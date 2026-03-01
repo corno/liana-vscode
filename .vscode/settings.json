@@ -1,0 +1,16 @@
+{
+	"editor.insertSpaces": false,
+	"typescript.tsc.autoDetect": "off",
+	"typescript.preferences.quoteStyle": "single",
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "explicit"
+	},
+    "workbench.colorCustomizations": {
+        "titleBar.activeBackground": "#8f243b",
+        "titleBar.inactiveBackground": "#631828",
+        "titleBar.activeForeground": "#ffffff",
+        "titleBar.inactiveForeground": "#cccccc",
+        "statusBar.background": "#631828",
+        "statusBar.foreground": "#ffffff"
+    }
+}

@@ -1,0 +1,320 @@
+{
+	"name": "astn",
+	"scopeName": "source.astn",
+	"patterns": [
+		{
+			"match": "!",
+			"name": "punctuation.definition.header.astn support.type.singular_structural_token.astn"
+		},
+		{
+			"include": "#comment_or_value"
+		},
+		{
+			"match": "[^\\s\\}]",
+			"name": "invalid.illegal.unexpected-root-token.astn"
+		}
+	],
+	"repository": {
+		"comment_or_value": {
+			"patterns": [
+				{
+					"include": "#comment"
+				},
+				{
+					"include": "#value"
+				}
+			]
+		},
+		"comment": {
+			"patterns": [
+				{
+					"begin": "/\\*\\*(?!/)",
+					"captures": {
+						"0": {
+							"name": "punctuation.definition.comment.astn"
+						}
+					},
+					"end": "\\*/",
+					"name": "comment.block.documentation.astn"
+				},
+				{
+					"begin": "/\\*",
+					"captures": {
+						"0": {
+							"name": "punctuation.definition.comment.astn"
+						}
+					},
+					"end": "\\*/",
+					"name": "comment.block.astn"
+				},
+				{
+					"captures": {
+						"1": {
+							"name": "punctuation.definition.comment.astn"
+						}
+					},
+					"match": "(//).*$\\n?",
+					"name": "comment.line.double-slash.js"
+				}
+			]
+		},
+		"value": {
+			"patterns": [
+				{
+					"include": "#concise_group"
+				},
+				{
+					"include": "#dictionary"
+				},
+				{
+					"include": "#list"
+				},
+				{
+					"include": "#verbose_group"
+				},
+				{
+					"match": "\\|",
+					"name": "punctuation.separator.tagged_value.astn support.type.singular_structural_token.astn"
+				},
+				{
+					"match": "\\@",
+					"name": "punctuation.separator.include.ast support.type.singular_structural_token.astn"
+				},
+				{
+					"match": "\\~",
+					"name": "punctuation.separator.no_value.astn support.type.singular_structural_token.astn"
+				},
+				{
+					"match": "\\*",
+					"name": "punctuation.separator.set_value.astn support.type.singular_structural_token.astn"
+				},
+				{
+					"include": "#string"
+				}
+			]
+		},
+		"concise_group": {
+			"begin": "\\<",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.concise_group.begin.astn"
+				}
+			},
+			"end": "\\>",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.concise_group.end.astn"
+				}
+			},
+			"name": "meta.structure.concise_group.astn",
+			"patterns": [
+				{
+					"include": "#comment_or_value"
+				},
+				{
+					"match": ",",
+					"name": "punctuation.separator.comma.concise_group.astn"
+				},
+				{
+					"match": "[^\\s\\]]",
+					"name": "invalid.illegal.expected-concise_group-separator-or-end.astn"
+				}
+			]
+		},
+		"dictionary": {
+			"begin": "\\{",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.dictionary.begin.astn"
+				}
+			},
+			"end": "\\}",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.dictionary.end.astn"
+				}
+			},
+			"name": "meta.structure.dictionary.astn",
+			"patterns": [
+				{
+					"include": "#comment_or_value"
+				},
+				{
+					"match": ",",
+					"name": "punctuation.separator.comma.dictionary.astn"
+				},
+				{
+					"match": ":",
+					"name": "punctuation.separator.colon.dictionary.astn"
+				},
+				{
+					"match": "[^\\s\\}]",
+					"name": "invalid.illegal.expected-dictionary-separator-or-end.astn"
+				}
+			]
+		},
+		"string": {
+			"patterns": [
+				{
+					"include": "#quoted_string"
+				},
+				{
+					"include": "#backticked_string"
+				},
+				{
+					"include": "#apostrophed_string"
+				},
+				{
+					"include": "#undelimited_string"
+				}
+			]
+		},
+		"list": {
+			"begin": "\\[",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.list.begin.astn"
+				}
+			},
+			"end": "\\]",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.list.end.astn"
+				}
+			},
+			"name": "meta.structure.list.astn",
+			"patterns": [
+				{
+					"include": "#comment_or_value"
+				},
+				{
+					"match": ",",
+					"name": "punctuation.separator.comma.list.astn"
+				},
+				{
+					"match": "[^\\s\\]]",
+					"name": "invalid.illegal.expected-list-separator-or-end.astn"
+				}
+			]
+		},
+		"verbose_group": {
+			"begin": "\\(",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.verbose_group.begin.astn"
+				}
+			},
+			"end": "\\)",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.verbose_group.end.astn"
+				}
+			},
+			"name": "meta.structure.type.astn",
+			"patterns": [
+				{
+					"include": "#comment_or_value"
+				},
+				{
+					"match": ",",
+					"name": "punctuation.separator.comma.verbose_group.astn"
+				},
+				{
+					"match": ":",
+					"name": "punctuation.separator.colon.verbose_group.astn"
+				},
+				{
+					"match": "[^\\s\\}]",
+					"name": "invalid.illegal.expected-verbose_group-separator-or-end.astn"
+				}
+			]
+		},
+		"quoted_string": {
+			"begin": "\"",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.quote.begin.astn"
+				}
+			},
+			"end": "\"",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.quote.end.astn"
+				}
+			},
+			"name": "string.quoted.double.astn",
+			"patterns": [
+				{
+					"match": "[^\"\\\\]+",
+					"name": "string.unescaped.content"
+				},
+				{
+					"match": "\\\\.",
+					"name": "constant.character.escape"
+				}
+			]
+		},
+		"apostrophed_string": {
+			"begin": "'",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.support.type.apostrophed_string.astn"
+				}
+			},
+			"end": "'",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.support.type.apostrophed_string.astn"
+				}
+			},
+			"name": "string.astn support.type.apostrophed_string.astn",
+			"patterns": [
+				{
+					"match": "[^'\\\\]+",
+					"name": "string.unescaped.content support.type.apostrophed_string.astn"
+				},
+				{
+					"match": "\\\\.",
+					"name": "constant.character.escape support.type.apostrophed_string.astn"
+				},
+				{
+					"match": "\\n",
+					"name": "invalid.illegal.newline_in_apostrophed_string.astn"
+				}
+			]
+		},
+		"backticked_string": {
+			"begin": "`",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.support.type.backticked_string.astn"
+				}
+			},
+			"end": "`",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.support.type.backticked_string.astn"
+				}
+			},
+			"name": "string.astn support.type.backticked_string.astn",
+			"patterns": [
+				{
+					"match": "[^`\\\\]+",
+					"name": "string.unescaped.content support.type.backticked_string.astn"
+				},
+				{
+					"match": "\\\\.",
+					"name": "constant.character.escape support.type.backticked_string.astn"
+				},
+				{
+					"match": "\\n",
+					"name": "invalid.illegal.newline_in_backticked_string.astn"
+				}
+			]
+		},
+		"undelimited_string": {
+			"match": "[^\\s\\[\\]\\{\\}\\(\\)\\<\\>\\|\\@\\~\\*\"'`]+",
+			"name": "string.unquoted.astn support.type.undelimited_string.astn"
+		}
+	}
+}

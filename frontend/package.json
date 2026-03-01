@@ -1,0 +1,170 @@
+{
+	"name": "liana",
+	"description": "Liana Language support; syntax highlighting, formatting, validation, conversion to JSON.",
+	"author": "Corno",
+	"license": "Apache-2.0",
+	"version": "1.20.6",
+	"icon": "images/icon.png",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/corno/liana-vscode"
+	},
+	"publisher": "corno",
+	"categories": [],
+	"keywords": [
+		"Liana",
+		"ASTN",
+		"syntax highlighting",
+		"formatting",
+		"validation",
+		"JSON",
+		"conversion",
+		"type checking"
+	],
+	"engines": {
+		"vscode": "^1.75.0"
+	},
+	"activationEvents": [],
+	"main": "./client/out/extension",
+	"contributes": {
+		"languages": [
+			{
+				"id": "astn",
+				"aliases": [
+					"astn"
+				],
+				"extensions": [
+					".astn",
+					".astn-schema"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "astn",
+				"scopeName": "source.astn",
+				"path": "./syntaxes/astn.tmLanguage.json"
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "ASTN configuration",
+			"properties": {}
+		},
+		"commands": [
+			{
+				"command": "astn.initialize_schema_development_environment",
+				"title": "initialize schema development environment"
+			},
+			{
+				"command": "astn.sort_alphabetically",
+				"title": "sort dictionary alphabetically"
+			},
+			{
+				"command": "astn.jump_to_next_missing_data",
+				"title": "jump to next missing_data (#)"
+			},
+			{
+				"command": "astn.collapse_all_entries",
+				"title": "collapse all entries"
+			},
+			{
+				"command": "astn.convert_to_json",
+				"title": "convert to JSON"
+			},
+			{
+				"command": "astn.convert_to_json_disabled",
+				"title": "convert to JSON (n/a due to errors)"
+			},
+			{
+				"command": "astn.save_as_json",
+				"title": "save as JSON file"
+			},
+			{
+				"command": "astn.save_as_json_disabled",
+				"title": "save as JSON file (n/a due to errors)"
+			},
+			{
+				"command": "astn.seal",
+				"title": "seal document"
+			},
+			{
+				"command": "astn.seal_disabled",
+				"title": "seal document (n/a due to errors)"
+			}
+		],
+		"keybindings": [
+			{
+				"command": "astn.jump_to_next_missing_data",
+				"key": "ctrl+3",
+				"when": "editorTextFocus && editorLangId == astn"
+			}
+		],
+		"menus": {
+			"editor/context": [
+				{
+					"command": "astn.convert_to_json",
+					"when": "editorLangId == astn && !astn.hasErrors",
+					"group": "1_astn"
+				},
+				{
+					"command": "astn.convert_to_json_disabled",
+					"when": "editorLangId == astn && astn.hasErrors",
+					"group": "1_astn"
+				},
+				{
+					"command": "astn.sort_alphabetically",
+					"when": "editorLangId == astn",
+					"group": "1_astn"
+				},
+				{
+					"command": "astn.save_as_json",
+					"when": "editorLangId == astn && !astn.hasErrors",
+					"group": "1_astn"
+				},
+				{
+					"command": "astn.save_as_json_disabled",
+					"when": "editorLangId == astn && astn.hasErrors",
+					"group": "1_astn"
+				},
+				{
+					"command": "astn.collapse_all_entries",
+					"when": "editorLangId == astn",
+					"group": "1_astn"
+				},
+				{
+					"command": "astn.seal",
+					"when": "editorLangId == astn && !astn.hasErrors",
+					"group": "1_astn"
+				},
+				{
+					"command": "astn.seal_disabled",
+					"when": "editorLangId == astn && astn.hasErrors",
+					"group": "1_astn"
+				}
+			]
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -b",
+		"watch": "tsc -b -w",
+		"lint": "eslint ./client/src ./server/src --ext .ts,.tsx",
+		"postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
+		"test": "sh ./scripts/e2e.sh"
+	},
+	"devDependencies": {
+		"@types/mocha": "^10.0.6",
+		"@types/node": "^18.14.6",
+		"@typescript-eslint/eslint-plugin": "^7.1.0",
+		"@typescript-eslint/parser": "^7.1.0",
+		"eslint": "^8.57.0",
+		"mocha": "^10.3.0",
+		"typescript": "^5.3.3"
+	},
+	"dependencies": {
+		"liana-authoring": "^0.0.9",
+		"pareto-host-nodejs": "^0.2.34"
+	}
+}
