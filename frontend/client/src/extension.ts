@@ -131,7 +131,6 @@ export function activate(context: ExtensionContext) {
 
 	{
 		context.subscriptions.push(vscode.commands.registerCommand('astn.save_as_json', () => {
-			vscode.window.showInformationMessage('Save as JSON!');
 
 			const editor = vscode.window.activeTextEditor;
 			if (!editor) {
@@ -160,6 +159,8 @@ export function activate(context: ExtensionContext) {
 
 				vscode.window.showSaveDialog({}).then(fileInfos => {
 					fs.writeFileSync(fileInfos.path, new_text, 'utf8');
+					vscode.window.showInformationMessage('file saved as json');
+
 				})
 			} catch (error) {
 				vscode.window.showErrorMessage("Cannot save as JSON because the file is not valid ASTN.");
@@ -197,7 +198,6 @@ export function activate(context: ExtensionContext) {
 	}
 	{
 		context.subscriptions.push(vscode.commands.registerCommand('astn.convert_to_json', () => {
-			vscode.window.showInformationMessage('Convert to JSON!');
 
 			const editor = vscode.window.activeTextEditor;
 			if (!editor) {

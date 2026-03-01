@@ -164,7 +164,8 @@
 		"typescript": "^5.3.3"
 	},
 	"dependencies": {
-		"liana-authoring": "^0.0.9",
-		"pareto-host-nodejs": "^0.2.34"
+		"liana-authoring": "file:../../pareto-canon/packages/liana-authoring/pub",
+		"pareto-host-nodejs": "^0.2.34",
+		"pareto-liana": "file:../../pareto-canon/packages/pareto-liana/pub"
 	}
 }
