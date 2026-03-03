@@ -213,9 +213,7 @@ documents.onDidChangeContent(change => {
 
 async function validateTextDocument(textDocument: TextDocument): Promise<Diagnostic[]> {
 	// In this simple example we get the settings for every validate run.
-	return new Promise<Diagnostic[]>((resolve, reject) => {
-
-		console.log(`Validating document: ${textDocument.uri}`)
+	return new Promise<Diagnostic[]>((resolve) => {
 
 		const x = ($: d_diagnostics.Diagnostics): Diagnostic[] => {
 			return $.__l_map(($) => ({
@@ -254,7 +252,6 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 			{ 'encoding': 'utf-8' },
 			(err, data) => {
 				if (err) {
-					console.log(`failed reading schema file from path: ${schema_path}`)
 					resolve([
 						{
 							'severity': DiagnosticSeverity.Error,
@@ -263,7 +260,6 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 						}
 					])
 				} else {
-					console.log(`successfully read schema file from path: ${schema_path}`)
 
 					let diagnostics: d_diagnostics.Diagnostics_ | null = null
 
@@ -291,9 +287,9 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 						resolve(x(xx))
 					} catch (e) {
 						if (diagnostics === null) {
-							reject()
+							console.log(`this should not happen`)
+							resolve([])
 						} else {
-							console.log(`Diagnostics for document ${textDocument.uri}`)
 							resolve(x(diagnostics))
 						}
 						//the error is already reported to the user via the diagnostics, so we can just do nothing here (I think)
@@ -322,8 +318,10 @@ connection.onCompletion(
 			return null
 		}
 
+		console.log(`Completion requested at position: ${params.position.line}:${params.position.character} in document: ${params.textDocument.uri}`)
 
-		return new Promise<CompletionItem[]>((resolve, reject) => {
+
+		return new Promise<CompletionItem[]>((resolve) => {
 			const context = params.context;
 
 			const remove_trigger_character = context &&
@@ -342,7 +340,51 @@ connection.onCompletion(
 				]
 				: []
 
-			resolve([])
+
+
+			const schema_path = path.dirname(url.fileURLToPath(params.textDocument.uri)) + path.sep + "liana.schema"
+
+			fs.readFile(
+				schema_path,
+				{ 'encoding': 'utf-8' },
+				(err, data) => {
+					if (err) {
+						resolve([])
+					} else {
+
+						try {
+							const xx = r_completion_suggestions_from_loc.Document(
+								_p_list_from_text(
+									doc.getText(),
+									($) => $
+								),
+								($) => {
+									throw new Error("there are lower level errors (parsing, schema resolving")
+								},
+								{
+									'position': params.position,
+									'unmarshall': {
+										'instance path': url.fileURLToPath(params.textDocument.uri),
+										'schema': {
+											'path': schema_path,
+											'content': _p_list_from_text(data, ($) => $),
+										},
+										'tab size': 1 // vscode works with character, not with columns
+									}
+								}
+							)
+							resolve(xx.__l_map(($) => ({
+								'label': $.label,
+								'insertText': $['insert text'],
+								'kind': CompletionItemKind.Text,
+							})).__get_raw_copy().map(($) => $))
+						} catch (e) {
+							resolve([])
+						}
+					}
+				}
+			)
+
 
 			// q_get_completion_suggestions({
 			// 	'read file': q_read_file
@@ -451,7 +493,7 @@ connection.onHover(
 		}
 
 		return new Promise(
-			(resolve, reject) => {
+			(resolve) => {
 
 				const schema_path = path.dirname(url.fileURLToPath(hoverParams.textDocument.uri)) + path.sep + "liana.schema"
 
@@ -464,9 +506,6 @@ connection.onHover(
 								'contents': []
 							})
 						} else {
-							console.log(`successfully read schema file from path: ${schema_path}`)
-
-							let diagnostics: d_diagnostics.Diagnostics_ | null = null
 
 							try {
 								const xx = r_hover_info_from_loc.Document(
@@ -503,30 +542,6 @@ connection.onHover(
 						}
 					}
 				)
-				// q_get_on_hover_info({
-				// 	'read file': q_read_file
-				// })(
-				// 	{
-				// 		'content': doc.getText(),
-				// 		'file path': url.fileURLToPath(hoverParams.textDocument.uri),
-				// 		'position': hoverParams.position
-				// 	},
-				// 	($) => $
-				// ).__extract_data(
-				// 	($) => {
-				// 		resolve({
-				// 			contents: $.contents['hover texts'].__decide(
-				// 				($) => $.__get_raw_copy().map(($) => $),
-				// 				() => []
-				// 			)
-				// 		})
-				// 	},
-				// 	($) => {
-				// 		resolve({
-				// 			contents: []
-				// 		})
-				// 	}
-				// )
 			},
 		)
 	}
