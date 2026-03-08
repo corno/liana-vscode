@@ -13,9 +13,7 @@ import { workspace, ExtensionContext } from 'vscode';
 
 
 import { $$ as ttt_convert_to_json } from "liana-authoring/dist/implementation/manual/text_to_text/convert_to_json"
-// import { $$ as r_seal } from "liana-authoring/dist/implementation/manual/queries/seal"
-// import { $$ as q_sort_alphabetically } from "pareto-vscode-backend/dist/implementation/algorithms/queries/sort_alphabetically"
-// import { $$ as q_format } from "liana-authoring/dist/implementation/manual/queries/"
+
 
 import * as fs from "fs"
 

@@ -1,8 +1,12 @@
 import * as _p from 'pareto-core/dist/assign'
+import * as _pi from 'pareto-core/dist/interface'
 import _p_list_from_text from 'pareto-core/dist/_p_list_from_text'
 
 //data types
 import * as d_diagnostics from "liana-authoring/dist/interface/generated/liana/schemas/diagnostics/data"
+import * as d_unmarshall_result_from_lines_of_characters from "pareto-liana/dist/interface/to_be_generated/unmarshall_result_from_loc"
+import * as d_location from "liana-authoring/dist/interface/generated/liana/schemas/location/data"
+import * as d_text_edits from "liana-authoring/dist/interface/generated/liana/schemas/text_edits/data"
 // import * as d_get_on_hover_info from "liana-authoring/dist/interface/generated/liana/schemas/get_on_hover_info/data"
 // import * as d_get_completion_suggestions from "liana-authoring/dist/interface/generated/liana/schemas/get_completion_suggestions/data"
 
@@ -31,6 +35,7 @@ import {
 	CompletionItem,
 	CompletionParams,
 	CompletionItemKind,
+	InsertTextFormat,
 	TextDocumentPositionParams,
 	CompletionTriggerKind,
 	TextDocumentSyncKind,
@@ -48,6 +53,7 @@ import {
 import * as vscode_types from 'vscode-languageserver-types';
 
 import {
+	DocumentUri,
 	TextDocument
 } from 'vscode-languageserver-textdocument';
 
@@ -210,12 +216,57 @@ documents.onDidChangeContent(change => {
 // 	return new Position(position.line, position.column);
 // }
 
+function read_schema(
+	documentURI: DocumentUri,
+	on_error: ($: {
+		'error': NodeJS.ErrnoException
+		'schema path': string
+	}) => void,
+	on_success: ($: d_unmarshall_result_from_lines_of_characters.Parameters) => void,
+): void {
+
+	const schema_path = path.dirname(url.fileURLToPath(documentURI)) + path.sep + "liana.schema"
+
+	fs.readFile(
+		schema_path,
+		{ 'encoding': 'utf-8' },
+		(err, data) => {
+			if (err) {
+				on_error({
+					'error': err,
+					'schema path': schema_path,
+				})
+			} else {
+				on_success({
+					'instance path': url.fileURLToPath(documentURI),
+					'schema': {
+						'path': schema_path,
+						'content': _p_list_from_text(data, ($) => $),
+					},
+					'tab size': 1 // vscode works with character, not with columns
+				})
+			}
+		}
+	)
+}
+
+const create_range = (
+	$: d_location.Range
+): vscode_types.Range => {
+	return vscode_types.Range.create(
+		$.start.line,
+		$.start.character,
+		$.end.line,
+		$.end.character
+	)
+}
+
 
 async function validateTextDocument(textDocument: TextDocument): Promise<Diagnostic[]> {
 	// In this simple example we get the settings for every validate run.
 	return new Promise<Diagnostic[]>((resolve) => {
 
-		const x = ($: d_diagnostics.Diagnostics): Diagnostic[] => {
+		const convert_diagnostics = ($: d_diagnostics.Diagnostics): Diagnostic[] => {
 			return $.__l_map(($) => ({
 				severity: (() => {
 					switch ($.severity[0]) {
@@ -226,17 +277,12 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 					}
 				})(),
 				message: $.message,
-				range: vscode_types.Range.create(
-					$.range.start.line,
-					$.range.start.character,
-					$.range.end.line,
-					$.range.end.character
-				),
+				range: create_range($.range),
 				relatedInformation: $['related information'].__decide(
 					($) => $.__get_raw_copy().map(($): vscode_types.DiagnosticRelatedInformation => ({
 						'location': {
 							'uri': textDocument.uri,
-							'range': $.location.range,
+							'range': create_range($.location.range),
 						},
 						'message': $.message,
 					})),
@@ -245,61 +291,67 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 			})).__get_raw_copy().map(($) => $)
 		}
 
-		const schema_path = path.dirname(url.fileURLToPath(textDocument.uri)) + path.sep + "liana.schema"
-
-		fs.readFile(
-			schema_path,
-			{ 'encoding': 'utf-8' },
-			(err, data) => {
-				if (err) {
-					resolve([
-						{
-							'severity': DiagnosticSeverity.Error,
-							'message': `Failed to read schema file: ${schema_path}`,
-							'range': vscode_types.Range.create(0, 0, 0, 1),
-						}
-					])
-				} else {
-
-					let diagnostics: d_diagnostics.Diagnostics_ | null = null
-
-					try {
-						const xx = r_diagnositics_from_loc.Document(
-							_p_list_from_text(
-								textDocument.getText(),
-								($) => $
-							),
-							($) => {
-								diagnostics = $
-								throw new Error("there are lower level errors (parsing, schema resolving")
-							},
-							{
-								'unmarshall': {
-									'instance path': url.fileURLToPath(textDocument.uri),
-									'schema': {
-										'path': schema_path,
-										'content': _p_list_from_text(data, ($) => $),
-									},
-									'tab size': 1 // vscode works with character, not with columns
-								}
-							}
-						)
-						resolve(x(xx))
-					} catch (e) {
-						if (diagnostics === null) {
-							console.log(`this should not happen`)
-							resolve([])
-						} else {
-							resolve(x(diagnostics))
-						}
-						//the error is already reported to the user via the diagnostics, so we can just do nothing here (I think)
+		read_schema(
+			textDocument.uri,
+			($) => {
+				resolve([
+					{
+						'severity': DiagnosticSeverity.Error,
+						'message': `Failed to read schema file: ${$['schema path']}`,
+						'range': vscode_types.Range.create(0, 0, 0, 1),
 					}
+				])
+			},
+			(unmarshall_parameters) => {
+				let diagnostics: d_diagnostics.Diagnostics_ | null = null
+				try {
+					const xx = r_diagnositics_from_loc.Document(
+						_p_list_from_text(
+							textDocument.getText(),
+							($) => $
+						),
+						($) => {
+							diagnostics = $
+							throw new Error("there are lower level errors (parsing, schema resolving")
+						},
+						{
+							'unmarshall': unmarshall_parameters
+						}
+					)
+					resolve(convert_diagnostics(xx))
+				} catch (e) {
+					if (diagnostics === null) {
+						console.log(`this should not happen`)
+						resolve([])
+					} else {
+						resolve(convert_diagnostics(diagnostics))
+					}
+					//the error is already reported to the user via the diagnostics, so we can just do nothing here (I think)
 				}
 			}
 		)
 
+
+
 	})
 }
+
+const map_text_edits = ($: d_text_edits.Text_Edits): vscode_types.TextEdit[] => $.__l_map(($): TextEdit => _p.decide.state($, ($) => {
+	switch ($[0]) {
+		case 'replace': return _p.ss($, ($) => TextEdit.replace(
+			create_range($.range),
+			$.text
+		))
+		case 'delete': return _p.ss($, ($) => TextEdit.del(
+			create_range($.range)
+		))
+		case 'insert': return _p.ss($, ($) => TextEdit.insert(
+			$.location,
+			$.text
+		))
+		default: return _p.au($[0])
+	}
+})).__get_raw_copy().map(($) => $)
 
 connection.onDidChangeWatchedFiles(_change => {
 	// Monitored files have change in VSCode
@@ -321,7 +373,7 @@ connection.onCompletion(
 		console.log(`Completion requested at position: ${params.position.line}:${params.position.character} in document: ${params.textDocument.uri}`)
 
 
-		return new Promise<CompletionItem[]>((resolve) => {
+		return new Promise<vscode_types.CompletionList>((resolve) => {
 			const context = params.context;
 
 			const remove_trigger_character = context &&
@@ -340,50 +392,65 @@ connection.onCompletion(
 				]
 				: []
 
-
-
-			const schema_path = path.dirname(url.fileURLToPath(params.textDocument.uri)) + path.sep + "liana.schema"
-
-			fs.readFile(
-				schema_path,
-				{ 'encoding': 'utf-8' },
-				(err, data) => {
-					if (err) {
-						resolve([])
-					} else {
-
-						try {
-							const xx = r_completion_suggestions_from_loc.Document(
-								_p_list_from_text(
-									doc.getText(),
-									($) => $
-								),
-								($) => {
-									throw new Error("there are lower level errors (parsing, schema resolving")
-								},
-								{
-									'position': params.position,
-									'unmarshall': {
-										'instance path': url.fileURLToPath(params.textDocument.uri),
-										'schema': {
-											'path': schema_path,
-											'content': _p_list_from_text(data, ($) => $),
-										},
-										'tab size': 1 // vscode works with character, not with columns
-									}
-								}
-							)
-							resolve(xx.__l_map(($) => ({
-								'label': $.label,
-								'insertText': $['insert text'],
-								'kind': CompletionItemKind.Text,
-							})).__get_raw_copy().map(($) => $))
-						} catch (e) {
-							resolve([])
+			read_schema(
+				params.textDocument.uri,
+				($) => {
+					resolve({ 'isIncomplete': false, 'items': [] })
+				},
+				(unmarshall_parameters) => {
+					try {
+						const xx = r_completion_suggestions_from_loc.Document(
+							_p_list_from_text(
+								doc.getText(),
+								($) => $
+							),
+							($) => {
+								throw new Error("there are lower level errors (parsing, schema resolving")
+							},
+							{
+								'position': params.position,
+								'unmarshall': unmarshall_parameters
+							}
+						)
+						resolve({
+							'isIncomplete': false,
+							'items': xx.__l_map(($) => {
+								return ({
+									'label': $.label,
+									'insertText': $['insert text'],
+									'insertTextFormat': InsertTextFormat.Snippet,
+									'kind': _p.decide.state($.type, ($): CompletionItemKind => {
+										switch ($[0]) {
+											case 'number': return _p.ss($, ($) => CompletionItemKind.Value)
+											case 'boolean': return _p.ss($, ($) => CompletionItemKind.Value)
+											case 'component': return _p.ss($, ($) => CompletionItemKind.Class)
+											case 'dictionary': return _p.ss($, ($) => CompletionItemKind.Class)
+											case 'group': return _p.ss($, ($) => CompletionItemKind.Struct)
+											case 'list': return _p.ss($, ($) => CompletionItemKind.Class)
+											case 'nothing': return _p.ss($, ($) => CompletionItemKind.Value)
+											case 'optional': return _p.ss($, ($) => CompletionItemKind.Field)
+											case 'reference': return _p.ss($, ($) => CompletionItemKind.Reference)
+											case 'state': return _p.ss($, ($) => CompletionItemKind.Enum)
+											case 'text': return _p.ss($, ($) => CompletionItemKind.Text)
+											default: return _p.au($[0])
+										}
+									}),
+									'additionalTextEdits': map_text_edits($['additional text edits']),
+									'documentation': $.documentation,
+								})
+							}).__get_raw_copy().map(($) => $)
+						})
+					} catch (e) {
+						if (e instanceof Error) {
+							console.log(`Error while getting completion suggestions: ${e.message}, stack: ${e.stack}`)
+						} else {
+							console.log(`Error (unknown) while getting completion suggestions: ${e}`)
 						}
+						resolve({ 'isIncomplete': false, 'items': [] })
 					}
 				}
 			)
+
 
 
 			// q_get_completion_suggestions({
@@ -495,53 +562,43 @@ connection.onHover(
 		return new Promise(
 			(resolve) => {
 
-				const schema_path = path.dirname(url.fileURLToPath(hoverParams.textDocument.uri)) + path.sep + "liana.schema"
+				read_schema(
+					hoverParams.textDocument.uri,
+					($) => {
+						resolve({
+							'contents': []
+						})
+					},
+					(unmarshall_parameters) => {
 
-				fs.readFile(
-					schema_path,
-					{ 'encoding': 'utf-8' },
-					(err, data) => {
-						if (err) {
+						try {
+							const xx = r_hover_info_from_loc.Document(
+								_p_list_from_text(
+									doc.getText(),
+									($) => $
+								),
+								($) => {
+									throw new Error("there are lower level errors (parsing, schema resolving")
+								},
+								{
+									'position': hoverParams.position,
+									'unmarshall': unmarshall_parameters
+								}
+							)
+							resolve({
+								'contents': xx.__decide(
+									($) => $.__get_raw_copy(),
+									() => []
+								).map(($) => $)
+							})
+						} catch (e) {
 							resolve({
 								'contents': []
 							})
-						} else {
-
-							try {
-								const xx = r_hover_info_from_loc.Document(
-									_p_list_from_text(
-										doc.getText(),
-										($) => $
-									),
-									($) => {
-										throw new Error("there are lower level errors (parsing, schema resolving")
-									},
-									{
-										'position': hoverParams.position,
-										'unmarshall': {
-											'instance path': url.fileURLToPath(hoverParams.textDocument.uri),
-											'schema': {
-												'path': schema_path,
-												'content': _p_list_from_text(data, ($) => $),
-											},
-											'tab size': 1 // vscode works with character, not with columns
-										}
-									}
-								)
-								resolve({
-									'contents': xx.__decide(
-										($) => $.__get_raw_copy(),
-										() => []
-									).map(($) => $)
-								})
-							} catch (e) {
-								resolve({
-									'contents': []
-								})
-							}
 						}
 					}
 				)
+
 			},
 		)
 	}
