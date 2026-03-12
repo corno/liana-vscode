@@ -372,9 +372,6 @@ connection.onCompletion(
 			return null
 		}
 
-		console.log(`Completion requested at position: ${params.position.line}:${params.position.character} in document: ${params.textDocument.uri}`)
-
-
 		return new Promise<vscode_types.CompletionList>((resolve) => {
 			const context = params.context;
 
@@ -444,7 +441,7 @@ connection.onCompletion(
 						})
 					} catch (e) {
 						if (e instanceof Error) {
-							console.log(`Error while getting completion suggestions: ${e.message}, stack: ${e.stack}`)
+							console.log(`Error while getting completion suggestions: ${e.message}`)
 						} else {
 							console.log(`Error (unknown) while getting completion suggestions: ${e}`)
 						}
