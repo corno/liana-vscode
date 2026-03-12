@@ -1,6 +1,6 @@
 {
-	"name": "astn",
-	"scopeName": "source.astn",
+	"name": "liana",
+	"scopeName": "source.liana",
 	"patterns": [
 		{
 			"match": "!",

@@ -29,119 +29,128 @@
 	"contributes": {
 		"languages": [
 			{
-				"id": "astn",
+				"id": "liana",
 				"aliases": [
-					"astn"
+					"liana"
 				],
 				"extensions": [
-					".astn",
-					".astn-schema"
+					".liana"
 				],
 				"configuration": "./language-configuration.json"
 			}
 		],
 		"grammars": [
 			{
-				"language": "astn",
-				"scopeName": "source.astn",
+				"language": "liana",
+				"scopeName": "source.liana",
 				"path": "./syntaxes/astn.tmLanguage.json"
 			}
 		],
 		"configuration": {
 			"type": "object",
-			"title": "ASTN configuration",
+			"title": "Liana configuration",
 			"properties": {}
 		},
 		"commands": [
 			{
-				"command": "astn.initialize_schema_development_environment",
+				"command": "liana.initialize_schema_development_environment",
+				"category": "Liana",
 				"title": "initialize schema development environment"
 			},
 			{
-				"command": "astn.sort_alphabetically",
+				"command": "liana.sort_alphabetically",
+				"category": "Liana",
 				"title": "sort dictionary alphabetically"
 			},
 			{
-				"command": "astn.jump_to_next_missing_data",
+				"command": "liana.jump_to_next_missing_data",
+				"category": "Liana",
 				"title": "jump to next missing_data (#)"
 			},
 			{
-				"command": "astn.collapse_all_entries",
+				"command": "liana.collapse_all_entries",
+				"category": "Liana",
 				"title": "collapse all entries"
 			},
 			{
-				"command": "astn.convert_to_json",
+				"command": "liana.convert_to_json",
+				"category": "Liana",
 				"title": "convert to JSON"
 			},
 			{
-				"command": "astn.convert_to_json_disabled",
+				"command": "liana.convert_to_json_disabled",
+				"category": "Liana",
 				"title": "convert to JSON (n/a due to errors)"
 			},
 			{
-				"command": "astn.save_as_json",
+				"command": "liana.save_as_json",
+				"category": "Liana",
 				"title": "save as JSON file"
 			},
 			{
-				"command": "astn.save_as_json_disabled",
+				"command": "liana.save_as_json_disabled",
+				"category": "Liana",
 				"title": "save as JSON file (n/a due to errors)"
 			},
 			{
-				"command": "astn.seal",
+				"command": "liana.seal",
+				"category": "Liana",
 				"title": "seal document"
 			},
 			{
-				"command": "astn.seal_disabled",
+				"command": "liana.seal_disabled",
+				"category": "Liana",
 				"title": "seal document (n/a due to errors)"
 			}
 		],
 		"keybindings": [
 			{
-				"command": "astn.jump_to_next_missing_data",
+				"command": "liana.jump_to_next_missing_data",
 				"key": "ctrl+3",
-				"when": "editorTextFocus && editorLangId == astn"
+				"when": "editorTextFocus && editorLangId == liana"
 			}
 		],
 		"menus": {
 			"editor/context": [
 				{
-					"command": "astn.convert_to_json",
-					"when": "editorLangId == astn && !astn.hasErrors",
-					"group": "1_astn"
+					"command": "liana.convert_to_json",
+					"when": "editorLangId == liana && !liana.has_parse_errors",
+					"group": "1_liana"
 				},
 				{
-					"command": "astn.convert_to_json_disabled",
-					"when": "editorLangId == astn && astn.hasErrors",
-					"group": "1_astn"
+					"command": "liana.convert_to_json_disabled",
+					"when": "editorLangId == liana && liana.has_parse_errors",
+					"group": "1_liana"
 				},
 				{
-					"command": "astn.sort_alphabetically",
-					"when": "editorLangId == astn",
-					"group": "1_astn"
+					"command": "liana.sort_alphabetically",
+					"when": "editorLangId == liana",
+					"group": "1_liana"
 				},
 				{
-					"command": "astn.save_as_json",
-					"when": "editorLangId == astn && !astn.hasErrors",
-					"group": "1_astn"
+					"command": "liana.save_as_json",
+					"when": "editorLangId == liana && !liana.has_parse_errors",
+					"group": "1_liana"
 				},
 				{
-					"command": "astn.save_as_json_disabled",
-					"when": "editorLangId == astn && astn.hasErrors",
-					"group": "1_astn"
+					"command": "liana.save_as_json_disabled",
+					"when": "editorLangId == liana && liana.has_parse_errors",
+					"group": "1_liana"
 				},
 				{
-					"command": "astn.collapse_all_entries",
-					"when": "editorLangId == astn",
-					"group": "1_astn"
+					"command": "liana.collapse_all_entries",
+					"when": "editorLangId == liana",
+					"group": "1_liana"
 				},
 				{
-					"command": "astn.seal",
-					"when": "editorLangId == astn && !astn.hasErrors",
-					"group": "1_astn"
+					"command": "liana.seal",
+					"when": "editorLangId == liana && !liana.has_parse_errors",
+					"group": "1_liana"
 				},
 				{
-					"command": "astn.seal_disabled",
-					"when": "editorLangId == astn && astn.hasErrors",
-					"group": "1_astn"
+					"command": "liana.seal_disabled",
+					"when": "editorLangId == liana && liana.has_parse_errors",
+					"group": "1_liana"
 				}
 			]
 		}

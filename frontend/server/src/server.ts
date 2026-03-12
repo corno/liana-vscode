@@ -4,7 +4,7 @@ import _p_list_from_text from 'pareto-core/dist/_p_list_from_text'
 
 //data types
 import * as d_diagnostics from "liana-authoring/dist/interface/generated/liana/schemas/diagnostics/data"
-import * as d_unmarshall_result_from_lines_of_characters from "pareto-liana/dist/interface/to_be_generated/unmarshall_result_from_loc"
+import * as d_unmarshall_result_from_lines_of_characters from "liana-authoring/dist/interface/to_be_generated/unmarshall_result_from_loc"
 import * as d_location from "liana-authoring/dist/interface/generated/liana/schemas/location/data"
 import * as d_text_edits from "liana-authoring/dist/interface/generated/liana/schemas/text_edits/data"
 // import * as d_get_on_hover_info from "liana-authoring/dist/interface/generated/liana/schemas/get_on_hover_info/data"
@@ -18,8 +18,6 @@ import * as d_text_edits from "liana-authoring/dist/interface/generated/liana/sc
 import * as r_hover_info_from_loc from "liana-authoring/dist/implementation/manual/refiners/hover_info/list_of_characters"
 import * as r_completion_suggestions_from_loc from "liana-authoring/dist/implementation/manual/refiners/completion_suggestions/list_of_characters"
 import * as r_diagnositics_from_loc from "liana-authoring/dist/implementation/manual/refiners/diagnostics/list_of_characters"
-import * as t_ur_from_loc_to_fp from "pareto-liana/dist/implementation/manual/transformers/unmarshall_result_from_loc/fountain_pen"
-import * as t_fp_to_text from "pareto-fountain-pen/dist/implementation/manual/transformers/prose/text"
 
 import * as fs from "fs"
 import * as path from "path"
@@ -36,12 +34,10 @@ import {
 	CompletionParams,
 	CompletionItemKind,
 	InsertTextFormat,
-	TextDocumentPositionParams,
 	CompletionTriggerKind,
 	TextDocumentSyncKind,
 	InitializeResult,
 	DocumentDiagnosticReportKind,
-	Position,
 	type DocumentDiagnosticReport,
 	DocumentSymbol,
 	SymbolKind,
@@ -225,7 +221,7 @@ function read_schema(
 	on_success: ($: d_unmarshall_result_from_lines_of_characters.Parameters) => void,
 ): void {
 
-	const schema_path = path.dirname(url.fileURLToPath(documentURI)) + path.sep + "liana.schema"
+	const schema_path = path.dirname(url.fileURLToPath(documentURI)) + path.sep + "liana-schema"
 
 	fs.readFile(
 		schema_path,
@@ -266,7 +262,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 	// In this simple example we get the settings for every validate run.
 	return new Promise<Diagnostic[]>((resolve) => {
 
-		const convert_diagnostics = ($: d_diagnostics.Diagnostics): Diagnostic[] => {
+		const convert_diagnostics = ($: d_diagnostics.Diagnostics, source: string): Diagnostic[] => {
 			return $.__l_map(($) => ({
 				severity: (() => {
 					switch ($.severity[0]) {
@@ -278,6 +274,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 				})(),
 				message: $.message,
 				range: create_range($.range),
+				source: source,
 				relatedInformation: $['related information'].__decide(
 					($) => $.__get_raw_copy().map(($): vscode_types.DiagnosticRelatedInformation => ({
 						'location': {
@@ -318,13 +315,18 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 							'unmarshall': unmarshall_parameters
 						}
 					)
-					resolve(convert_diagnostics(xx))
+					resolve(convert_diagnostics(xx, 'liana-semantic'))
 				} catch (e) {
 					if (diagnostics === null) {
 						console.log(`this should not happen`)
+						if (e instanceof Error) {
+							console.log(`Error while validating document: ${e.message}, stack: ${e.stack}`)
+						} else {
+							console.log(`Error (unknown) while validating document: ${e}`)
+						}
 						resolve([])
 					} else {
-						resolve(convert_diagnostics(diagnostics))
+						resolve(convert_diagnostics(diagnostics, 'liana-parser'))
 					}
 					//the error is already reported to the user via the diagnostics, so we can just do nothing here (I think)
 				}

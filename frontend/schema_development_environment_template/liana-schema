@@ -10533,6 +10533,6 @@
             'complexity': | 'unconstrained' ~
         )
     }
-    'schema path': [ `module` ],
-    'module': `Module`
+    'schema path': [ `schema` ],
+    'module': `Module Specification`
 )

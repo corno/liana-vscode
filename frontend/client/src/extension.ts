@@ -88,17 +88,22 @@ export function activate(context: ExtensionContext) {
 	// Set up diagnostic monitoring for error state
 	function updateErrorContext(uri: vscode.Uri) {
 		const diagnostics = vscode.languages.getDiagnostics(uri);
-		const hasErrors = diagnostics.some(diagnostic =>
+		const has_errors = diagnostics.some(diagnostic =>
 			diagnostic.severity === vscode.DiagnosticSeverity.Error
 		);
-		vscode.commands.executeCommand('setContext', 'astn.hasErrors', hasErrors);
+		const has_parse_errors = diagnostics.some(diagnostic =>
+			diagnostic.severity === vscode.DiagnosticSeverity.Error &&
+			diagnostic.source === 'liana-parser'
+		);
+		vscode.commands.executeCommand('setContext', 'liana.has_errors', has_errors);
+		vscode.commands.executeCommand('setContext', 'liana.has_parse_errors', has_parse_errors);
 	}
 
 	// Monitor diagnostic changes
 	context.subscriptions.push(
 		vscode.languages.onDidChangeDiagnostics(event => {
 			const activeEditor = vscode.window.activeTextEditor;
-			if (activeEditor && activeEditor.document.languageId === 'astn') {
+			if (activeEditor && activeEditor.document.languageId === 'liana') {
 				for (const uri of event.uris) {
 					if (uri.toString() === activeEditor.document.uri.toString()) {
 						updateErrorContext(uri);
@@ -112,27 +117,27 @@ export function activate(context: ExtensionContext) {
 	// Monitor active editor changes
 	context.subscriptions.push(
 		vscode.window.onDidChangeActiveTextEditor(editor => {
-			if (editor && editor.document.languageId === 'astn') {
+			if (editor && editor.document.languageId === 'liana') {
 				updateErrorContext(editor.document.uri);
 			} else {
 				// Clear context when not in ASTN file
-				vscode.commands.executeCommand('setContext', 'astn.hasErrors', false);
+				vscode.commands.executeCommand('setContext', 'liana.has_parse_errors', false);
 			}
 		})
 	);
 
 	// Initialize context for current file
 	const activeEditor = vscode.window.activeTextEditor;
-	if (activeEditor && activeEditor.document.languageId === 'astn') {
+	if (activeEditor && activeEditor.document.languageId === 'liana') {
 		updateErrorContext(activeEditor.document.uri);
 	}
 
 	{
-		context.subscriptions.push(vscode.commands.registerCommand('astn.save_as_json', () => {
+		context.subscriptions.push(vscode.commands.registerCommand('liana.save_as_json', () => {
 
 			const editor = vscode.window.activeTextEditor;
 			if (!editor) {
-				vscode.window.showInformationMessage('Open an ASTN file first to convert to JSON');
+				vscode.window.showInformationMessage('Open a Liana file first to convert to JSON');
 				return;
 			}
 
@@ -166,10 +171,10 @@ export function activate(context: ExtensionContext) {
 		}))
 	}
 	{
-		context.subscriptions.push(vscode.commands.registerCommand('astn.sort_alphabetically', () => {
+		context.subscriptions.push(vscode.commands.registerCommand('liana.sort_alphabetically', () => {
 			const editor = vscode.window.activeTextEditor;
 			if (!editor) {
-				vscode.window.showInformationMessage('Open an ASTN file first to sort alphabetically');
+				vscode.window.showInformationMessage('Open a Liana file first to sort alphabetically');
 				return;
 			}
 
@@ -188,18 +193,18 @@ export function activate(context: ExtensionContext) {
 			// 		// })
 			// 	},
 			// 	() => {
-			// 		vscode.window.showErrorMessage("Sorting failed because the file is not valid ASTN.");
+			// 		vscode.window.showErrorMessage("Sorting failed because the file is not valid liana.");
 
 			// 	}
 			// )
 		}))
 	}
 	{
-		context.subscriptions.push(vscode.commands.registerCommand('astn.convert_to_json', () => {
+		context.subscriptions.push(vscode.commands.registerCommand('liana.convert_to_json', () => {
 
 			const editor = vscode.window.activeTextEditor;
 			if (!editor) {
-				vscode.window.showInformationMessage('Open an ASTN file first to save as JSON');
+				vscode.window.showInformationMessage('Open a Liana file first to save as JSON');
 				return;
 			}
 
@@ -237,7 +242,7 @@ export function activate(context: ExtensionContext) {
 		}))
 	}
 	{
-		context.subscriptions.push(vscode.commands.registerCommand('astn.jump_to_next_missing_data', () => {
+		context.subscriptions.push(vscode.commands.registerCommand('liana.jump_to_next_missing_data', () => {
 			const editor = vscode.window.activeTextEditor;
 			if (!editor) {
 				vscode.window.showInformationMessage('No active editor');
@@ -278,7 +283,7 @@ export function activate(context: ExtensionContext) {
 		}))
 	}
 	{
-		context.subscriptions.push(vscode.commands.registerCommand('astn.initialize_schema_development_environment', async () => {
+		context.subscriptions.push(vscode.commands.registerCommand('liana.initialize_schema_development_environment', async () => {
 			try {
 				// Ask user for target directory
 				const targetUris = await vscode.window.showOpenDialog({
@@ -350,7 +355,7 @@ export function activate(context: ExtensionContext) {
 		}))
 	}
 	{
-		context.subscriptions.push(vscode.commands.registerCommand('astn.collapse_all_entries', async () => {
+		context.subscriptions.push(vscode.commands.registerCommand('liana.collapse_all_entries', async () => {
 			const editor = vscode.window.activeTextEditor;
 			if (!editor) {
 				vscode.window.showInformationMessage('No active editor');
@@ -407,12 +412,12 @@ export function activate(context: ExtensionContext) {
 		}))
 	}
 	{
-		context.subscriptions.push(vscode.commands.registerCommand('astn.seal', () => {
+		context.subscriptions.push(vscode.commands.registerCommand('liana.seal', () => {
 			vscode.window.showInformationMessage('Seal!');
 
 			const editor = vscode.window.activeTextEditor;
 			if (!editor) {
-				vscode.window.showInformationMessage('Open an ASTN file first to seal');
+				vscode.window.showInformationMessage('Open a liana file first to seal');
 				return;
 			}
 
@@ -449,17 +454,17 @@ export function activate(context: ExtensionContext) {
 	}
 	{
 		// Disabled command versions that show when there are errors
-		context.subscriptions.push(vscode.commands.registerCommand('astn.convert_to_json_disabled', () => {
+		context.subscriptions.push(vscode.commands.registerCommand('liana.convert_to_json_disabled', () => {
 			vscode.window.showErrorMessage('Cannot convert to JSON because the file has errors. Fix the errors first.');
 		}))
 	}
 	{
-		context.subscriptions.push(vscode.commands.registerCommand('astn.save_as_json_disabled', () => {
+		context.subscriptions.push(vscode.commands.registerCommand('liana.save_as_json_disabled', () => {
 			vscode.window.showErrorMessage('Cannot save as JSON because the file has errors. Fix the errors first.');
 		}))
 	}
 	{
-		context.subscriptions.push(vscode.commands.registerCommand('astn.seal_disabled', () => {
+		context.subscriptions.push(vscode.commands.registerCommand('liana.seal_disabled', () => {
 			vscode.window.showErrorMessage('Cannot seal because the file has errors. Fix the errors first.');
 		}))
 	}
@@ -483,7 +488,7 @@ export function activate(context: ExtensionContext) {
 	// Options to control the language client
 	const clientOptions: LanguageClientOptions = {
 		// Register the server for plain text documents
-		documentSelector: [{ scheme: 'file', language: 'astn' }],
+		documentSelector: [{ scheme: 'file', language: 'liana' }],
 		synchronize: {
 			// Notify the server about file changes to '.clientrc files contained in the workspace
 			fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
@@ -499,11 +504,11 @@ export function activate(context: ExtensionContext) {
 	);
 
 
-	vscode.languages.registerDocumentFormattingEditProvider('astn', {
+	vscode.languages.registerDocumentFormattingEditProvider('liana', {
 		provideDocumentFormattingEdits(document: vscode.TextDocument, options) {
 			const edits: vscode.TextEdit[] = [];
 			// Read user configuration for formatting
-			const config = vscode.workspace.getConfiguration('astn');
+			const config = vscode.workspace.getConfiguration('liana');
 
 			return new Promise((resolve, reject) => {
 				resolve([])
