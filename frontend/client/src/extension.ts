@@ -132,7 +132,27 @@ export function activate(context: ExtensionContext) {
 		updateErrorContext(activeEditor.document.uri);
 	}
 
-	// Register command to create a new .liana file
+	// Check if workspace contains any liana-schema files and set context
+	async function updateWorkspaceHasSchemaContext() {
+		try {
+			const schemaFiles = await vscode.workspace.findFiles('**/liana-schema', null, 1);
+			const hasSchema = schemaFiles.length > 0;
+			vscode.commands.executeCommand('setContext', 'liana.workspaceHasSchema', hasSchema);
+		} catch (error) {
+			vscode.commands.executeCommand('setContext', 'liana.workspaceHasSchema', false);
+		}
+	}
+
+	// Initial check for liana-schema files in workspace
+	updateWorkspaceHasSchemaContext();
+
+	// Watch for liana-schema file changes
+	const schemaWatcher = vscode.workspace.createFileSystemWatcher('**/liana-schema');
+	context.subscriptions.push(schemaWatcher.onDidCreate(() => updateWorkspaceHasSchemaContext()));
+	context.subscriptions.push(schemaWatcher.onDidDelete(() => updateWorkspaceHasSchemaContext()));
+	context.subscriptions.push(schemaWatcher);
+
+	// Register command to create a new .lna file
 	context.subscriptions.push(vscode.commands.registerCommand('liana.create_liana_file', async (uri: vscode.Uri) => {
 		try {
 			// Determine the folder where the file should be created
@@ -154,10 +174,19 @@ export function activate(context: ExtensionContext) {
 				return;
 			}
 
+			// Check if the target folder contains a liana-schema file
+			const schemaPath = vscode.Uri.file(path.join(targetFolder.fsPath, 'liana-schema'));
+			try {
+				await vscode.workspace.fs.stat(schemaPath);
+			} catch {
+				vscode.window.showErrorMessage('This folder does not contain a liana-schema file. Please select a folder with a liana-schema file.');
+				return;
+			}
+
 			// Prompt for filename
 			const fileName = await vscode.window.showInputBox({
 				prompt: 'Enter the name for your new Liana file',
-				placeHolder: 'filename.liana',
+				placeHolder: 'filename.lna',
 				validateInput: (value: string) => {
 					if (!value || value.trim() === '') {
 						return 'Filename cannot be empty';
@@ -170,8 +199,11 @@ export function activate(context: ExtensionContext) {
 				return; // User cancelled
 			}
 
-			// Ensure .liana extension
-			const finalFileName = fileName.endsWith('.liana') ? fileName : `${fileName}.liana`;
+			// Ensure .liana or .lna extension
+			let finalFileName = fileName;
+			if (!fileName.endsWith('.liana') && !fileName.endsWith('.lna')) {
+				finalFileName = `${fileName}.lna`;
+			}
 			const fileUri = vscode.Uri.file(path.join(targetFolder.fsPath, finalFileName));
 
 			// Create the file with default content (single # character)

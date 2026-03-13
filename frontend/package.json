@@ -114,6 +114,11 @@
 				"command": "liana.jump_to_next_missing_data",
 				"key": "ctrl+3",
 				"when": "editorTextFocus && editorLangId == liana"
+			},
+			{
+				"command": "liana.jump_to_next_missing_data",
+				"key": "ctrl+d",
+				"when": "editorTextFocus && editorLangId == liana"
 			}
 		],
 		"menus": {
@@ -162,6 +167,7 @@
 			"explorer/context": [
 				{
 					"command": "liana.create_liana_file",
+					"when": "explorerResourceIsFolder && liana.workspaceHasSchema",
 					"group": "navigation@1"
 				}
 			]
