@@ -34,7 +34,8 @@
 					"liana"
 				],
 				"extensions": [
-					".liana"
+					".liana",
+					".lna"
 				],
 				"configuration": "./language-configuration.json"
 			}
@@ -101,6 +102,11 @@
 				"command": "liana.seal_disabled",
 				"category": "Liana",
 				"title": "seal document (n/a due to errors)"
+			},
+			{
+				"command": "liana.create_liana_file",
+				"category": "Liana",
+				"title": "New Liana File..."
 			}
 		],
 		"keybindings": [
@@ -151,6 +157,12 @@
 					"command": "liana.seal_disabled",
 					"when": "editorLangId == liana && liana.has_parse_errors",
 					"group": "1_liana"
+				}
+			],
+			"explorer/context": [
+				{
+					"command": "liana.create_liana_file",
+					"group": "navigation@1"
 				}
 			]
 		}

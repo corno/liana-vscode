@@ -132,6 +132,61 @@ export function activate(context: ExtensionContext) {
 		updateErrorContext(activeEditor.document.uri);
 	}
 
+	// Register command to create a new .liana file
+	context.subscriptions.push(vscode.commands.registerCommand('liana.create_liana_file', async (uri: vscode.Uri) => {
+		try {
+			// Determine the folder where the file should be created
+			let targetFolder: vscode.Uri;
+			if (uri && uri.fsPath) {
+				// Check if the URI is a directory or file
+				const stat = await vscode.workspace.fs.stat(uri);
+				if (stat.type === vscode.FileType.Directory) {
+					targetFolder = uri;
+				} else {
+					// If it's a file, use its parent directory
+					targetFolder = vscode.Uri.file(path.dirname(uri.fsPath));
+				}
+			} else if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
+				// Default to workspace root if no URI provided
+				targetFolder = vscode.workspace.workspaceFolders[0].uri;
+			} else {
+				vscode.window.showErrorMessage('No workspace folder found');
+				return;
+			}
+
+			// Prompt for filename
+			const fileName = await vscode.window.showInputBox({
+				prompt: 'Enter the name for your new Liana file',
+				placeHolder: 'filename.liana',
+				validateInput: (value: string) => {
+					if (!value || value.trim() === '') {
+						return 'Filename cannot be empty';
+					}
+					return null;
+				}
+			});
+
+			if (!fileName) {
+				return; // User cancelled
+			}
+
+			// Ensure .liana extension
+			const finalFileName = fileName.endsWith('.liana') ? fileName : `${fileName}.liana`;
+			const fileUri = vscode.Uri.file(path.join(targetFolder.fsPath, finalFileName));
+
+			// Create the file with default content (single # character)
+			const defaultContent = '#';
+			const encoder = new TextEncoder();
+			await vscode.workspace.fs.writeFile(fileUri, encoder.encode(defaultContent));
+
+			// Open the file in the editor
+			const document = await vscode.workspace.openTextDocument(fileUri);
+			await vscode.window.showTextDocument(document);
+		} catch (error) {
+			vscode.window.showErrorMessage(`Failed to create Liana file: ${error.message}`);
+		}
+	}));
+
 	{
 		context.subscriptions.push(vscode.commands.registerCommand('liana.save_as_json', () => {
 
