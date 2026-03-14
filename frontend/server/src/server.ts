@@ -234,9 +234,7 @@ function read_schema(
 				})
 			} else {
 				on_success({
-					'instance path': url.fileURLToPath(documentURI),
 					'schema': {
-						'path': schema_path,
 						'content': _p_list_from_text(data, ($) => $),
 					},
 					'tab size': 1 // vscode works with character, not with columns

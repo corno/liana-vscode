@@ -54,9 +54,9 @@
 		},
 		"commands": [
 			{
-				"command": "liana.initialize_schema_development_environment",
+				"command": "liana.initialize_liana_authoring_environment",
 				"category": "Liana",
-				"title": "initialize schema development environment"
+				"title": "initialize Liana authoring environment"
 			},
 			{
 				"command": "liana.sort_alphabetically",
@@ -102,6 +102,11 @@
 				"command": "liana.seal_disabled",
 				"category": "Liana",
 				"title": "seal document (n/a due to errors)"
+			},
+			{
+				"command": "liana.initialize_authoring_environment_with_this_schema",
+				"category": "Liana",
+				"title": "Initialize authoring environment with this Liana schema"
 			},
 			{
 				"command": "liana.create_liana_file",
@@ -161,6 +166,11 @@
 				{
 					"command": "liana.seal_disabled",
 					"when": "editorLangId == liana && liana.has_parse_errors",
+					"group": "1_liana"
+				},
+				{
+					"command": "liana.initialize_authoring_environment_with_this_schema",
+					"when": "editorLangId == liana && !liana.has_parse_errors && resourceFilename =~ /\\.liana\\.lna$/",
 					"group": "1_liana"
 				}
 			],

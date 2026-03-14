@@ -1,3 +1,6 @@
+import _p_list_from_text from 'pareto-core/dist/_p_list_from_text'
+
+
 //data types
 import * as d_convert_to_json from "liana-authoring/dist/interface/generated/liana/schemas/convert_to_json/data"
 import * as d_location from "liana-authoring/dist/interface/generated/liana/schemas/location/data"
@@ -10,10 +13,13 @@ import * as d_location from "liana-authoring/dist/interface/generated/liana/sche
 
 import * as path from 'path';
 import { workspace, ExtensionContext } from 'vscode';
+import * as url from "url"
 
 
 import { $$ as ttt_convert_to_json } from "liana-authoring/dist/implementation/manual/text_to_text/convert_to_json"
+import { $$ as ttt_seal } from "liana-authoring/dist/implementation/manual/text_to_text/seal"
 
+import * as d_unmarshall_result_from_lines_of_characters from "liana-authoring/dist/interface/to_be_generated/unmarshall_result_from_loc"
 
 import * as fs from "fs"
 
@@ -27,6 +33,40 @@ import {
 import * as vscode from 'vscode'
 
 let client: LanguageClient;
+
+
+
+function read_schema(
+	documentURI: string,
+	on_error: ($: {
+		'error': NodeJS.ErrnoException
+		'schema path': string
+	}) => void,
+	on_success: ($: d_unmarshall_result_from_lines_of_characters.Parameters) => void,
+): void {
+
+	const schema_path = path.dirname(url.fileURLToPath(documentURI)) + path.sep + "liana-schema"
+
+	fs.readFile(
+		schema_path,
+		{ 'encoding': 'utf-8' },
+		(err, data) => {
+			if (err) {
+				on_error({
+					'error': err,
+					'schema path': schema_path,
+				})
+			} else {
+				on_success({
+					'schema': {
+						'content': _p_list_from_text(data, ($) => $),
+					},
+					'tab size': 1 // vscode works with character, not with columns
+				})
+			}
+		}
+	)
+}
 
 // Helper function to find the folding range that contains the cursor position
 function findContainingFoldingRange(foldingRanges: vscode.FoldingRange[], position: vscode.Position): vscode.FoldingRange | undefined {
@@ -370,7 +410,7 @@ export function activate(context: ExtensionContext) {
 		}))
 	}
 	{
-		context.subscriptions.push(vscode.commands.registerCommand('liana.initialize_schema_development_environment', async () => {
+		context.subscriptions.push(vscode.commands.registerCommand('liana.initialize_liana_authoring_environment', async () => {
 			try {
 				// Ask user for target directory
 				const targetUris = await vscode.window.showOpenDialog({
@@ -378,7 +418,7 @@ export function activate(context: ExtensionContext) {
 					canSelectFolders: true,
 					canSelectMany: false,
 					openLabel: 'Select Target Directory',
-					title: 'Select directory to initialize schema development environment'
+					title: 'Select directory to initialize Liana authoring environment'
 				});
 
 				if (!targetUris || targetUris.length === 0) {
@@ -388,11 +428,11 @@ export function activate(context: ExtensionContext) {
 				const targetPath = targetUris[0].fsPath;
 
 				// Get the template directory path relative to the extension
-				const templatePath = context.asAbsolutePath('schema_development_environment_template');
+				const templatePath = context.asAbsolutePath('liana_authoring_environment_template');
 
 				// Check if template exists
 				if (!fs.existsSync(templatePath)) {
-					vscode.window.showErrorMessage('Schema development environment template not found in extension.');
+					vscode.window.showErrorMessage('Liana authoring environment template not found in extension.');
 					console.error('Template not found at:', templatePath);
 					return;
 				}
@@ -422,11 +462,11 @@ export function activate(context: ExtensionContext) {
 					}
 				}
 
-				vscode.window.showInformationMessage(`Schema development environment initialized successfully in: ${targetPath}`);
+				vscode.window.showInformationMessage(`Authoring environment initialized successfully in: ${targetPath}`);
 
 				// Ask if user wants to open the new directory
 				const openChoice = await vscode.window.showInformationMessage(
-					'Would you like to open the initialized schema development environment?',
+					'Would you like to open the initialized authoring environment?',
 					'Yes', 'No'
 				);
 
@@ -436,8 +476,8 @@ export function activate(context: ExtensionContext) {
 				}
 
 			} catch (error) {
-				console.error('Error initializing schema development environment:', error);
-				vscode.window.showErrorMessage(`Failed to initialize schema development environment: ${error instanceof Error ? error.message : String(error)}`);
+				console.error('Error initializing authoring environment:', error);
+				vscode.window.showErrorMessage(`Failed to initialize authoring environment: ${error instanceof Error ? error.message : String(error)}`);
 			}
 		}))
 	}
@@ -500,7 +540,6 @@ export function activate(context: ExtensionContext) {
 	}
 	{
 		context.subscriptions.push(vscode.commands.registerCommand('liana.seal', () => {
-			vscode.window.showInformationMessage('Seal!');
 
 			const editor = vscode.window.activeTextEditor;
 			if (!editor) {
@@ -508,35 +547,126 @@ export function activate(context: ExtensionContext) {
 				return;
 			}
 
-			// q_seal(
-			// 	{
-			// 		'read file': xxxx
-			// 	},
-			// )(
-			// 	{
-			// 		'content': editor.document.getText(),
-			// 		'source': {
-			// 			'file path': xxxx,
-			// 			'tab size': 4
-			// 		},
-			// 		'target': {
-			// 			'indentation': "	",
-			// 			'newline': "\n",
-			// 		}
-			// 	},
-			// 	($) => $
-			// ).__extract_data(
-			// 	($) => {
-			// 		vscode.window.showSaveDialog({}).then(fileInfos => {
-			// 			if (fileInfos) {
-			// 				fs.writeFileSync(fileInfos.path, $, 'utf8');
-			// 			}
-			// 		})
-			// 	},
-			// 	($) => {
-			// 		vscode.window.showErrorMessage("Cannot seal because the file is not valid ASTN.");
-			// 	}
-			// )
+			try {
+
+				read_schema(
+					editor.document.uri.toString(),
+					() => {
+						vscode.window.showErrorMessage("Cannot seal because no liana-schema file could be found in the same directory as the liana file.");
+					},
+					($) => {
+
+						const new_text = ttt_seal(
+							editor.document.getText(),
+							(): never => {
+								throw new Error("Sealing failed because the file is not valid Liana.");
+							},
+							{
+								'unmarshall': $,
+								'target': {
+									'indentation': "",
+									'newline': "",
+								}
+							}
+						)
+
+						vscode.window.showSaveDialog({
+							// You can set a default extension using filters
+							filters: {
+								'Sealed Liana': ['slna']
+							},
+							// Optionally, set a default file name
+							defaultUri: vscode.Uri.file(
+								path.join(
+									path.dirname(editor.document.uri.fsPath),
+									`${path.basename(editor.document.uri.fsPath, path.extname(editor.document.uri.fsPath))}.slna`
+								)
+							),
+							saveLabel: 'Save Sealed File',
+						}).then(fileInfos => {
+							if (fileInfos) {
+								fs.writeFileSync(fileInfos.path, new_text, 'utf8');
+								vscode.window.showInformationMessage('File saved as sealed Liana');
+							}
+						})
+					}
+				)
+			} catch (error) {
+				vscode.window.showErrorMessage("Cannot seal because the file is not valid Liana.");
+			}
+		}))
+	}
+	{
+		context.subscriptions.push(vscode.commands.registerCommand('liana.initialize_authoring_environment_with_this_schema', async () => {
+
+			const editor = vscode.window.activeTextEditor;
+			if (!editor) {
+				vscode.window.showInformationMessage('Open a liana file first to create authoring environment');
+				return;
+			}
+
+			try {
+
+
+				read_schema(
+					editor.document.uri.toString(),
+					() => {
+						vscode.window.showErrorMessage("Cannot seal because no liana-schema file could be found in the same directory as the liana file.");
+					},
+					async ($) => {
+
+						const new_text = ttt_seal(
+							editor.document.getText(),
+							(): never => {
+								throw new Error("Conversion to JSON failed because the file is not valid Liana.");
+							},
+							{
+								'unmarshall': $,
+								'target': {
+									'indentation': "	",
+									'newline': "\n",
+								}
+							}
+						)
+
+						// Ask user to select a directory
+						const targetUris = await vscode.window.showOpenDialog({
+							canSelectFiles: false,
+							canSelectFolders: true,
+							canSelectMany: false,
+							openLabel: 'Select Directory',
+							title: 'Select directory to save liana-schema file'
+						});
+
+						if (!targetUris || targetUris.length === 0) {
+							return; // User cancelled
+						}
+
+						const targetPath = targetUris[0].fsPath;
+						const schemaFilePath = path.join(targetPath, 'liana-schema');
+
+						// Write the file
+						fs.writeFileSync(schemaFilePath, new_text, 'utf8');
+						vscode.window.showInformationMessage(`authoring environment created: ${targetPath}`);
+
+						// Ask if user wants to open the new directory
+						const openChoice = await vscode.window.showInformationMessage(
+							'Would you like to open the initialized authoring environment?',
+							'Yes', 'No'
+						);
+
+						if (openChoice === 'Yes') {
+							const uri = vscode.Uri.file(targetPath);
+							await vscode.commands.executeCommand('vscode.openFolder', uri, true);
+						}
+
+
+					}
+				)
+
+			} catch (error) {
+				vscode.window.showErrorMessage(`Cannot create schema: ${error.message}`);
+			}
 		}))
 	}
 	{
