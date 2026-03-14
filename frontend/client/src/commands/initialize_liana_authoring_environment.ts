@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as vscode from 'vscode'
 
-export function registerInitializeLianaAuthoringEnvironmentCommand(context: vscode.ExtensionContext): vscode.Disposable {
+export default function $(context: vscode.ExtensionContext): vscode.Disposable {
 	return vscode.commands.registerCommand('liana.initialize_liana_authoring_environment', async () => {
 		try {
 			const targetUris = await vscode.window.showOpenDialog({

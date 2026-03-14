@@ -1,31 +1,31 @@
 import * as vscode from 'vscode'
 
-import { registerCollapseAllEntriesCommand } from './commands/collapse_all_entries'
-import { registerConvertToJsonCommand } from './commands/convert_to_json'
-import { registerConvertToJsonDisabledCommand } from './commands/convert_to_json_disabled'
-import { registerCreateLianaFileCommand } from './commands/create_liana_file'
-import { registerInitializeAuthoringEnvironmentWithThisSchemaCommand } from './commands/initialize_authoring_environment_with_this_schema'
-import { registerInitializeLianaAuthoringEnvironmentCommand } from './commands/initialize_liana_authoring_environment'
-import { registerJumpToNextMissingDataCommand } from './commands/jump_to_next_missing_data'
-import { registerSaveAsJsonCommand } from './commands/save_as_json'
-import { registerSaveAsJsonDisabledCommand } from './commands/save_as_json_disabled'
-import { registerSealCommand } from './commands/seal'
-import { registerSealDisabledCommand } from './commands/seal_disabled'
-import { registerSortAlphabeticallyCommand } from './commands/sort_alphabetically'
+import collapse_all_entries from './commands/collapse_all_entries'
+import convert_to_json from './commands/convert_to_json'
+import convert_to_json_disabled from './commands/convert_to_json_disabled'
+import create_liana_file from './commands/create_liana_file'
+import initialize_authoring_environment_with_this_schema from './commands/initialize_authoring_environment_with_this_schema'
+import initialize_liana_authoring_environment from './commands/initialize_liana_authoring_environment'
+import jump_to_next_missing_data from './commands/jump_to_next_missing_data'
+import save_as_json from './commands/save_as_json'
+import save_as_json_disabled from './commands/save_as_json_disabled'
+import seal from './commands/seal'
+import seal_disabled from './commands/seal_disabled'
+import sort_alphabetically from './commands/sort_alphabetically'
 
 export function registerCommands(context: vscode.ExtensionContext): void {
 	context.subscriptions.push(
-		registerCreateLianaFileCommand(),
-		registerSaveAsJsonCommand(),
-		registerSortAlphabeticallyCommand(),
-		registerConvertToJsonCommand(),
-		registerJumpToNextMissingDataCommand(),
-		registerInitializeLianaAuthoringEnvironmentCommand(context),
-		registerCollapseAllEntriesCommand(),
-		registerSealCommand(),
-		registerInitializeAuthoringEnvironmentWithThisSchemaCommand(),
-		registerConvertToJsonDisabledCommand(),
-		registerSaveAsJsonDisabledCommand(),
-		registerSealDisabledCommand(),
+		create_liana_file(),
+		save_as_json(),
+		sort_alphabetically(),
+		convert_to_json(),
+		jump_to_next_missing_data(),
+		initialize_liana_authoring_environment(context),
+		collapse_all_entries(),
+		seal(),
+		initialize_authoring_environment_with_this_schema(),
+		convert_to_json_disabled(),
+		save_as_json_disabled(),
+		seal_disabled(),
 	)
 }

@@ -1,7 +1,7 @@
 import * as path from 'path'
 import * as vscode from 'vscode'
 
-export function registerCreateLianaFileCommand(): vscode.Disposable {
+export default function $(): vscode.Disposable {
 	return vscode.commands.registerCommand('liana.create_liana_file', async (uri: vscode.Uri) => {
 		try {
 			let targetFolder: vscode.Uri;

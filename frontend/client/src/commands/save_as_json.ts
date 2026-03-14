@@ -3,7 +3,7 @@ import { $$ as ttt_convert_to_json } from 'liana-authoring/dist/implementation/m
 import * as fs from 'fs'
 import * as vscode from 'vscode'
 
-export function registerSaveAsJsonCommand(): vscode.Disposable {
+export default function $(): vscode.Disposable {
 	return vscode.commands.registerCommand('liana.save_as_json', () => {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {

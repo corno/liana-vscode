@@ -6,7 +6,7 @@ import * as vscode from 'vscode'
 
 import { readSchema } from '../command_support/schema'
 
-export function registerInitializeAuthoringEnvironmentWithThisSchemaCommand(): vscode.Disposable {
+export default function $(): vscode.Disposable {
 	return vscode.commands.registerCommand('liana.initialize_authoring_environment_with_this_schema', async () => {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {

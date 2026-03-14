@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 
-export function registerJumpToNextMissingDataCommand(): vscode.Disposable {
+export default function $(): vscode.Disposable {
 	return vscode.commands.registerCommand('liana.jump_to_next_missing_data', () => {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {

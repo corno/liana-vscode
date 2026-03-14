@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 
-export function registerSortAlphabeticallyCommand(): vscode.Disposable {
+export default function $(): vscode.Disposable {
 	return vscode.commands.registerCommand('liana.sort_alphabetically', () => {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {

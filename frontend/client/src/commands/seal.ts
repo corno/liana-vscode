@@ -6,7 +6,7 @@ import * as vscode from 'vscode'
 
 import { readSchema } from '../command_support/schema'
 
-export function registerSealCommand(): vscode.Disposable {
+export default function $(): vscode.Disposable {
 	return vscode.commands.registerCommand('liana.seal', () => {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
