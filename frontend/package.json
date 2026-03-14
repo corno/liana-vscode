@@ -47,6 +47,42 @@
 				"path": "./syntaxes/astn.tmLanguage.json"
 			}
 		],
+		"configurationDefaults": {
+			"editor.tokenColorCustomizations": {
+				"textMateRules": [
+					{
+						"scope": "support.type.singular_structural_token.astn",
+						"settings": {
+							"foreground": "#fd3c7c"
+						}
+					},
+					{
+						"scope": "support.type.apostrophed_string.astn",
+						"settings": {
+							"foreground": "#9CDCFE"
+						}
+					},
+					{
+						"scope": "support.type.undelimited_string.astn",
+						"settings": {
+							"foreground": "#9c8a21"
+						}
+					},
+					{
+						"scope": "support.type.backticked_string.astn",
+						"settings": {
+							"foreground": "#569CD6"
+						}
+					},
+					{
+						"scope": "string.quoted.double.astn",
+						"settings": {
+							"foreground": "#CE9178"
+						}
+					}
+				]
+			}
+		},
 		"configuration": {
 			"type": "object",
 			"title": "Liana configuration",
@@ -107,6 +143,11 @@
 				"command": "liana.initialize_authoring_environment_with_this_schema",
 				"category": "Liana",
 				"title": "Initialize authoring environment with this Liana schema"
+			},
+			{
+				"command": "liana.generate_typescript_code_from_this_schema",
+				"category": "Liana",
+				"title": "Generate TypeScript code from this Liana schema"
 			},
 			{
 				"command": "liana.create_liana_file",
@@ -172,6 +213,11 @@
 					"command": "liana.initialize_authoring_environment_with_this_schema",
 					"when": "editorLangId == liana && !liana.has_parse_errors && resourceFilename =~ /\\.liana\\.lna$/",
 					"group": "1_liana"
+				},
+				{
+					"command": "liana.generate_typescript_code_from_this_schema",
+					"when": "editorLangId == liana && !liana.has_parse_errors && resourceFilename =~ /\\.liana\\.lna$/",
+					"group": "1_liana"
 				}
 			],
 			"explorer/context": [
@@ -201,8 +247,7 @@
 		"typescript": "^5.3.3"
 	},
 	"dependencies": {
-		"liana-authoring": "file:../../pareto-canon/packages/liana-authoring/pub",
-		"pareto-host-nodejs": "^0.2.34",
-		"pareto-liana": "file:../../pareto-canon/packages/pareto-liana/pub"
+		"liana-authoring": "^0.1.1",
+		"pareto-host-nodejs": "^0.2.34"
 	}
 }

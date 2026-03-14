@@ -4,7 +4,6 @@ This project has been reorganized into two main parts:
 
 ## Structure
 
-- **`backend/`** - Core language processing logic
 - **`frontend/`** - VS Code extension (client + language server)
 
 ## Development
