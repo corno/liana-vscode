@@ -97,8 +97,8 @@ connection.onInitialize((params: InitializeParams) => {
 					'<', //to fill a concise type
 					//'[', 
 					'|', //to fill a union type
-					'`', //to set a reference
-					'\'', //to set a keyword or start a property
+					'`', //to set a keyword or start a property
+					'\'', //to set a id or a reference
 					':', //to set a property
 					//',',
 					'#' //to replace missing data

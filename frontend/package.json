@@ -1,15 +1,15 @@
 {
 	"name": "liana",
+	"version": "0.1.1",
+	"publisher": "corno",
 	"description": "Liana Language support; syntax highlighting, formatting, validation, conversion to JSON.",
 	"author": "Corno",
 	"license": "Apache-2.0",
-	"version": "1.20.6",
 	"icon": "images/icon.png",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/corno/liana-vscode"
 	},
-	"publisher": "corno",
 	"categories": [],
 	"keywords": [
 		"Liana",
@@ -230,7 +230,9 @@
 		}
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run compile",
+		"vscode:prepublish": "npm run compile && npm run bundle",
+		"bundle": "node ./esbuild.js --production",
+		"bundle:watch": "node ./esbuild.js --watch",
 		"compile": "tsc -b",
 		"watch": "tsc -b -w",
 		"lint": "eslint ./client/src ./server/src --ext .ts,.tsx",
@@ -242,12 +244,13 @@
 		"@types/node": "^18.14.6",
 		"@typescript-eslint/eslint-plugin": "^7.1.0",
 		"@typescript-eslint/parser": "^7.1.0",
+		"esbuild": "^0.27.4",
 		"eslint": "^8.57.0",
 		"mocha": "^10.3.0",
 		"typescript": "^5.3.3"
 	},
 	"dependencies": {
-		"liana-authoring": "^0.1.1",
+		"liana-authoring": "file:../../pareto-canon/packages/liana-authoring/pub",
 		"pareto-host-nodejs": "^0.2.34"
 	}
 }
