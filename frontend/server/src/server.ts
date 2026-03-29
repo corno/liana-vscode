@@ -1,8 +1,10 @@
 import * as _p from 'pareto-core/dist/assign'
 import * as _pi from 'pareto-core/dist/interface'
 import _p_list_from_text from 'pareto-core/dist/_p_list_from_text'
+import _p_unreachable from 'pareto-core/dist/_p_unreachable_code_path'
 
 //data types
+import * as d_path from "pareto-resources/dist/interface/generated/liana/schemas/path/data"
 import * as d_diagnostics from "liana-authoring/dist/interface/generated/liana/schemas/diagnostics/data"
 import * as d_unmarshall_result_from_lines_of_characters from "liana-authoring/dist/interface/to_be_generated/unmarshall_result_from_loc"
 import * as d_location from "liana-authoring/dist/interface/generated/liana/schemas/location/data"
@@ -16,8 +18,10 @@ import * as d_text_edits from "liana-authoring/dist/interface/generated/liana/sc
  * ------------------------------------------------------------------------------------------ */
 
 import * as r_hover_info_from_loc from "liana-authoring/dist/implementation/manual/refiners/hover_info/list_of_characters"
+import * as r_path_from_text from "pareto-resources/dist/implementation/manual/refiners/node_path/text"
 import * as r_completion_suggestions_from_loc from "liana-authoring/dist/implementation/manual/refiners/completion_suggestions/list_of_characters"
 import * as r_diagnositics_from_loc from "liana-authoring/dist/implementation/manual/refiners/diagnostics/list_of_characters"
+import * as t_node_path_to_text from "pareto-resources/dist/implementation/manual/transformers/path/text"
 
 import * as fs from "fs"
 import * as path from "path"
@@ -218,7 +222,10 @@ function read_schema(
 		'error': NodeJS.ErrnoException
 		'schema path': string
 	}) => void,
-	on_success: ($: d_unmarshall_result_from_lines_of_characters.Parameters) => void,
+	on_success: (
+		$: d_unmarshall_result_from_lines_of_characters.Parameters,
+		schema_path: d_path.Node_Path
+	) => void,
 ): void {
 
 	const schema_path = path.dirname(url.fileURLToPath(documentURI)) + path.sep + "liana-schema"
@@ -233,19 +240,28 @@ function read_schema(
 					'schema path': schema_path,
 				})
 			} else {
-				on_success({
-					'schema': {
-						'content': _p_list_from_text(data, ($) => $),
+				on_success(
+					{
+						'schema': {
+							'content': _p_list_from_text(data, ($) => $),
+						},
+						'tab size': 1 // vscode works with character, not with columns
 					},
-					'tab size': 1 // vscode works with character, not with columns
-				})
+					r_path_from_text.Node_Path(
+						schema_path,
+						() => _p_unreachable("the path is constructed above"),
+						{
+							'pedantic': true
+						}
+					)
+				)
 			}
 		}
 	)
 }
 
 const create_range = (
-	$: d_location.Range
+	$: d_location.Range_FE
 ): vscode_types.Range => {
 	return vscode_types.Range.create(
 		$.start.line,
@@ -276,7 +292,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 				relatedInformation: $['related information'].__decide(
 					($) => $.__get_raw_copy().map(($): vscode_types.DiagnosticRelatedInformation => ({
 						'location': {
-							'uri': textDocument.uri,
+							'uri': t_node_path_to_text.Node_Path($.location['file path']),
 							'range': create_range($.location.range),
 						},
 						'message': $.message,
@@ -297,8 +313,8 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 					}
 				])
 			},
-			(unmarshall_parameters) => {
-				let diagnostics: d_diagnostics.Diagnostics_ | null = null
+			(unmarshall_parameters, schema_path) => {
+				let diagnostics: Diagnostic[] | null = null
 				try {
 					const xx = r_diagnositics_from_loc.Document(
 						_p_list_from_text(
@@ -306,11 +322,20 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 							($) => $
 						),
 						($) => {
-							diagnostics = $
+							diagnostics = convert_diagnostics(_p.list.literal([
+								$
+							]), _p.decide.state($.type, ($) => {
+								switch ($[0]) {
+									case 'schema': return _p.ss($, ($) => "schema")
+									case 'deserialize': return _p.ss($, ($) => "deserialize")
+									default: return _p.au($[0])
+								}
+							}))
 							throw new Error("there are lower level errors (parsing, schema resolving")
 						},
 						{
-							'unmarshall': unmarshall_parameters
+							'unmarshall': unmarshall_parameters,
+							'schema path': schema_path
 						}
 					)
 					resolve(convert_diagnostics(xx, 'liana-semantic'))
@@ -324,7 +349,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 						}
 						resolve([])
 					} else {
-						resolve(convert_diagnostics(diagnostics, 'liana-parser'))
+						resolve(diagnostics)
 					}
 					//the error is already reported to the user via the diagnostics, so we can just do nothing here (I think)
 				}

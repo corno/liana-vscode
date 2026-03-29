@@ -14,7 +14,7 @@ export default function $(): vscode.Disposable {
 			const newText = ttt_convert_to_json(
 				editor.document.getText(),
 				(): never => {
-					throw new Error('Conversion to JSON failed because the file is not valid ASTN.');
+					throw new Error('Safe as JSON failed because the file is not valid ASTN.');
 				},
 				{
 					'source': {

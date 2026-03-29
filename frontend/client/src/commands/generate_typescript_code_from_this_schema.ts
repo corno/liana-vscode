@@ -24,7 +24,7 @@ export default function $(): vscode.Disposable {
 					const newText = ttt_seal(
 						editor.document.getText(),
 						(): never => {
-							throw new Error('Conversion to JSON failed because the file is not valid Liana.');
+							throw new Error('Sealing failed because the file is not valid Liana.');
 						},
 						{
 							'unmarshall': $,

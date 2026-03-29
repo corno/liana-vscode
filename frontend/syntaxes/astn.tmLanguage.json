@@ -74,19 +74,19 @@
 				},
 				{
 					"match": "\\|",
-					"name": "punctuation.separator.tagged_value.astn support.type.singular_structural_token.astn"
+					"name": "punctuation.separator.state.astn support.type.singular_structural_token.astn"
 				},
 				{
 					"match": "\\@",
-					"name": "punctuation.separator.include.ast support.type.singular_structural_token.astn"
+					"name": "punctuation.separator.include.astn support.type.singular_structural_token.astn"
 				},
 				{
 					"match": "\\~",
-					"name": "punctuation.separator.no_value.astn support.type.singular_structural_token.astn"
+					"name": "punctuation.separator.nothing.astn support.type.singular_structural_token.astn"
 				},
 				{
 					"match": "\\*",
-					"name": "punctuation.separator.set_value.astn support.type.singular_structural_token.astn"
+					"name": "punctuation.separator.set.astn support.type.singular_structural_token.astn"
 				},
 				{
 					"include": "#string"
@@ -313,7 +313,7 @@
 			]
 		},
 		"undelimited_string": {
-			"match": "[^\\s\\[\\]\\{\\}\\(\\)\\<\\>\\|\\@\\~\\*\"'`]+",
+			"match": "[^\\s\\[\\]\\{\\}\\(\\)\\<\\>\\|\\@\\~\\_\\*\"'`]+",
 			"name": "string.unquoted.astn support.type.undelimited_string.astn"
 		}
 	}
