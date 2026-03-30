@@ -19,11 +19,11 @@ export default function $(): vscode.Disposable {
 				return;
 			}
 
-			const schemaPath = vscode.Uri.file(path.join(targetFolder.fsPath, 'liana-schema'));
+			const schemaPath = vscode.Uri.file(path.join(targetFolder.fsPath, 'liana-schema.slna'));
 			try {
 				await vscode.workspace.fs.stat(schemaPath);
 			} catch {
-				vscode.window.showErrorMessage('This folder does not contain a liana-schema file. Please select a folder with a liana-schema file.');
+				vscode.window.showErrorMessage('This folder does not contain a liana-schema.slna file. Please select a folder with a liana-schema.slna file.');
 				return;
 			}
 

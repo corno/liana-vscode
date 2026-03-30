@@ -14,7 +14,7 @@ export function readSchema(
 	}) => void,
 	onSuccess: ($: d_unmarshall_result_from_lines_of_characters.Parameters) => void,
 ): void {
-	const schemaPath = path.dirname(url.fileURLToPath(documentURI)) + path.sep + 'liana-schema'
+	const schemaPath = path.dirname(url.fileURLToPath(documentURI)) + path.sep + 'liana-schema.slna'
 
 	fs.readFile(
 		schemaPath,

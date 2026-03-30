@@ -48,6 +48,7 @@ import {
 	DocumentSymbolParams,
 	TextEdit,
 	Range,
+	MarkupKind,
 } from 'vscode-languageserver/node';
 
 import * as vscode_types from 'vscode-languageserver-types';
@@ -228,7 +229,7 @@ function read_schema(
 	) => void,
 ): void {
 
-	const schema_path = path.dirname(url.fileURLToPath(documentURI)) + path.sep + "liana-schema"
+	const schema_path = path.dirname(url.fileURLToPath(documentURI)) + path.sep + "liana-schema.slna"
 
 	fs.readFile(
 		schema_path,
@@ -434,33 +435,40 @@ connection.onCompletion(
 								'unmarshall': unmarshall_parameters
 							}
 						)
+						const items = xx.__l_map(($) => {
+							return ({
+								'label': $.label,
+								'insertText': $['insert text'],
+								'insertTextFormat': InsertTextFormat.Snippet,
+								'kind': _p.decide.state($.type, ($): CompletionItemKind => {
+									switch ($[0]) {
+										case 'number': return _p.ss($, ($) => CompletionItemKind.Value)
+										case 'boolean': return _p.ss($, ($) => CompletionItemKind.Value)
+										case 'component': return _p.ss($, ($) => CompletionItemKind.Class)
+										case 'dictionary': return _p.ss($, ($) => CompletionItemKind.Class)
+										case 'group': return _p.ss($, ($) => CompletionItemKind.Struct)
+										case 'list': return _p.ss($, ($) => CompletionItemKind.Class)
+										case 'nothing': return _p.ss($, ($) => CompletionItemKind.Value)
+										case 'optional': return _p.ss($, ($) => CompletionItemKind.Field)
+										case 'reference': return _p.ss($, ($) => CompletionItemKind.Reference)
+										case 'state': return _p.ss($, ($) => CompletionItemKind.Enum)
+										case 'text': return _p.ss($, ($) => CompletionItemKind.Text)
+										default: return _p.au($[0])
+									}
+								}),
+								'additionalTextEdits': map_text_edits($['additional text edits']),
+								'documentation': {
+									kind: MarkupKind.PlainText,
+									value: $.documentation
+								},
+								'data': {
+									'documentation': $.documentation
+								}
+							})
+						}).__get_raw_copy().map(($) => $)
 						resolve({
 							'isIncomplete': false,
-							'items': xx.__l_map(($) => {
-								return ({
-									'label': $.label,
-									'insertText': $['insert text'],
-									'insertTextFormat': InsertTextFormat.Snippet,
-									'kind': _p.decide.state($.type, ($): CompletionItemKind => {
-										switch ($[0]) {
-											case 'number': return _p.ss($, ($) => CompletionItemKind.Value)
-											case 'boolean': return _p.ss($, ($) => CompletionItemKind.Value)
-											case 'component': return _p.ss($, ($) => CompletionItemKind.Class)
-											case 'dictionary': return _p.ss($, ($) => CompletionItemKind.Class)
-											case 'group': return _p.ss($, ($) => CompletionItemKind.Struct)
-											case 'list': return _p.ss($, ($) => CompletionItemKind.Class)
-											case 'nothing': return _p.ss($, ($) => CompletionItemKind.Value)
-											case 'optional': return _p.ss($, ($) => CompletionItemKind.Field)
-											case 'reference': return _p.ss($, ($) => CompletionItemKind.Reference)
-											case 'state': return _p.ss($, ($) => CompletionItemKind.Enum)
-											case 'text': return _p.ss($, ($) => CompletionItemKind.Text)
-											default: return _p.au($[0])
-										}
-									}),
-									'additionalTextEdits': map_text_edits($['additional text edits']),
-									'documentation': $.documentation,
-								})
-							}).__get_raw_copy().map(($) => $)
+							'items': items
 						})
 					} catch (e) {
 						if (e instanceof Error) {
@@ -560,12 +568,11 @@ connection.onCompletion(
 // the completion list.
 connection.onCompletionResolve(
 	(item: CompletionItem): CompletionItem => {
-		if (item.data === 1) {
-			// item.detail = 'TypeScript details';
-			// item.documentation = 'TypeScript documentation';
-		} else if (item.data === 2) {
-			// item.detail = 'JavaScript details';
-			// item.documentation = 'JavaScript documentation';
+		if (item.data && item.data.documentation) {
+			item.documentation = {
+				kind: MarkupKind.PlainText,
+				value: item.data.documentation
+			};
 		}
 		return item;
 	}
