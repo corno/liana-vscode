@@ -18,7 +18,7 @@ import * as d_text_edits from "liana-authoring/dist/interface/generated/liana/sc
  * ------------------------------------------------------------------------------------------ */
 
 import * as r_hover_info_from_loc from "liana-authoring/dist/implementation/manual/refiners/hover_info/list_of_characters"
-import * as r_path_from_text from "pareto-resources/dist/implementation/manual/refiners/node_path/text"
+import * as r_path_from_text from "pareto-resources/dist/implementation/manual/refiners/path/text"
 import * as r_completion_suggestions_from_loc from "liana-authoring/dist/implementation/manual/refiners/completion_suggestions/list_of_characters"
 import * as r_diagnositics_from_loc from "liana-authoring/dist/implementation/manual/refiners/diagnostics/list_of_characters"
 import * as t_node_path_to_text from "pareto-resources/dist/implementation/manual/transformers/path/text"
@@ -229,7 +229,7 @@ function read_schema(
 	) => void,
 ): void {
 
-	const schema_path = path.dirname(url.fileURLToPath(documentURI)) + path.sep + "liana-schema.slna"
+	const schema_path = path.join(path.dirname(url.fileURLToPath(documentURI)), ".liana", "schema.slna")
 
 	fs.readFile(
 		schema_path,
@@ -442,8 +442,7 @@ connection.onCompletion(
 								'insertTextFormat': InsertTextFormat.Snippet,
 								'kind': _p.decide.state($.type, ($): CompletionItemKind => {
 									switch ($[0]) {
-										case 'number': return _p.ss($, ($) => CompletionItemKind.Value)
-										case 'boolean': return _p.ss($, ($) => CompletionItemKind.Value)
+										case 'simple': return _p.ss($, ($) => CompletionItemKind.Value)
 										case 'component': return _p.ss($, ($) => CompletionItemKind.Class)
 										case 'dictionary': return _p.ss($, ($) => CompletionItemKind.Class)
 										case 'group': return _p.ss($, ($) => CompletionItemKind.Struct)

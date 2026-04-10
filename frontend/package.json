@@ -1,6 +1,6 @@
 {
 	"name": "liana",
-	"version": "0.1.1",
+	"version": "0.1.3",
 	"publisher": "corno",
 	"description": "Liana Language support; syntax highlighting, formatting, validation, conversion to JSON.",
 	"author": "Corno",
@@ -250,7 +250,8 @@
 		"typescript": "^5.3.3"
 	},
 	"dependencies": {
-		"liana-authoring": "file:../../pareto-canon/packages/liana-authoring/pub",
+		"liana-authoring": "^0.1.4",
+		"pareto-fountain-pen-file-structure": "^0.1.5",
 		"pareto-host-nodejs": "^0.2.34"
 	}
 }

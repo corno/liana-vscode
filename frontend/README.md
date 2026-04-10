@@ -17,30 +17,35 @@ first you need to create a schema authoring (development) environment:
 ctrl+shift+p
 select 'Liana:initialize Liana authoring environment'
 and select (or create) a directory where you want to author your schemas
-you should now have a directory with 2 files
--liana-schema.slna
--my_schema.liana.lna
 
-you can now either author the '-my_schema.liana.lna' file or create your own one; right click in the folder -> create liana file (make sure the file has the double extension '.liana.lna', more about this later).
+you should now have a directory with 2 files:
+
+- liana-schema.slna
+- my_schema.liana.lna
+
+you can now either author the `my_schema.liana.lna` file or create your own one; right click in the folder -> create liana file (make sure the file has the double extension '.liana.lna', more about this later).
+
+you should now see a file with a single '#' character.
 
 ## '#' (missing data) and ctrl-d
-you should now see a file with a single '#' character. The '#' character means 'missing data'. By selecting ctrl-d, you will jump to the first next '#' and you will get code completion suggestions for this location. You will use ctrl-d extensively to fill in all the missing data.
+ The '#' character means 'missing data'. By selecting ctrl-d, you will jump to the first next '#' and you will get code completion suggestions for this location. You will use ctrl-d extensively to fill in all the missing data.
 
 ## verbose/concise
-The suggestion might be verbose or concise. I would advise to start with the verbose options to get a feel for the language and then later you can switch to concise.
+The suggestion you will get might indicate that they are either verbose or concise.
+The verbose option explicitly names all the properties, the concise option relies on the order of the values to interpret the data, much like programming languages.
+
+I would advise to start with the verbose options to get a feel for the language and then later you can switch to concise.
 
 ## creating your first schema
-select ctrl-d, which should give you a couple of suggestions. Choose 'schema (verbose)', and then again select ctrl-d and choose 'unconstrained' twice.
-
-set the \``module`\` value to `"root"`
-
-add a module in \``modules`\` named '`root`' (this is the module that \``module`\` will refer to)
-type a colon (:).
-It should be automatically expanded to ': #'. 
-use ctrl-d, select, use ctrl-d again, select 'group'. You have now configured your first value. You will be doing this a lot.
-in the {}, add a property named 'my dictionary', and configure this value to be a dictionary.
-configure the dictionary's value to be a state. A state will force the user to select one of the available options.
-add 2 options; 'a' and 'b'. Make the values of the options 'nothing' for now.
+- select ctrl-d, which should give you a couple of suggestions. 
+- Choose 'schema (verbose)', and then again select ctrl-d and choose 'unconstrained' twice.
+- set the \``module`\` property to the text value `"root"`
+- add a module in \``modules`\` named '`root`' (this is the module that the \``module`\` property will refer to)
+- type a colon (:). It should be automatically expanded to ': #'.
+- use ctrl-d, select, use ctrl-d again, select 'group'. You have now configured your first value. You will be doing this a lot.
+- in the {}, add a property named 'my dictionary', and configure this value to be a dictionary.
+- configure the dictionary's value to be a state. A state will force the user to select one of the available options.
+- add 2 options; 'a' and 'b'. Make the values of the options 'nothing' for now.
 
 If all went well, you ended up with a file that looks like this
 
@@ -86,11 +91,12 @@ If all went well, you ended up with a file that looks like this
 ````
 
 ## create an language authoring environment for this schema.
-save the file, right click on the content and select `Initialize authoring environment with this Liana schema`.
-Now you can create your first file that conforms to the language you just created; right-click on the folder, select 'New Liana file'. Give a name that ends with .lna. My advise would be to add the language name in the file, according to this format; .my_lang.lna
-Again, you should see a '#'. ctrl-d should give the 'my dictionary' property, to which you can now add entries.
+- save the file
+- right click on the content and select `Initialize authoring environment with this Liana schema`.
+- Now you can create your first file that conforms to the language you just created; right-click on the folder, select 'New Liana file'. Give a name that ends with .lna. My advise would be to add the language name in the file, according to this format; .my_lang.lna
+- Again, you should see a '#'. ctrl-d should give the 'my dictionary' property, to which you can now add entries.
 
-You have just finished creating your first language.
+Congratulations, you have just finished creating your first language.
 
 
 

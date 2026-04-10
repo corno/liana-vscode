@@ -18,7 +18,7 @@ export default function $(): vscode.Disposable {
 			readSchema(
 				editor.document.uri.toString(),
 				() => {
-					vscode.window.showErrorMessage('Cannot seal because no liana-schema.slna file could be found in the same directory as the liana file.');
+					vscode.window.showErrorMessage('Cannot seal because no .liana/schema.slna file could be found in the same directory as the liana file.');
 				},
 				async ($) => {
 					const newText = ttt_seal(
@@ -40,7 +40,7 @@ export default function $(): vscode.Disposable {
 						canSelectFolders: true,
 						canSelectMany: false,
 						openLabel: 'Select Directory',
-						title: 'Select directory to save liana-schema.slna file',
+						title: 'Select directory to save .liana/schema.slna file',
 					});
 
 					if (!targetUris || targetUris.length === 0) {
@@ -48,8 +48,10 @@ export default function $(): vscode.Disposable {
 					}
 
 					const targetPath = targetUris[0].fsPath;
-					const schemaFilePath = path.join(targetPath, 'liana-schema.slna');
+					const schemaFilePath = path.join(targetPath, ".liana", "schema.slna");
 
+					const schemaDir = path.dirname(schemaFilePath);
+					fs.mkdirSync(schemaDir, { recursive: true });
 					fs.writeFileSync(schemaFilePath, newText, 'utf8');
 					vscode.window.showInformationMessage(`authoring environment created: ${targetPath}`);
 

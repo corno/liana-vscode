@@ -67,7 +67,7 @@ export function activate(context: ExtensionContext) {
 
 	async function updateWorkspaceHasSchemaContext() {
 		try {
-			const schemaFiles = await vscode.workspace.findFiles('**/liana-schema.slna', null, 1);
+			const schemaFiles = await vscode.workspace.findFiles("**/.liana/schema.slna", null, 1);
 			const hasSchema = schemaFiles.length > 0;
 			vscode.commands.executeCommand('setContext', 'liana.workspaceHasSchema', hasSchema);
 		} catch (error) {
@@ -77,7 +77,7 @@ export function activate(context: ExtensionContext) {
 
 	updateWorkspaceHasSchemaContext();
 
-	const schemaWatcher = vscode.workspace.createFileSystemWatcher('**/liana-schema.slna');
+	const schemaWatcher = vscode.workspace.createFileSystemWatcher("**/.liana/schema.slna");
 	context.subscriptions.push(schemaWatcher.onDidCreate(() => updateWorkspaceHasSchemaContext()));
 	context.subscriptions.push(schemaWatcher.onDidDelete(() => updateWorkspaceHasSchemaContext()));
 	context.subscriptions.push(schemaWatcher);
@@ -86,13 +86,16 @@ export function activate(context: ExtensionContext) {
 
 	// The server is implemented in node
 	const serverModule = context.asAbsolutePath(
-		path.join('server', 'out', 'server.js')
+		path.join("server", "out", "server.js")
 	);
 
 	// If the extension is launched in debug mode then the debug server options are used
 	// Otherwise the run options are used
 	const serverOptions: ServerOptions = {
-		run: { module: serverModule, transport: TransportKind.ipc },
+		run: {
+			module: serverModule,
+			transport: TransportKind.ipc
+		},
 		debug: {
 			module: serverModule,
 			transport: TransportKind.ipc,

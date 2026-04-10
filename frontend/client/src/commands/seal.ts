@@ -18,7 +18,7 @@ export default function $(): vscode.Disposable {
 			readSchema(
 				editor.document.uri.toString(),
 				() => {
-					vscode.window.showErrorMessage('Cannot seal because no liana-schema.slna file could be found in the same directory as the liana file.');
+					vscode.window.showErrorMessage('Cannot seal because no .liana/schema.slna file could be found in the same directory as the liana file.');
 				},
 				($) => {
 					const newText = ttt_seal(

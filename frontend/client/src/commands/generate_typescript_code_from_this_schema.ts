@@ -1,8 +1,18 @@
 import { $$ as ttt_seal } from 'liana-authoring/dist/implementation/manual/text_to_text/seal'
 
-import * as fs from 'fs'
 import * as path from 'path'
 import * as vscode from 'vscode'
+import * as c_generate_typescript from "pareto-liana/dist/implementation/manual/commands/generate_typescript"
+import * as cx_copy from "pareto-host-nodejs/dist/commands/copy"
+import * as cx_make_directory from "pareto-host-nodejs/dist/commands/make_directory"
+import * as cx_remove from "pareto-host-nodejs/dist/commands/remove"
+import * as cx_write_file from "pareto-host-nodejs/dist/commands/write_file"
+import * as qx_read_file from "pareto-host-nodejs/dist/queries/read_file"
+import * as c_write_to_directory from "pareto-fountain-pen-file-structure/dist/implementation/manual/commands/write_to_directory"
+import * as c_write_to_file from "pareto-fountain-pen-file-structure/dist/implementation/manual/commands/write_to_file"
+import * as r_path_from_text from "pareto-resources/dist/implementation/manual/refiners/path/text"
+import * as t_generate_typescript_to_fp from "pareto-liana/dist/implementation/manual/transformers/generate_typescript/fountain_pen"
+import * as t_prose_to_text from "pareto-fountain-pen/dist/implementation/manual/transformers/prose/text"
 
 import { readSchema } from '../command_support/schema'
 
@@ -13,62 +23,78 @@ export default function $(): vscode.Disposable {
 			vscode.window.showInformationMessage('Open a liana file first to create authoring environment');
 			return;
 		}
+		const targetUris = await vscode.window.showOpenDialog({
+			canSelectFiles: false,
+			canSelectFolders: true,
+			canSelectMany: false,
+			openLabel: 'Select Target Directory',
+			title: 'Select directory to initialize Liana authoring environment',
+		});
+
+		if (!targetUris || targetUris.length === 0) {
+			return;
+		}
+
 
 		try {
-			readSchema(
-				editor.document.uri.toString(),
-				() => {
-					vscode.window.showErrorMessage('Cannot seal because no liana-schema.slna file could be found in the same directory as the liana file.');
+
+			c_generate_typescript.$$(
+				{
+					'copy': cx_copy.$$,
+					'make directory': cx_make_directory.$$,
+					'remove': cx_remove.$$,
+					'write to directory': c_write_to_directory.$$(
+						{
+							'remove': cx_remove.$$,
+							'write to_file': c_write_to_file.$$(
+								{
+									'make directory': cx_make_directory.$$,
+									'write file': cx_write_file.$$
+								},
+								null,
+							)
+						},
+						null,
+					)
 				},
-				async ($) => {
-					const newText = ttt_seal(
-						editor.document.getText(),
-						(): never => {
-							throw new Error('Sealing failed because the file is not valid Liana.');
+				{
+					'read file': qx_read_file.$$,
+				}
+			).execute(
+				{
+					'type': ['module specification', null],
+					'source': r_path_from_text.Node_Path(
+						editor.document.uri.fsPath,
+						() => {
+							vscode.window.showInformationMessage('unexpected error: the file path is not valid.');
+
+							throw new Error('The file path is not valid.');
 						},
 						{
-							'unmarshall': $,
-							'target': {
-								'indentation': '\t',
-								'newline': '\n',
-							},
+							'pedantic': true,
+						}
+					),
+					'target': r_path_from_text.Context_Path(targetUris[0].fsPath)
+				},
+				($) => $
+			).__start(
+				() => {
+					vscode.window.showInformationMessage('code generated');
+				},
+				($) => {
+					const message: string = t_prose_to_text.Phrase(
+						t_generate_typescript_to_fp.Error($, { 'character location reporting': ['one based', null] }),
+						{
+							'indentation': "  ",
+							'newline': "\n",
 						}
 					)
-
-					const targetUris = await vscode.window.showOpenDialog({
-						canSelectFiles: false,
-						canSelectFolders: true,
-						canSelectMany: false,
-						openLabel: 'Select Directory',
-						title: 'Select directory to save liana-schema.slna file',
-					});
-
-					if (!targetUris || targetUris.length === 0) {
-						return;
-					}
-
-					const targetPath = targetUris[0].fsPath;
-					const schemaFilePath = path.join(targetPath, 'liana-schema.slna');
-
-					vscode.window.showInformationMessage(`needs impmentation`);
-
-					// fs.writeFileSync(schemaFilePath, newText, 'utf8');
-					// vscode.window.showInformationMessage(`authoring environment created: ${targetPath}`);
-
-					// const openChoice = await vscode.window.showInformationMessage(
-					// 	'Would you like to open the initialized authoring environment?',
-					// 	'Yes', 'No'
-					// );
-
-					// if (openChoice === 'Yes') {
-					// 	const uri = vscode.Uri.file(targetPath);
-					// 	await vscode.commands.executeCommand('vscode.openFolder', uri, true);
-					// }
+					vscode.window.showInformationMessage(`error encountered: ${message}`);
 				}
 			)
 		} catch (error) {
-			const message = error instanceof Error ? error.message : String(error);
-			vscode.window.showErrorMessage(`Cannot create schema: ${message}`);
 		}
+
+
 	})
 }
