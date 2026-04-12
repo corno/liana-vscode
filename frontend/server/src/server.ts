@@ -20,7 +20,9 @@ import * as r_path_from_text from "pareto-resources/dist/implementation/manual/r
 import * as r_completion_suggestions_from_loc from "liana-authoring/dist/implementation/manual/refiners/completion_suggestions/list_of_characters"
 import * as r_diagnositics_from_loc from "liana-authoring/dist/implementation/manual/refiners/diagnostics/list_of_characters"
 import * as r_formatting_edits_from_loc from "liana-authoring/dist/implementation/manual/refiners/formatting_edits/list_of_characters"
+import * as r_parse_tree_from_loc from "astn-core/dist/implementation/manual/refiners/parse_tree/list_of_characters"
 import * as t_node_path_to_text from "pareto-resources/dist/implementation/manual/transformers/path/text"
+import * as t_parse_tree_to_text from "astn/dist/implementation/manual/transformers/parse_tree/text"
 
 import * as fs from "fs"
 import * as path from "path"
@@ -51,6 +53,7 @@ import {
 	CodeAction,
 	CodeActionKind,
 	CodeActionParams,
+	DocumentFormattingParams,
 } from 'vscode-languageserver/node';
 
 import * as vscode_types from 'vscode-languageserver-types';
@@ -121,6 +124,7 @@ connection.onInitialize((params: InitializeParams) => {
 			codeActionProvider: {
 				codeActionKinds: [CodeActionKind.RefactorRewrite]
 			},
+			documentFormattingProvider: true,
 		}
 	};
 	if (hasWorkspaceFolderCapability) {
@@ -725,6 +729,65 @@ connection.onCodeAction(
 				}
 			);
 		});
+	}
+);
+
+connection.onDocumentFormatting(
+	(params: DocumentFormattingParams): TextEdit[] => {
+		const document = documents.get(params.textDocument.uri);
+		if (document === undefined) {
+			connection.console.log('Document formatting called but document not found');
+			return [];
+		}
+
+		try {
+			connection.console.log('Formatting document...');
+
+			// Parse the document to a parse tree
+			const parseTree = r_parse_tree_from_loc.Document(
+				_p_list_from_text(
+					document.getText(),
+					($) => $
+				),
+				($) => {
+					throw new Error('Parse error occurred');
+				},
+				{
+					'tab size': params.options.tabSize || 4,
+				}
+			);
+
+			// Transform the parse tree back to formatted text
+			const formattedText = t_parse_tree_to_text.Document(
+				parseTree,
+				{
+					'indentation': ' '.repeat(params.options.tabSize || 4),
+					'newline': '\n'
+				}
+			);
+
+			// Create range covering the entire document
+			const lastLine = document.lineCount - 1;
+			const lastLineLength = document.getText(Range.create(lastLine, 0, lastLine + 1, 0)).length;
+
+			connection.console.log(`Formatting complete. Original lines: ${document.lineCount}, Formatted length: ${formattedText.length}`);
+
+			// Return a single edit that replaces the entire document
+			return [
+				TextEdit.replace(
+					Range.create(
+						0,
+						0,
+						lastLine,
+						lastLineLength
+					),
+					formattedText
+				)
+			];
+		} catch (e) {
+			connection.console.log(`Formatting error: ${e instanceof Error ? e.message : String(e)}`);
+			return [];
+		}
 	}
 );
 

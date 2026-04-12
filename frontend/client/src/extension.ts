@@ -121,59 +121,6 @@ export function activate(context: ExtensionContext) {
 	);
 
 
-	vscode.languages.registerDocumentFormattingEditProvider('liana', {
-		provideDocumentFormattingEdits(document: vscode.TextDocument, options) {
-			const edits: vscode.TextEdit[] = [];
-			// Read user configuration for formatting
-			const config = vscode.workspace.getConfiguration('liana');
-
-			return new Promise((resolve, reject) => {
-				resolve([])
-				// q_format(
-				// 	{
-				// 		'content': document.getText(),
-				// 		'options': {
-				// 			'preserve delimiters': config.get<boolean>('format.Preserve Delimiters', false),
-				// 			'indent string': config.get<string>('format.Indentation String', '    '),
-				// 			'preserve final newline state': config.get<boolean>('format.Preserve Final Newline State', true),
-				// 			'preserve commas': config.get<boolean>('format.Preserve Commas', true),
-				// 			'insert spaces': options.insertSpaces,
-				// 		}
-				// 	}
-				// ).__extract_data(
-				// 	($) => {
-				// 		resolve($.map(edit => {
-				// 			switch (edit[0]) {
-				// 				case 'replace':
-				// 					console.log("REPLACE", edit[1].range.start, edit[1].range.end, edit[1].text)
-
-				// 					return vscode.TextEdit.replace(
-				// 						create_vscode_range(edit[1].range),
-				// 						edit[1].text
-				// 					);
-				// 				case 'delete':
-				// 					return vscode.TextEdit.delete(
-				// 						create_vscode_range(edit[1].range)
-				// 					);
-				// 				case 'insert':
-				// 					return vscode.TextEdit.insert(
-				// 						create_vscode_position(edit[1].location),
-				// 						edit[1].text
-				// 					);
-				// 			}
-				// 		}).__get_raw_copy().map(($) => $))
-				// 	},
-				// 	($) => {
-
-				// 		console.error("Formatting failed:", $.message);
-				// 		vscode.window.showErrorMessage("Formatting failed: " + $.message);
-				// 		resolve([])
-				// 	}
-				// )
-			})
-		}
-	})
-
 	// Start the client. This will also launch the server
 	client.start();
 
