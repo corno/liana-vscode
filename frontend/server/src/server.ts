@@ -9,8 +9,6 @@ import * as d_diagnostics from "liana-authoring/dist/interface/generated/liana/s
 import * as d_unmarshall_result_from_lines_of_characters from "liana-authoring/dist/interface/to_be_generated/unmarshall_result_from_loc"
 import * as d_location from "liana-authoring/dist/interface/generated/liana/schemas/location/data"
 import * as d_text_edits from "liana-authoring/dist/interface/generated/liana/schemas/text_edits/data"
-// import * as d_get_on_hover_info from "liana-authoring/dist/interface/generated/liana/schemas/get_on_hover_info/data"
-// import * as d_get_completion_suggestions from "liana-authoring/dist/interface/generated/liana/schemas/get_completion_suggestions/data"
 
 /* --------------------------------------------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
@@ -21,6 +19,7 @@ import * as r_hover_info_from_loc from "liana-authoring/dist/implementation/manu
 import * as r_path_from_text from "pareto-resources/dist/implementation/manual/refiners/path/text"
 import * as r_completion_suggestions_from_loc from "liana-authoring/dist/implementation/manual/refiners/completion_suggestions/list_of_characters"
 import * as r_diagnositics_from_loc from "liana-authoring/dist/implementation/manual/refiners/diagnostics/list_of_characters"
+import * as r_formatting_edits_from_loc from "liana-authoring/dist/implementation/manual/refiners/formatting_edits/list_of_characters"
 import * as t_node_path_to_text from "pareto-resources/dist/implementation/manual/transformers/path/text"
 
 import * as fs from "fs"
@@ -49,6 +48,9 @@ import {
 	TextEdit,
 	Range,
 	MarkupKind,
+	CodeAction,
+	CodeActionKind,
+	CodeActionParams,
 } from 'vscode-languageserver/node';
 
 import * as vscode_types from 'vscode-languageserver-types';
@@ -116,6 +118,9 @@ connection.onInitialize((params: InitializeParams) => {
 			},
 			hoverProvider: true,
 			documentSymbolProvider: true,
+			codeActionProvider: {
+				codeActionKinds: [CodeActionKind.RefactorRewrite]
+			},
 		}
 	};
 	if (hasWorkspaceFolderCapability) {
@@ -631,6 +636,97 @@ connection.onHover(
 		)
 	}
 )
+
+connection.onCodeAction(
+	(params: CodeActionParams) => {
+		const document = documents.get(params.textDocument.uri);
+		if (document === undefined) {
+			connection.console.log('Code action called but document not found');
+			return [];
+		}
+
+		connection.console.log(`Code action requested at position: ${params.range.start.line}:${params.range.start.character}`);
+
+		return new Promise<CodeAction[]>((resolve) => {
+			read_schema(
+				params.textDocument.uri,
+				($) => {
+					// If schema can't be read, return empty actions
+					connection.console.log(`Schema could not be read: ${$['schema path']}`);
+					resolve([]);
+				},
+				(unmarshall_parameters) => {
+					try {
+						const actions: CodeAction[] = [];
+
+						// Get formatting edits for the position
+						try {
+							connection.console.log('Calling formatting refiner...');
+							const formattingResult = r_formatting_edits_from_loc.Document(
+								_p_list_from_text(
+									document.getText(),
+									($) => $
+								),
+								($) => {
+									throw new Error("there are lower level errors (parsing, schema resolving")
+								},
+								{
+									'position': params.range.start,
+									'unmarshall': unmarshall_parameters,
+									// Note: 'type' parameter will be available in future version of liana-authoring
+									'type': ['verbose', null]
+								}
+							);
+
+							// Extract the actual text edits and convert them
+							// The formatting result has a 'replace' property with the text edit
+							connection.console.log(`Formatting result received, checking for replace property...`);
+							const textEdits: vscode_types.TextEdit[] = [];
+							if (formattingResult.replace) {
+								connection.console.log('Replace property found, creating text edit');
+								textEdits.push(
+									TextEdit.replace(
+										create_range(formattingResult.replace.range),
+										formattingResult.replace.text
+									)
+								);
+							} else {
+								connection.console.log('No replace property found in formatting result');
+							}
+							if (textEdits.length > 0) {
+								connection.console.log('Adding Reformat action');
+								// For now, we'll offer a generic "Reformat" action
+								// When 'type' parameter is available, we'll offer separate verbose/concise actions
+								actions.push({
+									title: 'Reformat (verbose/concise conversion will be available in next version)',
+									kind: CodeActionKind.RefactorRewrite,
+									edit: {
+										changes: {
+											[params.textDocument.uri]: textEdits
+										}
+									}
+								});
+							}
+						} catch (e) {
+							// Formatting not available for this location
+							connection.console.log(`Formatting error: ${e instanceof Error ? e.message : String(e)}`);
+						}
+
+						connection.console.log(`Resolving with ${actions.length} code actions`);
+						resolve(actions);
+					} catch (e) {
+						if (e instanceof Error) {
+							connection.console.log(`Error while getting code actions: ${e.message}`);
+						} else {
+							connection.console.log(`Error (unknown) while getting code actions: ${e}`);
+						}
+						resolve([]);
+					}
+				}
+			);
+		});
+	}
+);
 
 connection.onDocumentSymbol(
 	(params: DocumentSymbolParams): DocumentSymbol[] => {
