@@ -122,7 +122,7 @@ connection.onInitialize((params: InitializeParams) => {
 			hoverProvider: true,
 			documentSymbolProvider: true,
 			codeActionProvider: {
-				codeActionKinds: [CodeActionKind.RefactorRewrite]
+				codeActionKinds: [CodeActionKind.Source]
 			},
 			documentFormattingProvider: true,
 		}
@@ -663,9 +663,15 @@ connection.onCodeAction(
 					try {
 						const actions: CodeAction[] = [];
 
-						// Get formatting edits for the position
+// Try to offer both verbose and concise conversion actions
+					const notationTypes: Array<['verbose' | 'concise', string]> = [
+						['verbose', 'Convert to verbose notation'],
+						['concise', 'Convert to concise notation']
+					];
+
+					for (const [notationType, actionTitle] of notationTypes) {
 						try {
-							connection.console.log('Calling formatting refiner...');
+							connection.console.log(`Trying ${notationType} conversion...`);
 							const formattingResult = r_formatting_edits_from_loc.Document(
 								_p_list_from_text(
 									document.getText(),
@@ -677,43 +683,33 @@ connection.onCodeAction(
 								{
 									'position': params.range.start,
 									'unmarshall': unmarshall_parameters,
-									// Note: 'type' parameter will be available in future version of liana-authoring
-									'type': ['verbose', null]
+									'type': [notationType, null]
 								}
 							);
 
-							// Extract the actual text edits and convert them
-							// The formatting result has a 'replace' property with the text edit
-							connection.console.log(`Formatting result received, checking for replace property...`);
-							const textEdits: vscode_types.TextEdit[] = [];
 							if (formattingResult.replace) {
-								connection.console.log('Replace property found, creating text edit');
-								textEdits.push(
-									TextEdit.replace(
-										create_range(formattingResult.replace.range),
-										formattingResult.replace.text
-									)
-								);
-							} else {
-								connection.console.log('No replace property found in formatting result');
-							}
-							if (textEdits.length > 0) {
-								connection.console.log('Adding Reformat action');
-								// For now, we'll offer a generic "Reformat" action
-								// When 'type' parameter is available, we'll offer separate verbose/concise actions
+								connection.console.log(`${notationType} conversion available, creating action`);
 								actions.push({
-									title: 'Reformat (verbose/concise conversion will be available in next version)',
-									kind: CodeActionKind.RefactorRewrite,
+									title: actionTitle,
+									kind: CodeActionKind.Source,
 									edit: {
 										changes: {
-											[params.textDocument.uri]: textEdits
+											[params.textDocument.uri]: [
+												TextEdit.replace(
+													create_range(formattingResult.replace.range),
+													formattingResult.replace.text
+												)
+											]
 										}
 									}
 								});
+							} else {
+								connection.console.log(`No ${notationType} conversion available at this position`);
 							}
 						} catch (e) {
-							// Formatting not available for this location
-							connection.console.log(`Formatting error: ${e instanceof Error ? e.message : String(e)}`);
+							// This notation type not available for this location
+							connection.console.log(`${notationType} conversion error: ${e instanceof Error ? e.message : String(e)}`);
+						}
 						}
 
 						connection.console.log(`Resolving with ${actions.length} code actions`);
