@@ -43,7 +43,7 @@ import {
 	TextDocumentSyncKind,
 	InitializeResult,
 	DocumentDiagnosticReportKind,
-	type DocumentDiagnosticReport,
+	DocumentDiagnosticReport,
 	DocumentSymbol,
 	SymbolKind,
 	DocumentSymbolParams,
@@ -663,53 +663,61 @@ connection.onCodeAction(
 					try {
 						const actions: CodeAction[] = [];
 
-// Try to offer both verbose and concise conversion actions
-					const notationTypes: Array<['verbose' | 'concise', string]> = [
-						['verbose', 'Convert to verbose notation'],
-						['concise', 'Convert to concise notation']
-					];
+						// Try to offer both verbose and concise conversion actions
+						const notationTypes: Array<[string, 'verbose' | 'concise', boolean]> = [
+							['Convert to verbose notation (shallow)', 'verbose', true],
+							['Convert to verbose notation (deep)', 'verbose', false],
+							['Convert to concise notation (shallow)', 'concise', true],
+							['Convert to concise notation (deep)', 'concise', false],
+						];
 
-					for (const [notationType, actionTitle] of notationTypes) {
-						try {
-							connection.console.log(`Trying ${notationType} conversion...`);
-							const formattingResult = r_formatting_edits_from_loc.Document(
-								_p_list_from_text(
-									document.getText(),
-									($) => $
-								),
-								($) => {
-									throw new Error("there are lower level errors (parsing, schema resolving")
-								},
-								{
-									'position': params.range.start,
-									'unmarshall': unmarshall_parameters,
-									'type': [notationType, null]
-								}
-							);
+						for (const [actionTitle, style, shallow] of notationTypes) {
+							try {
+								connection.console.log(`Trying ${style} conversion...`);
+								const formattingResult = r_formatting_edits_from_loc.Document(
+									_p_list_from_text(
+										document.getText(),
+										($) => $
+									),
+									($) => {
+										throw new Error("there are lower level errors (parsing, schema resolving")
+									},
+									{
+										'position': params.range.start,
+										'unmarshall': unmarshall_parameters,
+										'conversion': {
 
-							if (formattingResult.replace) {
-								connection.console.log(`${notationType} conversion available, creating action`);
-								actions.push({
-									title: actionTitle,
-									kind: CodeActionKind.Source,
-									edit: {
-										changes: {
-											[params.textDocument.uri]: [
-												TextEdit.replace(
-													create_range(formattingResult.replace.range),
-													formattingResult.replace.text
-												)
-											]
+											'style': [style, null],
+											'impact': shallow
+												? ['shallow', null]
+												: ['deep', null]
 										}
 									}
-								});
-							} else {
-								connection.console.log(`No ${notationType} conversion available at this position`);
+								);
+
+								if (formattingResult.replace) {
+									connection.console.log(`${style} conversion available, creating action`);
+									actions.push({
+										title: actionTitle,
+										kind: CodeActionKind.Source,
+										edit: {
+											changes: {
+												[params.textDocument.uri]: [
+													TextEdit.replace(
+														create_range(formattingResult.replace.range),
+														formattingResult.replace.text
+													)
+												]
+											}
+										}
+									});
+								} else {
+									connection.console.log(`No ${style} conversion available at this position`);
+								}
+							} catch (e) {
+								// This notation type not available for this location
+								connection.console.log(`${style} conversion error: ${e instanceof Error ? e.message : String(e)}`);
 							}
-						} catch (e) {
-							// This notation type not available for this location
-							connection.console.log(`${notationType} conversion error: ${e instanceof Error ? e.message : String(e)}`);
-						}
 						}
 
 						connection.console.log(`Resolving with ${actions.length} code actions`);
