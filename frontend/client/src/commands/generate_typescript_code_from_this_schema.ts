@@ -1,6 +1,4 @@
-import { $$ as ttt_seal } from 'liana-authoring/dist/implementation/manual/text_to_text/seal'
 
-import * as path from 'path'
 import * as vscode from 'vscode'
 import * as c_generate_typescript from "pareto-liana/dist/implementation/manual/commands/generate_typescript"
 import * as cx_copy from "pareto-host-nodejs/dist/commands/copy"
@@ -13,6 +11,7 @@ import * as c_write_to_file from "pareto-fountain-pen-file-structure/dist/implem
 import * as r_path_from_text from "pareto-resources/dist/implementation/manual/refiners/path/text"
 import * as t_generate_typescript_to_fp from "pareto-liana/dist/implementation/manual/transformers/generate_typescript/fountain_pen"
 import * as t_prose_to_text from "pareto-fountain-pen/dist/implementation/manual/transformers/prose/text"
+import * as pareto_unreachable_code_path from 'pareto-core/dist/_p_unreachable_code_path'
 
 import { readSchema } from '../command_support/schema'
 
@@ -93,6 +92,13 @@ export default function $(): vscode.Disposable {
 				}
 			)
 		} catch (error) {
+			if (error instanceof Error) {
+				console.error('Error generating TypeScript code:', error.message);
+			} else if (error instanceof pareto_unreachable_code_path.Unreachable_Code_Path_Error) {
+				console.error('Unreachable code path reached:', error.message);
+			} else {
+				console.error('Unexpected error:', error);
+			}
 		}
 
 

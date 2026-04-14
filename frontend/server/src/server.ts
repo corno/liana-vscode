@@ -2,6 +2,7 @@ import * as _p from 'pareto-core/dist/assign'
 import * as _pi from 'pareto-core/dist/interface'
 import _p_list_from_text from 'pareto-core/dist/_p_list_from_text'
 import _p_unreachable from 'pareto-core/dist/_p_unreachable_code_path'
+import * as pareto_unreachable_code_path from 'pareto-core/dist/_p_unreachable_code_path'
 
 //data types
 import * as d_path from "pareto-resources/dist/interface/generated/liana/schemas/path/data"
@@ -122,7 +123,8 @@ connection.onInitialize((params: InitializeParams) => {
 			hoverProvider: true,
 			documentSymbolProvider: true,
 			codeActionProvider: {
-				codeActionKinds: [CodeActionKind.Source]
+				codeActionKinds: [CodeActionKind.Refactor],
+				resolveProvider: true
 			},
 			documentFormattingProvider: true,
 		}
@@ -351,11 +353,13 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 					resolve(convert_diagnostics(xx, 'liana-semantic'))
 				} catch (e) {
 					if (diagnostics === null) {
-						console.log(`this should not happen`)
+						console.error(`this should not happen`)
 						if (e instanceof Error) {
-							console.log(`Error while validating document: ${e.message}, stack: ${e.stack}`)
+							console.error(`Error while validating document: ${e.message}, stack: ${e.stack}`)
+						} else if (e instanceof pareto_unreachable_code_path.Unreachable_Code_Path_Error) {
+							console.error(`Unreachable code path reached while validating document: ${e.message}`)
 						} else {
-							console.log(`Error (unknown) while validating document: ${e}`)
+							console.error(`Error (unknown) while validating document: ${e}`)
 						}
 						resolve([])
 					} else {
@@ -480,9 +484,11 @@ connection.onCompletion(
 						})
 					} catch (e) {
 						if (e instanceof Error) {
-							console.log(`Error while getting completion suggestions: ${e.message}`)
+							console.error(`Error while getting completion suggestions: ${e.message}`)
+						} else if (e instanceof pareto_unreachable_code_path.Unreachable_Code_Path_Error) {
+							console.error(`Unreachable code path reached while getting completion suggestions: ${e.message}`)
 						} else {
-							console.log(`Error (unknown) while getting completion suggestions: ${e}`)
+							console.error(`Error (unknown) while getting completion suggestions: ${e}`)
 						}
 						resolve({ 'isIncomplete': false, 'items': [] })
 					}
@@ -629,6 +635,9 @@ connection.onHover(
 								).map(($) => $)
 							})
 						} catch (e) {
+							if (e instanceof pareto_unreachable_code_path.Unreachable_Code_Path_Error) {
+								console.error(`Unreachable code path reached while getting hover info: ${e.message}`)
+							}
 							resolve({
 								'contents': []
 							})
@@ -643,92 +652,107 @@ connection.onHover(
 
 connection.onCodeAction(
 	(params: CodeActionParams) => {
-		const document = documents.get(params.textDocument.uri);
-		if (document === undefined) {
-			connection.console.log('Code action called but document not found');
-			return [];
-		}
-
 		connection.console.log(`Code action requested at position: ${params.range.start.line}:${params.range.start.character}`);
 
-		return new Promise<CodeAction[]>((resolve) => {
+		// Return lightweight actions without computing edits
+		const actions: CodeAction[] = [];
+
+		const notationTypes: Array<[string, 'verbose' | 'concise', boolean]> = [
+			['Convert to verbose notation (shallow)', 'verbose', true],
+			['Convert to verbose notation (deep)', 'verbose', false],
+			['Convert to concise notation (shallow)', 'concise', true],
+			['Convert to concise notation (deep)', 'concise', false],
+		];
+
+		for (const [actionTitle, style, shallow] of notationTypes) {
+			actions.push({
+				title: actionTitle,
+				kind: CodeActionKind.Refactor,
+				data: {
+					uri: params.textDocument.uri,
+					position: params.range.start,
+					style: style,
+					shallow: shallow
+				}
+			});
+		}
+
+		connection.console.log(`Returning ${actions.length} code actions`);
+		return actions;
+	}
+);
+
+connection.onCodeActionResolve(
+	(action: CodeAction) => {
+		return new Promise<CodeAction>((resolve) => {
+			if (!action.data) {
+				connection.console.log('Code action resolve called without data');
+				resolve(action);
+				return;
+			}
+
+			const { uri, position, style, shallow } = action.data;
+			const document = documents.get(uri);
+
+			if (document === undefined) {
+				connection.console.log('Code action resolve called but document not found');
+				resolve(action);
+				return;
+			}
+
+			connection.console.log(`Resolving code action: ${action.title}`);
+
 			read_schema(
-				params.textDocument.uri,
+				uri,
 				($) => {
-					// If schema can't be read, return empty actions
 					connection.console.log(`Schema could not be read: ${$['schema path']}`);
-					resolve([]);
+					resolve(action);
 				},
 				(unmarshall_parameters) => {
 					try {
-						const actions: CodeAction[] = [];
-
-						// Try to offer both verbose and concise conversion actions
-						const notationTypes: Array<[string, 'verbose' | 'concise', boolean]> = [
-							['Convert to verbose notation (shallow)', 'verbose', true],
-							['Convert to verbose notation (deep)', 'verbose', false],
-							['Convert to concise notation (shallow)', 'concise', true],
-							['Convert to concise notation (deep)', 'concise', false],
-						];
-
-						for (const [actionTitle, style, shallow] of notationTypes) {
-							try {
-								connection.console.log(`Trying ${style} conversion...`);
-								const formattingResult = r_formatting_edits_from_loc.Document(
-									_p_list_from_text(
-										document.getText(),
-										($) => $
-									),
-									($) => {
-										throw new Error("there are lower level errors (parsing, schema resolving")
-									},
-									{
-										'position': params.range.start,
-										'unmarshall': unmarshall_parameters,
-										'conversion': {
-
-											'style': [style, null],
-											'impact': shallow
-												? ['shallow', null]
-												: ['deep', null]
-										}
-									}
-								);
-
-								if (formattingResult.replace) {
-									connection.console.log(`${style} conversion available, creating action`);
-									actions.push({
-										title: actionTitle,
-										kind: CodeActionKind.Source,
-										edit: {
-											changes: {
-												[params.textDocument.uri]: [
-													TextEdit.replace(
-														create_range(formattingResult.replace.range),
-														formattingResult.replace.text
-													)
-												]
-											}
-										}
-									});
-								} else {
-									connection.console.log(`No ${style} conversion available at this position`);
+						const formattingResult = r_formatting_edits_from_loc.Document(
+							_p_list_from_text(
+								document.getText(),
+								($) => $
+							),
+							($) => {
+								throw new Error("there are lower level errors (parsing, schema resolving")
+							},
+							{
+								'position': position,
+								'unmarshall': unmarshall_parameters,
+								'conversion': {
+									'style': [style, null],
+									'impact': shallow
+										? ['shallow', null]
+										: ['deep', null]
 								}
-							} catch (e) {
-								// This notation type not available for this location
-								connection.console.log(`${style} conversion error: ${e instanceof Error ? e.message : String(e)}`);
 							}
-						}
+						);
 
-						connection.console.log(`Resolving with ${actions.length} code actions`);
-						resolve(actions);
-					} catch (e) {
-						if (e instanceof Error) {
-							connection.console.log(`Error while getting code actions: ${e.message}`);
+						if (formattingResult.replace) {
+							action.edit = {
+								changes: {
+									[uri]: [
+										TextEdit.replace(
+											create_range(formattingResult.replace.range),
+											formattingResult.replace.text
+										)
+									]
+								}
+							};
+							connection.console.log(`Code action resolved successfully`);
 						} else {
-							connection.console.log(`Error (unknown) while getting code actions: ${e}`);
+							connection.console.log(`No conversion available for this action`);
 						}
-						resolve([]);
+						resolve(action);
+					} catch (e) {
+						if (e instanceof pareto_unreachable_code_path.Unreachable_Code_Path_Error) {
+							connection.console.error(`Unreachable code path reached while resolving code action: ${e.message}`);
+						} else {
+							connection.console.error(`Error resolving code action: ${e instanceof Error ? e.message : String(e)}`);
+						}
+						resolve(action);
 					}
 				}
 			);
@@ -789,7 +813,11 @@ connection.onDocumentFormatting(
 				)
 			];
 		} catch (e) {
-			connection.console.log(`Formatting error: ${e instanceof Error ? e.message : String(e)}`);
+			if (e instanceof pareto_unreachable_code_path.Unreachable_Code_Path_Error) {
+				connection.console.error(`Unreachable code path reached while formatting document: ${e.message}`);
+			} else {
+				connection.console.error(`Formatting error: ${e instanceof Error ? e.message : String(e)}`);
+			}
 			return [];
 		}
 	}

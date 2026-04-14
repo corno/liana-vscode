@@ -2,6 +2,7 @@ import { $$ as ttt_convert_to_json } from 'liana-authoring/dist/implementation/m
 
 import * as fs from 'fs'
 import * as vscode from 'vscode'
+import * as pareto_unreachable_code_path from 'pareto-core/dist/_p_unreachable_code_path'
 
 export default function $(): vscode.Disposable {
 	return vscode.commands.registerCommand('liana.save_as_json', () => {
@@ -38,6 +39,13 @@ export default function $(): vscode.Disposable {
 				vscode.window.showInformationMessage('file saved as json');
 			})
 		} catch (error) {
+					if (error instanceof Error) {
+						console.error('Error generating TypeScript code:', error.message);
+					} else if (error instanceof pareto_unreachable_code_path.Unreachable_Code_Path_Error) {
+						console.error('Unreachable code path reached:', error.message);
+					} else {
+						console.error('Unexpected error:', error);
+					}
 			vscode.window.showErrorMessage('Cannot save as JSON because the file is not valid ASTN.');
 		}
 	})

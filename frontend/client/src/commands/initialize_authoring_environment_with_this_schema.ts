@@ -3,6 +3,7 @@ import { $$ as ttt_seal } from 'liana-authoring/dist/implementation/manual/text_
 import * as fs from 'fs'
 import * as path from 'path'
 import * as vscode from 'vscode'
+import * as pareto_unreachable_code_path from 'pareto-core/dist/_p_unreachable_code_path'
 
 import { readSchema } from '../command_support/schema'
 
@@ -67,6 +68,13 @@ export default function $(): vscode.Disposable {
 				}
 			)
 		} catch (error) {
+			if (error instanceof Error) {
+				console.error('Error generating TypeScript code:', error.message);
+			} else if (error instanceof pareto_unreachable_code_path.Unreachable_Code_Path_Error) {
+				console.error('Unreachable code path reached:', error.message);
+			} else {
+				console.error('Unexpected error:', error);
+			}
 			const message = error instanceof Error ? error.message : String(error);
 			vscode.window.showErrorMessage(`Cannot create schema: ${message}`);
 		}
