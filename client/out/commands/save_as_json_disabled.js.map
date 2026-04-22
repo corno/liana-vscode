@@ -1,0 +1,1 @@
+{"version":3,"file":"save_as_json_disabled.js","sourceRoot":"","sources":["../../src/commands/save_as_json_disabled.ts"],"names":[],"mappings":";;AAEA,oBAIC;AAND,iCAAgC;AAEhC,SAAwB,CAAC;IACxB,OAAO,MAAM,CAAC,QAAQ,CAAC,eAAe,CAAC,6BAA6B,EAAE,GAAG,EAAE;QAC1E,MAAM,CAAC,MAAM,CAAC,gBAAgB,CAAC,wEAAwE,CAAC,CAAC;IAC1G,CAAC,CAAC,CAAA;AACH,CAAC"}

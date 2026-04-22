@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OUTPUT_DIR=../out
+OUTPUT_DIR=./out
 
 npm version patch
 node ./esbuild.js

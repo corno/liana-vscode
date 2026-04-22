@@ -1,0 +1,1 @@
+{"version":3,"file":"seal_disabled.js","sourceRoot":"","sources":["../../src/commands/seal_disabled.ts"],"names":[],"mappings":";;AAEA,oBAIC;AAND,iCAAgC;AAEhC,SAAwB,CAAC;IACxB,OAAO,MAAM,CAAC,QAAQ,CAAC,eAAe,CAAC,qBAAqB,EAAE,GAAG,EAAE;QAClE,MAAM,CAAC,MAAM,CAAC,gBAAgB,CAAC,gEAAgE,CAAC,CAAC;IAClG,CAAC,CAAC,CAAA;AACH,CAAC"}

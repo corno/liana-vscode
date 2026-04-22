@@ -1,0 +1,1 @@
+{"version":3,"file":"convert_to_json_disabled.js","sourceRoot":"","sources":["../../src/commands/convert_to_json_disabled.ts"],"names":[],"mappings":";;AAEA,oBAIC;AAND,iCAAgC;AAEhC,SAAwB,CAAC;IACxB,OAAO,MAAM,CAAC,QAAQ,CAAC,eAAe,CAAC,gCAAgC,EAAE,GAAG,EAAE;QAC7E,MAAM,CAAC,MAAM,CAAC,gBAAgB,CAAC,2EAA2E,CAAC,CAAC;IAC7G,CAAC,CAAC,CAAA;AACH,CAAC"}
