@@ -107,8 +107,11 @@ export function activate(context: ExtensionContext) {
 		// Register the server for plain text documents
 		documentSelector: [{ scheme: 'file', language: 'liana' }],
 		synchronize: {
-			// Notify the server about file changes to '.clientrc files contained in the workspace
-			fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
+			// Notify the server about file changes to '.clientrc' and schema files
+			fileEvents: [
+				workspace.createFileSystemWatcher('**/.clientrc'),
+				schemaWatcher
+			]
 		}
 	};
 

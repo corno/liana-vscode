@@ -13,8 +13,6 @@ import * as t_generate_typescript_to_fp from "pareto-liana/dist/implementation/m
 import * as t_prose_to_text from "pareto-fountain-pen/dist/implementation/manual/transformers/prose/text"
 import * as pareto_unreachable_code_path from 'pareto-core/dist/_p_unreachable_code_path'
 
-import { readSchema } from '../command_support/schema'
-
 export default function $(): vscode.Disposable {
 	return vscode.commands.registerCommand('liana.generate_typescript_code_from_this_schema', async () => {
 		const editor = vscode.window.activeTextEditor;
@@ -42,19 +40,7 @@ export default function $(): vscode.Disposable {
 					'copy': cx_copy.$$,
 					'make directory': cx_make_directory.$$,
 					'remove': cx_remove.$$,
-					'write to directory': c_write_to_directory.$$(
-						{
-							'remove': cx_remove.$$,
-							'write to_file': c_write_to_file.$$(
-								{
-									'make directory': cx_make_directory.$$,
-									'write file': cx_write_file.$$
-								},
-								null,
-							)
-						},
-						null,
-					)
+					'write file': cx_write_file.$$,
 				},
 				{
 					'read file': qx_read_file.$$,
@@ -82,7 +68,7 @@ export default function $(): vscode.Disposable {
 				},
 				($) => {
 					const message: string = t_prose_to_text.Phrase(
-						t_generate_typescript_to_fp.Error($, { 'character location reporting': ['one based', null] }),
+						t_generate_typescript_to_fp.Error($),
 						{
 							'indentation': "  ",
 							'newline': "\n",

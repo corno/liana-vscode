@@ -4,7 +4,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as vscode from 'vscode'
 
-import { readSchema } from '../command_support/schema'
+import {load_schema} from '../to_be_backend/load_applicable_schema'
 
 export default function $(): vscode.Disposable {
 	return vscode.commands.registerCommand('liana.seal', () => {
@@ -15,7 +15,7 @@ export default function $(): vscode.Disposable {
 		}
 
 		try {
-			readSchema(
+			load_schema(
 				editor.document.uri.toString(),
 				() => {
 					vscode.window.showErrorMessage('Cannot seal because no .liana/schema.slna file could be found in the same directory as the liana file.');

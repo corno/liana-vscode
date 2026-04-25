@@ -7,29 +7,24 @@ import create_refinement_context from 'pareto-core/dist/__internals/async/create
 
 //data types
 import * as d_path from "pareto-resources/dist/interface/generated/liana/schemas/path/data"
-import * as d_hover from "liana-authoring/dist/interface/generated/liana/schemas/hover_info/data"
 import * as d_diagnostics from "liana-authoring/dist/interface/generated/liana/schemas/diagnostics/data"
 import * as d_unmarshall_result_from_lines_of_characters from "liana-authoring/dist/interface/to_be_generated/unmarshall_result_from_loc"
 import * as d_location from "liana-authoring/dist/interface/generated/liana/schemas/location/data"
 import * as d_text_edits from "liana-authoring/dist/interface/generated/liana/schemas/text_edits/data"
-import * as d_deserialize_resolved from "liana-core/dist/interface/to_be_generated/deserialize_resolved"
 
 /* --------------------------------------------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
 
-import * as r_hover_info_from_loc from "liana-authoring/dist/implementation/manual/refiners/hover_info/list_of_characters"
-import * as r_path_from_text from "pareto-resources/dist/implementation/manual/refiners/path/text"
-import * as r_completion_suggestions_from_loc from "liana-authoring/dist/implementation/manual/refiners/completion_suggestions/list_of_characters"
-import * as r_diagnositics_from_loc from "liana-authoring/dist/implementation/manual/refiners/diagnostics/list_of_characters"
-import * as r_formatting_edits_from_loc from "liana-authoring/dist/implementation/manual/refiners/formatting_edits/list_of_characters"
+import * as t_unmarshall_result_to_hover_info from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/hover_info"
+import * as t_unmarshall_result_to_completion_suggestions from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/completion_suggestions"
+import * as t_unmarshall_result_to_diagnostics from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/diagnostics"
+import * as t_unmarshall_result_to_formatting_edits from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/formatting_edits"
 import * as r_parse_tree_from_loc from "astn-core/dist/implementation/manual/refiners/parse_tree/list_of_characters"
-import * as r_temp_module_specifier_from_loc from "pareto-liana/dist/implementation/manual/refiners/temp_module_specifier/list_of_characters"
 import * as t_node_path_to_text from "pareto-resources/dist/implementation/manual/transformers/path/text"
 import * as t_parse_tree_to_text from "astn/dist/implementation/manual/transformers/parse_tree/text"
 
-import * as fs from "fs"
 import * as path from "path"
 
 import {
@@ -69,9 +64,10 @@ import {
 } from 'vscode-languageserver-textdocument';
 
 import * as url from "url"
-import { on } from 'events'
-import { Temp_Module_Specifier } from 'pareto-liana/dist/interface/to_be_generated/temp_module_specifier'
 import { Completion_Suggestions } from 'liana-authoring/dist/interface/generated/liana/schemas/completion_suggestions/data'
+import load_possibly_cached_schema from './load_possibly_cached_schema'
+import { Schema_Cache } from './schema_cache'
+import { load_instance } from './to_be_backend/load_instance'
 
 
 
@@ -241,94 +237,8 @@ type Cached_Schema = {
 	schema_path: d_path.Node_Path
 }
 
-const schema_cache = new Map<string, Cached_Schema>()
+const schema_cache = new Schema_Cache()
 
-type Read_Schema_Error = {
-	'schema path': string
-	'type':
-	| ['read file', {
-		'error': NodeJS.ErrnoException
-	}]
-	| ['parse schema', {
-		'error': d_deserialize_resolved.Error
-	}]
-}
-
-function read_schema(
-	documentURI: DocumentUri,
-	on_error: ($: Read_Schema_Error) => void,
-	on_success: (
-		$: d_unmarshall_result_from_lines_of_characters.Parameters,
-		schema_path: d_path.Node_Path
-	) => void,
-): void {
-
-	const schema_path = path.join(path.dirname(url.fileURLToPath(documentURI)), ".liana", "schema.slna")
-
-	// Check cache first
-	const cached = schema_cache.get(schema_path)
-	if (cached !== undefined) {
-		// Cache hit - return immediately
-		on_success(cached.unmarshall_parameters, cached.schema_path)
-		return
-	}
-
-	// Cache miss - read and parse the schema
-	fs.readFile(
-		schema_path,
-		{ 'encoding': 'utf-8' },
-		(err, data) => {
-			if (err) {
-				on_error({
-					'schema path': schema_path,
-					'type': ['read file', {
-						'error': err,
-					}]
-				})
-			} else {
-				create_refinement_context<Temp_Module_Specifier, d_deserialize_resolved.Error>(
-					(abort) => r_temp_module_specifier_from_loc.Module_Specifier(
-						_p_list_from_text(data, ($) => $),
-						($) => abort($)
-
-					)
-				).__extract_data(
-					($) => {
-						const unmarshall_parameters = {
-							'schema': $,
-							'tab size': 1 // vscode works with character, not with columns
-						}
-						const parsed_schema_path = r_path_from_text.Node_Path(
-							schema_path,
-							() => _p_unreachable("the path is constructed above"),
-							{
-								'pedantic': true
-							}
-						)
-						
-						// Store in cache
-						schema_cache.set(schema_path, {
-							unmarshall_parameters,
-							schema_path: parsed_schema_path
-						})
-						
-						on_success(unmarshall_parameters, parsed_schema_path)
-
-					},
-					($) => {
-						on_error({
-							'schema path': schema_path,
-							'type': ['parse schema', {
-								'error': $
-							}],
-
-						})
-					}
-				)
-			}
-		}
-	)
-}
 
 const create_range = (
 	$: d_location.Range_FE
@@ -372,61 +282,63 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 			})).__get_raw_copy().map(($) => $)
 		}
 
-		read_schema(
+		load_instance(
 			textDocument.uri,
+			textDocument.getText(),
+			schema_cache,
+			($) => _p.decide.state($, ($) => {
+				switch ($[0]) {
+					case 'schema': return _p.ss($, ($) => {
+						const schema_path = $['schema path']
+						resolve(_p.decide.state($.type, ($) => {
+							switch ($[0]) {
+								case 'read file': return _p.ss($, ($) => [
+									{
+										'severity': DiagnosticSeverity.Error,
+										'message': `Failed to read schema file: ${schema_path}`,
+										'range': vscode_types.Range.create(0, 0, 0, 1),
+									}
+								])
+								case 'parse schema': return _p.ss($, ($) => [
+									{
+										'severity': DiagnosticSeverity.Error,
+										'message': `Failed to parse schema: ${schema_path}`,
+										'range': vscode_types.Range.create(0, 0, 0, 1),
+									}
+								])
+								default: return _p.au($[0])
+							}
+						}))
+
+					})
+					case 'unmarshall': return _p.ss($, ($) => {
+						return [
+							{
+								'severity': DiagnosticSeverity.Error,
+								'message': `Failed to unmarshall (FIXME)`,
+								'range': vscode_types.Range.create(0, 0, 0, 1),
+
+							}
+						]
+
+						// convert_diagnostics(
+						// 	_p.list.literal([
+						// 		$
+						// 	]),
+						// 	_p.decide.state($.type, ($) => {
+						// 		switch ($[0]) {
+						// 			case 'schema': return _p.ss($, ($) => "schema")
+						// 			case 'deserialize': return _p.ss($, ($) => "deserialize")
+						// 			default: return _p.au($[0])
+						// 		}
+						// 	}))
+						// resolve(convert_diagnostics($, 'liana-unmarshall'))
+					})
+					default: return _p.au($[0])
+				}
+			}),
 			($) => {
-				const schema_path = $['schema path']
-				resolve(_p.decide.state($.type, ($) => {
-					switch ($[0]) {
-						case 'read file': return _p.ss($, ($) => [
-							{
-								'severity': DiagnosticSeverity.Error,
-								'message': `Failed to read schema file: ${schema_path}`,
-								'range': vscode_types.Range.create(0, 0, 0, 1),
-							}
-						])
-						case 'parse schema': return _p.ss($, ($) => [
-							{
-								'severity': DiagnosticSeverity.Error,
-								'message': `Failed to parse schema: ${schema_path}`,
-								'range': vscode_types.Range.create(0, 0, 0, 1),
-							}
-						])
-						default: return _p.au($[0])
-					}
-				}))
-			},
-			(unmarshall_parameters, schema_path) => {
-				create_refinement_context<d_diagnostics.Diagnostics, Diagnostic[]>(
-					(abort) => r_diagnositics_from_loc.Document(
-						_p_list_from_text(
-							textDocument.getText(),
-							($) => $
-						),
-						($) => abort(
-							convert_diagnostics(_p.list.literal([
-								$
-							]), _p.decide.state($.type, ($) => {
-								switch ($[0]) {
-									case 'schema': return _p.ss($, ($) => "schema")
-									case 'deserialize': return _p.ss($, ($) => "deserialize")
-									default: return _p.au($[0])
-								}
-							}))
-						),
-						{
-							'unmarshall': unmarshall_parameters,
-							'schema path': schema_path
-						}
-					),
-				).__extract_data(
-					($) => {
-						resolve(convert_diagnostics($, 'liana-semantic'))
-					},
-					($) => {
-						resolve($)
-					}
-				)
+				resolve(convert_diagnostics(t_unmarshall_result_to_diagnostics.Document($), 'liana-semantic'))
 			}
 		)
 
@@ -455,7 +367,7 @@ const map_text_edits = ($: d_text_edits.Text_Edits): vscode_types.TextEdit[] => 
 connection.onDidChangeWatchedFiles(_change => {
 	// Monitored files have change in VSCode
 	connection.console.log('We received a file change event');
-	
+
 	// Invalidate schema cache for any changed files
 	_change.changes.forEach(change => {
 		const file_path = url.fileURLToPath(change.uri)
@@ -498,65 +410,60 @@ connection.onCompletion(
 				]
 				: []
 
-			read_schema(
+			load_instance(
 				params.textDocument.uri,
+				doc.getText(),
+				schema_cache,
 				($) => {
 					resolve({ 'isIncomplete': false, 'items': [] })
 				},
-				(unmarshall_parameters) => {
-					create_refinement_context<Completion_Suggestions, d_unmarshall_result_from_lines_of_characters.Error>(
-						(abort) => r_completion_suggestions_from_loc.Document(
-							_p_list_from_text(
-								doc.getText(),
-								($) => $
-							),
-							($) => abort($),
-							{
-								'position': params.position,
-								'unmarshall': unmarshall_parameters
-							}
-						)
-					).__extract_data(
-						($) => {
-							const items = $.__l_map(($) => {
-								return ({
-									'label': $.label,
-									'insertText': $['insert text'],
-									'insertTextFormat': InsertTextFormat.Snippet,
-									'kind': _p.decide.state($.type, ($): CompletionItemKind => {
-										switch ($[0]) {
-											case 'simple': return _p.ss($, ($) => CompletionItemKind.Value)
-											case 'component': return _p.ss($, ($) => CompletionItemKind.Class)
-											case 'dictionary': return _p.ss($, ($) => CompletionItemKind.Class)
-											case 'group': return _p.ss($, ($) => CompletionItemKind.Struct)
-											case 'list': return _p.ss($, ($) => CompletionItemKind.Class)
-											case 'nothing': return _p.ss($, ($) => CompletionItemKind.Value)
-											case 'optional': return _p.ss($, ($) => CompletionItemKind.Field)
-											case 'reference': return _p.ss($, ($) => CompletionItemKind.Reference)
-											case 'state': return _p.ss($, ($) => CompletionItemKind.Enum)
-											case 'text': return _p.ss($, ($) => CompletionItemKind.Text)
-											default: return _p.au($[0])
-										}
-									}),
-									'additionalTextEdits': map_text_edits($['additional text edits']),
-									'documentation': {
-										kind: MarkupKind.PlainText,
-										value: $.documentation
-									},
-									'data': {
-										'documentation': $.documentation
-									}
-								})
-							}).__get_raw_copy().map(($) => $)
-							resolve({
-								'isIncomplete': false,
-								'items': items
-							})
-						},
-						() => {
-							resolve({ 'isIncomplete': false, 'items': [] })
+				(instance) => {
+					// We have the instance, now we can compute the completion items
+					const xxxxx = t_unmarshall_result_to_completion_suggestions.Document(
+						instance,
+						{
+							'indent': "    ",
+							'position': params.position,
 						}
 					)
+
+					const items = xxxxx.__decide(
+						($) => $.__l_map(($) => {
+							return ({
+								'label': $.label,
+								'insertText': $['insert text'],
+								'insertTextFormat': InsertTextFormat.Snippet,
+								'kind': _p.decide.state($.type, ($): CompletionItemKind => {
+									switch ($[0]) {
+										case 'simple': return _p.ss($, ($) => CompletionItemKind.Value)
+										case 'component': return _p.ss($, ($) => CompletionItemKind.Class)
+										case 'dictionary': return _p.ss($, ($) => CompletionItemKind.Class)
+										case 'group': return _p.ss($, ($) => CompletionItemKind.Struct)
+										case 'list': return _p.ss($, ($) => CompletionItemKind.Class)
+										case 'nothing': return _p.ss($, ($) => CompletionItemKind.Value)
+										case 'optional': return _p.ss($, ($) => CompletionItemKind.Field)
+										case 'reference': return _p.ss($, ($) => CompletionItemKind.Reference)
+										case 'state': return _p.ss($, ($) => CompletionItemKind.Enum)
+										case 'text': return _p.ss($, ($) => CompletionItemKind.Text)
+										default: return _p.au($[0])
+									}
+								}),
+								'additionalTextEdits': map_text_edits($['additional text edits']),
+								'documentation': {
+									kind: MarkupKind.PlainText,
+									value: $.documentation
+								},
+								'data': {
+									'documentation': $.documentation
+								}
+							})
+						}).__get_raw_copy().map(($) => $),
+						() => []
+					)
+					resolve({
+						'isIncomplete': false,
+						'items': items
+					})
 				}
 			)
 		})
@@ -591,44 +498,32 @@ connection.onHover(
 		return new Promise(
 			(resolve) => {
 
-				read_schema(
+				load_instance(
 					hoverParams.textDocument.uri,
+					doc.getText(),
+					schema_cache,
 					($) => {
 						resolve({
 							'contents': []
 						})
 					},
-					(unmarshall_parameters) => {
-						create_refinement_context<d_hover.Hover_Texts, d_unmarshall_result_from_lines_of_characters.Error>(
-							(abort) => r_hover_info_from_loc.Document(
-								_p_list_from_text(
-									doc.getText(),
-									($) => $
-								),
-								($) => abort($),
+					(instance) => {
+						// We have the instance, now we can compute the hover info
+						resolve({
+							'contents': t_unmarshall_result_to_hover_info.Document(
+								instance,
 								{
 									'position': hoverParams.position,
-									'unmarshall': unmarshall_parameters
+									'full path': "",
+									'id path': ""
 								}
-							)
-						).__extract_data(
-							($) => {
-								resolve({
-									'contents': $.__decide(
-										($) => $.__get_raw_copy(),
-										() => []
-									).map(($) => $)
-								})
-							},
-							() => {
-								resolve({
-									'contents': []
-								})
-							}
-						)
+							).__decide(
+								($) => $.__get_raw_copy(),
+								() => []
+							).map(($) => $)
+						})
 					}
 				)
-
 			},
 		)
 	}
@@ -686,60 +581,42 @@ connection.onCodeActionResolve(
 
 			connection.console.log(`Resolving code action: ${action.title}`);
 
-			read_schema(
+			load_instance(
 				uri,
+				document.getText(),
+				schema_cache,
 				($) => {
-					connection.console.log(`Schema could not be read: ${$['schema path']}`);
+					// connection.console.log(`Instance could not be loaded for code action: ${$['schema path']}`);
 					resolve(action);
 				},
-				(unmarshall_parameters) => {
-					try {
-						const formattingResult = r_formatting_edits_from_loc.Document(
-							_p_list_from_text(
-								document.getText(),
-								($) => $
-							),
-							($) => {
-								throw new Error("there are lower level errors (parsing, schema resolving")
+				(instance) => {
+					const formattingResult = t_unmarshall_result_to_formatting_edits.Document(
+						instance,
+						{
+							'conversion': {
+								'style': [style, null],
+								'impact': shallow
+									? ['shallow', null]
+									: ['deep', null]
 							},
-							{
-								'position': position,
-								'unmarshall': unmarshall_parameters,
-								'conversion': {
-									'style': [style, null],
-									'impact': shallow
-										? ['shallow', null]
-										: ['deep', null]
-								}
-							}
-						);
+							'indent': "    ",
+							'position': position,
+						}
+					)
 
-						if (formattingResult.replace) {
-							action.edit = {
-								changes: {
-									[uri]: [
-										TextEdit.replace(
-											create_range(formattingResult.replace.range),
-											formattingResult.replace.text
-										)
-									]
-								}
-							};
-							connection.console.log(`Code action resolved successfully`);
-						} else {
-							connection.console.log(`No conversion available for this action`);
+					action.edit = {
+						changes: {
+							[uri]: [
+								TextEdit.replace(
+									create_range(formattingResult.replace.range),
+									formattingResult.replace.text
+								)
+							]
 						}
-						resolve(action);
-					} catch (e) {
-						if (e instanceof pareto_unreachable_code_path.Unreachable_Code_Path_Error) {
-							connection.console.error(`Unreachable code path reached while resolving code action: ${e.message}`);
-						} else {
-							connection.console.error(`Error resolving code action: ${e instanceof Error ? e.message : String(e)}`);
-						}
-						resolve(action);
 					}
+					resolve(action)
 				}
-			);
+			)
 		});
 	}
 );
