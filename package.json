@@ -10,6 +10,16 @@
 		"type": "git",
 		"url": "https://github.com/corno/liana-vscode"
 	},
+	"files": [
+		"client/out/**",
+		"server/out/**",
+		"syntaxes/**",
+		"images/**",
+		"language-configuration.json",
+		"liana_authoring_environment_template/**",
+		"README.md",
+		"LICENSE.md"
+	],
 	"categories": [],
 	"keywords": [
 		"Liana",
