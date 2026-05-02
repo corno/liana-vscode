@@ -3,27 +3,23 @@ import * as _pi from 'pareto-core/dist/interface'
 import _p_list_from_text from 'pareto-core/dist/_p_list_from_text'
 import _p_unreachable from 'pareto-core/dist/_p_unreachable_code_path'
 import * as pareto_unreachable_code_path from 'pareto-core/dist/_p_unreachable_code_path'
-import create_refinement_context from 'pareto-core/dist/__internals/async/create_refinement_context'
 
 //data types
 import * as d_path from "pareto-resources/dist/interface/generated/liana/schemas/path/data"
 import * as d_diagnostics from "liana-authoring/dist/interface/generated/liana/schemas/diagnostics/data"
 import * as d_unmarshall_result_from_lines_of_characters from "liana-authoring/dist/interface/to_be_generated/unmarshall_result_from_loc"
 import * as d_location from "liana-authoring/dist/interface/generated/liana/schemas/location/data"
+import * as d_astn_location from "astn-core/dist/interface/generated/liana/schemas/location/data"
 import * as d_text_edits from "liana-authoring/dist/interface/generated/liana/schemas/text_edits/data"
 
-/* --------------------------------------------------------------------------------------------
- * Copyright (c) Microsoft Corporation. All rights reserved.
- * Licensed under the MIT License. See License.txt in the project root for license information.
- * ------------------------------------------------------------------------------------------ */
-
+import * as r_parse_tree_from_loc from "astn-core/dist/implementation/manual/refiners/parse_tree/list_of_characters"
 import * as t_unmarshall_result_to_hover_info from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/hover_info"
 import * as t_unmarshall_result_to_completion_suggestions from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/completion_suggestions"
 import * as t_unmarshall_result_to_diagnostics from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/diagnostics"
 import * as t_unmarshall_result_to_formatting_edits from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/formatting_edits"
-import * as r_parse_tree_from_loc from "astn-core/dist/implementation/manual/refiners/parse_tree/list_of_characters"
 import * as t_node_path_to_text from "pareto-resources/dist/implementation/manual/transformers/path/text"
 import * as t_parse_tree_to_text from "astn/dist/implementation/manual/transformers/parse_tree/text"
+import * as t_deserialize_to_location from "astn-core/dist/implementation/manual/transformers/deserialize_parse_tree/location"
 
 import * as path from "path"
 
@@ -240,24 +236,50 @@ type Cached_Schema = {
 const schema_cache = new Schema_Cache()
 
 
-const create_range = (
-	$: d_location.Range_FE
+const create_range_from_range = (
+	$: d_astn_location.Range
 ): vscode_types.Range => {
 	return vscode_types.Range.create(
-		$.start.line,
-		$.start.character,
-		$.end.line,
-		$.end.character
+		$.start.relative.line,
+		$.start.relative.column,
+		$.end.relative.line,
+		$.end.relative.column
 	)
+}
+
+const create_position_from_location = (
+	$: d_astn_location.Location
+): vscode_types.Position => {
+	return vscode_types.Position.create(
+		$.relative.line,
+		$.relative.column
+	)
+}
+const create_range_from_possible_range = (
+	$: d_astn_location.Possible_Range,
+): vscode_types.Range => {
+	return _p.decide.state($, ($) => {
+		switch ($[0]) {
+			case 'range': return _p.ss($, ($) => create_range_from_range($))
+			case 'end of document': return _p.ss($, ($) => {
+
+				return vscode_types.Range.create(
+					vscode_types.Position.create($.end.relative.line, $.end.relative.column),
+					vscode_types.Position.create($.end.relative.line, $.end.relative.column),
+				)
+			})
+			default: return _p.au($[0])
+		}
+	})
 }
 
 
 async function validateTextDocument(textDocument: TextDocument): Promise<Diagnostic[]> {
 	// In this simple example we get the settings for every validate run.
-	return new Promise<Diagnostic[]>((resolve) => {
+	return new Promise<Diagnostic[]>((resolve_raw) => {
 
-		const convert_diagnostics = ($: d_diagnostics.Diagnostics, source: string): Diagnostic[] => {
-			return $.__l_map(($) => ({
+		const resolve = ($: d_diagnostics.Diagnostics) => {
+			resolve_raw($.__l_map(($) => ({
 				severity: (() => {
 					switch ($.severity[0]) {
 						case 'error': return DiagnosticSeverity.Error
@@ -267,78 +289,92 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 					}
 				})(),
 				message: $.message,
-				range: create_range($.range),
-				source: source,
+				range: $.range.__decide(
+					($) => create_range_from_possible_range($),
+					() => vscode_types.Range.create(0, 0, 0, 1) // if we don't have a range, we put it at the start of the document
+				),
+				source: _p.decide.state($.type, ($): string => {
+					switch ($[0]) {
+						case 'semantic': return _p.ss($, ($) => "liana-semantic")
+						case 'deserialize': return _p.ss($, ($) => "liana-deserialize")
+						case 'schema': return _p.ss($, ($) => "schema")
+						default: return _p.au($[0])
+					}
+				}),
 				relatedInformation: $['related information'].__decide(
 					($) => $.__get_raw_copy().map(($): vscode_types.DiagnosticRelatedInformation => ({
 						'location': {
 							'uri': t_node_path_to_text.Node_Path($.location['file path']),
-							'range': create_range($.location.range),
+							'range': create_range_from_possible_range($.location.range),
 						},
 						'message': $.message,
 					})),
 					() => undefined
 				)
-			})).__get_raw_copy().map(($) => $)
+			})).__get_raw_copy().map(($) => $))
 		}
 
 		load_instance(
 			textDocument.uri,
 			textDocument.getText(),
 			schema_cache,
-			($) => _p.decide.state($, ($) => {
-				switch ($[0]) {
-					case 'schema': return _p.ss($, ($) => {
-						const schema_path = $['schema path']
-						resolve(_p.decide.state($.type, ($) => {
-							switch ($[0]) {
-								case 'read file': return _p.ss($, ($) => [
-									{
-										'severity': DiagnosticSeverity.Error,
-										'message': `Failed to read schema file: ${schema_path}`,
-										'range': vscode_types.Range.create(0, 0, 0, 1),
-									}
-								])
-								case 'parse schema': return _p.ss($, ($) => [
-									{
-										'severity': DiagnosticSeverity.Error,
-										'message': `Failed to parse schema: ${schema_path}`,
-										'range': vscode_types.Range.create(0, 0, 0, 1),
-									}
-								])
-								default: return _p.au($[0])
-							}
-						}))
-
-					})
-					case 'unmarshall': return _p.ss($, ($) => {
-						return [
-							{
-								'severity': DiagnosticSeverity.Error,
-								'message': `Failed to unmarshall (FIXME)`,
-								'range': vscode_types.Range.create(0, 0, 0, 1),
-
-							}
-						]
-
-						// convert_diagnostics(
-						// 	_p.list.literal([
-						// 		$
-						// 	]),
-						// 	_p.decide.state($.type, ($) => {
-						// 		switch ($[0]) {
-						// 			case 'schema': return _p.ss($, ($) => "schema")
-						// 			case 'deserialize': return _p.ss($, ($) => "deserialize")
-						// 			default: return _p.au($[0])
-						// 		}
-						// 	}))
-						// resolve(convert_diagnostics($, 'liana-unmarshall'))
-					})
-					default: return _p.au($[0])
-				}
-			}),
 			($) => {
-				resolve(convert_diagnostics(t_unmarshall_result_to_diagnostics.Document($), 'liana-semantic'))
+				resolve(_p.list.literal([
+					_p.decide.state($, ($): d_diagnostics.Diagnostic => {
+						switch ($[0]) {
+							case 'schema': return _p.ss($, ($): d_diagnostics.Diagnostic => {
+								const schema_path = $['schema path']
+								return _p.decide.state($.type, ($): d_diagnostics.Diagnostic => {
+									switch ($[0]) {
+										case 'read file': return _p.ss($, ($) => ({
+											'severity': ['error', null],
+											'message': `Failed to read schema file: ${schema_path}`,
+											'range': _p.optional.literal.not_set(),
+											'related information': _p.optional.literal.not_set(),
+											'type': ['schema', null]
+										}))
+										case 'deserialize': return _p.ss($, ($) => ({
+											'severity': ['error', null],
+											'message': `Failed to parse schema: ${schema_path}`,
+											'range': _p.optional.literal.not_set(),
+											'related information': _p.optional.literal.not_set(),
+											'type': ['schema', null]
+										}))
+										default: return _p.au($[0])
+									}
+								})
+
+							})
+							case 'deserialize': return _p.ss($, ($) => {
+								return {
+									'severity': ['error', null],
+									'message': `Failed to deserialize (FIXME)`,
+									'range': _p.optional.literal.set(t_deserialize_to_location.Error($)),
+									'related information': _p.optional.literal.not_set(),
+									'type': ['deserialize', null]
+								}
+
+
+								// convert_diagnostics(
+								// 	_p.list.literal([
+								// 		$
+								// 	]),
+								// 	_p.decide.state($.type, ($) => {
+								// 		switch ($[0]) {
+								// 			case 'schema': return _p.ss($, ($) => "schema")
+								// 			case 'deserialize': return _p.ss($, ($) => "deserialize")
+								// 			default: return _p.au($[0])
+								// 		}
+								// 	}))
+								// resolve(convert_diagnostics($, 'liana-unmarshall'))
+							})
+							default: return _p.au($[0])
+						}
+					})
+				]))
+			},
+			($) => {
+				resolve(t_unmarshall_result_to_diagnostics.Document($))
 			}
 		)
 
@@ -350,14 +386,14 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 const map_text_edits = ($: d_text_edits.Text_Edits): vscode_types.TextEdit[] => $.__l_map(($): TextEdit => _p.decide.state($, ($) => {
 	switch ($[0]) {
 		case 'replace': return _p.ss($, ($) => TextEdit.replace(
-			create_range($.range),
+			create_range_from_range($.range),
 			$.text
 		))
 		case 'delete': return _p.ss($, ($) => TextEdit.del(
-			create_range($.range)
+			create_range_from_range($.range)
 		))
 		case 'insert': return _p.ss($, ($) => TextEdit.insert(
-			$.location,
+			create_position_from_location($.location),
 			$.text
 		))
 		default: return _p.au($[0])
@@ -419,50 +455,48 @@ connection.onCompletion(
 				},
 				(instance) => {
 					// We have the instance, now we can compute the completion items
-					const xxxxx = t_unmarshall_result_to_completion_suggestions.Document(
-						instance,
-						{
-							'indent': "    ",
-							'position': params.position,
-						}
-					)
 
-					const items = xxxxx.__decide(
-						($) => $.__l_map(($) => {
-							return ({
-								'label': $.label,
-								'insertText': $['insert text'],
-								'insertTextFormat': InsertTextFormat.Snippet,
-								'kind': _p.decide.state($.type, ($): CompletionItemKind => {
-									switch ($[0]) {
-										case 'simple': return _p.ss($, ($) => CompletionItemKind.Value)
-										case 'component': return _p.ss($, ($) => CompletionItemKind.Class)
-										case 'dictionary': return _p.ss($, ($) => CompletionItemKind.Class)
-										case 'group': return _p.ss($, ($) => CompletionItemKind.Struct)
-										case 'list': return _p.ss($, ($) => CompletionItemKind.Class)
-										case 'nothing': return _p.ss($, ($) => CompletionItemKind.Value)
-										case 'optional': return _p.ss($, ($) => CompletionItemKind.Field)
-										case 'reference': return _p.ss($, ($) => CompletionItemKind.Reference)
-										case 'state': return _p.ss($, ($) => CompletionItemKind.Enum)
-										case 'text': return _p.ss($, ($) => CompletionItemKind.Text)
-										default: return _p.au($[0])
-									}
-								}),
-								'additionalTextEdits': map_text_edits($['additional text edits']),
-								'documentation': {
-									kind: MarkupKind.PlainText,
-									value: $.documentation
-								},
-								'data': {
-									'documentation': $.documentation
-								}
-							})
-						}).__get_raw_copy().map(($) => $),
-						() => []
-					)
 					resolve({
 						'isIncomplete': false,
-						'items': items
+						'items': t_unmarshall_result_to_completion_suggestions.Document(
+							instance,
+							{
+								'indent': "    ",
+								'position': params.position,
+							}
+						).__decide(
+							($) => $.__l_map(($) => {
+								return ({
+									'label': $.label,
+									'insertText': $['insert text'],
+									'insertTextFormat': InsertTextFormat.Snippet,
+									'kind': _p.decide.state($.type, ($): CompletionItemKind => {
+										switch ($[0]) {
+											case 'simple': return _p.ss($, ($) => CompletionItemKind.Value)
+											case 'component': return _p.ss($, ($) => CompletionItemKind.Class)
+											case 'dictionary': return _p.ss($, ($) => CompletionItemKind.Class)
+											case 'group': return _p.ss($, ($) => CompletionItemKind.Struct)
+											case 'list': return _p.ss($, ($) => CompletionItemKind.Class)
+											case 'nothing': return _p.ss($, ($) => CompletionItemKind.Value)
+											case 'optional': return _p.ss($, ($) => CompletionItemKind.Field)
+											case 'reference': return _p.ss($, ($) => CompletionItemKind.Reference)
+											case 'state': return _p.ss($, ($) => CompletionItemKind.Enum)
+											case 'text': return _p.ss($, ($) => CompletionItemKind.Text)
+											default: return _p.au($[0])
+										}
+									}),
+									'additionalTextEdits': map_text_edits($['additional text edits']),
+									'documentation': {
+										kind: MarkupKind.PlainText,
+										value: $.documentation
+									},
+									'data': {
+										'documentation': $.documentation
+									}
+								})
+							}).__get_raw_copy().map(($) => $),
+							() => []
+						)
 					})
 				}
 			)
@@ -517,10 +551,7 @@ connection.onHover(
 									'full path': "",
 									'id path': ""
 								}
-							).__decide(
-								($) => $.__get_raw_copy(),
-								() => []
-							).map(($) => $)
+							).__get_raw_copy().map(($) => $)
 						})
 					}
 				)
@@ -608,7 +639,7 @@ connection.onCodeActionResolve(
 						changes: {
 							[uri]: [
 								TextEdit.replace(
-									create_range(formattingResult.replace.range),
+									create_range_from_range(formattingResult.replace.range),
 									formattingResult.replace.text
 								)
 							]

@@ -2,6 +2,8 @@
 /node_modules
 /client/node_modules
 /client/out
+/client/tsconfig.tsbuildinfo
 /server/node_modules
 /server/out
+/server/tsconfig.tsbuildinfo
 /.vscode-test
