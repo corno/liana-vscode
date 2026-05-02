@@ -2,7 +2,7 @@
 
 OUTPUT_DIR=./out
 
-npm version patch
+npm version patch || exit 1
 node ./esbuild.js
 
   # Extract name and version from package.json
