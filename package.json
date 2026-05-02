@@ -1,6 +1,6 @@
 {
 	"name": "liana",
-	"version": "0.1.15",
+	"version": "0.1.16",
 	"publisher": "corno",
 	"description": "Liana Language support; syntax highlighting, formatting, validation, conversion to JSON.",
 	"author": "Corno",
