@@ -8,7 +8,6 @@ import * as pareto_unreachable_code_path from 'pareto-core/dist/_p_unreachable_c
 import * as d_path from "pareto-resources/dist/interface/generated/liana/schemas/path/data"
 import * as d_diagnostics from "liana-authoring/dist/interface/generated/liana/schemas/diagnostics/data"
 import * as d_unmarshall_result_from_lines_of_characters from "liana-authoring/dist/interface/to_be_generated/unmarshall_result_from_loc"
-import * as d_location from "liana-authoring/dist/interface/generated/liana/schemas/location/data"
 import * as d_astn_location from "astn-core/dist/interface/generated/liana/schemas/location/data"
 import * as d_text_edits from "liana-authoring/dist/interface/generated/liana/schemas/text_edits/data"
 
@@ -19,7 +18,7 @@ import * as t_unmarshall_result_to_diagnostics from "liana-authoring/dist/implem
 import * as t_unmarshall_result_to_formatting_edits from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/formatting_edits"
 import * as t_node_path_to_text from "pareto-resources/dist/implementation/manual/transformers/path/text"
 import * as t_parse_tree_to_text from "astn/dist/implementation/manual/transformers/parse_tree/text"
-import * as t_deserialize_to_location from "astn-core/dist/implementation/manual/transformers/deserialize_parse_tree/location"
+import * as t_deserialize_to_diagnostic from "liana-authoring/dist/implementation/manual/transformers/deserialize/diagnostics"
 
 import * as path from "path"
 
@@ -55,15 +54,12 @@ import {
 import * as vscode_types from 'vscode-languageserver-types';
 
 import {
-	DocumentUri,
 	TextDocument
 } from 'vscode-languageserver-textdocument';
 
 import * as url from "url"
-import { Completion_Suggestions } from 'liana-authoring/dist/interface/generated/liana/schemas/completion_suggestions/data'
-import load_possibly_cached_schema from './load_possibly_cached_schema'
-import { Schema_Cache } from './schema_cache'
 import { load_instance } from './to_be_backend/load_instance'
+import { schema_cache } from './schema_cache'
 
 
 
@@ -233,8 +229,6 @@ type Cached_Schema = {
 	schema_path: d_path.Node_Path
 }
 
-const schema_cache = new Schema_Cache()
-
 
 const create_range_from_range = (
 	$: d_astn_location.Range
@@ -320,57 +314,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 			schema_cache,
 			($) => {
 				resolve(_p.list.literal([
-					_p.decide.state($, ($): d_diagnostics.Diagnostic => {
-						switch ($[0]) {
-							case 'schema': return _p.ss($, ($): d_diagnostics.Diagnostic => {
-								const schema_path = $['schema path']
-								return _p.decide.state($.type, ($): d_diagnostics.Diagnostic => {
-									switch ($[0]) {
-										case 'read file': return _p.ss($, ($) => ({
-											'severity': ['error', null],
-											'message': `Failed to read schema file: ${schema_path}`,
-											'range': _p.optional.literal.not_set(),
-											'related information': _p.optional.literal.not_set(),
-											'type': ['schema', null]
-										}))
-										case 'deserialize': return _p.ss($, ($) => ({
-											'severity': ['error', null],
-											'message': `Failed to parse schema: ${schema_path}`,
-											'range': _p.optional.literal.not_set(),
-											'related information': _p.optional.literal.not_set(),
-											'type': ['schema', null]
-										}))
-										default: return _p.au($[0])
-									}
-								})
-
-							})
-							case 'deserialize': return _p.ss($, ($) => {
-								return {
-									'severity': ['error', null],
-									'message': `Failed to deserialize (FIXME)`,
-									'range': _p.optional.literal.set(t_deserialize_to_location.Error($)),
-									'related information': _p.optional.literal.not_set(),
-									'type': ['deserialize', null]
-								}
-
-
-								// convert_diagnostics(
-								// 	_p.list.literal([
-								// 		$
-								// 	]),
-								// 	_p.decide.state($.type, ($) => {
-								// 		switch ($[0]) {
-								// 			case 'schema': return _p.ss($, ($) => "schema")
-								// 			case 'deserialize': return _p.ss($, ($) => "deserialize")
-								// 			default: return _p.au($[0])
-								// 		}
-								// 	}))
-								// resolve(convert_diagnostics($, 'liana-unmarshall'))
-							})
-							default: return _p.au($[0])
-						}
-					})
+					t_deserialize_to_diagnostic.Error($)
 				]))
 			},
 			($) => {

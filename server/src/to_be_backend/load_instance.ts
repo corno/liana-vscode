@@ -1,57 +1,90 @@
-import create_refinement_context from 'pareto-core/dist/__internals/async/create_refinement_context'
+import * as _p from 'pareto-core/dist/assign'
 import _p_list_from_text from 'pareto-core/dist/_p_list_from_text'
-
-import { Load_Schema_Error } from "./load_applicable_schema"
+import _p_unreachable_code_path from 'pareto-core/dist/_p_unreachable_code_path'
+import __query_result from 'pareto-core/dist/__internals/async/__query_result'
 
 import {
 	DocumentUri,
 } from 'vscode-languageserver-textdocument'
 
-import load_possibly_cached_schema from '../load_possibly_cached_schema'
+import * as url from "url"
 
 import * as d_unmarshall_result from "liana-authoring/dist/interface/to_be_generated/unmashall_result"
-import * as d_deserialize_parse_tree from "astn-core/dist/interface/generated/liana/schemas/deserialize_parse_tree/data"
-import { Schema_Cache } from '../schema_cache'
+import * as d_deserialize from "liana-authoring/dist/interface/to_be_generated/deserialize"
+
+import * as d_temp_module_specifier from "pareto-liana/dist/interface/to_be_generated/temp_module_specifier"
+import * as d_get_schema from "liana-authoring/dist/interface/to_be_generated/get_schema"
+import { $$ as qr_stat } from "pareto-host-nodejs/dist/queries/stat_possible_node"
+import { $$ as qr_read_file } from "pareto-host-nodejs/dist/queries/read_file"
 
 
-import * as r_unmarshall_result_from_loc from "liana-authoring/dist/implementation/manual/refiners/unmarshall_result/list_of_characters"
-
-type Load_Instance_Error =
-	| ['schema', Load_Schema_Error]
-	| ['deserialize', d_deserialize_parse_tree.Error]
+import * as r_path_from_text from "pareto-resources/dist/implementation/manual/refiners/path/text"
+import * as t_path_to_text from "pareto-resources/dist/implementation/manual/transformers/path/text"
+import { $$ as q_deserialize } from "liana-authoring/dist/implementation/manual/queries/deserialize"
+import { $$ as q_get_schema_path } from "liana-authoring/dist/implementation/manual/queries/get_schema_path"
+import { $$ as q_get_schema } from "liana-authoring/dist/implementation/manual/queries/get_schema"
+import { Cache, get_cached_or_fresh } from '../cache'
+import { Schema_Cache_Entry } from '../schema_cache'
 
 export const load_instance = (
 	document_uri: DocumentUri,
 	document_content: string,
-	schema_cache: Schema_Cache,
-	on_error: ($: Load_Instance_Error) => void,
+	schema_cache: Cache<Schema_Cache_Entry>,
+	on_error: ($: d_deserialize.Error) => void,
 	on_success: ($: d_unmarshall_result.Document) => void
 ) => {
-	load_possibly_cached_schema(
-		document_uri,
-		schema_cache,
-		($) => {
-			on_error(['schema', $])
-		},
-		(unmarshall_parameters) => {
-			create_refinement_context<d_unmarshall_result.Document, d_deserialize_parse_tree.Error>(
-				(abort) => r_unmarshall_result_from_loc.Document(
-					_p_list_from_text(
-						document_content,
-						($) => $
-					),
-					($) => abort($),
-					unmarshall_parameters.parameters
+
+	q_deserialize(
+		{
+			'get schema path': q_get_schema_path({
+				'stat': qr_stat
+			}),
+			'get schema': ($p, e_t) => {
+				return __query_result(
+					(on_success, on_error) => {
+						get_cached_or_fresh<d_temp_module_specifier.Temp_Module_Specifier, d_get_schema.Error>(
+							schema_cache,
+							t_path_to_text.Node_Path($p['schema path']),
+							(on_cache_success, on_cache_error) => {
+								q_get_schema(
+									{
+										'read file': qr_read_file
+									},
+								)(
+									$p,
+									($) => $
+								).__extract_data(
+									($) => {
+										on_cache_success($)
+									},
+									($) => {
+										on_cache_error($)
+									}
+								)
+							},
+							on_success,
+							($) => on_error(e_t($)),
+						)
+					}
 				)
-			).__extract_data(
-				($) => {
-					on_success($)
-				},
-				($) => {
-					on_error(['deserialize', $])
-				}
-			)
+			}
 		}
+	)(
+		{
+			'content': document_content,
+			'tab size': 1, // LSP uses character offsets, not visual columns (tab = 1 character)
+			'file path': r_path_from_text.Node_Path(
+				url.fileURLToPath(document_uri),
+				() => _p_unreachable_code_path("vscode is providing an unexpected file URI: " + url.fileURLToPath(document_uri)),
+				{
+					'pedantic': false
+				}
+			),
+		},
+		($): d_deserialize.Error => $
+	).__extract_data(
+		($) => on_success($),
+		($) => on_error($)
 	)
 
 }
