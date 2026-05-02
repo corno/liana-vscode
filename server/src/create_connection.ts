@@ -1,6 +1,7 @@
 import * as _p from 'pareto-core/dist/assign'
 import * as _pi from 'pareto-core/dist/interface'
 import _p_list_from_text from 'pareto-core/dist/_p_list_from_text'
+import create_refinement_context from 'pareto-core/dist/__internals/async/create_refinement_context'
 
 import * as helpers from './helpers'
 
@@ -23,7 +24,7 @@ import * as vscode_textdocument from 'vscode-languageserver-textdocument';
 import { ExampleSettings } from './types'
 import { create_on_completion } from './connection/on_completion'
 
-export async function validateTextDocument(textDocument: vscode_textdocument.TextDocument): Promise<vscode_node.Diagnostic[]> {
+export async function validate_text_document(textDocument: vscode_textdocument.TextDocument): Promise<vscode_node.Diagnostic[]> {
 	return new Promise<vscode_node.Diagnostic[]>((resolve) => {
 		load_document(
 			textDocument,
@@ -207,7 +208,7 @@ export const create_connection = (
 		if (document !== undefined) {
 			return {
 				kind: vscode_node.DocumentDiagnosticReportKind.Full,
-				items: await validateTextDocument(document)
+				items: await validate_text_document(document)
 			}
 		} else {
 			// We don't know the document. We can either try to read it from disk
@@ -393,58 +394,61 @@ export const create_connection = (
 				return [];
 			}
 
-			try {
-				connection.console.log('Formatting document...');
+			return create_refinement_context(
+				(abort) => {
 
-				// Parse the document to a parse tree
-				const parseTree = r_parse_tree_from_loc.Document(
-					_p_list_from_text(
-						document.getText(),
-						($) => $
-					),
-					($) => {
-						throw new Error('Parse error occurred');
-					},
-					{
-						'tab size': params.options.tabSize || 4,
-					}
-				);
+					connection.console.log('Formatting document...');
 
-				// Transform the parse tree back to formatted text
-				const formattedText = t_parse_tree_to_text.Document(
-					parseTree,
-					{
-						'indentation': ' '.repeat(params.options.tabSize || 4),
-						'newline': '\n'
-					}
-				);
-
-				// Create range covering the entire document
-				const lastLine = document.lineCount - 1;
-				const lastLineLength = document.getText(vscode_node.Range.create(lastLine, 0, lastLine + 1, 0)).length;
-
-				connection.console.log(`Formatting complete. Original lines: ${document.lineCount}, Formatted length: ${formattedText.length}`);
-
-				// Return a single edit that replaces the entire document
-				return [
-					vscode_node.TextEdit.replace(
-						vscode_node.Range.create(
-							0,
-							0,
-							lastLine,
-							lastLineLength
+					// Parse the document to a parse tree
+					return r_parse_tree_from_loc.Document(
+						_p_list_from_text(
+							document.getText(),
+							($) => $
 						),
-						formattedText
-					)
-				];
-			} catch (e) {
-				if (e instanceof pareto_unreachable_code_path.Unreachable_Code_Path_Error) {
-					connection.console.error(`Unreachable code path reached while formatting document: ${e.message}`);
-				} else {
-					connection.console.error(`Formatting error: ${e instanceof Error ? e.message : String(e)}`);
+						($) => abort($),
+						{
+							'tab size': params.options.tabSize || 4,
+						}
+					);
 				}
-				return [];
-			}
+			).__extract_data(
+				($) => {
+
+
+					// Transform the parse tree back to formatted text
+					const formattedText = t_parse_tree_to_text.Document(
+						$,
+						{
+							'indentation': ' '.repeat(params.options.tabSize || 4),
+							'newline': '\n'
+						}
+					);
+
+					// Create range covering the entire document
+					const lastLine = document.lineCount - 1;
+					const lastLineLength = document.getText(vscode_node.Range.create(lastLine, 0, lastLine + 1, 0)).length;
+
+					connection.console.log(`Formatting complete. Original lines: ${document.lineCount}, Formatted length: ${formattedText.length}`);
+
+					// Return a single edit that replaces the entire document
+					return [
+						vscode_node.TextEdit.replace(
+							vscode_node.Range.create(
+								0,
+								0,
+								lastLine,
+								lastLineLength
+							),
+							formattedText
+						)
+					]
+				},
+				($) => {
+					connection.console.error(`parsing error`);
+
+					return []
+				}
+			)
 		}
 	);
 

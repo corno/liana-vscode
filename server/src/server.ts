@@ -2,7 +2,7 @@ import * as _p from 'pareto-core/dist/assign'
 import * as _pi from 'pareto-core/dist/interface'
 import _p_list_from_text from 'pareto-core/dist/_p_list_from_text'
 
-import { create_connection, validateTextDocument } from './create_connection'
+import { create_connection, validate_text_document } from './create_connection'
 
 import * as vscode_node from 'vscode-languageserver/node';
 import * as vscode_textdocument from 'vscode-languageserver-textdocument';
@@ -22,7 +22,7 @@ documents.onDidClose(e => {
 // The content of a text document has changed. This event is emitted
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent(change => {
-	validateTextDocument(change.document);
+	validate_text_document(change.document);
 });
 
 // Cache the settings of all open documents
