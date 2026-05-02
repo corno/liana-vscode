@@ -5,6 +5,7 @@ import __query_result from 'pareto-core/dist/__internals/async/__query_result'
 
 import {
 	DocumentUri,
+	TextDocument,
 } from 'vscode-languageserver-textdocument'
 
 import * as url from "url"
@@ -26,12 +27,12 @@ import { $$ as q_get_schema } from "liana-authoring/dist/implementation/manual/q
 import { Cache, get_cached_or_fresh } from '../cache'
 import { Schema_Cache_Entry } from '../schema_cache'
 
-export const load_instance = (
-	document_uri: DocumentUri,
-	document_content: string,
+export const load_document = <T>(
+	document: TextDocument,
 	schema_cache: Cache<Schema_Cache_Entry>,
-	on_error: ($: d_deserialize.Error) => void,
-	on_success: ($: d_unmarshall_result.Document) => void
+	on_errorx: ($: d_deserialize.Error) => T,
+	on_successx: ($: d_unmarshall_result.Document) => T,
+	resolve: ($: T) => void,
 ) => {
 
 	q_deserialize(
@@ -54,12 +55,8 @@ export const load_instance = (
 									$p,
 									($) => $
 								).__extract_data(
-									($) => {
-										on_cache_success($)
-									},
-									($) => {
-										on_cache_error($)
-									}
+									on_cache_success,
+									on_cache_error,
 								)
 							},
 							on_success,
@@ -71,11 +68,11 @@ export const load_instance = (
 		}
 	)(
 		{
-			'content': document_content,
+			'content': document.getText(),
 			'tab size': 1, // LSP uses character offsets, not visual columns (tab = 1 character)
 			'file path': r_path_from_text.Node_Path(
-				url.fileURLToPath(document_uri),
-				() => _p_unreachable_code_path("vscode is providing an unexpected file URI: " + url.fileURLToPath(document_uri)),
+				url.fileURLToPath(document.uri),
+				() => _p_unreachable_code_path("vscode is providing an unexpected file URI: " + url.fileURLToPath(document.uri)),
 				{
 					'pedantic': false
 				}
@@ -83,8 +80,8 @@ export const load_instance = (
 		},
 		($): d_deserialize.Error => $
 	).__extract_data(
-		($) => on_success($),
-		($) => on_error($)
+		($) => resolve(on_successx($)),
+		($) => resolve(on_errorx($)),
 	)
 
 }

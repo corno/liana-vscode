@@ -58,7 +58,7 @@ import {
 } from 'vscode-languageserver-textdocument';
 
 import * as url from "url"
-import { load_instance } from './to_be_backend/load_instance'
+import { load_document } from './to_be_backend/load_document'
 import { schema_cache } from './schema_cache'
 
 
@@ -269,57 +269,49 @@ const create_range_from_possible_range = (
 
 
 async function validateTextDocument(textDocument: TextDocument): Promise<Diagnostic[]> {
-	// In this simple example we get the settings for every validate run.
-	return new Promise<Diagnostic[]>((resolve_raw) => {
-
-		const resolve = ($: d_diagnostics.Diagnostics) => {
-			resolve_raw($.__l_map(($) => ({
-				severity: (() => {
-					switch ($.severity[0]) {
-						case 'error': return DiagnosticSeverity.Error
-						case 'warning': return DiagnosticSeverity.Warning
-						case 'information': return DiagnosticSeverity.Information
-						case 'hint': return DiagnosticSeverity.Hint
-					}
-				})(),
-				message: $.message,
-				range: $.range.__decide(
-					($) => create_range_from_possible_range($),
-					() => vscode_types.Range.create(0, 0, 0, 1) // if we don't have a range, we put it at the start of the document
-				),
-				source: _p.decide.state($.type, ($): string => {
-					switch ($[0]) {
-						case 'semantic': return _p.ss($, ($) => "liana-semantic")
-						case 'deserialize': return _p.ss($, ($) => "liana-deserialize")
-						case 'schema': return _p.ss($, ($) => "schema")
-						default: return _p.au($[0])
-					}
-				}),
-				relatedInformation: $['related information'].__decide(
-					($) => $.__get_raw_copy().map(($): vscode_types.DiagnosticRelatedInformation => ({
-						'location': {
-							'uri': t_node_path_to_text.Node_Path($.location['file path']),
-							'range': create_range_from_possible_range($.location.range),
-						},
-						'message': $.message,
-					})),
-					() => undefined
-				)
-			})).__get_raw_copy().map(($) => $))
-		}
-
-		load_instance(
-			textDocument.uri,
-			textDocument.getText(),
+	return new Promise<Diagnostic[]>((resolve) => {
+		load_document(
+			textDocument,
 			schema_cache,
+			($) => _p.list.literal([
+				t_deserialize_to_diagnostic.Error($)
+			]),
+			($) => t_unmarshall_result_to_diagnostics.Document($),
 			($) => {
-				resolve(_p.list.literal([
-					t_deserialize_to_diagnostic.Error($)
-				]))
+				resolve($.__l_map(($) => ({
+					severity: (() => {
+						switch ($.severity[0]) {
+							case 'error': return DiagnosticSeverity.Error
+							case 'warning': return DiagnosticSeverity.Warning
+							case 'information': return DiagnosticSeverity.Information
+							case 'hint': return DiagnosticSeverity.Hint
+						}
+					})(),
+					message: $.message,
+					range: $.range.__decide(
+						($) => create_range_from_possible_range($),
+						() => vscode_types.Range.create(0, 0, 0, 1) // if we don't have a range, we put it at the start of the document
+					),
+					source: _p.decide.state($.type, ($): string => {
+						switch ($[0]) {
+							case 'semantic': return _p.ss($, ($) => "liana-semantic")
+							case 'deserialize': return _p.ss($, ($) => "liana-deserialize")
+							case 'schema': return _p.ss($, ($) => "schema")
+							default: return _p.au($[0])
+						}
+					}),
+					relatedInformation: $['related information'].__decide(
+						($) => $.__get_raw_copy().map(($): vscode_types.DiagnosticRelatedInformation => ({
+							'location': {
+								'uri': t_node_path_to_text.Node_Path($.location['file path']),
+								'range': create_range_from_possible_range($.location.range),
+							},
+							'message': $.message,
+						})),
+						() => undefined
+					)
+				})).__get_raw_copy().map(($) => $))
 			},
-			($) => {
-				resolve(t_unmarshall_result_to_diagnostics.Document($))
-			}
 		)
 
 
@@ -390,59 +382,53 @@ connection.onCompletion(
 				]
 				: []
 
-			load_instance(
-				params.textDocument.uri,
-				doc.getText(),
+			load_document(
+				doc,
 				schema_cache,
-				($) => {
-					resolve({ 'isIncomplete': false, 'items': [] })
-				},
-				(instance) => {
-					// We have the instance, now we can compute the completion items
-
-					resolve({
-						'isIncomplete': false,
-						'items': t_unmarshall_result_to_completion_suggestions.Document(
-							instance,
-							{
-								'indent': "    ",
-								'position': params.position,
-							}
-						).__decide(
-							($) => $.__l_map(($) => {
-								return ({
-									'label': $.label,
-									'insertText': $['insert text'],
-									'insertTextFormat': InsertTextFormat.Snippet,
-									'kind': _p.decide.state($.type, ($): CompletionItemKind => {
-										switch ($[0]) {
-											case 'simple': return _p.ss($, ($) => CompletionItemKind.Value)
-											case 'component': return _p.ss($, ($) => CompletionItemKind.Class)
-											case 'dictionary': return _p.ss($, ($) => CompletionItemKind.Class)
-											case 'group': return _p.ss($, ($) => CompletionItemKind.Struct)
-											case 'list': return _p.ss($, ($) => CompletionItemKind.Class)
-											case 'nothing': return _p.ss($, ($) => CompletionItemKind.Value)
-											case 'optional': return _p.ss($, ($) => CompletionItemKind.Field)
-											case 'reference': return _p.ss($, ($) => CompletionItemKind.Reference)
-											case 'state': return _p.ss($, ($) => CompletionItemKind.Enum)
-											case 'text': return _p.ss($, ($) => CompletionItemKind.Text)
-											default: return _p.au($[0])
-										}
-									}),
-									'additionalTextEdits': map_text_edits($['additional text edits']),
-									'documentation': {
-										kind: MarkupKind.PlainText,
-										value: $.documentation
-									},
-									'data': {
-										'documentation': $.documentation
+				($) => ({ 'isIncomplete': false, 'items': [] }),
+				(instance) => ({
+					'isIncomplete': false,
+					'items': t_unmarshall_result_to_completion_suggestions.Document(
+						instance,
+						{
+							'indent': "    ",
+							'position': params.position,
+						}
+					).__decide(
+						($) => $.__l_map(($) => {
+							return ({
+								'label': $.label,
+								'insertText': $['insert text'],
+								'insertTextFormat': InsertTextFormat.Snippet,
+								'kind': _p.decide.state($.type, ($): CompletionItemKind => {
+									switch ($[0]) {
+										case 'simple': return _p.ss($, ($) => CompletionItemKind.Value)
+										case 'component': return _p.ss($, ($) => CompletionItemKind.Class)
+										case 'dictionary': return _p.ss($, ($) => CompletionItemKind.Class)
+										case 'group': return _p.ss($, ($) => CompletionItemKind.Struct)
+										case 'list': return _p.ss($, ($) => CompletionItemKind.Class)
+										case 'nothing': return _p.ss($, ($) => CompletionItemKind.Value)
+										case 'optional': return _p.ss($, ($) => CompletionItemKind.Field)
+										case 'reference': return _p.ss($, ($) => CompletionItemKind.Reference)
+										case 'state': return _p.ss($, ($) => CompletionItemKind.Enum)
+										case 'text': return _p.ss($, ($) => CompletionItemKind.Text)
+										default: return _p.au($[0])
 									}
-								})
-							}).__get_raw_copy().map(($) => $),
-							() => []
-						)
-					})
-				}
+								}),
+								'additionalTextEdits': map_text_edits($['additional text edits']),
+								'documentation': {
+									kind: MarkupKind.PlainText,
+									value: $.documentation
+								},
+								'data': {
+									'documentation': $.documentation
+								}
+							})
+						}).__get_raw_copy().map(($) => $),
+						() => []
+					)
+				}),
+				resolve,
 			)
 		})
 
@@ -475,29 +461,23 @@ connection.onHover(
 
 		return new Promise(
 			(resolve) => {
-
-				load_instance(
-					hoverParams.textDocument.uri,
-					doc.getText(),
+				load_document(
+					doc,
 					schema_cache,
-					($) => {
-						resolve({
-							'contents': []
-						})
-					},
-					(instance) => {
-						// We have the instance, now we can compute the hover info
-						resolve({
-							'contents': t_unmarshall_result_to_hover_info.Document(
-								instance,
-								{
-									'position': hoverParams.position,
-									'full path': "",
-									'id path': ""
-								}
-							).__get_raw_copy().map(($) => $)
-						})
-					}
+					($) => ({
+						'contents': []
+					}),
+					(instance) => ({
+						'contents': t_unmarshall_result_to_hover_info.Document(
+							instance,
+							{
+								'position': hoverParams.position,
+								'full path': "",
+								'id path': ""
+							}
+						).__get_raw_copy().map(($) => $)
+					}),
+					resolve,
 				)
 			},
 		)
@@ -556,14 +536,10 @@ connection.onCodeActionResolve(
 
 			connection.console.log(`Resolving code action: ${action.title}`);
 
-			load_instance(
-				uri,
-				document.getText(),
+			load_document(
+				document,
 				schema_cache,
-				($) => {
-					// connection.console.log(`Instance could not be loaded for code action: ${$['schema path']}`);
-					resolve(action);
-				},
+				($) => null,
 				(instance) => {
 					const formattingResult = t_unmarshall_result_to_formatting_edits.Document(
 						instance,
@@ -579,18 +555,26 @@ connection.onCodeActionResolve(
 						}
 					)
 
-					action.edit = {
-						changes: {
-							[uri]: [
-								TextEdit.replace(
-									create_range_from_range(formattingResult.replace.range),
-									formattingResult.replace.text
-								)
-							]
+
+					return formattingResult
+				},
+				($) => {
+					if ($ === null) {
+						resolve(action)
+					} else {
+						action.edit = {
+							changes: {
+								[uri]: [
+									TextEdit.replace(
+										create_range_from_range($.replace.range),
+										$.replace.text
+									)
+								]
+							}
 						}
+						resolve(action)
 					}
-					resolve(action)
-				}
+				},
 			)
 		});
 	}
