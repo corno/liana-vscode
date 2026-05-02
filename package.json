@@ -11,8 +11,8 @@
 		"url": "https://github.com/corno/liana-vscode"
 	},
 	"files": [
-		"client/out/**",
-		"server/out/**",
+		"client/out/extension.js",
+		"server/out/server.js",
 		"syntaxes/**",
 		"images/**",
 		"language-configuration.json",
