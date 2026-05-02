@@ -1,17 +1,11 @@
 import * as _p from 'pareto-core/dist/assign'
 import * as _pi from 'pareto-core/dist/interface'
 import _p_list_from_text from 'pareto-core/dist/_p_list_from_text'
-import _p_unreachable from 'pareto-core/dist/_p_unreachable_code_path'
-import * as pareto_unreachable_code_path from 'pareto-core/dist/_p_unreachable_code_path'
 
 import * as helpers from './helpers'
 
-//data types
-import * as d_text_edits from "liana-authoring/dist/interface/generated/liana/schemas/text_edits/data"
-
 import * as r_parse_tree_from_loc from "astn-core/dist/implementation/manual/refiners/parse_tree/list_of_characters"
 import * as t_unmarshall_result_to_hover_info from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/hover_info"
-import * as t_unmarshall_result_to_completion_suggestions from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/completion_suggestions"
 import * as t_unmarshall_result_to_diagnostics from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/diagnostics"
 import * as t_unmarshall_result_to_formatting_edits from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/formatting_edits"
 import * as t_node_path_to_text from "pareto-resources/dist/implementation/manual/transformers/path/text"
@@ -20,41 +14,11 @@ import * as t_deserialize_to_diagnostic from "liana-authoring/dist/implementatio
 
 import * as path from "path"
 
-import {
-	createConnection,
-	TextDocuments,
-	ProposedFeatures,
-	InitializeParams,
-	DidChangeConfigurationNotification,
-	CompletionItem,
-	CompletionParams,
-	CompletionItemKind,
-	InsertTextFormat,
-	CompletionTriggerKind,
-	TextDocumentSyncKind,
-	InitializeResult,
-	DocumentDiagnosticReportKind,
-	DocumentDiagnosticReport,
-	DocumentSymbol,
-	SymbolKind,
-	DocumentSymbolParams,
-	TextEdit,
-	Range,
-	CodeAction,
-	CodeActionKind,
-	CodeActionParams,
-	DocumentFormattingParams,
-	ServerRequestHandler,
-	CompletionList,
-	SymbolInformation
-} from 'vscode-languageserver/node';
-
 import * as url from "url"
 import { load_document } from './to_be_backend/load_document'
 import { schema_cache } from './schema_cache'
 
 import * as vscode_node from 'vscode-languageserver/node';
-import * as vscode_types from 'vscode-languageserver-types';
 import * as vscode_textdocument from 'vscode-languageserver-textdocument';
 import { ExampleSettings } from './types'
 import { create_on_completion } from './connection/on_completion'
@@ -81,7 +45,7 @@ export async function validateTextDocument(textDocument: vscode_textdocument.Tex
 					message: $.message,
 					range: $.range.__decide(
 						($) => helpers.create_range_from_possible_range($),
-						() => vscode_types.Range.create(0, 0, 0, 1) // if we don't have a range, we put it at the start of the document
+						() => vscode_node.Range.create(0, 0, 0, 1) // if we don't have a range, we put it at the start of the document
 					),
 					source: _p.decide.state($.type, ($): string => {
 						switch ($[0]) {
@@ -92,7 +56,7 @@ export async function validateTextDocument(textDocument: vscode_textdocument.Tex
 						}
 					}),
 					relatedInformation: $['related information'].__decide(
-						($) => $.__get_raw_copy().map(($): vscode_types.DiagnosticRelatedInformation => ({
+						($) => $.__get_raw_copy().map(($): vscode_node.DiagnosticRelatedInformation => ({
 							'location': {
 								'uri': t_node_path_to_text.Node_Path($.location['file path']),
 								'range': helpers.create_range_from_possible_range($.location.range),
@@ -114,7 +78,7 @@ export async function validateTextDocument(textDocument: vscode_textdocument.Tex
 
 export const create_connection = (
 	documentSettings: Map<string, Thenable<ExampleSettings>>,
-	documents: TextDocuments<vscode_textdocument.TextDocument>,
+	documents: vscode_node.TextDocuments<vscode_textdocument.TextDocument>,
 ) => {
 
 	// The global settings, used when the `workspace/configuration` request is not supported by the client.
@@ -130,10 +94,10 @@ export const create_connection = (
 	let hasWorkspaceFolderCapability = false;
 	let hasDiagnosticRelatedInformationCapability = false;
 
-	const connection = createConnection(ProposedFeatures.all);
+	const connection = vscode_node.createConnection(vscode_node.ProposedFeatures.all);
 
 
-	connection.onInitialize((params: InitializeParams) => {
+	connection.onInitialize((params: vscode_node.InitializeParams) => {
 		const capabilities = params.capabilities;
 
 		// Does the client support the `workspace/configuration` request?
@@ -150,9 +114,9 @@ export const create_connection = (
 			capabilities.textDocument.publishDiagnostics.relatedInformation
 		);
 
-		const result: InitializeResult = {
+		const result: vscode_node.InitializeResult = {
 			capabilities: {
-				textDocumentSync: TextDocumentSyncKind.Incremental,
+				textDocumentSync: vscode_node.TextDocumentSyncKind.Incremental,
 				// Tell the client that this server supports code completion.
 				completionProvider: {
 					resolveProvider: true,
@@ -177,7 +141,7 @@ export const create_connection = (
 				hoverProvider: true,
 				documentSymbolProvider: true,
 				codeActionProvider: {
-					codeActionKinds: [CodeActionKind.Refactor],
+					codeActionKinds: [vscode_node.CodeActionKind.Refactor],
 					resolveProvider: true
 				},
 				documentFormattingProvider: true,
@@ -196,7 +160,7 @@ export const create_connection = (
 	connection.onInitialized(() => {
 		if (hasConfigurationCapability) {
 			// Register for all configuration changes.
-			connection.client.register(DidChangeConfigurationNotification.type, undefined);
+			connection.client.register(vscode_node.DidChangeConfigurationNotification.type, undefined);
 		}
 		if (hasWorkspaceFolderCapability) {
 			connection.workspace.onDidChangeWorkspaceFolders(_event => {
@@ -242,16 +206,16 @@ export const create_connection = (
 		const document = documents.get(params.textDocument.uri);
 		if (document !== undefined) {
 			return {
-				kind: DocumentDiagnosticReportKind.Full,
+				kind: vscode_node.DocumentDiagnosticReportKind.Full,
 				items: await validateTextDocument(document)
-			} satisfies DocumentDiagnosticReport;
+			}
 		} else {
 			// We don't know the document. We can either try to read it from disk
 			// or we don't report problems for it.
 			return {
-				kind: DocumentDiagnosticReportKind.Full,
+				kind: vscode_node.DocumentDiagnosticReportKind.Full,
 				items: []
-			} satisfies DocumentDiagnosticReport;
+			}
 		}
 	});
 
@@ -279,7 +243,7 @@ export const create_connection = (
 	// This handler resolves additional information for the item selected in
 	// the completion list.
 	connection.onCompletionResolve(
-		(item: CompletionItem): CompletionItem => {
+		(item: vscode_node.CompletionItem): vscode_node.CompletionItem => {
 			if (item.data && item.data.documentation) {
 				item.documentation = {
 					kind: vscode_node.MarkupKind.PlainText,
@@ -326,11 +290,11 @@ export const create_connection = (
 	)
 
 	connection.onCodeAction(
-		(params: CodeActionParams) => {
+		(params: vscode_node.CodeActionParams) => {
 			connection.console.log(`Code action requested at position: ${params.range.start.line}:${params.range.start.character}`);
 
 			// Return lightweight actions without computing edits
-			const actions: CodeAction[] = [];
+			const actions: vscode_node.CodeAction[] = [];
 
 			const notationTypes: Array<[string, 'verbose' | 'concise', boolean]> = [
 				['Convert to verbose notation (shallow)', 'verbose', true],
@@ -342,7 +306,7 @@ export const create_connection = (
 			for (const [actionTitle, style, shallow] of notationTypes) {
 				actions.push({
 					title: actionTitle,
-					kind: CodeActionKind.Refactor,
+					kind: vscode_node.CodeActionKind.Refactor,
 					data: {
 						uri: params.textDocument.uri,
 						position: params.range.start,
@@ -358,8 +322,8 @@ export const create_connection = (
 	);
 
 	connection.onCodeActionResolve(
-		(action: CodeAction) => {
-			return new Promise<CodeAction>((resolve) => {
+		(action: vscode_node.CodeAction) => {
+			return new Promise<vscode_node.CodeAction>((resolve) => {
 				if (!action.data) {
 					connection.console.log('Code action resolve called without data');
 					resolve(action);
@@ -406,7 +370,7 @@ export const create_connection = (
 							action.edit = {
 								changes: {
 									[uri]: [
-										TextEdit.replace(
+										vscode_node.TextEdit.replace(
 											helpers.create_range_from_range($.replace.range),
 											$.replace.text
 										)
@@ -422,7 +386,7 @@ export const create_connection = (
 	);
 
 	connection.onDocumentFormatting(
-		(params: DocumentFormattingParams): TextEdit[] => {
+		(params: vscode_node.DocumentFormattingParams): vscode_node.TextEdit[] => {
 			const document = documents.get(params.textDocument.uri);
 			if (document === undefined) {
 				connection.console.log('Document formatting called but document not found');
@@ -457,14 +421,14 @@ export const create_connection = (
 
 				// Create range covering the entire document
 				const lastLine = document.lineCount - 1;
-				const lastLineLength = document.getText(Range.create(lastLine, 0, lastLine + 1, 0)).length;
+				const lastLineLength = document.getText(vscode_node.Range.create(lastLine, 0, lastLine + 1, 0)).length;
 
 				connection.console.log(`Formatting complete. Original lines: ${document.lineCount}, Formatted length: ${formattedText.length}`);
 
 				// Return a single edit that replaces the entire document
 				return [
-					TextEdit.replace(
-						Range.create(
+					vscode_node.TextEdit.replace(
+						vscode_node.Range.create(
 							0,
 							0,
 							lastLine,
@@ -484,7 +448,7 @@ export const create_connection = (
 		}
 	);
 
-	const onDocumentSymbol: ServerRequestHandler<DocumentSymbolParams, SymbolInformation[] | DocumentSymbol[] | undefined | null, SymbolInformation[] | DocumentSymbol[], void> = (params) => {
+	const onDocumentSymbol: vscode_node.ServerRequestHandler<vscode_node.DocumentSymbolParams, vscode_node.SymbolInformation[] | vscode_node.DocumentSymbol[] | undefined | null, vscode_node.SymbolInformation[] | vscode_node.DocumentSymbol[], void> = (params) => {
 		// Stub implementation - returns empty array until backend support is added
 		// This handler provides document symbols for the outline view and navigation
 		const document = documents.get(params.textDocument.uri);
@@ -494,17 +458,17 @@ export const create_connection = (
 
 		// TODO: Replace with actual backend call when symbol extraction is implemented
 		// For now, return a sample symbol to demonstrate the structure
-		const stubSymbol: DocumentSymbol = {
+		const stubSymbol: vscode_node.DocumentSymbol = {
 			name: 'Document Root',
-			kind: SymbolKind.Module,
-			range: vscode_types.Range.create(0, 0, document.lineCount - 1, 0),
-			selectionRange: vscode_types.Range.create(0, 0, 0, 0),
+			kind: vscode_node.SymbolKind.Module,
+			range: vscode_node.Range.create(0, 0, document.lineCount - 1, 0),
+			selectionRange: vscode_node.Range.create(0, 0, 0, 0),
 			children: [
 				{
 					name: 'Example Symbol',
-					kind: SymbolKind.Function,
-					range: vscode_types.Range.create(0, 0, 0, 10),
-					selectionRange: vscode_types.Range.create(0, 0, 0, 10),
+					kind: vscode_node.SymbolKind.Function,
+					range: vscode_node.Range.create(0, 0, 0, 10),
+					selectionRange: vscode_node.Range.create(0, 0, 0, 10),
 				}
 			]
 		};
