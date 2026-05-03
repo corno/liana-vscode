@@ -1,10 +1,12 @@
+import * as _p from 'pareto-core/dist/assign'
+
 import { $$ as ttt_seal } from 'liana-authoring/dist/implementation/manual/text_to_text/seal'
 
 import * as fs from 'fs'
 import * as path from 'path'
 import * as vscode from 'vscode'
 
-import {load_schema} from '../to_be_backend/load_applicable_schema'
+import { load_applicable_schema } from '../to_be_backend/load_applicable_schema'
 
 export default function $(): vscode.Disposable {
 	return vscode.commands.registerCommand('liana.seal', () => {
@@ -15,10 +17,20 @@ export default function $(): vscode.Disposable {
 		}
 
 		try {
-			load_schema(
-				editor.document.uri.toString(),
-				() => {
-					vscode.window.showErrorMessage('Cannot seal because no .liana/schema.slna file could be found in the same directory as the liana file.');
+			load_applicable_schema(
+				editor.document,
+				($) => {
+					_p.decide.state($.type, ($) => {
+						switch ($[0]) {
+							case 'read file': return _p.ss($, ($) => {
+								vscode.window.showErrorMessage('Cannot seal because no .liana/schema.slna file could be found in the same directory as the liana file: ' + $.error.message);
+							})
+							case 'parse schema': return _p.ss($, ($) => {
+								vscode.window.showErrorMessage('Cannot seal because the .liana/schema.slna file is not a valid schema.');
+							})
+							default: return _p.au($[0])
+						}
+					})
 				},
 				($) => {
 					const newText = ttt_seal(

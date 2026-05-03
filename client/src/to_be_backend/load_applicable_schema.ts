@@ -14,6 +14,7 @@ import * as r_path_from_text from "pareto-resources/dist/implementation/manual/r
 import * as fs from "fs"
 import * as path from "path"
 import get_applicable_schema_path from './get_applicable_schema_path'
+import { TextDocument } from 'vscode'
 
 export type Load_Schema_Error = {
 	'schema path': string
@@ -26,18 +27,18 @@ export type Load_Schema_Error = {
 	}]
 }
 
-export function load_schema(
-	schema_path_as_string: string,
+export function load_applicable_schema(
+	text_document: TextDocument,
 	on_error: ($: Load_Schema_Error) => void,
 	on_success: (
 		$: d_unmarshall_result_from_lines_of_characters.Parameters,
 	) => void,
 ): void {
 
-	const schema_path = get_applicable_schema_path(schema_path_as_string)
+	const schema_path = get_applicable_schema_path(text_document.uri.fsPath)
 
+	console.log(`Loading schema from ${schema_path}`)
 
-	// Cache miss - read and parse the schema
 	fs.readFile(
 		schema_path,
 		{ 'encoding': 'utf-8' },

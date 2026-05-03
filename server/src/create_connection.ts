@@ -292,7 +292,7 @@ export const create_connection = (
 
 	connection.onCodeAction(
 		(params: vscode_node.CodeActionParams) => {
-			connection.console.log(`Code action requested at position: ${params.range.start.line}:${params.range.start.character}`);
+			//connection.console.log(`Code action requested at position: ${params.range.start.line}:${params.range.start.character}`);
 
 			// Return lightweight actions without computing edits
 			const actions: vscode_node.CodeAction[] = [];
@@ -317,7 +317,7 @@ export const create_connection = (
 				});
 			}
 
-			connection.console.log(`Returning ${actions.length} code actions`);
+			//connection.console.log(`Returning ${actions.length} code actions`);
 			return actions;
 		}
 	);
