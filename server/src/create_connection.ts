@@ -91,8 +91,8 @@ export const create_connection = (
 
 	let globalSettings: ExampleSettings = defaultSettings
 
-	// Store the notation style preference
-	let notationStyle: 'verbose' | 'concise' = 'verbose'
+	// Store the notation style preference per document
+	const documentNotationStyles: Map<string, 'verbose' | 'concise'> = new Map()
 
 	let hasConfigurationCapability = false
 	let hasWorkspaceFolderCapability = false
@@ -102,9 +102,10 @@ export const create_connection = (
 
 
 	connection.onInitialize((params: vscode_node.InitializeParams) => {
-		// Get notation style from initialization options
+		// Get notation style from initialization options (for initial document)
 		if (params.initializationOptions && params.initializationOptions.notationStyle) {
-			notationStyle = params.initializationOptions.notationStyle
+			// Store as default for documents without specific preference
+			documentNotationStyles.set('__default__', params.initializationOptions.notationStyle)
 		}
 
 		const capabilities = params.capabilities
@@ -229,30 +230,57 @@ export const create_connection = (
 	})
 
 
-	connection.onDidChangeWatchedFiles(_change => {
+	connection.onDidChangeWatchedFiles(async (_change) => {
 		// Monitored files have change in VSCode
 		connection.console.log('We received a file change event')
 
-		// Invalidate schema cache for any changed files
-		_change.changes.forEach(change => {
+		// Invalidate schema cache for any changed files and re-validate affected documents
+		for (const change of _change.changes) {
 			const file_path = url.fileURLToPath(change.uri)
 			// Check if this is a schema file
 			if (file_path.endsWith(path.join('.liana', 'schema.slna'))) {
 				schema_cache.delete(file_path)
 				connection.console.log(`Schema cache invalidated for: ${file_path}`)
+				
+				// Find the directory that contains the .liana folder
+				// Schema path is like: /path/to/project/.liana/schema.slna
+				// We want to re-validate all .liana files in /path/to/project/
+				const schemaDir = path.dirname(file_path) // .../project/.liana
+				const projectDir = path.dirname(schemaDir) // .../project
+				
+				// Re-validate all open documents that use this schema
+				const affectedDocuments: vscode_textdocument.TextDocument[] = []
+				documents.all().forEach(doc => {
+					const doc_path = url.fileURLToPath(doc.uri)
+					// Check if this document is in the project directory or subdirectories
+					if (doc_path.startsWith(projectDir + path.sep) || path.dirname(doc_path) === projectDir) {
+						affectedDocuments.push(doc)
+					}
+				})
+				
+				connection.console.log(`Re-validating ${affectedDocuments.length} document(s) affected by schema change`)
+				
+				// Trigger validation for each affected document
+				for (const doc of affectedDocuments) {
+					const diagnostics = await validate_text_document(doc)
+					connection.sendDiagnostics({ uri: doc.uri, diagnostics })
+				}
 			}
-		})
+		}
 	})
 
 	// Register custom request to update notation style
-	connection.onRequest('liana/updateNotationStyle', (style: 'verbose' | 'concise') => {
-		notationStyle = style
-		connection.console.log(`Notation style updated to: ${style}`)
+	connection.onRequest('liana/updateNotationStyle', (params: { uri: string, style: 'verbose' | 'concise' }) => {
+		documentNotationStyles.set(params.uri, params.style)
+		connection.console.log(`Notation style updated for ${params.uri}: ${params.style}`)
 	})
 
 	// This handler provides the initial list of the completion items.
 	connection.onCompletion(
-		create_on_completion(documents, () => notationStyle)
+		create_on_completion(documents, (uri: string) => {
+			// Get document-specific style, fall back to default
+			return documentNotationStyles.get(uri) || documentNotationStyles.get('__default__') || 'verbose'
+		})
 	)
 
 	// This handler resolves additional information for the item selected in

@@ -92,7 +92,7 @@ If all went well, you ended up with a file that looks like this
 
 ## create an language authoring environment for this schema.
 - save the file
-- right click on the content and select `Initialize authoring environment with this Liana schema`.
+- right click on the content and select `Initialize or update authoring environment with this Liana schema`.
 - Now you can create your first file that conforms to the language you just created; right-click on the folder, select 'New Liana file'. Give a name that ends with .lna. My advise would be to add the language name in the file, according to this format; .my_lang.lna
 - Again, you should see a '#'. ctrl-d should give the 'my dictionary' property, to which you can now add entries.
 

@@ -150,9 +150,9 @@
 				"title": "seal document (n/a due to errors)"
 			},
 			{
-				"command": "liana.initialize_authoring_environment_with_this_schema",
+				"command": "liana.initialize_or_update_authoring_environment_with_this_schema",
 				"category": "Liana",
-				"title": "Initialize authoring environment with this Liana schema"
+				"title": "Initialize or update authoring environment with this Liana schema"
 			},
 			{
 				"command": "liana.generate_typescript_code_from_this_schema",
@@ -230,7 +230,7 @@
 					"group": "1_liana"
 				},
 				{
-					"command": "liana.initialize_authoring_environment_with_this_schema",
+					"command": "liana.initialize_or_update_authoring_environment_with_this_schema",
 					"when": "editorLangId == liana && !liana.has_parse_errors && resourceFilename =~ /\\.liana\\.lna$/",
 					"group": "1_liana"
 				},
@@ -245,6 +245,16 @@
 					"command": "liana.create_liana_file",
 					"when": "explorerResourceIsFolder && liana.workspaceHasSchema",
 					"group": "navigation@1"
+				},
+				{
+					"command": "liana.initialize_or_update_authoring_environment_with_this_schema",
+					"when": "resourceExtname == .lna && resourceFilename =~ /\\.liana\\.lna$/",
+					"group": "liana@1"
+				},
+				{
+					"command": "liana.generate_typescript_code_from_this_schema",
+					"when": "resourceExtname == .lna && resourceFilename =~ /\\.liana\\.lna$/",
+					"group": "liana@1"
 				}
 			]
 		}

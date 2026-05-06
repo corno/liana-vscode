@@ -17,7 +17,7 @@ import * as vscode_textdocument from 'vscode-languageserver-textdocument'
 
 export const create_on_completion: (
 	documents: vscode_node.TextDocuments<vscode_textdocument.TextDocument>,
-	getNotationStyle: () => 'verbose' | 'concise',
+	getNotationStyle: (uri: string) => 'verbose' | 'concise',
 ) => vscode_node.ServerRequestHandler<vscode_node.CompletionParams, vscode_node.CompletionList | null, vscode_node.CompletionItem[], void> = (documents, getNotationStyle) => {
 	return (params) => {
 		// The pass parameter contains the position of the text document in
@@ -59,7 +59,7 @@ export const create_on_completion: (
 						{
 							'indent': "    ",
 							'position': params.position,
-							'style': getNotationStyle() === 'verbose' ? ['verbose', null] : ['concise', null]
+							'style': getNotationStyle(params.textDocument.uri) === 'verbose' ? ['verbose', null] : ['concise', null]
 						}
 					).__decide(
 						($) => $.__l_map(($) => {

@@ -20,8 +20,28 @@ import { registerCommands } from './command_index'
 let client: LanguageClient
 
 // Export the notation style state so it can be accessed by the server
-export function getNotationStyle(context: ExtensionContext): 'verbose' | 'concise' {
-	return context.workspaceState.get<'verbose' | 'concise'>('liana.notationStyle', 'verbose')
+export function getNotationStyle(context: ExtensionContext, documentUri?: string): 'verbose' | 'concise' {
+	if (documentUri) {
+		// Check for document-specific preference
+		const docStyles = context.workspaceState.get<Record<string, 'verbose' | 'concise'>>('liana.documentNotationStyles', {})
+		if (docStyles[documentUri]) {
+			return docStyles[documentUri]
+		}
+	}
+	// Fall back to workspace default
+	return context.workspaceState.get<'verbose' | 'concise'>('liana.defaultNotationStyle', 'verbose')
+}
+
+export function setNotationStyle(context: ExtensionContext, style: 'verbose' | 'concise', documentUri?: string): void {
+	if (documentUri) {
+		// Set document-specific preference
+		const docStyles = context.workspaceState.get<Record<string, 'verbose' | 'concise'>>('liana.documentNotationStyles', {})
+		docStyles[documentUri] = style
+		context.workspaceState.update('liana.documentNotationStyles', docStyles)
+	} else {
+		// Set workspace default
+		context.workspaceState.update('liana.defaultNotationStyle', style)
+	}
 }
 
 // Export function to get the client for sending notifications
@@ -29,15 +49,40 @@ export function getClient(): LanguageClient | undefined {
 	return client
 }
 
+function updateStatusBar(context: ExtensionContext, statusBarItem: vscode.StatusBarItem, editor?: vscode.TextEditor) {
+	if (editor && editor.document.languageId === 'liana') {
+		const style = getNotationStyle(context, editor.document.uri.toString())
+		const hasDocSpecific = context.workspaceState.get<Record<string, 'verbose' | 'concise'>>('liana.documentNotationStyles', {})[editor.document.uri.toString()] !== undefined
+		statusBarItem.text = `$(symbol-property) ${style === 'verbose' ? 'Verbose' : 'Concise'}${hasDocSpecific ? ' (doc)' : ''}`
+		statusBarItem.tooltip = `Liana notation style: ${style}${hasDocSpecific ? ' (document-specific)' : ' (workspace default)'}\nClick to toggle`
+		statusBarItem.show()
+	} else {
+		statusBarItem.hide()
+	}
+}
+
 export function activate(context: ExtensionContext) {
 	// Create status bar item for notation style
 	const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100)
-	const currentStyle = getNotationStyle(context)
-	statusBarItem.text = `$(symbol-property) ${currentStyle === 'verbose' ? 'Verbose' : 'Concise'}`
-	statusBarItem.tooltip = `Liana notation style: ${currentStyle} (Click to toggle)`
 	statusBarItem.command = 'liana.toggle_notation_style'
-	statusBarItem.show()
 	context.subscriptions.push(statusBarItem)
+	
+	// Update status bar for current editor
+	updateStatusBar(context, statusBarItem, vscode.window.activeTextEditor)
+	
+	// Update status bar when active editor changes
+	context.subscriptions.push(
+		vscode.window.onDidChangeActiveTextEditor(editor => {
+			updateStatusBar(context, statusBarItem, editor)
+			if (editor && editor.document.languageId === 'liana' && client) {
+				const style = getNotationStyle(context, editor.document.uri.toString())
+				client.sendRequest('liana/updateNotationStyle', { 
+					uri: editor.document.uri.toString(), 
+					style 
+				}).catch(() => {})
+			}
+		})
+	)
 
 	// Set up diagnostic monitoring for error state
 	function updateErrorContext(uri: vscode.Uri) {
@@ -101,7 +146,7 @@ export function activate(context: ExtensionContext) {
 	context.subscriptions.push(schemaWatcher.onDidDelete(() => updateWorkspaceHasSchemaContext()))
 	context.subscriptions.push(schemaWatcher)
 	
-	registerCommands(context, statusBarItem)
+	registerCommands(context, statusBarItem, (editor) => updateStatusBar(context, statusBarItem, editor))
 
 
 	// The server is implemented in node
@@ -134,7 +179,9 @@ export function activate(context: ExtensionContext) {
 			]
 		},
 		initializationOptions: {
-			notationStyle: getNotationStyle(context)
+			notationStyle: vscode.window.activeTextEditor && vscode.window.activeTextEditor.document.languageId === 'liana'
+				? getNotationStyle(context, vscode.window.activeTextEditor.document.uri.toString())
+				: getNotationStyle(context)
 		}
 	}
 

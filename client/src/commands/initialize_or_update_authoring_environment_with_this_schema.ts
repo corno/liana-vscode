@@ -10,7 +10,7 @@ import { load_applicable_schema } from '../to_be_backend/load_applicable_schema'
 import create_refinement_context from 'pareto-core/dist/__internals/async/create_refinement_context'
 
 export default function $(): vscode.Disposable {
-	return vscode.commands.registerCommand('liana.initialize_authoring_environment_with_this_schema', async () => {
+	return vscode.commands.registerCommand('liana.initialize_or_update_authoring_environment_with_this_schema', async () => {
 		const editor = vscode.window.activeTextEditor
 		if (!editor) {
 			vscode.window.showInformationMessage('Open a liana file first to create authoring environment')
