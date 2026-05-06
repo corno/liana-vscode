@@ -4,48 +4,48 @@ import { findChildFoldingRanges, findContainingFoldingRange } from '../command_s
 
 export default function $(): vscode.Disposable {
 	return vscode.commands.registerCommand('liana.collapse_all_entries', async () => {
-		const editor = vscode.window.activeTextEditor;
+		const editor = vscode.window.activeTextEditor
 		if (!editor) {
-			vscode.window.showInformationMessage('No active editor');
-			return;
+			vscode.window.showInformationMessage('No active editor')
+			return
 		}
 
-		const document = editor.document;
-		const cursorPosition = editor.selection.active;
+		const document = editor.document
+		const cursorPosition = editor.selection.active
 
 		try {
 			const foldingRanges = await vscode.commands.executeCommand<vscode.FoldingRange[]>(
 				'vscode.executeFoldingRangeProvider',
 				document.uri,
-			);
+			)
 
 			if (!foldingRanges || foldingRanges.length === 0) {
-				vscode.window.showInformationMessage('No foldable regions found');
-				return;
+				vscode.window.showInformationMessage('No foldable regions found')
+				return
 			}
 
-			const containingRange = findContainingFoldingRange(foldingRanges, cursorPosition);
+			const containingRange = findContainingFoldingRange(foldingRanges, cursorPosition)
 			if (!containingRange) {
-				vscode.window.showInformationMessage('No foldable structure found at cursor position');
-				return;
+				vscode.window.showInformationMessage('No foldable structure found at cursor position')
+				return
 			}
 
-			const childRanges = findChildFoldingRanges(foldingRanges, containingRange);
+			const childRanges = findChildFoldingRanges(foldingRanges, containingRange)
 			if (childRanges.length === 0) {
-				vscode.window.showInformationMessage('No entries found to collapse');
-				return;
+				vscode.window.showInformationMessage('No entries found to collapse')
+				return
 			}
 
 			for (const range of childRanges) {
-				const startPosition = new vscode.Position(range.start, 0);
-				editor.selection = new vscode.Selection(startPosition, startPosition);
-				await vscode.commands.executeCommand('editor.fold');
+				const startPosition = new vscode.Position(range.start, 0)
+				editor.selection = new vscode.Selection(startPosition, startPosition)
+				await vscode.commands.executeCommand('editor.fold')
 			}
 
-			vscode.window.showInformationMessage(`Collapsed ${childRanges.length} entries`);
+			vscode.window.showInformationMessage(`Collapsed ${childRanges.length} entries`)
 		} catch (error) {
-			console.error('Error collapsing entries:', error);
-			vscode.window.showErrorMessage('Failed to collapse entries');
+			console.error('Error collapsing entries:', error)
+			vscode.window.showErrorMessage('Failed to collapse entries')
 		}
 	})
 }

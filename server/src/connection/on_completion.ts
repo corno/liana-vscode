@@ -12,8 +12,8 @@ import * as t_unmarshall_result_to_completion_suggestions from "liana-authoring/
 import { load_document } from '../to_be_backend/load_document'
 import { schema_cache } from '../schema_cache'
 
-import * as vscode_node from 'vscode-languageserver/node';
-import * as vscode_textdocument from 'vscode-languageserver-textdocument';
+import * as vscode_node from 'vscode-languageserver/node'
+import * as vscode_textdocument from 'vscode-languageserver-textdocument'
 
 export const create_on_completion: (
 	documents: vscode_node.TextDocuments<vscode_textdocument.TextDocument>,
@@ -29,11 +29,11 @@ export const create_on_completion: (
 		}
 
 		return new Promise<vscode_node.CompletionList>((resolve) => {
-			const context = params.context;
+			const context = params.context
 
 			const remove_trigger_character = context &&
 				context.triggerKind === vscode_node.CompletionTriggerKind.TriggerCharacter &&
-				context.triggerCharacter === '#';
+				context.triggerCharacter === '#'
 
 			const additionalTextEdits = remove_trigger_character
 				? [

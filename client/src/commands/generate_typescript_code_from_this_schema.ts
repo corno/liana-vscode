@@ -15,10 +15,10 @@ import * as pareto_unreachable_code_path from 'pareto-core/dist/_p_unreachable_c
 
 export default function $(): vscode.Disposable {
 	return vscode.commands.registerCommand('liana.generate_typescript_code_from_this_schema', async () => {
-		const editor = vscode.window.activeTextEditor;
+		const editor = vscode.window.activeTextEditor
 		if (!editor) {
-			vscode.window.showInformationMessage('Open a liana file first to create authoring environment');
-			return;
+			vscode.window.showInformationMessage('Open a liana file first to create authoring environment')
+			return
 		}
 		const targetUris = await vscode.window.showOpenDialog({
 			canSelectFiles: false,
@@ -26,10 +26,10 @@ export default function $(): vscode.Disposable {
 			canSelectMany: false,
 			openLabel: 'Select Target Directory',
 			title: 'Select directory to initialize Liana authoring environment',
-		});
+		})
 
 		if (!targetUris || targetUris.length === 0) {
-			return;
+			return
 		}
 
 
@@ -51,9 +51,9 @@ export default function $(): vscode.Disposable {
 					'source': r_path_from_text.Node_Path(
 						editor.document.uri.fsPath,
 						() => {
-							vscode.window.showInformationMessage('unexpected error: the file path is not valid.');
+							vscode.window.showInformationMessage('unexpected error: the file path is not valid.')
 
-							throw new Error('The file path is not valid.');
+							throw new Error('The file path is not valid.')
 						},
 						{
 							'pedantic': true,
@@ -64,7 +64,7 @@ export default function $(): vscode.Disposable {
 				($) => $
 			).__start(
 				() => {
-					vscode.window.showInformationMessage('code generated');
+					vscode.window.showInformationMessage('code generated')
 				},
 				($) => {
 					const message: string = t_prose_to_text.Phrase(
@@ -74,16 +74,16 @@ export default function $(): vscode.Disposable {
 							'newline': "\n",
 						}
 					)
-					vscode.window.showInformationMessage(`error encountered: ${message}`);
+					vscode.window.showInformationMessage(`error encountered: ${message}`)
 				}
 			)
 		} catch (error) {
 			if (error instanceof Error) {
-				console.error('Error generating TypeScript code:', error.message);
+				console.error('Error generating TypeScript code:', error.message)
 			} else if (error instanceof pareto_unreachable_code_path.Unreachable_Code_Path_Error) {
-				console.error('Unreachable code path reached:', error.message);
+				console.error('Unreachable code path reached:', error.message)
 			} else {
-				console.error('Unexpected error:', error);
+				console.error('Unexpected error:', error)
 			}
 		}
 

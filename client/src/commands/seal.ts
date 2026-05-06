@@ -10,10 +10,10 @@ import { load_applicable_schema } from '../to_be_backend/load_applicable_schema'
 
 export default function $(): vscode.Disposable {
 	return vscode.commands.registerCommand('liana.seal', () => {
-		const editor = vscode.window.activeTextEditor;
+		const editor = vscode.window.activeTextEditor
 		if (!editor) {
-			vscode.window.showInformationMessage('Open a liana file first to seal');
-			return;
+			vscode.window.showInformationMessage('Open a liana file first to seal')
+			return
 		}
 
 		try {
@@ -23,10 +23,10 @@ export default function $(): vscode.Disposable {
 					_p.decide.state($.type, ($) => {
 						switch ($[0]) {
 							case 'read file': return _p.ss($, ($) => {
-								vscode.window.showErrorMessage('Cannot seal because no .liana/schema.slna file could be found in the same directory as the liana file: ' + $.error.message);
+								vscode.window.showErrorMessage('Cannot seal because no .liana/schema.slna file could be found in the same directory as the liana file: ' + $.error.message)
 							})
 							case 'parse schema': return _p.ss($, ($) => {
-								vscode.window.showErrorMessage('Cannot seal because the .liana/schema.slna file is not a valid schema.');
+								vscode.window.showErrorMessage('Cannot seal because the .liana/schema.slna file is not a valid schema.')
 							})
 							default: return _p.au($[0])
 						}
@@ -36,7 +36,7 @@ export default function $(): vscode.Disposable {
 					const newText = ttt_seal(
 						editor.document.getText(),
 						(): never => {
-							throw new Error('Sealing failed because the file is not valid Liana.');
+							throw new Error('Sealing failed because the file is not valid Liana.')
 						},
 						{
 							'unmarshall': $,
@@ -60,16 +60,16 @@ export default function $(): vscode.Disposable {
 						saveLabel: 'Save Sealed File',
 					}).then((fileInfos) => {
 						if (!fileInfos) {
-							return;
+							return
 						}
 
-						fs.writeFileSync(fileInfos.fsPath, newText, 'utf8');
-						vscode.window.showInformationMessage('File saved as sealed Liana');
+						fs.writeFileSync(fileInfos.fsPath, newText, 'utf8')
+						vscode.window.showInformationMessage('File saved as sealed Liana')
 					})
 				}
 			)
 		} catch (error) {
-			vscode.window.showErrorMessage('Cannot seal because the file is not valid Liana.');
+			vscode.window.showErrorMessage('Cannot seal because the file is not valid Liana.')
 		}
 	})
 }

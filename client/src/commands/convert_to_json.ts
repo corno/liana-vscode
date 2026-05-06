@@ -4,17 +4,17 @@ import * as vscode from 'vscode'
 
 export default function $(): vscode.Disposable {
 	return vscode.commands.registerCommand('liana.convert_to_json', () => {
-		const editor = vscode.window.activeTextEditor;
+		const editor = vscode.window.activeTextEditor
 		if (!editor) {
-			vscode.window.showInformationMessage('Open a Liana file first to save as JSON');
-			return;
+			vscode.window.showInformationMessage('Open a Liana file first to save as JSON')
+			return
 		}
 
 		try {
 			const newText = ttt_convert_to_json(
 				editor.document.getText(),
 				(): never => {
-					throw new Error('Safe as JSON failed because the file is not valid ASTN.');
+					throw new Error('Safe as JSON failed because the file is not valid ASTN.')
 				},
 				{
 					'source': {
@@ -38,7 +38,7 @@ export default function $(): vscode.Disposable {
 				)
 			})
 		} catch (error) {
-			vscode.window.showErrorMessage('Cannot convert to JSON because the file is not valid ASTN.');
+			vscode.window.showErrorMessage('Cannot convert to JSON because the file is not valid ASTN.')
 		}
 	})
 }
