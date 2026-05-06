@@ -22,14 +22,14 @@ documents.onDidClose(e => {
 // The content of a text document has changed. This event is emitted
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent(change => {
-	validate_text_document(change.document)
+	// Trigger a diagnostic refresh to update the diagnostics
+	connection.languages.diagnostics.refresh()
 })
 
 // Cache the settings of all open documents
 const documentSettings: Map<string, Thenable<ExampleSettings>> = new Map()
 
-
-create_connection(
+const connection = create_connection(
 	documentSettings,
 	documents,
 )

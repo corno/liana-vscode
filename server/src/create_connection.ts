@@ -260,10 +260,9 @@ export const create_connection = (
 				
 				connection.console.log(`Re-validating ${affectedDocuments.length} document(s) affected by schema change`)
 				
-				// Trigger validation for each affected document
-				for (const doc of affectedDocuments) {
-					const diagnostics = await validate_text_document(doc)
-					connection.sendDiagnostics({ uri: doc.uri, diagnostics })
+				// Trigger diagnostic refresh for affected documents
+				if (affectedDocuments.length > 0) {
+					connection.languages.diagnostics.refresh()
 				}
 			}
 		}
@@ -519,4 +518,6 @@ export const create_connection = (
 
 	// Listen on the connection
 	connection.listen()
+	
+	return connection
 }

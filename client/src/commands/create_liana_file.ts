@@ -49,7 +49,7 @@ export default function $(): vscode.Disposable {
 			const fileUri = vscode.Uri.file(path.join(targetFolder.fsPath, finalFileName))
 
 			const encoder = new TextEncoder()
-			await vscode.workspace.fs.writeFile(fileUri, encoder.encode('#'))
+			await vscode.workspace.fs.writeFile(fileUri, encoder.encode("#"))
 
 			const document = await vscode.workspace.openTextDocument(fileUri)
 			await vscode.window.showTextDocument(document)
