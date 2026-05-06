@@ -163,6 +163,11 @@
 				"command": "liana.create_liana_file",
 				"category": "Liana",
 				"title": "New Liana File..."
+			},
+			{
+				"command": "liana.toggle_notation_style",
+				"category": "Liana",
+				"title": "Toggle notation style (Verbose/Concise)"
 			}
 		],
 		"keybindings": [
@@ -174,6 +179,11 @@
 			{
 				"command": "liana.jump_to_next_missing_data",
 				"key": "ctrl+d",
+				"when": "editorTextFocus && editorLangId == liana"
+			},
+			{
+				"command": "liana.toggle_notation_style",
+				"key": "ctrl+alt+n",
 				"when": "editorTextFocus && editorLangId == liana"
 			}
 		],

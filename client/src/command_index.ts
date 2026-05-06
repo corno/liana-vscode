@@ -13,8 +13,9 @@ import save_as_json_disabled from './commands/save_as_json_disabled'
 import seal from './commands/seal'
 import seal_disabled from './commands/seal_disabled'
 import sort_alphabetically from './commands/sort_alphabetically'
+import toggle_notation_style from './commands/toggle_notation_style'
 
-export function registerCommands(context: vscode.ExtensionContext): void {
+export function registerCommands(context: vscode.ExtensionContext, statusBarItem: vscode.StatusBarItem): void {
 	context.subscriptions.push(
 		create_liana_file(),
 		save_as_json(),
@@ -29,5 +30,6 @@ export function registerCommands(context: vscode.ExtensionContext): void {
 		convert_to_json_disabled(),
 		save_as_json_disabled(),
 		seal_disabled(),
+		toggle_notation_style(context, statusBarItem),
 	)
 }

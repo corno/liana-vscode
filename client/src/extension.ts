@@ -19,7 +19,26 @@ import { registerCommands } from './command_index'
 
 let client: LanguageClient
 
+// Export the notation style state so it can be accessed by the server
+export function getNotationStyle(context: ExtensionContext): 'verbose' | 'concise' {
+	return context.workspaceState.get<'verbose' | 'concise'>('liana.notationStyle', 'verbose')
+}
+
+// Export function to get the client for sending notifications
+export function getClient(): LanguageClient | undefined {
+	return client
+}
+
 export function activate(context: ExtensionContext) {
+	// Create status bar item for notation style
+	const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100)
+	const currentStyle = getNotationStyle(context)
+	statusBarItem.text = `$(symbol-property) ${currentStyle === 'verbose' ? 'Verbose' : 'Concise'}`
+	statusBarItem.tooltip = `Liana notation style: ${currentStyle} (Click to toggle)`
+	statusBarItem.command = 'liana.toggle_notation_style'
+	statusBarItem.show()
+	context.subscriptions.push(statusBarItem)
+
 	// Set up diagnostic monitoring for error state
 	function updateErrorContext(uri: vscode.Uri) {
 		const diagnostics = vscode.languages.getDiagnostics(uri)
@@ -81,7 +100,8 @@ export function activate(context: ExtensionContext) {
 	context.subscriptions.push(schemaWatcher.onDidCreate(() => updateWorkspaceHasSchemaContext()))
 	context.subscriptions.push(schemaWatcher.onDidDelete(() => updateWorkspaceHasSchemaContext()))
 	context.subscriptions.push(schemaWatcher)
-	registerCommands(context)
+	
+	registerCommands(context, statusBarItem)
 
 
 	// The server is implemented in node
@@ -112,6 +132,9 @@ export function activate(context: ExtensionContext) {
 				workspace.createFileSystemWatcher('**/.clientrc'),
 				schemaWatcher
 			]
+		},
+		initializationOptions: {
+			notationStyle: getNotationStyle(context)
 		}
 	}
 
@@ -123,6 +146,12 @@ export function activate(context: ExtensionContext) {
 		clientOptions
 	)
 
+	// Register a custom request handler to get current notation style
+	context.subscriptions.push(
+		vscode.commands.registerCommand('liana.getNotationStyle', () => {
+			return getNotationStyle(context)
+		})
+	)
 
 	// Start the client. This will also launch the server
 	client.start()

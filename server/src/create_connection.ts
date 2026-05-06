@@ -91,6 +91,8 @@ export const create_connection = (
 
 	let globalSettings: ExampleSettings = defaultSettings
 
+	// Store the notation style preference
+	let notationStyle: 'verbose' | 'concise' = 'verbose'
 
 	let hasConfigurationCapability = false
 	let hasWorkspaceFolderCapability = false
@@ -100,6 +102,11 @@ export const create_connection = (
 
 
 	connection.onInitialize((params: vscode_node.InitializeParams) => {
+		// Get notation style from initialization options
+		if (params.initializationOptions && params.initializationOptions.notationStyle) {
+			notationStyle = params.initializationOptions.notationStyle
+		}
+
 		const capabilities = params.capabilities
 
 		// Does the client support the `workspace/configuration` request?
@@ -237,9 +244,15 @@ export const create_connection = (
 		})
 	})
 
+	// Register custom request to update notation style
+	connection.onRequest('liana/updateNotationStyle', (style: 'verbose' | 'concise') => {
+		notationStyle = style
+		connection.console.log(`Notation style updated to: ${style}`)
+	})
+
 	// This handler provides the initial list of the completion items.
 	connection.onCompletion(
-		create_on_completion(documents)
+		create_on_completion(documents, () => notationStyle)
 	)
 
 	// This handler resolves additional information for the item selected in
