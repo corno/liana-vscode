@@ -12,81 +12,158 @@ import * as r_path_from_text from "pareto-resources/dist/implementation/manual/r
 import * as t_generate_typescript_to_fp from "pareto-liana/dist/implementation/manual/transformers/generate_typescript/fountain_pen"
 import * as t_prose_to_text from "pareto-fountain-pen/dist/implementation/manual/transformers/prose/text"
 import * as pareto_unreachable_code_path from 'pareto-core/dist/_p_unreachable_code_path'
+import * as _p from 'pareto-core/dist/assign'
+import { $$ as ttt_seal } from 'liana-authoring/dist/implementation/manual/text_to_text/seal'
+import create_refinement_context from 'pareto-core/dist/__internals/async/create_refinement_context'
+import { load_applicable_schema } from '../to_be_backend/load_applicable_schema'
+import * as fs from 'fs'
+import * as os from 'os'
+import * as path from 'path'
 
 export default function $(): vscode.Disposable {
 	return vscode.commands.registerCommand('liana.generate_typescript_code_from_this_schema', async () => {
 		const editor = vscode.window.activeTextEditor
 		if (!editor) {
-			vscode.window.showInformationMessage('Open a liana file first to create authoring environment')
+			vscode.window.showInformationMessage('Open a liana file first to generate TypeScript code')
 			return
 		}
-		const targetUris = await vscode.window.showOpenDialog({
-			canSelectFiles: false,
-			canSelectFolders: true,
-			canSelectMany: false,
-			openLabel: 'Select Target Directory',
-			title: 'Select directory to initialize Liana authoring environment',
-		})
-
-		if (!targetUris || targetUris.length === 0) {
-			return
-		}
-
-
-		try {
-
-			c_generate_typescript.$$(
-				{
-					'copy': cx_copy.$$,
-					'make directory': cx_make_directory.$$,
-					'remove': cx_remove.$$,
-					'write file': cx_write_file.$$,
-				},
-				{
-					'read file': qx_read_file.$$,
-				}
-			).execute(
-				{
-					'type': ['module specification', null],
-					'source': r_path_from_text.Node_Path(
-						editor.document.uri.fsPath,
-						() => {
-							vscode.window.showInformationMessage('unexpected error: the file path is not valid.')
-
-							throw new Error('The file path is not valid.')
-						},
+		
+		// First, load the schema and convert to verbose notation
+		load_applicable_schema(
+			editor.document,
+			($) => {
+				_p.decide.state($.type, ($) => {
+					switch ($[0]) {
+						case 'read file': return _p.ss($, ($) => {
+							vscode.window.showErrorMessage('Cannot generate TypeScript code because no .liana/schema.slna file could be found: ' + $.error.message)
+						})
+						case 'parse schema': return _p.ss($, ($) => {
+							vscode.window.showErrorMessage('Cannot generate TypeScript code because the .liana/schema.slna file is not a valid schema.')
+						})
+						default: return _p.au($[0])
+					}
+				})
+			},
+			async ($) => {
+				// Convert to verbose notation using seal
+				create_refinement_context<string, string>(
+					(abort) => ttt_seal(
+						editor.document.getText(),
+						($) => abort("Cannot generate TypeScript code because the file is not valid Liana."),
 						{
-							'pedantic': true,
-						}
-					),
-					'target': r_path_from_text.Context_Path(targetUris[0].fsPath)
-				},
-				($) => $
-			).__start(
-				() => {
-					vscode.window.showInformationMessage('code generated')
-				},
-				($) => {
-					const message: string = t_prose_to_text.Phrase(
-						t_generate_typescript_to_fp.Error($),
-						{
-							'indentation': "  ",
-							'newline': "\n",
+							'unmarshall': $,
+							'target': {
+								'indentation': '\t',
+								'newline': '\n',
+							},
 						}
 					)
-					vscode.window.showInformationMessage(`error encountered: ${message}`)
-				}
-			)
-		} catch (error) {
-			if (error instanceof Error) {
-				console.error('Error generating TypeScript code:', error.message)
-			} else if (error instanceof pareto_unreachable_code_path.Unreachable_Code_Path_Error) {
-				console.error('Unreachable code path reached:', error.message)
-			} else {
-				console.error('Unexpected error:', error)
+				).__extract_data(
+					async (verboseText) => {
+						// Create a temporary file with verbose notation
+						const tmpDir = os.tmpdir()
+						const tmpFileName = `liana-verbose-${Date.now()}.liana.lna`
+						const tmpFilePath = path.join(tmpDir, tmpFileName)
+						
+						try {
+							// Write verbose notation to temp file
+							fs.writeFileSync(tmpFilePath, verboseText, 'utf8')
+							
+							// Now proceed with TypeScript generation
+							const targetUris = await vscode.window.showOpenDialog({
+								canSelectFiles: false,
+								canSelectFolders: true,
+								canSelectMany: false,
+								openLabel: 'Select Target Directory',
+								title: 'Select directory to generate TypeScript code',
+							})
+
+							if (!targetUris || targetUris.length === 0) {
+								// Clean up temp file
+								fs.unlinkSync(tmpFilePath)
+								return
+							}
+
+							c_generate_typescript.$$(
+								{
+									'copy': cx_copy.$$,
+									'make directory': cx_make_directory.$$,
+									'remove': cx_remove.$$,
+									'write file': cx_write_file.$$,
+								},
+								{
+									'read file': qx_read_file.$$,
+								}
+							).execute(
+								{
+									'type': ['module specification', null],
+									'source': r_path_from_text.Node_Path(
+										tmpFilePath,
+										() => {
+											vscode.window.showInformationMessage('unexpected error: the file path is not valid.')
+											throw new Error('The file path is not valid.')
+										},
+										{
+											'pedantic': true,
+										}
+									),
+									'target': r_path_from_text.Context_Path(targetUris[0].fsPath)
+								},
+								($) => $
+							).__start(
+								() => {
+									vscode.window.showInformationMessage('TypeScript code generated successfully')
+									// Clean up temp file
+									try {
+										fs.unlinkSync(tmpFilePath)
+									} catch (e) {
+										// Ignore cleanup errors
+									}
+								},
+								($) => {
+									const message: string = t_prose_to_text.Phrase(
+										t_generate_typescript_to_fp.Error($),
+										{
+											'indentation': "  ",
+											'newline': "\n",
+										}
+									)
+									vscode.window.showErrorMessage(`Error generating TypeScript: ${message}`)
+									// Clean up temp file
+									try {
+										fs.unlinkSync(tmpFilePath)
+									} catch (e) {
+										// Ignore cleanup errors
+									}
+								}
+							)
+						} catch (error) {
+							// Clean up temp file on error
+							try {
+								if (fs.existsSync(tmpFilePath)) {
+									fs.unlinkSync(tmpFilePath)
+								}
+							} catch (e) {
+								// Ignore cleanup errors
+							}
+							
+							if (error instanceof Error) {
+								console.error('Error generating TypeScript code:', error.message)
+								vscode.window.showErrorMessage(`Error: ${error.message}`)
+							} else if (error instanceof pareto_unreachable_code_path.Unreachable_Code_Path_Error) {
+								console.error('Unreachable code path reached:', error.message)
+								vscode.window.showErrorMessage(`Error: ${error.message}`)
+							} else {
+								console.error('Unexpected error:', error)
+								vscode.window.showErrorMessage('An unexpected error occurred')
+							}
+						}
+					},
+					async ($) => {
+						vscode.window.showErrorMessage(`Cannot convert to verbose notation: ${$}`)
+					}
+				)
 			}
-		}
-
-
+		)
 	})
 }
