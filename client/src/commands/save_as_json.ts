@@ -13,7 +13,7 @@ export default function $(): vscode.Disposable {
 		}
 
 		try {
-			const newText = ttt_convert_to_json(
+			const new_text = ttt_convert_to_json(
 				editor.document.getText(),
 				(): never => {
 					throw new Error('Saving as JSON failed because the file is not valid ASTN.')
@@ -30,12 +30,12 @@ export default function $(): vscode.Disposable {
 				}
 			)
 
-			void vscode.window.showSaveDialog({}).then((fileInfos) => {
-				if (!fileInfos) {
+			void vscode.window.showSaveDialog({}).then((file_infos) => {
+				if (!file_infos) {
 					return
 				}
 
-				fs.writeFileSync(fileInfos.fsPath, newText, 'utf8')
+				fs.writeFileSync(file_infos.fsPath, new_text, 'utf8')
 				vscode.window.showInformationMessage('file saved as json')
 			})
 		} catch (error) {

@@ -4,30 +4,30 @@ import * as vscode from 'vscode'
 export default function $(): vscode.Disposable {
 	return vscode.commands.registerCommand('liana.create_liana_file', async (uri: vscode.Uri) => {
 		try {
-			let targetFolder: vscode.Uri
+			let target_folder: vscode.Uri
 			if (uri && uri.fsPath) {
 				const stat = await vscode.workspace.fs.stat(uri)
 				if (stat.type === vscode.FileType.Directory) {
-					targetFolder = uri
+					target_folder = uri
 				} else {
-					targetFolder = vscode.Uri.file(path.dirname(uri.fsPath))
+					target_folder = vscode.Uri.file(path.dirname(uri.fsPath))
 				}
 			} else if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
-				targetFolder = vscode.workspace.workspaceFolders[0].uri
+				target_folder = vscode.workspace.workspaceFolders[0].uri
 			} else {
 				vscode.window.showErrorMessage('No workspace folder found')
 				return
 			}
 
-			const schemaPath = vscode.Uri.file(path.join(targetFolder.fsPath, ".liana", "schema.slna"))
+			const schema_path = vscode.Uri.file(path.join(target_folder.fsPath, ".liana", "schema.slna"))
 			try {
-				await vscode.workspace.fs.stat(schemaPath)
+				await vscode.workspace.fs.stat(schema_path)
 			} catch {
 				vscode.window.showErrorMessage('This folder does not contain a .liana/schema.slna file. Please select a folder with a .liana/schema.slna file.')
 				return
 			}
 
-			const fileName = await vscode.window.showInputBox({
+			const file_name = await vscode.window.showInputBox({
 				prompt: 'Enter the name for your new Liana file',
 				placeHolder: 'filename.lna',
 				validateInput: (value: string) => {
@@ -38,20 +38,20 @@ export default function $(): vscode.Disposable {
 				}
 			})
 
-			if (!fileName) {
+			if (!file_name) {
 				return
 			}
 
-			let finalFileName = fileName
-			if (!fileName.endsWith('.liana') && !fileName.endsWith('.lna')) {
-				finalFileName = `${fileName}.lna`
+			let final_file_name = file_name
+			if (!file_name.endsWith('.liana') && !file_name.endsWith('.lna')) {
+				final_file_name = `${file_name}.lna`
 			}
-			const fileUri = vscode.Uri.file(path.join(targetFolder.fsPath, finalFileName))
+			const file_uri = vscode.Uri.file(path.join(target_folder.fsPath, final_file_name))
 
 			const encoder = new TextEncoder()
-			await vscode.workspace.fs.writeFile(fileUri, encoder.encode("#"))
+			await vscode.workspace.fs.writeFile(file_uri, encoder.encode("#"))
 
-			const document = await vscode.workspace.openTextDocument(fileUri)
+			const document = await vscode.workspace.openTextDocument(file_uri)
 			await vscode.window.showTextDocument(document)
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error)

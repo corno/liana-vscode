@@ -1,10 +1,10 @@
 import * as vscode from 'vscode'
-import { getClient, getNotationStyle, setNotationStyle } from '../extension'
+import { get_client, get_notation_style, set_notation_style } from '../extension'
 
 export default function $(
 	context: vscode.ExtensionContext,
-	statusBarItem: vscode.StatusBarItem,
-	updateStatusBar: (editor?: vscode.TextEditor) => void
+	status_bar_item: vscode.StatusBarItem,
+	update_status_bar: (editor?: vscode.TextEditor) => void
 ): vscode.Disposable {
 	return vscode.commands.registerCommand('liana.toggle_notation_style', async () => {
 		const editor = vscode.window.activeTextEditor
@@ -13,24 +13,24 @@ export default function $(
 			return
 		}
 
-		const documentUri = editor.document.uri.toString()
-		const currentStyle = getNotationStyle(context, documentUri)
-		const newStyle: 'verbose' | 'concise' = currentStyle === 'verbose' ? 'concise' : 'verbose'
+		const document_uri = editor.document.uri.toString()
+		const current_style = get_notation_style(context, document_uri)
+		const new_style: 'verbose' | 'concise' = current_style === 'verbose' ? 'concise' : 'verbose'
 		
-		setNotationStyle(context, newStyle, documentUri)
+		set_notation_style(context, new_style, document_uri)
 		
 		// Update status bar
-		updateStatusBar(editor)
+		update_status_bar(editor)
 		
 		// Notify the language server
-		const client = getClient()
+		const client = get_client()
 		if (client) {
 			await client.sendRequest('liana/updateNotationStyle', { 
-				uri: documentUri, 
-				style: newStyle 
+				uri: document_uri, 
+				style: new_style 
 			}).catch(() => {})
 		}
 		
-		vscode.window.showInformationMessage(`Liana notation style for this document: ${newStyle}`)
+		vscode.window.showInformationMessage(`Liana notation style for this document: ${new_style}`)
 	})
 }

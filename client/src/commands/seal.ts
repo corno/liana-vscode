@@ -33,7 +33,7 @@ export default function $(): vscode.Disposable {
 					})
 				},
 				($) => {
-					const newText = ttt_seal(
+					const new_text = ttt_seal(
 						editor.document.getText(),
 						(): never => {
 							throw new Error('Sealing failed because the file is not valid Liana.')
@@ -58,12 +58,12 @@ export default function $(): vscode.Disposable {
 							)
 						),
 						saveLabel: 'Save Sealed File',
-					}).then((fileInfos) => {
-						if (!fileInfos) {
+					}).then((file_infos) => {
+						if (!file_infos) {
 							return
 						}
 
-						fs.writeFileSync(fileInfos.fsPath, newText, 'utf8')
+						fs.writeFileSync(file_infos.fsPath, new_text, 'utf8')
 						vscode.window.showInformationMessage('File saved as sealed Liana')
 					})
 				}

@@ -11,7 +11,7 @@ export default function $(): vscode.Disposable {
 		}
 
 		try {
-			const newText = ttt_convert_to_json(
+			const new_text = ttt_convert_to_json(
 				editor.document.getText(),
 				(): never => {
 					throw new Error('Safe as JSON failed because the file is not valid ASTN.')
@@ -34,7 +34,7 @@ export default function $(): vscode.Disposable {
 						new vscode.Position(0, 0),
 						editor.document.lineAt(editor.document.lineCount - 1).range.end,
 					),
-					newText,
+					new_text,
 				)
 			})
 		} catch (error) {

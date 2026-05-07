@@ -9,19 +9,19 @@ export default function $(): vscode.Disposable {
 		}
 
 		const document = editor.document
-		const currentPosition = editor.selection.active
+		const current_position = editor.selection.active
 		const text = document.getText()
 
-		const currentOffset = document.offsetAt(currentPosition)
-		const nextHashIndex = text.indexOf('#', currentOffset + 1)
-		const targetIndex = nextHashIndex === -1 ? text.indexOf('#') : nextHashIndex
+		const current_offset = document.offsetAt(current_position)
+		const next_hash_index = text.indexOf('#', current_offset + 1)
+		const target_index = next_hash_index === -1 ? text.indexOf('#') : next_hash_index
 
-		if (targetIndex === -1) {
+		if (target_index === -1) {
 			vscode.window.showInformationMessage('No # character found in the document')
 			return
 		}
 
-		const position = document.positionAt(targetIndex)
+		const position = document.positionAt(target_index)
 		editor.selection = new vscode.Selection(position, position)
 		editor.revealRange(new vscode.Range(position, position))
 		void vscode.commands.executeCommand('editor.action.triggerSuggest')

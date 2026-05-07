@@ -47,10 +47,10 @@ export default function $(): vscode.Disposable {
 					)
 				).__extract_data(
 					async ($) => {
-						const newText = $
+						const new_text = $
 
 
-						const target_URIs = await vscode.window.showOpenDialog({
+						const target_uris = await vscode.window.showOpenDialog({
 							canSelectFiles: false,
 							canSelectFolders: true,
 							canSelectMany: false,
@@ -58,25 +58,25 @@ export default function $(): vscode.Disposable {
 							title: 'Select directory to save .liana/schema.slna file',
 						})
 
-						if (!target_URIs || target_URIs.length === 0) {
+						if (!target_uris || target_uris.length === 0) {
 							return
 						}
 
-						const targetPath = target_URIs[0].fsPath
-						const schemaFilePath = path.join(targetPath, ".liana", "schema.slna")
+						const target_path = target_uris[0].fsPath
+						const schema_file_path = path.join(target_path, ".liana", "schema.slna")
 
-						const schemaDir = path.dirname(schemaFilePath)
-						fs.mkdirSync(schemaDir, { recursive: true })
-						fs.writeFileSync(schemaFilePath, newText, 'utf8')
-						vscode.window.showInformationMessage(`authoring environment created: ${targetPath}`)
+						const schema_dir = path.dirname(schema_file_path)
+						fs.mkdirSync(schema_dir, { recursive: true })
+						fs.writeFileSync(schema_file_path, new_text, 'utf8')
+						vscode.window.showInformationMessage(`authoring environment created: ${target_path}`)
 
-						const openChoice = await vscode.window.showInformationMessage(
+						const open_choice = await vscode.window.showInformationMessage(
 							'Would you like to open the initialized authoring environment?',
 							'Yes', 'No'
 						)
 
-						if (openChoice === 'Yes') {
-							const uri = vscode.Uri.file(targetPath)
+						if (open_choice === 'Yes') {
+							const uri = vscode.Uri.file(target_path)
 							await vscode.commands.executeCommand('vscode.openFolder', uri, true)
 						}
 					},

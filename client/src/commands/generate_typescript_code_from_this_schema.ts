@@ -59,18 +59,18 @@ export default function $(): vscode.Disposable {
 						}
 					)
 				).__extract_data(
-					async (verboseText) => {
+					async (verbose_text) => {
 						// Create a temporary file with verbose notation
-						const tmpDir = os.tmpdir()
-						const tmpFileName = `liana-verbose-${Date.now()}.liana.lna`
-						const tmpFilePath = path.join(tmpDir, tmpFileName)
+						const tmp_dir = os.tmpdir()
+						const tmp_file_name = `liana-verbose-${Date.now()}.liana.lna`
+						const tmp_file_path = path.join(tmp_dir, tmp_file_name)
 						
 						try {
 							// Write verbose notation to temp file
-							fs.writeFileSync(tmpFilePath, verboseText, 'utf8')
+							fs.writeFileSync(tmp_file_path, verbose_text, 'utf8')
 							
 							// Now proceed with TypeScript generation
-							const targetUris = await vscode.window.showOpenDialog({
+							const target_uris = await vscode.window.showOpenDialog({
 								canSelectFiles: false,
 								canSelectFolders: true,
 								canSelectMany: false,
@@ -78,9 +78,9 @@ export default function $(): vscode.Disposable {
 								title: 'Select directory to generate TypeScript code',
 							})
 
-							if (!targetUris || targetUris.length === 0) {
+							if (!target_uris || target_uris.length === 0) {
 								// Clean up temp file
-								fs.unlinkSync(tmpFilePath)
+								fs.unlinkSync(tmp_file_path)
 								return
 							}
 
@@ -98,7 +98,7 @@ export default function $(): vscode.Disposable {
 								{
 									'type': ['module specification', null],
 									'source': r_path_from_text.Node_Path(
-										tmpFilePath,
+										tmp_file_path,
 										() => {
 											vscode.window.showInformationMessage('unexpected error: the file path is not valid.')
 											throw new Error('The file path is not valid.')
@@ -107,7 +107,7 @@ export default function $(): vscode.Disposable {
 											'pedantic': true,
 										}
 									),
-									'target': r_path_from_text.Context_Path(targetUris[0].fsPath)
+									'target': r_path_from_text.Context_Path(target_uris[0].fsPath)
 								},
 								($) => $
 							).__start(
@@ -115,7 +115,7 @@ export default function $(): vscode.Disposable {
 									vscode.window.showInformationMessage('TypeScript code generated successfully')
 									// Clean up temp file
 									try {
-										fs.unlinkSync(tmpFilePath)
+										fs.unlinkSync(tmp_file_path)
 									} catch (e) {
 										// Ignore cleanup errors
 									}

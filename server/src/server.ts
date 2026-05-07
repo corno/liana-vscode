@@ -6,7 +6,7 @@ import { create_connection, validate_text_document } from './create_connection'
 
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
-import { ExampleSettings } from './types'
+import { Example_Settings } from './types'
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -16,7 +16,7 @@ const documents: vscode_node.TextDocuments<vscode_textdocument.TextDocument> = n
 
 // Only keep settings for open documents
 documents.onDidClose(e => {
-	documentSettings.delete(e.document.uri)
+	document_settings.delete(e.document.uri)
 })
 
 // The content of a text document has changed. This event is emitted
@@ -27,9 +27,9 @@ documents.onDidChangeContent(change => {
 })
 
 // Cache the settings of all open documents
-const documentSettings: Map<string, Thenable<ExampleSettings>> = new Map()
+const document_settings: Map<string, Thenable<Example_Settings>> = new Map()
 
 const connection = create_connection(
-	documentSettings,
+	document_settings,
 	documents,
 )

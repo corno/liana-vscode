@@ -5,7 +5,7 @@ import * as vscode from 'vscode'
 export default function $(context: vscode.ExtensionContext): vscode.Disposable {
 	return vscode.commands.registerCommand('liana.initialize_liana_authoring_environment', async () => {
 		try {
-			const targetUris = await vscode.window.showOpenDialog({
+			const target_uris = await vscode.window.showOpenDialog({
 				canSelectFiles: false,
 				canSelectFolders: true,
 				canSelectMany: false,
@@ -13,21 +13,21 @@ export default function $(context: vscode.ExtensionContext): vscode.Disposable {
 				title: 'Select directory to initialize Liana authoring environment',
 			})
 
-			if (!targetUris || targetUris.length === 0) {
+			if (!target_uris || target_uris.length === 0) {
 				return
 			}
 
-			const targetPath = targetUris[0].fsPath
-			const templatePath = context.asAbsolutePath("liana_authoring_environment_template")
+			const target_path = target_uris[0].fsPath
+			const template_path = context.asAbsolutePath("liana_authoring_environment_template")
 
-			if (!fs.existsSync(templatePath)) {
+			if (!fs.existsSync(template_path)) {
 				vscode.window.showErrorMessage('Liana authoring environment template not found in extension.')
-				console.error('Template not found at:', templatePath)
+				console.error('Template not found at:', template_path)
 				return
 			}
 
-			const existingFiles = fs.readdirSync(targetPath)
-			if (existingFiles.length > 0) {
+			const existing_files = fs.readdirSync(target_path)
+			if (existing_files.length > 0) {
 				const overwrite = await vscode.window.showWarningMessage(
 					'Target directory is not empty. Copy template files anyway?',
 					'Yes', 'No'
@@ -37,27 +37,27 @@ export default function $(context: vscode.ExtensionContext): vscode.Disposable {
 				}
 			}
 
-			const entries = fs.readdirSync(templatePath, { withFileTypes: true })
+			const entries = fs.readdirSync(template_path, { withFileTypes: true })
 			for (const entry of entries) {
-				const sourcePath = path.join(templatePath, entry.name)
-				const destinationPath = path.join(targetPath, entry.name)
+				const source_path = path.join(template_path, entry.name)
+				const destination_path = path.join(target_path, entry.name)
 
 				if (entry.isDirectory()) {
-					fs.cpSync(sourcePath, destinationPath, { recursive: true })
+					fs.cpSync(source_path, destination_path, { recursive: true })
 				} else {
-					fs.copyFileSync(sourcePath, destinationPath)
+					fs.copyFileSync(source_path, destination_path)
 				}
 			}
 
-			vscode.window.showInformationMessage(`Authoring environment initialized successfully in: ${targetPath}`)
+			vscode.window.showInformationMessage(`Authoring environment initialized successfully in: ${target_path}`)
 
-			const openChoice = await vscode.window.showInformationMessage(
+			const open_choice = await vscode.window.showInformationMessage(
 				'Would you like to open the initialized authoring environment?',
 				'Yes', 'No'
 			)
 
-			if (openChoice === 'Yes') {
-				const uri = vscode.Uri.file(targetPath)
+			if (open_choice === 'Yes') {
+				const uri = vscode.Uri.file(target_path)
 				await vscode.commands.executeCommand('vscode.openFolder', uri, true)
 			}
 		} catch (error) {

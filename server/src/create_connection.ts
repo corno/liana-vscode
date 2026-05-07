@@ -22,13 +22,13 @@ import { schema_cache } from './schema_cache'
 
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
-import { ExampleSettings } from './types'
+import { Example_Settings } from './types'
 import { create_on_completion } from './connection/on_completion'
 
-export async function validate_text_document(textDocument: vscode_textdocument.TextDocument): Promise<vscode_node.Diagnostic[]> {
+export async function validate_text_document(text_document: vscode_textdocument.TextDocument): Promise<vscode_node.Diagnostic[]> {
 	return new Promise<vscode_node.Diagnostic[]>((resolve) => {
 		load_document(
-			textDocument,
+			text_document,
 			schema_cache,
 			($) => _p.list.literal([
 				t_deserialize_to_diagnostic.Error($)
@@ -79,24 +79,24 @@ export async function validate_text_document(textDocument: vscode_textdocument.T
 
 
 export const create_connection = (
-	documentSettings: Map<string, Thenable<ExampleSettings>>,
+	document_settings: Map<string, Thenable<Example_Settings>>,
 	documents: vscode_node.TextDocuments<vscode_textdocument.TextDocument>,
 ) => {
 
 	// The global settings, used when the `workspace/configuration` request is not supported by the client.
 	// Please note that this is not the case when using this server with the client provided in this example
 	// but could happen with other clients.
-	const defaultSettings: ExampleSettings = { maxNumberOfProblems: 1000 }
+	const default_settings: Example_Settings = { max_number_of_problems: 1000 }
 
 
-	let globalSettings: ExampleSettings = defaultSettings
+	let global_settings: Example_Settings = default_settings
 
 	// Store the notation style preference per document
-	const documentNotationStyles: Map<string, 'verbose' | 'concise'> = new Map()
+	const document_notation_styles: Map<string, 'verbose' | 'concise'> = new Map()
 
-	let hasConfigurationCapability = false
-	let hasWorkspaceFolderCapability = false
-	let hasDiagnosticRelatedInformationCapability = false
+	let has_configuration_capability = false
+	let has_workspace_folder_capability = false
+	let has_diagnostic_related_information_capability = false
 
 	const connection = vscode_node.createConnection(vscode_node.ProposedFeatures.all)
 
@@ -105,20 +105,20 @@ export const create_connection = (
 		// Get notation style from initialization options (for initial document)
 		if (params.initializationOptions && params.initializationOptions.notationStyle) {
 			// Store as default for documents without specific preference
-			documentNotationStyles.set('__default__', params.initializationOptions.notationStyle)
+			document_notation_styles.set('__default__', params.initializationOptions.notationStyle)
 		}
 
 		const capabilities = params.capabilities
 
 		// Does the client support the `workspace/configuration` request?
 		// If not, we fall back using global settings.
-		hasConfigurationCapability = !!(
+		has_configuration_capability = !!(
 			capabilities.workspace && !!capabilities.workspace.configuration
 		)
-		hasWorkspaceFolderCapability = !!(
+		has_workspace_folder_capability = !!(
 			capabilities.workspace && !!capabilities.workspace.workspaceFolders
 		)
-		hasDiagnosticRelatedInformationCapability = !!(
+		has_diagnostic_related_information_capability = !!(
 			capabilities.textDocument &&
 			capabilities.textDocument.publishDiagnostics &&
 			capabilities.textDocument.publishDiagnostics.relatedInformation
@@ -157,7 +157,7 @@ export const create_connection = (
 				documentFormattingProvider: true,
 			}
 		}
-		if (hasWorkspaceFolderCapability) {
+		if (has_workspace_folder_capability) {
 			result.capabilities.workspace = {
 				workspaceFolders: {
 					supported: true
@@ -168,11 +168,11 @@ export const create_connection = (
 	})
 
 	connection.onInitialized(() => {
-		if (hasConfigurationCapability) {
+		if (has_configuration_capability) {
 			// Register for all configuration changes.
 			connection.client.register(vscode_node.DidChangeConfigurationNotification.type, undefined)
 		}
-		if (hasWorkspaceFolderCapability) {
+		if (has_workspace_folder_capability) {
 			connection.workspace.onDidChangeWorkspaceFolders(_event => {
 				connection.console.log('Workspace folder change event received.')
 			})
@@ -181,23 +181,23 @@ export const create_connection = (
 
 
 	connection.onDidChangeConfiguration(change => {
-		if (hasConfigurationCapability) {
+		if (has_configuration_capability) {
 			// Reset all cached document settings
-			documentSettings.clear()
+			document_settings.clear()
 		} else {
-			globalSettings = <ExampleSettings>(
-				(change.settings.languageServerExample || defaultSettings)
+			global_settings = <Example_Settings>(
+				(change.settings.languageServerExample || default_settings)
 			)
 		}
-		// Refresh the diagnostics since the `maxNumberOfProblems` could have changed.
+		// Refresh the diagnostics since the `max_number_of_problems` could have changed.
 		// We could optimize things here and re-fetch the setting first can compare it
 		// to the existing setting, but this is out of scope for this example.
 		connection.languages.diagnostics.refresh()
 	})
 
-	// function getDocumentSettings(resource: string): Thenable<ExampleSettings> {
-	// 	if (!hasConfigurationCapability) {
-	// 		return Promise.resolve(globalSettings)
+	// function get_document_settings(resource: string): Thenable<Example_Settings> {
+	// 	if (!has_configuration_capability) {
+	// 		return Promise.resolve(global_settings)
 	// 	}
 	// 	let result = documentSettings.get(resource)
 	// 	if (!result) {
@@ -241,27 +241,27 @@ export const create_connection = (
 			if (file_path.endsWith(path.join('.liana', 'schema.slna'))) {
 				schema_cache.delete(file_path)
 				connection.console.log(`Schema cache invalidated for: ${file_path}`)
-				
+
 				// Find the directory that contains the .liana folder
 				// Schema path is like: /path/to/project/.liana/schema.slna
 				// We want to re-validate all .liana files in /path/to/project/
-				const schemaDir = path.dirname(file_path) // .../project/.liana
-				const projectDir = path.dirname(schemaDir) // .../project
-				
+				const schema_dir = path.dirname(file_path) // .../project/.liana
+				const project_dir = path.dirname(schema_dir) // .../project
+
 				// Re-validate all open documents that use this schema
-				const affectedDocuments: vscode_textdocument.TextDocument[] = []
+				const affected_documents: vscode_textdocument.TextDocument[] = []
 				documents.all().forEach(doc => {
 					const doc_path = url.fileURLToPath(doc.uri)
 					// Check if this document is in the project directory or subdirectories
-					if (doc_path.startsWith(projectDir + path.sep) || path.dirname(doc_path) === projectDir) {
-						affectedDocuments.push(doc)
+					if (doc_path.startsWith(project_dir + path.sep) || path.dirname(doc_path) === project_dir) {
+						affected_documents.push(doc)
 					}
 				})
-				
-				connection.console.log(`Re-validating ${affectedDocuments.length} document(s) affected by schema change`)
-				
+
+				connection.console.log(`Re-validating ${affected_documents.length} document(s) affected by schema change`)
+
 				// Trigger diagnostic refresh for affected documents
-				if (affectedDocuments.length > 0) {
+				if (affected_documents.length > 0) {
 					connection.languages.diagnostics.refresh()
 				}
 			}
@@ -270,7 +270,7 @@ export const create_connection = (
 
 	// Register custom request to update notation style
 	connection.onRequest('liana/updateNotationStyle', (params: { uri: string, style: 'verbose' | 'concise' }) => {
-		documentNotationStyles.set(params.uri, params.style)
+		document_notation_styles.set(params.uri, params.style)
 		connection.console.log(`Notation style updated for ${params.uri}: ${params.style}`)
 	})
 
@@ -278,7 +278,7 @@ export const create_connection = (
 	connection.onCompletion(
 		create_on_completion(documents, (uri: string) => {
 			// Get document-specific style, fall back to default
-			return documentNotationStyles.get(uri) || documentNotationStyles.get('__default__') || 'verbose'
+			return document_notation_styles.get(uri) || document_notation_styles.get('__default__') || 'verbose'
 		})
 	)
 
@@ -297,11 +297,11 @@ export const create_connection = (
 	)
 
 	connection.onHover(
-		(hoverParams, cancellationToken, workdoneProgress, resultProgress) => {
+		(hover_params, cancellation_token, workdone_progress, result_progress) => {
 			// The pass parameter contains the position of the text document in
 			// which code complete got requested.
 
-			const doc = documents.get(hoverParams.textDocument.uri)
+			const doc = documents.get(hover_params.textDocument.uri)
 			if (doc === undefined) {
 				return null
 			}
@@ -318,7 +318,7 @@ export const create_connection = (
 							'contents': t_unmarshall_result_to_hover_info.Document(
 								instance,
 								{
-									'position': hoverParams.position,
+									'position': hover_params.position,
 									'full path': "",
 									'id path': ""
 								}
@@ -338,16 +338,16 @@ export const create_connection = (
 			// Return lightweight actions without computing edits
 			const actions: vscode_node.CodeAction[] = []
 
-			const notationTypes: Array<[string, 'verbose' | 'concise', boolean]> = [
+			const notation_types: Array<[string, 'verbose' | 'concise', boolean]> = [
 				['Convert to verbose notation (shallow)', 'verbose', true],
 				['Convert to verbose notation (deep)', 'verbose', false],
 				['Convert to concise notation (shallow)', 'concise', true],
 				['Convert to concise notation (deep)', 'concise', false],
 			]
 
-			for (const [actionTitle, style, shallow] of notationTypes) {
+			for (const [action_title, style, shallow] of notation_types) {
 				actions.push({
-					title: actionTitle,
+					title: action_title,
 					kind: vscode_node.CodeActionKind.Refactor,
 					data: {
 						uri: params.textDocument.uri,
@@ -388,7 +388,7 @@ export const create_connection = (
 					schema_cache,
 					($) => null,
 					(instance) => {
-						const formattingResult = t_unmarshall_result_to_formatting_edits.Document(
+						const formatting_result = t_unmarshall_result_to_formatting_edits.Document(
 							instance,
 							{
 								'conversion': {
@@ -403,18 +403,58 @@ export const create_connection = (
 						)
 
 
-						return formattingResult
+						return formatting_result
 					},
 					($) => {
 						if ($ === null) {
 							resolve(action)
 						} else {
+
+							function indent_replacement_text(
+								range: vscode_node.Range,
+								document: vscode_textdocument.TextDocument,
+								replacement_text: string
+							): string {
+								// Calculate the base indentation from the start of the range
+								const line_text = document.getText(vscode_node.Range.create(
+									range.start.line,
+									0,
+									range.start.line,
+									range.start.character
+								))
+								const base_indent = line_text.match(/^[\t ]*/)?.[0] || ''
+
+								connection.console.log(`Base indentation: "${base_indent}" (${base_indent.length} chars), range starts at column ${range.start.character}`)
+
+								// Apply base indentation to all lines of the replacement text
+								const lines = replacement_text.split('\n')
+								const indented_text = lines.map((line, index) => {
+									// Don't indent empty lines
+									if (line.trim() === '') {
+										return line
+									}
+									// If range starts at column 0, add base indentation to ALL lines
+									// If range preserves original position, skip first line (already positioned)
+									if (index === 0 && range.start.character > 0) {
+										return line // First line maintains its position
+									}
+									// For all other lines, add base indentation
+									return base_indent + line
+								}).join('\n')
+
+								return indented_text
+							}
+
 							action.edit = {
 								changes: {
 									[uri]: [
 										vscode_node.TextEdit.replace(
 											helpers.create_range_from_range($.replace.range),
-											$.replace.text
+											indent_replacement_text(
+												helpers.create_range_from_range($.replace.range),
+												document,
+												$.replace.text
+											)
 										)
 									]
 								}
@@ -453,13 +493,13 @@ export const create_connection = (
 						vscode_node.TextEdit.replace(
 							_p_variables(() => {
 								// Create range covering the entire document
-								const lastLine = document.lineCount - 1
-								const lastLineLength = document.getText(vscode_node.Range.create(lastLine, 0, lastLine + 1, 0)).length
+								const last_line = document.lineCount - 1
+								const last_line_length = document.getText(vscode_node.Range.create(last_line, 0, last_line + 1, 0)).length
 								return vscode_node.Range.create(
 									0,
 									0,
-									lastLine,
-									lastLineLength
+									last_line,
+									last_line_length
 								)
 							}),
 							t_parse_tree_to_text.Document(
@@ -480,7 +520,7 @@ export const create_connection = (
 		}
 	)
 
-	const onDocumentSymbol: vscode_node.ServerRequestHandler<vscode_node.DocumentSymbolParams, vscode_node.SymbolInformation[] | vscode_node.DocumentSymbol[] | undefined | null, vscode_node.SymbolInformation[] | vscode_node.DocumentSymbol[], void> = (params) => {
+	const on_document_symbol: vscode_node.ServerRequestHandler<vscode_node.DocumentSymbolParams, vscode_node.SymbolInformation[] | vscode_node.DocumentSymbol[] | undefined | null, vscode_node.SymbolInformation[] | vscode_node.DocumentSymbol[], void> = (params) => {
 		// Stub implementation - returns empty array until backend support is added
 		// This handler provides document symbols for the outline view and navigation
 		const document = documents.get(params.textDocument.uri)
@@ -490,7 +530,7 @@ export const create_connection = (
 
 		// TODO: Replace with actual backend call when symbol extraction is implemented
 		// For now, return a sample symbol to demonstrate the structure
-		const stubSymbol: vscode_node.DocumentSymbol = {
+		const stub_symbol: vscode_node.DocumentSymbol = {
 			name: 'Document Root',
 			kind: vscode_node.SymbolKind.Module,
 			range: vscode_node.Range.create(0, 0, document.lineCount - 1, 0),
@@ -505,11 +545,11 @@ export const create_connection = (
 			]
 		}
 
-		return [stubSymbol]
+		return [stub_symbol]
 	}
 
 	connection.onDocumentSymbol(
-		onDocumentSymbol
+		on_document_symbol
 	)
 
 	// Make the text document manager listen on the connection
@@ -518,6 +558,6 @@ export const create_connection = (
 
 	// Listen on the connection
 	connection.listen()
-	
+
 	return connection
 }

@@ -17,8 +17,8 @@ import * as vscode_textdocument from 'vscode-languageserver-textdocument'
 
 export const create_on_completion: (
 	documents: vscode_node.TextDocuments<vscode_textdocument.TextDocument>,
-	getNotationStyle: (uri: string) => 'verbose' | 'concise',
-) => vscode_node.ServerRequestHandler<vscode_node.CompletionParams, vscode_node.CompletionList | null, vscode_node.CompletionItem[], void> = (documents, getNotationStyle) => {
+	get_notation_style: (uri: string) => 'verbose' | 'concise',
+) => vscode_node.ServerRequestHandler<vscode_node.CompletionParams, vscode_node.CompletionList | null, vscode_node.CompletionItem[], void> = (documents, get_notation_style) => {
 	return (params) => {
 		// The pass parameter contains the position of the text document in
 		// which code complete got requested. For the example we ignore this
@@ -36,7 +36,7 @@ export const create_on_completion: (
 				context.triggerKind === vscode_node.CompletionTriggerKind.TriggerCharacter &&
 				context.triggerCharacter === '#'
 
-			const additionalTextEdits = remove_trigger_character
+			const additional_text_edits = remove_trigger_character
 				? [
 					// Remove the trigger character
 					vscode_node.TextEdit.del(vscode_node.Range.create(
@@ -59,7 +59,7 @@ export const create_on_completion: (
 						{
 							'indent': "    ",
 							'position': params.position,
-							'style': getNotationStyle(params.textDocument.uri) === 'verbose' ? ['verbose', null] : ['concise', null]
+							'style': get_notation_style(params.textDocument.uri) === 'verbose' ? ['verbose', null] : ['concise', null]
 						}
 					).__decide(
 						($) => $.__l_map(($) => {
