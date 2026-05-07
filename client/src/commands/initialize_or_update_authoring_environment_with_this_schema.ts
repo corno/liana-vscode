@@ -67,6 +67,12 @@ export default function $(): vscode.Disposable {
 
 						const schema_dir = path.dirname(schema_file_path)
 						fs.mkdirSync(schema_dir, { recursive: true })
+						
+						// If file exists and is readonly, make it writable first
+						if (fs.existsSync(schema_file_path)) {
+							fs.chmodSync(schema_file_path, 0o644)
+						}
+						
 						fs.writeFileSync(schema_file_path, new_text, 'utf8')
 						
 						// Make the schema file readonly at OS level

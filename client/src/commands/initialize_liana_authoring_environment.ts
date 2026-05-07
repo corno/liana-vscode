@@ -43,7 +43,7 @@ export default function $(context: vscode.ExtensionContext): vscode.Disposable {
 				const destination_path = path.join(target_path, entry.name)
 
 				if (entry.isDirectory()) {
-					fs.cpSync(source_path, destination_path, { recursive: true })
+					fs.cpSync(source_path, destination_path, { recursive: true, force: true })
 				} else {
 					fs.copyFileSync(source_path, destination_path)
 				}
@@ -52,6 +52,8 @@ export default function $(context: vscode.ExtensionContext): vscode.Disposable {
 			// Make any .slna files in .liana folder readonly at OS level
 			const schema_file_path = path.join(target_path, '.liana', 'schema.slna')
 			if (fs.existsSync(schema_file_path)) {
+				// Ensure it's writable first, then make it readonly
+				fs.chmodSync(schema_file_path, 0o644)
 				fs.chmodSync(schema_file_path, 0o444)
 			}
 
