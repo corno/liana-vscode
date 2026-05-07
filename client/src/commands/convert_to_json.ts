@@ -1,4 +1,6 @@
-import { $$ as ttt_convert_to_json } from 'liana-authoring/dist/implementation/manual/text_to_text/convert_to_json'
+import create_refinement_context from 'pareto-core/dist/__internals/async/create_refinement_context'
+
+import { $$ as ttt_convert_to_json } from "liana-authoring/dist/implementation/manual/text_to_text/convert_to_json"
 
 import * as vscode from 'vscode'
 
@@ -10,12 +12,10 @@ export default function $(): vscode.Disposable {
 			return
 		}
 
-		try {
-			const new_text = ttt_convert_to_json(
+		create_refinement_context<string, string>(
+			(abort) => ttt_convert_to_json(
 				editor.document.getText(),
-				(): never => {
-					throw new Error('Safe as JSON failed because the file is not valid ASTN.')
-				},
+				($) => abort('Safe as JSON failed because the file is not valid ASTN.'),
 				{
 					'source': {
 						'document resource identifier': editor.document.uri.toString(),
@@ -27,18 +27,21 @@ export default function $(): vscode.Disposable {
 					},
 				}
 			)
-
-			void editor.edit((editBuilder) => {
-				editBuilder.replace(
-					new vscode.Range(
-						new vscode.Position(0, 0),
-						editor.document.lineAt(editor.document.lineCount - 1).range.end,
-					),
-					new_text,
-				)
-			})
-		} catch (error) {
-			vscode.window.showErrorMessage('Cannot convert to JSON because the file is not valid ASTN.')
-		}
+		).__extract_data(
+			($) => {
+				void editor.edit((editBuilder) => {
+					editBuilder.replace(
+						new vscode.Range(
+							new vscode.Position(0, 0),
+							editor.document.lineAt(editor.document.lineCount - 1).range.end,
+						),
+						$,
+					)
+				})
+			},
+			($) => {
+				vscode.window.showErrorMessage('Cannot convert to JSON because the file is not valid ASTN.')
+			}
+		)
 	})
 }
