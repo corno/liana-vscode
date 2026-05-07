@@ -2,6 +2,39 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as vscode from 'vscode'
 
+/**
+ * Create or update .vscode/settings.json to mark .liana folder as readonly
+ */
+function configure_workspace_settings(target_path: string): void {
+	const vscode_dir = path.join(target_path, '.vscode')
+	const settings_file = path.join(vscode_dir, 'settings.json')
+
+	// Create .vscode directory if it doesn't exist
+	if (!fs.existsSync(vscode_dir)) {
+		fs.mkdirSync(vscode_dir, { recursive: true })
+	}
+
+	// Read existing settings or create new object
+	let settings: any = {}
+	if (fs.existsSync(settings_file)) {
+		try {
+			const content = fs.readFileSync(settings_file, 'utf8')
+			settings = JSON.parse(content)
+		} catch (error) {
+			console.warn('Could not parse existing settings.json, will create new one')
+		}
+	}
+
+	// Add readonly configuration for .liana folder
+	if (!settings['files.readonlyInclude']) {
+		settings['files.readonlyInclude'] = {}
+	}
+	settings['files.readonlyInclude']['**/.liana/**'] = true
+
+	// Write settings back
+	fs.writeFileSync(settings_file, JSON.stringify(settings, null, '\t'), 'utf8')
+}
+
 export default function $(context: vscode.ExtensionContext): vscode.Disposable {
 	return vscode.commands.registerCommand('liana.initialize_liana_authoring_environment', async () => {
 		try {
@@ -48,6 +81,15 @@ export default function $(context: vscode.ExtensionContext): vscode.Disposable {
 					fs.copyFileSync(source_path, destination_path)
 				}
 			}
+
+			// Make any .slna files in .liana folder readonly at OS level
+			const schema_file_path = path.join(target_path, '.liana', 'schema.slna')
+			if (fs.existsSync(schema_file_path)) {
+				fs.chmodSync(schema_file_path, 0o444)
+			}
+
+			// Configure workspace settings to mark .liana folder as readonly
+			configure_workspace_settings(target_path)
 
 			vscode.window.showInformationMessage(`Authoring environment initialized successfully in: ${target_path}`)
 

@@ -16,6 +16,7 @@ import {
 import * as vscode from 'vscode'
 
 import { register_commands } from './command_index'
+import { Liana_Folder_Decorator } from './decorations/liana_folder_decorator'
 
 let client: LanguageClient
 
@@ -62,6 +63,12 @@ function update_status_bar(context: ExtensionContext, status_bar_item: vscode.St
 }
 
 export function activate(context: ExtensionContext) {
+	// Register file decoration provider for .liana folders
+	const liana_decorator = new Liana_Folder_Decorator()
+	context.subscriptions.push(
+		vscode.window.registerFileDecorationProvider(liana_decorator)
+	)
+
 	// Create status bar item for notation style
 	const status_bar_item = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100)
 	status_bar_item.command = 'liana.toggle_notation_style'
