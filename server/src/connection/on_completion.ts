@@ -2,11 +2,7 @@ import * as _p from 'pareto-core/dist/assign'
 import * as _pi from 'pareto-core/dist/interface'
 import _p_list_from_text from 'pareto-core/dist/_p_list_from_text'
 
-import * as helpers from '../helpers'
-
 //data types
-import * as d_text_edits from "liana-authoring/dist/interface/generated/liana/schemas/text_edits/data"
-
 import * as t_unmarshall_result_to_completion_suggestions from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/completion_suggestions"
 
 import { load_document } from '../to_be_backend/load_document'
@@ -30,23 +26,27 @@ export const create_on_completion: (
 		}
 
 		return new Promise<vscode_node.CompletionList>((resolve) => {
-			const context = params.context
-
-			const remove_trigger_character = context &&
-				context.triggerKind === vscode_node.CompletionTriggerKind.TriggerCharacter &&
-				context.triggerCharacter === '#'
-
-			const additional_text_edits = remove_trigger_character
-				? [
-					// Remove the trigger character
-					vscode_node.TextEdit.del(vscode_node.Range.create(
-						params.position.line,
-						params.position.character - 1,
-						params.position.line,
-						params.position.character
-					))
-				]
-				: []
+			// Check if user typed filter letters before the cursor
+			// These should be removed when a completion is selected (for certain types)
+			const textBeforeCursor = doc.getText({
+				start: { line: params.position.line, character: 0 },
+				end: params.position
+			})
+			
+			const fullLine = doc.getText({
+				start: { line: params.position.line, character: 0 },
+				end: { line: params.position.line + 1, character: 0 }
+			}).replace(/\r?\n$/, '')
+			
+			const textAfterCursor = fullLine.substring(params.position.character)
+			
+			// Check if there's a # immediately after the cursor
+			const hasHashAfterCursor = textAfterCursor.startsWith('#')
+			
+			// Find filter text (letters typed before cursor)
+			const wordMatch = textBeforeCursor.match(/([a-zA-Z0-9_]*)$/)
+			const filterText = wordMatch ? wordMatch[1] : ''
+			const filterStartIndex = params.position.character - filterText.length
 
 			load_document(
 				doc,
@@ -62,53 +62,82 @@ export const create_on_completion: (
 							'style': get_notation_style(params.textDocument.uri) === 'verbose' ? ['verbose', null] : ['concise', null]
 						}
 					).__decide(
-						($) => $.__l_map(($) => {
-
-							const map_text_edits = ($: d_text_edits.Text_Edits): vscode_node.TextEdit[] => $.__l_map(($): vscode_node.TextEdit => _p.decide.state($, ($) => {
+						($) => {
+							const type = $.type
+							
+							// Backend signals semantic intent through type
+							// For missing value/option, hash must be present (assertion)
+							const shouldRemoveHash = _p.decide.state(type, ($) => {
 								switch ($[0]) {
-									case 'replace': return _p.ss($, ($) => vscode_node.TextEdit.replace(
-										helpers.create_range_from_range($.range),
-										$.text
-									))
-									case 'delete': return _p.ss($, ($) => vscode_node.TextEdit.del(
-										helpers.create_range_from_range($.range)
-									))
-									case 'insert': return _p.ss($, ($) => vscode_node.TextEdit.insert(
-										helpers.create_position_from_location($.location),
-										$.text
-									))
+									case 'missing value': return _p.ss($, ($) => true)
+									case 'missing option': return _p.ss($, ($) => true)
+									case 'reference': return _p.ss($, ($) => false)
+									case 'property name': return _p.ss($, ($) => false)
+									case 'option name': return _p.ss($, ($) => false)
 									default: return _p.au($[0])
 								}
-							})).__get_raw_copy().map(($) => $)
-							return ({
-								'label': $.label,
-								'insertText': $['insert text'],
-								'insertTextFormat': vscode_node.InsertTextFormat.Snippet,
-								'kind': _p.decide.state($.type, ($): vscode_node.CompletionItemKind => {
-									switch ($[0]) {
-										case 'simple': return _p.ss($, ($) => vscode_node.CompletionItemKind.Value)
-										case 'component': return _p.ss($, ($) => vscode_node.CompletionItemKind.Class)
-										case 'dictionary': return _p.ss($, ($) => vscode_node.CompletionItemKind.Class)
-										case 'group': return _p.ss($, ($) => vscode_node.CompletionItemKind.Struct)
-										case 'list': return _p.ss($, ($) => vscode_node.CompletionItemKind.Class)
-										case 'nothing': return _p.ss($, ($) => vscode_node.CompletionItemKind.Value)
-										case 'optional': return _p.ss($, ($) => vscode_node.CompletionItemKind.Field)
-										case 'reference': return _p.ss($, ($) => vscode_node.CompletionItemKind.Reference)
-										case 'state': return _p.ss($, ($) => vscode_node.CompletionItemKind.Enum)
-										case 'text': return _p.ss($, ($) => vscode_node.CompletionItemKind.Text)
-										default: return _p.au($[0])
-									}
-								}),
-								'additionalTextEdits': map_text_edits($['additional text edits']),
-								'documentation': {
-									kind: vscode_node.MarkupKind.PlainText,
-									value: $.documentation
-								},
-								'data': {
-									'documentation': $.documentation
-								}
 							})
-						}).__get_raw_copy().map(($) => $),
+							
+							if (shouldRemoveHash && !hasHashAfterCursor) {
+								throw new Error(`Backend indicated ${type[0]} but no hash found after cursor`)
+							}
+							
+							return $.suggestions.__l_map(($) => {
+								const completionItem: vscode_node.CompletionItem = {
+									'label': $.label,
+									'insertTextFormat': vscode_node.InsertTextFormat.Snippet,
+									'kind': _p.decide.state(type, ($): vscode_node.CompletionItemKind => {
+										switch ($[0]) {
+											case 'missing value': return _p.ss($, ($) => vscode_node.CompletionItemKind.Value)
+											case 'missing option': return _p.ss($, ($) => vscode_node.CompletionItemKind.EnumMember)
+											case 'reference': return _p.ss($, ($) => vscode_node.CompletionItemKind.Reference)
+											case 'property name': return _p.ss($, ($) => vscode_node.CompletionItemKind.Property)
+											case 'option name': return _p.ss($, ($) => vscode_node.CompletionItemKind.EnumMember)
+											default: return _p.au($[0])
+										}
+									}),
+									'documentation': {
+										kind: vscode_node.MarkupKind.PlainText,
+										value: $.documentation
+									},
+									'data': {
+										'documentation': $.documentation
+									}
+								}
+
+								// Frontend handles hash + filter text removal based on backend's semantic signal
+								if (shouldRemoveHash) {
+									// Position cursor at beginning for missing data (need to fill it in)
+									const insertTextWithCursor = '$0' + $['insert text']
+									completionItem.textEdit = vscode_node.TextEdit.replace(
+										vscode_node.Range.create(
+											params.position.line,
+											filterStartIndex,  // Remove filter text
+											params.position.line,
+											params.position.character + 1  // +1 to include the # character
+										),
+										insertTextWithCursor
+									)
+								} else {
+									// Regular completion: cursor at end, only remove filter text if any
+									if (filterText.length > 0) {
+										completionItem.textEdit = vscode_node.TextEdit.replace(
+											vscode_node.Range.create(
+												params.position.line,
+												filterStartIndex,
+												params.position.line,
+												params.position.character
+											),
+											$['insert text']
+										)
+									} else {
+										completionItem.insertText = $['insert text']
+									}
+								}
+
+								return completionItem
+							}).__get_raw_copy().map(($) => $)
+						},
 						() => []
 					)
 				}),

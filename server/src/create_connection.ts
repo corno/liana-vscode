@@ -131,13 +131,11 @@ export const create_connection = (
 				completionProvider: {
 					resolveProvider: true,
 					'triggerCharacters': [
-						'{', //to fill a linked dictionary
-						'(', //to fill a verbose type
-						'<', //to fill a concise type
-						//'[', 
-						'|', //to fill a union type
+						'(', //to fill a verbose group
+						'<', //to fill a concise group
+						'|', //to fill a state
 						'`', //to set a keyword or start a property
-						'\'', //to set a id or a reference
+						'\'', //to set an id or a reference
 						':', //to set a property
 						//',',
 						'#' //to replace missing data
@@ -319,8 +317,6 @@ export const create_connection = (
 								instance,
 								{
 									'position': hover_params.position,
-									'full path': "",
-									'id path': ""
 								}
 							).__get_raw_copy().map(($) => $)
 						}),
@@ -447,16 +443,19 @@ export const create_connection = (
 
 							action.edit = {
 								changes: {
-									[uri]: [
-										vscode_node.TextEdit.replace(
-											helpers.create_range_from_range($.replace.range),
-											indent_replacement_text(
-												helpers.create_range_from_range($.replace.range),
-												document,
-												$.replace.text
+									[uri]: $.__decide(
+										($) => [
+											vscode_node.TextEdit.replace(
+												helpers.create_range_from_range($.range),
+												indent_replacement_text(
+													helpers.create_range_from_range($.range),
+													document,
+													$.text
+												)
 											)
-										)
-									]
+										],
+										() => []
+									)
 								}
 							}
 							resolve(action)
