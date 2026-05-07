@@ -32,17 +32,8 @@ export const create_on_completion: (
 				start: { line: params.position.line, character: 0 },
 				end: params.position
 			})
-			
-			const fullLine = doc.getText({
-				start: { line: params.position.line, character: 0 },
-				end: { line: params.position.line + 1, character: 0 }
-			}).replace(/\r?\n$/, '')
-			
-			const textAfterCursor = fullLine.substring(params.position.character)
-			
-			// Check if there's a # immediately after the cursor
-			const hasHashAfterCursor = textAfterCursor.startsWith('#')
-			
+
+
 			// Find filter text (letters typed before cursor)
 			const wordMatch = textBeforeCursor.match(/([a-zA-Z0-9_]*)$/)
 			const filterText = wordMatch ? wordMatch[1] : ''
@@ -64,7 +55,7 @@ export const create_on_completion: (
 					).__decide(
 						($) => {
 							const type = $.type
-							
+
 							// Backend signals semantic intent through type
 							// For missing value/option, hash must be present (assertion)
 							const shouldRemoveHash = _p.decide.state(type, ($) => {
@@ -77,11 +68,8 @@ export const create_on_completion: (
 									default: return _p.au($[0])
 								}
 							})
-							
-							if (shouldRemoveHash && !hasHashAfterCursor) {
-								throw new Error(`Backend indicated ${type[0]} but no hash found after cursor`)
-							}
-							
+
+
 							return $.suggestions.__l_map(($) => {
 								const completionItem: vscode_node.CompletionItem = {
 									'label': $.label,
@@ -107,6 +95,20 @@ export const create_on_completion: (
 
 								// Frontend handles hash + filter text removal based on backend's semantic signal
 								if (shouldRemoveHash) {
+
+
+									const fullLine = doc.getText({
+										start: { line: params.position.line, character: 0 },
+										end: { line: params.position.line + 1, character: 0 }
+									}).replace(/\r?\n$/, '')
+
+									const textAfterCursor = fullLine.substring(params.position.character)
+
+									// Check if there's a # immediately after the cursor
+									const hasHashAfterCursor = textAfterCursor.startsWith('#')
+									if (!hasHashAfterCursor) {
+										console.log(`INFO: Backend indicated ${type[0]} but no hash found after cursor`)
+									}
 									// Position cursor at beginning for missing data (need to fill it in)
 									const insertTextWithCursor = '$0' + $['insert text']
 									completionItem.textEdit = vscode_node.TextEdit.replace(
@@ -114,7 +116,7 @@ export const create_on_completion: (
 											params.position.line,
 											filterStartIndex,  // Remove filter text
 											params.position.line,
-											params.position.character + 1  // +1 to include the # character
+											params.position.character + (hasHashAfterCursor ? 1 : 0)  // +1 to include the # character
 										),
 										insertTextWithCursor
 									)
