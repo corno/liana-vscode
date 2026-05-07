@@ -16,7 +16,7 @@
 				"${workspaceRoot}/server/out/**/*.js"
 			],
 			"autoAttachChildProcesses": true,
-			"preLaunchTask": "npm: compile"
+			"preLaunchTask": "npm: bundle"
 		},
 		{
 			"name": "Language Server E2E Test",

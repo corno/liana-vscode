@@ -18,6 +18,21 @@
 		},
 		{
 			"type": "npm",
+			"script": "bundle",
+			"group": "build",
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "never"
+			},
+			"problemMatcher": [
+				"$esbuild"
+			],
+			"options": {
+				"cwd": "${workspaceRoot}"
+			}
+		},
+		{
+			"type": "npm",
 			"script": "watch",
 			"isBackground": true,
 			"group": {
