@@ -40,8 +40,8 @@ export default function $(): vscode.Disposable {
 						{
 							'unmarshall': $,
 							'target': {
-								'indentation': '\t',
-								'newline': '\n',
+								'indentation': "",
+								'newline': "",
 							},
 						}
 					)

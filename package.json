@@ -274,7 +274,6 @@
 	},
 	"dependencies": {
 		"liana-authoring": "^0.1.0",
-		"pareto-fountain-pen-file-structure": "^0.1.0",
 		"pareto-host-nodejs": "^0.2.0"
 	}
 }

@@ -16,15 +16,15 @@ import sort_alphabetically from './commands/sort_alphabetically'
 import toggle_notation_style from './commands/toggle_notation_style'
 
 export function register_commands(
-	context: vscode.ExtensionContext, 
+	context: vscode.ExtensionContext,
 	status_bar_item: vscode.StatusBarItem,
 	update_status_bar: (editor?: vscode.TextEditor) => void
 ): void {
 	context.subscriptions.push(
 		create_liana_file(),
 		save_as_json(),
-		sort_alphabetically(),
-		convert_to_json(),
+		vscode.commands.registerCommand('liana.sort_alphabetically', sort_alphabetically()),
+		vscode.commands.registerCommand('liana.convert_to_json', convert_to_json),
 		jump_to_next_missing_data(),
 		initialize_liana_authoring_environment(context),
 		collapse_all_entries(),
