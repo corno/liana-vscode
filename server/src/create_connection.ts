@@ -6,10 +6,15 @@ import create_refinement_context from 'pareto-core/dist/__internals/async/create
 
 import * as helpers from './helpers'
 
+import * as d_unmarshall_result from "liana-authoring/dist/interface/to_be_generated/unmashall_result"
+import * as d_document_symbols from "liana-authoring/dist/interface/to_be_generated/document_symbols"
+
 import * as r_parse_tree_from_loc from "astn-core/dist/implementation/manual/refiners/parse_tree/list_of_characters"
 import * as t_unmarshall_result_to_hover_info from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/hover_info"
 import * as t_unmarshall_result_to_diagnostics from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/diagnostics"
 import * as t_unmarshall_result_to_formatting_edits from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/formatting_edits"
+import * as t_unmarshall_result_to_selection_ranges from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/selection_ranges"
+import * as t_unmarshall_result_to_document_symbols from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/document_symbols"
 import * as t_node_path_to_text from "pareto-resources/dist/implementation/manual/transformers/path/text"
 import * as t_parse_tree_to_text from "astn/dist/implementation/manual/transformers/parse_tree/text"
 import * as t_deserialize_to_diagnostic from "liana-authoring/dist/implementation/manual/transformers/deserialize/diagnostics"
@@ -125,11 +130,11 @@ export const create_connection = (
 		)
 
 		const result: vscode_node.InitializeResult = {
-			capabilities: {
-				textDocumentSync: vscode_node.TextDocumentSyncKind.Incremental,
+			'capabilities': {
+				'textDocumentSync': vscode_node.TextDocumentSyncKind.Incremental,
 				// Tell the client that this server supports code completion.
-				completionProvider: {
-					resolveProvider: true,
+				'completionProvider': {
+					'resolveProvider': true,
 					'triggerCharacters': [
 						'(', //to fill a verbose group
 						'<', //to fill a concise group
@@ -142,23 +147,24 @@ export const create_connection = (
 					],
 
 				},
-				diagnosticProvider: {
-					interFileDependencies: false,
-					workspaceDiagnostics: false
+				'diagnosticProvider': {
+					'interFileDependencies': false,
+					'workspaceDiagnostics': false
 				},
-				hoverProvider: true,
-				documentSymbolProvider: true,
-				codeActionProvider: {
-					codeActionKinds: [vscode_node.CodeActionKind.Refactor],
-					resolveProvider: true
+				'hoverProvider': true,
+				'documentSymbolProvider': true,
+				'codeActionProvider': {
+					'codeActionKinds': [vscode_node.CodeActionKind.Refactor],
+					'resolveProvider': true
 				},
-				documentFormattingProvider: true,
+				'documentFormattingProvider': true,
+				'selectionRangeProvider': true,
 			}
 		}
 		if (has_workspace_folder_capability) {
 			result.capabilities.workspace = {
-				workspaceFolders: {
-					supported: true
+				'workspaceFolders': {
+					'supported': true
 				}
 			}
 		}
@@ -214,15 +220,15 @@ export const create_connection = (
 		const document = documents.get(params.textDocument.uri)
 		if (document !== undefined) {
 			return {
-				kind: vscode_node.DocumentDiagnosticReportKind.Full,
-				items: await validate_text_document(document)
+				'kind': vscode_node.DocumentDiagnosticReportKind.Full,
+				'items': await validate_text_document(document)
 			}
 		} else {
 			// We don't know the document. We can either try to read it from disk
 			// or we don't report problems for it.
 			return {
-				kind: vscode_node.DocumentDiagnosticReportKind.Full,
-				items: []
+				'kind': vscode_node.DocumentDiagnosticReportKind.Full,
+				'items': []
 			}
 		}
 	})
@@ -356,6 +362,55 @@ export const create_connection = (
 
 			//connection.console.log(`Returning ${actions.length} code actions`)
 			return actions
+		}
+	)
+
+	function convert_selecton_range($: d_unmarshall_result.Range_Stack): vscode_node.SelectionRange {
+		return {
+			'range': helpers.create_range_from_range($.range),
+			'parent': $.parent.__decide(
+				($) => convert_selecton_range($),
+				() => undefined
+			)
+		}
+	}
+
+	connection.onSelectionRanges(
+		(params) => {
+
+			return new Promise<vscode_node.SelectionRange[]>(
+				(resolve) => {
+					connection.console.log(`Selection ranges requested at position: ${params.positions.map(p => `${p.line}:${p.character}`).join(', ')}`)
+					const doc = documents.get(params.textDocument.uri)
+					if (doc === undefined) {
+						connection.console.log('Selection ranges: document not found, returning empty array')
+						resolve([])
+						return
+					}
+					load_document(
+						doc,
+						schema_cache,
+						($) => {
+							connection.console.log('Selection ranges: load_document failed (deserialize error), returning empty array')
+							return []
+						},
+						(instance) => {
+							const result = t_unmarshall_result_to_selection_ranges.Document(
+								instance,
+								{
+									'positions': _p.list.literal(params.positions),
+								}
+							).__get_raw_copy().map(($): vscode_node.SelectionRange => convert_selecton_range($))
+							connection.console.log(`Selection ranges: backend returned ${result.length} range(s): ${JSON.stringify(result, null, 2)}`)
+							return result
+						},
+						(final_result) => {
+							connection.console.log(`Selection ranges: resolving with ${final_result.length} range(s)`)
+							resolve(final_result)
+						},
+					)
+				},
+			)
 		}
 	)
 
@@ -520,31 +575,61 @@ export const create_connection = (
 	)
 
 	const on_document_symbol: vscode_node.ServerRequestHandler<vscode_node.DocumentSymbolParams, vscode_node.SymbolInformation[] | vscode_node.DocumentSymbol[] | undefined | null, vscode_node.SymbolInformation[] | vscode_node.DocumentSymbol[], void> = (params) => {
-		// Stub implementation - returns empty array until backend support is added
-		// This handler provides document symbols for the outline view and navigation
-		const document = documents.get(params.textDocument.uri)
-		if (document === undefined) {
+		const doc = documents.get(params.textDocument.uri)
+		if (doc === undefined) {
 			return []
 		}
 
-		// TODO: Replace with actual backend call when symbol extraction is implemented
-		// For now, return a sample symbol to demonstrate the structure
-		const stub_symbol: vscode_node.DocumentSymbol = {
-			name: 'Document Root',
-			kind: vscode_node.SymbolKind.Module,
-			range: vscode_node.Range.create(0, 0, document.lineCount - 1, 0),
-			selectionRange: vscode_node.Range.create(0, 0, 0, 0),
-			children: [
-				{
-					name: 'Example Symbol',
-					kind: vscode_node.SymbolKind.Function,
-					range: vscode_node.Range.create(0, 0, 0, 10),
-					selectionRange: vscode_node.Range.create(0, 0, 0, 10),
+		function convert_value($: d_document_symbols.Value): vscode_node.DocumentSymbol[] {
+			return _p.decide.state($.type, ($) => {
+				switch ($[0]) {
+					case 'primitive': return _p.ss($, ($) => [])
+					case 'composite': return _p.ss($, ($) => $.children.__get_raw_copy().map(($): vscode_node.DocumentSymbol => ({
+						'name': $.name,
+						'detail': $.detail,
+						'kind': _p.decide.state($.value.type, ($) => {
+							switch ($[0]) {
+								case 'primitive': return _p.ss($, ($) => _p.decide.state($.kind, ($) => {
+									switch ($[0]) {
+										case 'string': return _p.ss($, ($) => vscode_node.SymbolKind.String)
+										case 'number': return _p.ss($, ($) => vscode_node.SymbolKind.Number)
+										case 'boolean': return _p.ss($, ($) => vscode_node.SymbolKind.Boolean)
+										case 'enum': return _p.ss($, ($) => vscode_node.SymbolKind.Enum)
+										case 'null': return _p.ss($, ($) => vscode_node.SymbolKind.Null)
+										default: return _p.au($[0])
+									}
+								}))
+								case 'composite':return _p.ss($, ($) => _p.decide.state($.kind, ($) => {
+									switch ($[0]) {
+										case 'object': return _p.ss($, ($) => vscode_node.SymbolKind.Object)
+										case 'struct': return _p.ss($, ($) => vscode_node.SymbolKind.Struct)
+										case 'array': return _p.ss($, ($) => vscode_node.SymbolKind.Array)
+										default: return _p.au($[0])
+									}
+								}))
+								default: return _p.au($[0])
+							}
+						}),
+						'range': helpers.create_range_from_range($.range),
+						'selectionRange': helpers.create_range_from_range($['selection range']),
+						'children': convert_value($.value)
+					})))
+					default: return _p.au($[0])
 				}
-			]
+			})
 		}
 
-		return [stub_symbol]
+		return new Promise<vscode_node.DocumentSymbol[]>(
+			(resolve) => {
+				load_document(
+					doc,
+					schema_cache,
+					($) => [],
+					(instance) => convert_value(t_unmarshall_result_to_document_symbols.Document(instance)),
+					resolve,
+				)
+			},
+		)
 	}
 
 	connection.onDocumentSymbol(
