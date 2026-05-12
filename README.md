@@ -1,13 +1,67 @@
-# Liana
+# Liana VS Code Extension
 
-Liana is a tool to create textual languages.
-If you feel that editing the data for your project in JSON is cumbersome and creating a custom language is too much work, then Liana might fill the gap in between for you.
+Complete language support for Liana and ASTN (Asynchronous Syntax Tree Notation) in Visual Studio Code.
 
-# Easy to start...
-You can have your first language up and running 15 minutes, granted that it will be minimal, but it will have all the niceties of a professional language like syntax highlighting, code completion, hints, etcetera.
+## What is Liana?
 
-# ... but battle hardened by very complex and extensive languages
-Liana isn't geared towards just simple languages. Very extensive languages have been built with Liana without having to resort to hacks or workarounds
+Liana is a tool to create textual languages. If you feel that editing data for your project in JSON is cumbersome and creating a custom language is too much work, then Liana might fill the gap in between.
+
+**Easy to start...** You can have your first language up and running in 15 minutes with all the niceties of a professional language: syntax highlighting, code completion, hints, and more.
+
+**...but battle hardened** Liana isn't limited to simple languages. Very extensive and complex languages have been built with Liana without resorting to hacks or workarounds.
+
+## Features
+
+-**Syntax Highlighting** - Rich colorization for ASTN syntax elements
+**IntelliSense** - Schema-based code completion with contextual suggestions
+**Real-time Validation** - Immediate feedback on syntax and semantic errors
+**Auto-formatting** - Consistent code formatting at the press of a key
+**JSON Conversion** - Convert between Liana and JSON formats
+**Document Outline** - Navigate large files with document symbols
+**Quick Actions** - Convert between verbose and concise notation styles
+**Smart Navigation** - Jump to missing data, collapse entries, and more
+**Schema Support** - Full schema authoring and TypeScript code generation
+
+## Quick Start
+
+### Installation
+
+Install the extension from the VS Code Marketplace or install manually from VSIX.
+
+### Keyboard Shortcuts
+
+| Command | Shortcut | Description |
+|---------|----------|-------------|
+| Jump to next missing data | `Ctrl+D` or `Ctrl+3` | Navigate to the next `#` marker |
+| Toggle notation style | `Ctrl+Alt+N` | Switch between verbose and concise notation |
+
+### Commands
+
+Access these via the Command Palette (`Ctrl+Shift+P`):
+
+- **Initialize Liana authoring environment** - Set up an environment (directory) where schemas can be created and authored
+
+The following commands are also available in context menu's
+- **New Liana File...** - Create a new .liana file
+- **Convert to JSON** - Export current file to JSON
+- **Save as JSON file** - Save a JSON version alongside your .liana file
+- **Sort dictionary alphabetically** - Organize dictionary entries
+- **Toggle notation style** - Switch between verbose/concise notation
+- **Generate TypeScript code from this schema** - Generate type-safe TypeScript
+- **Seal document** - Mark document as finalized
+
+## Notation Styles
+
+Liana uses ASTN as its notation language. ASTN supports two notation styles:
+
+- **Verbose** - Explicitly names all properties for clarity: `( `name`: "value" `age`: 42 )`
+- **Concise** - Relies on value order like programming languages: `< "value", 42 >`
+
+Toggle between styles with `Ctrl+Alt+N` or use code actions (right-click → Refactor) for selective conversion.
+
+## Tutorial: Creating Your First Language
+
+Below is a step-by-step guide to creating your first Liana language.
 
 # Getting up and running
 Below is a quick-start tutorial
@@ -113,3 +167,16 @@ ASTN files can easily be converted back to JSON files
 
 
 For a detailed explanation, head over to the project site [project site](https://github.com/corno/astn) for more details. -->
+## Understanding Missing Data (`#`)
+
+The `#` character represents "missing data" - a placeholder that distinguishes between intentional 'null'/empty values and data that still needs to be filled in. Use `Ctrl+D` to jump to the next missing data marker and get contextual code completion.
+
+## Resources
+
+- 📖 [ASTN Project](https://github.com/corno/astn) - Learn more about the ASTN data format (Abstract Syntax Tree Notation)
+- 🐛 [Report Issues](https://github.com/corno/liana-vscode/issues) - Bug reports and feature requests
+- 📝 [Source Code](https://github.com/corno/liana-vscode) - Contribute to the extension
+
+## License
+
+Apache-2.0 © Corno

@@ -1,8 +1,9 @@
 {
 	"name": "liana",
+	"displayName": "Liana",
 	"version": "0.1.28",
 	"publisher": "corno",
-	"description": "Liana Language support; syntax highlighting, formatting, validation, conversion to JSON.",
+	"description": "Complete language support for Liana/ASTN: syntax highlighting, intelligent code completion, schema-based validation, formatting, and JSON conversion.",
 	"author": "Corno",
 	"license": "Apache-2.0",
 	"icon": "images/liana.png",
@@ -10,6 +11,10 @@
 		"type": "git",
 		"url": "https://github.com/corno/liana-vscode"
 	},
+	"bugs": {
+		"url": "https://github.com/corno/liana-vscode/issues"
+	},
+	"homepage": "https://github.com/corno/liana-vscode#readme",
 	"files": [
 		"client/out/extension.js",
 		"server/out/server.js",
@@ -18,18 +23,28 @@
 		"language-configuration.json",
 		"liana_authoring_environment_template/**",
 		"README.md",
+		"CHANGELOG.md",
 		"LICENSE.md"
 	],
-	"categories": [],
+	"categories": [
+		"Programming Languages",
+		"Formatters",
+		"Linters",
+		"Snippets"
+	],
 	"keywords": [
-		"Liana",
-		"ASTN",
+		"liana",
+		"astn",
 		"syntax highlighting",
+		"code completion",
+		"intellisense",
 		"formatting",
 		"validation",
-		"JSON",
-		"conversion",
-		"type checking"
+		"schema",
+		"json",
+		"type checking",
+		"data format",
+		"structured data"
 	],
 	"engines": {
 		"vscode": "^1.75.0"
