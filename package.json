@@ -115,9 +115,9 @@
 		},
 		"commands": [
 			{
-				"command": "liana.initialize_liana_authoring_environment",
+				"command": "liana.initialize_liana_schema_authoring_environment",
 				"category": "Liana",
-				"title": "initialize Liana authoring environment"
+				"title": "initialize Liana schema authoring environment"
 			},
 			{
 				"command": "liana.sort_alphabetically",

@@ -24,24 +24,24 @@ let client: LanguageClient
 export function get_notation_style(context: ExtensionContext, document_uri?: string): 'verbose' | 'concise' {
 	if (document_uri) {
 		// Check for document-specific preference
-		const doc_styles = context.workspaceState.get<Record<string, 'verbose' | 'concise'>>('liana.documentNotationStyles', {})
+		const doc_styles = context.workspaceState.get<Record<string, 'verbose' | 'concise'>>('liana.document_notation_styles', {})
 		if (doc_styles[document_uri]) {
 			return doc_styles[document_uri]
 		}
 	}
 	// Fall back to workspace default
-	return context.workspaceState.get<'verbose' | 'concise'>('liana.defaultNotationStyle', 'verbose')
+	return context.workspaceState.get<'verbose' | 'concise'>('liana.default_notation_style', 'verbose')
 }
 
 export function set_notation_style(context: ExtensionContext, style: 'verbose' | 'concise', document_uri?: string): void {
 	if (document_uri) {
 		// Set document-specific preference
-		const doc_styles = context.workspaceState.get<Record<string, 'verbose' | 'concise'>>('liana.documentNotationStyles', {})
+		const doc_styles = context.workspaceState.get<Record<string, 'verbose' | 'concise'>>('liana.document_notation_styles', {})
 		doc_styles[document_uri] = style
-		context.workspaceState.update('liana.documentNotationStyles', doc_styles)
+		context.workspaceState.update('liana.document_notation_styles', doc_styles)
 	} else {
 		// Set workspace default
-		context.workspaceState.update('liana.defaultNotationStyle', style)
+		context.workspaceState.update('liana.default_notation_style', style)
 	}
 }
 
@@ -53,7 +53,7 @@ export function get_client(): LanguageClient | undefined {
 function update_status_bar(context: ExtensionContext, status_bar_item: vscode.StatusBarItem, editor?: vscode.TextEditor) {
 	if (editor && editor.document.languageId === 'liana') {
 		const style = get_notation_style(context, editor.document.uri.toString())
-		const has_doc_specific = context.workspaceState.get<Record<string, 'verbose' | 'concise'>>('liana.documentNotationStyles', {})[editor.document.uri.toString()] !== undefined
+		const has_doc_specific = context.workspaceState.get<Record<string, 'verbose' | 'concise'>>('liana.document_notation_styles', {})[editor.document.uri.toString()] !== undefined
 		status_bar_item.text = `$(symbol-property) ${style === 'verbose' ? 'Verbose' : 'Concise'}${has_doc_specific ? ' (doc)' : ''}`
 		status_bar_item.tooltip = `Liana notation style: ${style}${has_doc_specific ? ' (document-specific)' : ' (workspace default)'}\nClick to toggle`
 		status_bar_item.show()

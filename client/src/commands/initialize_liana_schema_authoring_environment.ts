@@ -3,14 +3,19 @@ import * as path from 'path'
 import * as vscode from 'vscode'
 
 export default function $(context: vscode.ExtensionContext): vscode.Disposable {
-	return vscode.commands.registerCommand('liana.initialize_liana_authoring_environment', async () => {
+	return vscode.commands.registerCommand('liana.initialize_liana_schema_authoring_environment', async () => {
 		try {
+			// Get last selected directory
+			const last_directory = context.workspaceState.get<string>('liana.last_authoring_environment_directory')
+			const default_uri = last_directory ? vscode.Uri.file(last_directory) : undefined
+			
 			const target_uris = await vscode.window.showOpenDialog({
 				canSelectFiles: false,
 				canSelectFolders: true,
 				canSelectMany: false,
 				openLabel: 'Select Target Directory',
 				title: 'Select directory to initialize Liana authoring environment',
+				defaultUri: default_uri,
 			})
 
 			if (!target_uris || target_uris.length === 0) {
@@ -18,6 +23,10 @@ export default function $(context: vscode.ExtensionContext): vscode.Disposable {
 			}
 
 			const target_path = target_uris[0].fsPath
+			
+			// Store the selected directory for next time
+			context.workspaceState.update('liana.last_authoring_environment_directory', target_path)
+			
 			const template_path = context.asAbsolutePath("liana_authoring_environment_template")
 
 			if (!fs.existsSync(template_path)) {

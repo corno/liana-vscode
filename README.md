@@ -39,7 +39,7 @@ Install the extension from the VS Code Marketplace or install manually from VSIX
 
 Access these via the Command Palette (`Ctrl+Shift+P`):
 
-- **Initialize Liana authoring environment** - Set up an environment (directory) where schemas can be created and authored
+- **Initialize Liana schema authoring environment** - Set up an environment (directory) where schemas can be created and authored
 
 The following commands are also available in context menu's
 - **New Liana File...** - Create a new .liana file
@@ -69,7 +69,7 @@ Below is a quick-start tutorial
 ## schema authoring environment
 first you need to create a schema authoring (development) environment:
 ctrl+shift+p
-select 'Liana:initialize Liana authoring environment'
+select 'Liana:initialize Liana schema authoring environment'
 and select (or create) a directory where you want to author your schemas
 
 you should now have a directory with 2 files:

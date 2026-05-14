@@ -9,13 +9,14 @@ import * as vscode from 'vscode'
 import { load_applicable_schema } from '../to_be_backend/load_applicable_schema'
 import create_refinement_context from 'pareto-core/dist/__internals/async/create_refinement_context'
 
-export default function $(): vscode.Disposable {
+export default function $(context: vscode.ExtensionContext): vscode.Disposable {
 	return vscode.commands.registerCommand('liana.initialize_or_update_authoring_environment_with_this_schema', async () => {
 		const editor = vscode.window.activeTextEditor
 		if (!editor) {
 			vscode.window.showInformationMessage('Open a liana file first to create authoring environment')
 			return
 		}
+		const schema_file_uri = editor.document.uri.toString()
 		load_applicable_schema(
 			editor.document,
 			($) => {
@@ -49,6 +50,10 @@ export default function $(): vscode.Disposable {
 					async ($) => {
 						const new_text = $
 
+						// Get last selected directory for this schema file
+						const directory_map = context.workspaceState.get<Record<string, string>>('liana.authoring_environment_directories', {})
+						const last_directory = directory_map[schema_file_uri]
+						const default_uri = last_directory ? vscode.Uri.file(last_directory) : undefined
 
 						const target_uris = await vscode.window.showOpenDialog({
 							canSelectFiles: false,
@@ -56,6 +61,7 @@ export default function $(): vscode.Disposable {
 							canSelectMany: false,
 							openLabel: 'Select Directory',
 							title: 'Select directory to save .liana/schema.slna file',
+							defaultUri: default_uri,
 						})
 
 						if (!target_uris || target_uris.length === 0) {
@@ -63,6 +69,12 @@ export default function $(): vscode.Disposable {
 						}
 
 						const target_path = target_uris[0].fsPath
+						
+						// Store the selected directory for this schema file
+						const updated_map = context.workspaceState.get<Record<string, string>>('liana.authoring_environment_directories', {})
+						updated_map[schema_file_uri] = target_path
+						context.workspaceState.update('liana.authoring_environment_directories', updated_map)
+						
 						const schema_file_path = path.join(target_path, ".liana", "schema.slna")
 
 						const schema_dir = path.dirname(schema_file_path)
