@@ -4,7 +4,9 @@ import { $$ as ttt_convert_to_json } from "liana-authoring/dist/implementation/m
 
 import * as vscode from 'vscode'
 
-export default function $(): void {
+import * as types from "../types"
+
+export default ((deps) => () => {
 	const editor = vscode.window.activeTextEditor
 	if (!editor) {
 		vscode.window.showInformationMessage('Open a Liana file first to save as JSON')
@@ -42,4 +44,5 @@ export default function $(): void {
 			vscode.window.showErrorMessage('Cannot convert to JSON because the file is not valid ASTN.')
 		}
 	)
-}
+
+}) satisfies types.Register_Command

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 
-export default function $(): vscode.Disposable {
-	return vscode.commands.registerCommand('liana.seal_disabled', () => {
-		vscode.window.showErrorMessage('Cannot seal because the file has errors. Fix the errors first.')
-	})
-}
+import * as types from "../types"
+
+export default ((deps) => () => {
+	vscode.window.showErrorMessage('Cannot seal because the file has errors. Fix the errors first.')
+}) satisfies types.Register_Command

@@ -153,7 +153,11 @@ export function activate(context: ExtensionContext) {
 	context.subscriptions.push(schema_watcher.onDidDelete(() => update_workspace_has_schema_context()))
 	context.subscriptions.push(schema_watcher)
 	
-	register_commands(context, status_bar_item, (editor) => update_status_bar(context, status_bar_item, editor))
+	register_commands({
+		context,
+		status_bar_item,
+		update_status_bar: (editor) => update_status_bar(context, status_bar_item, editor),
+	})
 
 
 	// The server is implemented in node

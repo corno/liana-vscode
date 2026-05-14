@@ -1,8 +1,9 @@
 import * as path from 'path'
 import * as vscode from 'vscode'
 
-export default function $(): vscode.Disposable {
-	return vscode.commands.registerCommand('liana.create_liana_file', async (uri: vscode.Uri) => {
+import * as types from "../types"
+
+export default ((deps) => async (uri: vscode.Uri) => {
 		try {
 			let target_folder: vscode.Uri
 			if (uri && uri.fsPath) {
@@ -57,5 +58,4 @@ export default function $(): vscode.Disposable {
 			const message = error instanceof Error ? error.message : String(error)
 			vscode.window.showErrorMessage(`Failed to create Liana file: ${message}`)
 		}
-	})
-}
+}) satisfies types.Register_Command

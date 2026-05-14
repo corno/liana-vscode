@@ -2,8 +2,9 @@ import * as vscode from 'vscode'
 
 import { findChildFoldingRanges, findContainingFoldingRange } from '../command_support/folding'
 
-export default function $(): vscode.Disposable {
-	return vscode.commands.registerCommand('liana.collapse_all_entries', async () => {
+import * as types from "../types"
+
+export default ((deps) => async () => {
 		const editor = vscode.window.activeTextEditor
 		if (!editor) {
 			vscode.window.showInformationMessage('No active editor')
@@ -47,5 +48,5 @@ export default function $(): vscode.Disposable {
 			console.error('Error collapsing entries:', error)
 			vscode.window.showErrorMessage('Failed to collapse entries')
 		}
-	})
+}) satisfies types.Register_Command
 }

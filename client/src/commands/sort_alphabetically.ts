@@ -2,7 +2,7 @@ import * as vscode from 'vscode'
 
 import * as types from "../types"
 
-export default (() => () => {
+export default ((deps) => () => {
 	const editor = vscode.window.activeTextEditor
 	if (!editor) {
 		vscode.window.showInformationMessage('Open a Liana file first to sort alphabetically')

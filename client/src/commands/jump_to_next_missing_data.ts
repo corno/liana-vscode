@@ -1,7 +1,8 @@
 import * as vscode from 'vscode'
 
-export default function $(): vscode.Disposable {
-	return vscode.commands.registerCommand('liana.jump_to_next_missing_data', () => {
+import * as types from "../types"
+
+export default ((deps) => () => {
 		const editor = vscode.window.activeTextEditor
 		if (!editor) {
 			vscode.window.showInformationMessage('No active editor')
@@ -25,5 +26,4 @@ export default function $(): vscode.Disposable {
 		editor.selection = new vscode.Selection(position, position)
 		editor.revealRange(new vscode.Range(position, position))
 		void vscode.commands.executeCommand('editor.action.triggerSuggest')
-	})
-}
+}) satisfies types.Register_Command

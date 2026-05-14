@@ -19,8 +19,9 @@ import * as os from 'os'
 import * as path from 'path'
 import * as vscode from 'vscode'
 
-export default function $(): vscode.Disposable {
-	return vscode.commands.registerCommand('liana.generate_typescript_code_from_this_schema', async () => {
+import * as types from "../types"
+
+export default ((deps) => async () => {
 		const editor = vscode.window.activeTextEditor
 		if (!editor) {
 			vscode.window.showInformationMessage('Open a liana file first to generate TypeScript code')
@@ -155,4 +156,4 @@ export default function $(): vscode.Disposable {
 			}
 		)
 	})
-}
+}) satisfies types.Register_Command

@@ -9,8 +9,9 @@ import * as vscode from 'vscode'
 
 import { load_applicable_schema } from '../to_be_backend/load_applicable_schema'
 
-export default function $(): vscode.Disposable {
-	return vscode.commands.registerCommand('liana.seal', () => {
+import * as types from "../types"
+
+export default ((deps) => () => {
 		const editor = vscode.window.activeTextEditor
 		if (!editor) {
 			vscode.window.showInformationMessage('Open a liana file first to seal')
