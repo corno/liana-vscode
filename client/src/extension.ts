@@ -15,7 +15,7 @@ import {
 
 import * as vscode from 'vscode'
 
-import { register_commands } from './command_index'
+import { register_commands } from './register_commands'
 import { Liana_Folder_Decorator } from './decorations/liana_folder_decorator'
 
 let client: LanguageClient

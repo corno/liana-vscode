@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 
-export function findContainingFoldingRange(
+export function find_containing_folding_range(
 	folding_ranges: vscode.FoldingRange[],
 	position: vscode.Position,
 ): vscode.FoldingRange | undefined {
@@ -25,7 +25,7 @@ export function findContainingFoldingRange(
 	return undefined
 }
 
-export function findChildFoldingRanges(
+export function find_child_folding_ranges(
 	folding_ranges: vscode.FoldingRange[],
 	parent_range: vscode.FoldingRange,
 ): vscode.FoldingRange[] {

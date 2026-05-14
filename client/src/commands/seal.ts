@@ -74,5 +74,4 @@ export default ((deps) => () => {
 				)
 			}
 		)
-	})
-}
+}) satisfies types.Register_Command

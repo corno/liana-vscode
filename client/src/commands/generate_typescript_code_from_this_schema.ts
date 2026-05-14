@@ -155,5 +155,4 @@ export default ((deps) => async () => {
 				)
 			}
 		)
-	})
 }) satisfies types.Register_Command

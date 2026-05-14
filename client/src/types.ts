@@ -6,4 +6,4 @@ export type Command_Dependencies = {
 	update_status_bar: (editor?: vscode.TextEditor) => void
 }
 
-export type Register_Command = (deps?: Command_Dependencies) => () => void
+export type Register_Command = (deps?: Command_Dependencies) => (...args: any[]) => any
