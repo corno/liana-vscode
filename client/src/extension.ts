@@ -33,18 +33,6 @@ export function get_notation_style(context: ExtensionContext, document_uri?: str
 	return context.workspaceState.get<'verbose' | 'concise'>('liana.default_notation_style', 'verbose')
 }
 
-export function set_notation_style(context: ExtensionContext, style: 'verbose' | 'concise', document_uri?: string): void {
-	if (document_uri) {
-		// Set document-specific preference
-		const doc_styles = context.workspaceState.get<Record<string, 'verbose' | 'concise'>>('liana.document_notation_styles', {})
-		doc_styles[document_uri] = style
-		context.workspaceState.update('liana.document_notation_styles', doc_styles)
-	} else {
-		// Set workspace default
-		context.workspaceState.update('liana.default_notation_style', style)
-	}
-}
-
 // Export function to get the client for sending notifications
 export function get_client(): LanguageClient | undefined {
 	return client
