@@ -13,8 +13,8 @@ import * as vscode_textdocument from 'vscode-languageserver-textdocument'
 
 export const create_on_completion: (
 	documents: vscode_node.TextDocuments<vscode_textdocument.TextDocument>,
-	get_notation_style: (uri: string) => 'verbose' | 'concise',
-) => vscode_node.ServerRequestHandler<vscode_node.CompletionParams, vscode_node.CompletionList | null, vscode_node.CompletionItem[], void> = (documents, get_notation_style) => {
+	document_notation_styles: Map<string, 'verbose' | 'concise'>,
+) => vscode_node.ServerRequestHandler<vscode_node.CompletionParams, vscode_node.CompletionList | null, vscode_node.CompletionItem[], void> = (documents, document_notation_styles) => {
 	return (params) => {
 		// The pass parameter contains the position of the text document in
 		// which code complete got requested. For the example we ignore this
@@ -50,7 +50,7 @@ export const create_on_completion: (
 						{
 							'indent': "    ",
 							'position': params.position,
-							'style': get_notation_style(params.textDocument.uri) === 'verbose' ? ['verbose', null] : ['concise', null]
+							'style': (document_notation_styles.get(params.textDocument.uri) || document_notation_styles.get('__default__') || 'verbose') === 'verbose' ? ['verbose', null] : ['concise', null]
 						}
 					).__decide(
 						($) => {

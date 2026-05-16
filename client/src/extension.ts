@@ -71,7 +71,7 @@ export function activate(context: ExtensionContext) {
 			update_status_bar(context, status_bar_item, editor)
 			if (editor && editor.document.languageId === 'liana' && client) {
 				const style = get_notation_style(context, editor.document.uri.toString())
-				client.sendRequest('liana/updateNotationStyle', { 
+				client.sendRequest('liana/update_notation_style', { 
 					uri: editor.document.uri.toString(), 
 					style 
 				}).catch(() => {})

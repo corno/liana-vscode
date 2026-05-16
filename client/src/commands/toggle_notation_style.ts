@@ -36,7 +36,7 @@ export default ((deps) => async () => {
 	// Notify the language server
 	const client = get_client()
 	if (client) {
-		await client.sendRequest('liana/updateNotationStyle', {
+		await client.sendRequest('liana/update_notation_style', {
 			uri: document_uri,
 			style: new_style
 		}).catch(() => { })

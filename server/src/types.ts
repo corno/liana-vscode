@@ -1,6 +1,6 @@
 
 
 // The example settings
-export interface Example_Settings {
+export interface Settings {
 	max_number_of_problems: number
 }
