@@ -1,6 +1,6 @@
 import * as _p from 'pareto-core/dist/assign'
 
-import * as d_unmarshall_result from "liana-authoring/dist/interface/to_be_generated/unmashall_result"
+import * as d_unmarshall_result from "liana-authoring/dist/interface/to_be_generated/unmarshall_result"
 import * as t_unmarshall_result_to_selection_ranges from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/selection_ranges"
 
 import * as helpers from '../helpers/range'

@@ -10,7 +10,7 @@ import {
 
 import * as url from "url"
 
-import * as d_unmarshall_result from "liana-authoring/dist/interface/to_be_generated/unmashall_result"
+import * as d_unmarshall_result from "liana-authoring/dist/interface/to_be_generated/unmarshall_result"
 import * as d_deserialize from "liana-authoring/dist/interface/to_be_generated/deserialize"
 
 import * as d_temp_module_specifier from "pareto-liana/dist/interface/to_be_generated/temp_module_specifier"

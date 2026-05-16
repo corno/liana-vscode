@@ -9495,6 +9495,8 @@
             )
         )
     }
-    `schema path`: [ "schema" ],
-    `module`: "Module Specification"
+    `schema path`: [ "schema" ]
+    `complexity`: | 'constrained' (
+        `module resolver`: "Module Specification"
+    )
 )
