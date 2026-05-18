@@ -6,6 +6,7 @@ import * as d_deserialize_resolved from "liana-core/dist/interface/to_be_generat
 import * as d_unmarshall_result_from_lines_of_characters from "liana-authoring/dist/interface/to_be_generated/unmarshall_result_from_loc"
 import * as d_path from "pareto-resources/dist/interface/generated/liana/schemas/path/data"
 import * as d_temp_module_specifier from "pareto-liana/dist/interface/to_be_generated/temp_module_specifier"
+import * as d_deserialize from "liana-authoring/dist/interface/to_be_generated/deserialize"
 
 //dependencies
 import * as r_temp_module_specifier_from_loc from "pareto-liana/dist/implementation/manual/refiners/temp_module_specifier/list_of_characters"
@@ -31,7 +32,7 @@ export function load_applicable_schema(
 	text_document: TextDocument,
 	on_error: ($: Load_Schema_Error) => void,
 	on_success: (
-		$: d_unmarshall_result_from_lines_of_characters.Parameters,
+		$: d_temp_module_specifier.Temp_Module_Specifier,
 	) => void,
 ): void {
 
@@ -59,10 +60,6 @@ export function load_applicable_schema(
 					)
 				).__extract_data(
 					($) => {
-						const unmarshall_parameters = {
-							'schema': $,
-							'tab size': 1 // vscode works with character, not with columns
-						}
 						const parsed_schema_path = r_path_from_text.Node_Path(
 							schema_path,
 							() => _p_unreachable("the path is constructed above"),
@@ -72,7 +69,7 @@ export function load_applicable_schema(
 						)
 
 						on_success(
-							unmarshall_parameters,
+							$,
 						)
 
 					},

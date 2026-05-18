@@ -31,7 +31,7 @@ export const load_document = <T>(
 	document: TextDocument,
 	schema_cache: Cache<Schema_Cache_Entry>,
 	on_errorx: ($: d_deserialize.Error) => T,
-	on_successx: ($: d_unmarshall_result.Document) => T,
+	on_successx: ($: d_deserialize.Result) => T,
 	resolve: ($: T) => void,
 ) => {
 

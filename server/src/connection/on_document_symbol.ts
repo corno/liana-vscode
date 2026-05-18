@@ -67,7 +67,13 @@ export const create_on_document_symbol: (
 					doc,
 					schema_cache,
 					($) => [],
-					(instance) => convert_value(t_unmarshall_result_to_document_symbols.Document(instance)),
+					(instance) => convert_value(t_unmarshall_result_to_document_symbols.Document(_p.decide.state(instance, ($) => {
+						switch ($[0]) {
+							case 'constrained': return _p.ss($, ($) => $.unmarshalled)
+							case 'unconstrained': return _p.ss($, ($) => $)
+							default: return _p.au($[0])
+						}
+					}))),
 					resolve,
 				)
 			},

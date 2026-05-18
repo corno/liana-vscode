@@ -22,137 +22,146 @@ import * as vscode from 'vscode'
 import * as types from "../types"
 
 export default ((deps) => async () => {
-		const editor = vscode.window.activeTextEditor
-		if (!editor) {
-			vscode.window.showInformationMessage('Open a liana file first to generate TypeScript code')
-			return
-		}
-		
-		// First, load the schema and convert to verbose notation
-		load_applicable_schema(
-			editor.document,
-			($) => {
-				_p.decide.state($.type, ($) => {
-					switch ($[0]) {
-						case 'read file': return _p.ss($, ($) => {
-							vscode.window.showErrorMessage('Cannot generate TypeScript code because no .liana/schema.slna file could be found: ' + $.error.message)
-						})
-						case 'parse schema': return _p.ss($, ($) => {
-							vscode.window.showErrorMessage('Cannot generate TypeScript code because the .liana/schema.slna file is not a valid schema.')
-						})
-						default: return _p.au($[0])
-					}
-				})
-			},
-			async ($) => {
-				// Convert to verbose notation using seal
-				create_refinement_context<string, string>(
-					(abort) => ttt_seal(
-						editor.document.getText(),
-						($) => abort("Cannot generate TypeScript code because the file is not valid Liana."),
-						{
-							'unmarshall': $,
-							'target': {
-								'indentation': '\t',
-								'newline': '\n',
-							},
-						}
-					)
-				).__extract_data(
-					async ($) => {
-						// Create a temporary file with verbose notation
-						const tmp_dir = os.tmpdir()
-						const tmp_file_name = `liana-verbose-${Date.now()}.liana.lna`
-						const tmp_file_path = path.join(tmp_dir, tmp_file_name)
-						
-						// Write verbose notation to temp file
-						fs.writeFileSync(tmp_file_path, $, 'utf8')
-						
-						// Now proceed with TypeScript generation
-						const target_uris = await vscode.window.showOpenDialog({
-							canSelectFiles: false,
-							canSelectFolders: true,
-							canSelectMany: false,
-							openLabel: 'Select Target Directory',
-							title: 'Select directory to generate TypeScript code',
-						})
+	const editor = vscode.window.activeTextEditor
+	if (!editor) {
+		vscode.window.showInformationMessage('Open a liana file first to generate TypeScript code')
+		return
+	}
 
-						if (!target_uris || target_uris.length === 0) {
-							// Clean up temp file
-							fs.unlinkSync(tmp_file_path)
-							return
-						}
-
-					create_refinement_context(
-							(abort) => r_path_from_text.Node_Path(
-								tmp_file_path,
-								($) => abort('The file path is not valid.'),
-								{
-									'pedantic': true,
+	// First, load the schema and convert to verbose notation
+	load_applicable_schema(
+		editor.document,
+		($) => {
+			_p.decide.state($.type, ($) => {
+				switch ($[0]) {
+					case 'read file': return _p.ss($, ($) => {
+						vscode.window.showErrorMessage('Cannot generate TypeScript code because no .liana/schema.slna file could be found: ' + $.error.message)
+					})
+					case 'parse schema': return _p.ss($, ($) => {
+						vscode.window.showErrorMessage('Cannot generate TypeScript code because the .liana/schema.slna file is not a valid schema.')
+					})
+					default: return _p.au($[0])
+				}
+			})
+		},
+		async ($) => {
+			// Convert to verbose notation using seal
+			create_refinement_context<string, string>(
+				(abort) => ttt_seal(
+					editor.document.getText(),
+					($) => abort("Cannot generate TypeScript code because the file is not valid Liana."),
+					{
+						'unmarshall': {
+							'module': _p.decide.state($, ($) => {
+								switch ($[0]) {
+									case 'constrained': return _p.ss($, ($) => $['module resolver'].entry.signature.module)
+									case 'unconstrained': return _p.ss($, ($) => $.module.entry)
+									default: return _p.au($[0])
 								}
-							)
-						).__extract_data(
-							($) => {
-								c_generate_typescript.$$(
-									{
-										'copy': cx_copy.$$,
-										'make directory': cx_make_directory.$$,
-										'remove': cx_remove.$$,
-										'write file': cx_write_file.$$,
-									},
-									{
-										'read file': qx_read_file.$$,
-									}
-								).execute(
-									{
-										'type': ['module specification', null],
-										'source': $,
-										'target': r_path_from_text.Context_Path(target_uris[0].fsPath)
-									},
-									($) => $
-								).__start(
-									() => {
-										vscode.window.showInformationMessage('TypeScript code generated successfully')
-										// Clean up temp file
-										try {
-											fs.unlinkSync(tmp_file_path)
-										} catch (e) {
-											// Ignore cleanup errors
-										}
-									},
-									($) => {
-										const message: string = t_prose_to_text.Phrase(
-											t_generate_typescript_to_fp.Error($),
-											{
-												'indentation': "  ",
-												'newline': "\n",
-											}
-										)
-										vscode.window.showErrorMessage(`Error generating TypeScript: ${message}`)
-										// Clean up temp file
-										try {
-											fs.unlinkSync(tmp_file_path)
-										} catch (e) {
-											// Ignore cleanup errors
-										}
-									}
-								)
-							},
-							($) => {
-								vscode.window.showErrorMessage(`Error: ${$}`)
-								// Clean up temp file
-								try {
-									fs.unlinkSync(tmp_file_path)
-								} catch (e) {
-									// Ignore cleanup errors
-								}
-							}
-						)
-					},
-					async ($) => {
-						vscode.window.showErrorMessage(`Cannot convert to verbose notation: ${$}`)
+							}),
+							'tab size': 1, // vscode works with character, not with columns
+						},
+						'target': {
+							'indentation': '\t',
+							'newline': '\n',
+						},
 					}
 				)
-			}
-		)
+			).__extract_data(
+				async ($) => {
+					// Create a temporary file with verbose notation
+					const tmp_dir = os.tmpdir()
+					const tmp_file_name = `liana-verbose-${Date.now()}.liana.lna`
+					const tmp_file_path = path.join(tmp_dir, tmp_file_name)
+
+					// Write verbose notation to temp file
+					fs.writeFileSync(tmp_file_path, $, 'utf8')
+
+					// Now proceed with TypeScript generation
+					const target_uris = await vscode.window.showOpenDialog({
+						canSelectFiles: false,
+						canSelectFolders: true,
+						canSelectMany: false,
+						openLabel: 'Select Target Directory',
+						title: 'Select directory to generate TypeScript code',
+					})
+
+					if (!target_uris || target_uris.length === 0) {
+						// Clean up temp file
+						fs.unlinkSync(tmp_file_path)
+						return
+					}
+
+					create_refinement_context(
+						(abort) => r_path_from_text.Node_Path(
+							tmp_file_path,
+							($) => abort('The file path is not valid.'),
+							{
+								'pedantic': true,
+							}
+						)
+					).__extract_data(
+						($) => {
+							c_generate_typescript.$$(
+								{
+									'copy': cx_copy.$$,
+									'make directory': cx_make_directory.$$,
+									'remove': cx_remove.$$,
+									'write file': cx_write_file.$$,
+								},
+								{
+									'read file': qx_read_file.$$,
+								}
+							).execute(
+								{
+									'type': ['module specification', null],
+									'source': $,
+									'target': r_path_from_text.Context_Path(target_uris[0].fsPath)
+								},
+								($) => $
+							).__start(
+								() => {
+									vscode.window.showInformationMessage('TypeScript code generated successfully')
+									// Clean up temp file
+									try {
+										fs.unlinkSync(tmp_file_path)
+									} catch (e) {
+										// Ignore cleanup errors
+									}
+								},
+								($) => {
+									const message: string = t_prose_to_text.Phrase(
+										t_generate_typescript_to_fp.Error($),
+										{
+											'indentation': "  ",
+											'newline': "\n",
+										}
+									)
+									vscode.window.showErrorMessage(`Error generating TypeScript: ${message}`)
+									// Clean up temp file
+									try {
+										fs.unlinkSync(tmp_file_path)
+									} catch (e) {
+										// Ignore cleanup errors
+									}
+								}
+							)
+						},
+						($) => {
+							vscode.window.showErrorMessage(`Error: ${$}`)
+							// Clean up temp file
+							try {
+								fs.unlinkSync(tmp_file_path)
+							} catch (e) {
+								// Ignore cleanup errors
+							}
+						}
+					)
+				},
+				async ($) => {
+					vscode.window.showErrorMessage(`Cannot convert to verbose notation: ${$}`)
+				}
+			)
+		}
+	)
 }) satisfies types.Register_Command

@@ -44,7 +44,13 @@ export const create_on_selection_ranges: (
 					},
 					(instance) => {
 						const result = t_unmarshall_result_to_selection_ranges.Document(
-							instance,
+							_p.decide.state(instance, ($) => {
+								switch ($[0]) {
+									case 'constrained': return _p.ss($, ($) => $.unmarshalled)
+									case 'unconstrained': return _p.ss($, ($) => $)
+									default: return _p.au($[0])
+								}
+							}),
 							{
 								'positions': _p.list.literal(params.positions),
 							}

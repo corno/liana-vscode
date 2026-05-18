@@ -1,3 +1,5 @@
+import * as _p from 'pareto-core/dist/assign'
+
 import * as t_unmarshall_result_to_formatting_edits from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/formatting_edits"
 
 import * as helpers from '../helpers/range'
@@ -63,7 +65,13 @@ export const create_on_code_action_resolve: (
 				schema_cache,
 				($) => null,
 				(instance) => t_unmarshall_result_to_formatting_edits.Document(
-					instance,
+					_p.decide.state(instance, ($) => {
+						switch ($[0]) {
+							case 'constrained': return _p.ss($, ($) => $.unmarshalled)
+							case 'unconstrained': return _p.ss($, ($) => $)
+							default: return _p.au($[0])
+						}
+					}),
 					{
 						'conversion': {
 							'style': [style, null],

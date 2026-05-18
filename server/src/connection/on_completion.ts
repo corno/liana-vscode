@@ -46,7 +46,13 @@ export const create_on_completion: (
 				(instance) => ({
 					'isIncomplete': false,
 					'items': t_unmarshall_result_to_completion_suggestions.Document(
-						instance,
+						_p.decide.state(instance, ($) => {
+							switch ($[0]) {
+								case 'constrained': return _p.ss($, ($) => $.unmarshalled)
+								case 'unconstrained': return _p.ss($, ($) => $)
+								default: return _p.au($[0])
+							}
+						}),
 						{
 							'indent': "    ",
 							'position': params.position,
