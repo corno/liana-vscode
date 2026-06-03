@@ -76,7 +76,7 @@ export const create_on_code_action_resolve: (
 						'conversion': {
 							'style': [style, null],
 							'impact': shallow
-								? ['shallow', null]
+								? ['shallow with entities', null]
 								: ['deep', null]
 						},
 						'indent': "    ",
