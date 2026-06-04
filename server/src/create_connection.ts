@@ -109,6 +109,16 @@ export const create_connection = (
 		create_on_document_symbol(documents)
 	)
 
+	// Handle shutdown gracefully
+	connection.onShutdown(() => {
+		// Clean up any resources if needed
+		return Promise.resolve()
+	})
+
+	connection.onExit(() => {
+		process.exit(0)
+	})
+
 	// Make the text document manager listen on the connection
 	// for open, change and close text document events
 	documents.listen(connection)

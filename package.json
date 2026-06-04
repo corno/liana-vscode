@@ -278,8 +278,8 @@
 		"vscode:prepublish": "npm run compile && npm run bundle",
 		"bundle": "node ./esbuild.js --production",
 		"bundle:watch": "node ./esbuild.js --watch",
-		"compile": "tsc -b",
-		"watch": "tsc -b -w",
+		"compile": "tsc --project client/tsconfig.json && tsc --project server/tsconfig.json",
+		"watch": "tsc --project client/tsconfig.json -w & tsc --project server/tsconfig.json -w",
 		"lint": "eslint ./client/src ./server/src --ext .ts,.tsx",
 		"postinstall": "cd client && npm install && cd ../server && npm install && cd .."
 	},

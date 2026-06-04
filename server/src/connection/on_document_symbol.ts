@@ -37,7 +37,7 @@ export const create_on_document_symbol: (
 													case 'string': return _p.ss($, ($) => vscode_node.SymbolKind.String)
 													case 'number': return _p.ss($, ($) => vscode_node.SymbolKind.Number)
 													case 'boolean': return _p.ss($, ($) => vscode_node.SymbolKind.Boolean)
-													case 'enum': return _p.ss($, ($) => vscode_node.SymbolKind.Enum)
+													case 'enum member': return _p.ss($, ($) => vscode_node.SymbolKind.EnumMember)
 													case 'null': return _p.ss($, ($) => vscode_node.SymbolKind.Null)
 													default: return _p.au($[0])
 												}
