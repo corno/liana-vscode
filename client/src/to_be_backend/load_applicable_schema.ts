@@ -4,13 +4,12 @@ import _p_unreachable from 'pareto-core/dist/_p_unreachable_code_path'
 
 import * as d_deserialize_resolved from "liana-core/dist/interface/to_be_generated/deserialize_resolved"
 import * as d_unmarshall_result_from_lines_of_characters from "liana-authoring/dist/interface/to_be_generated/unmarshall_result_from_loc"
-import * as d_path from "pareto-resources/dist/interface/generated/liana/schemas/path/data"
 import * as d_temp_module_specifier from "pareto-liana/dist/interface/to_be_generated/temp_module_specifier"
 import * as d_deserialize from "liana-authoring/dist/interface/to_be_generated/deserialize"
 
 //dependencies
 import * as r_temp_module_specifier_from_loc from "pareto-liana/dist/implementation/manual/refiners/temp_module_specifier/list_of_characters"
-import * as r_path_from_text from "pareto-resources/dist/implementation/manual/refiners/path/text"
+import * as r_path_from_text from "pareto-resources/dist/implementation/manual/refiners/path_unrestricted/text"
 
 import * as fs from "fs"
 import * as path from "path"

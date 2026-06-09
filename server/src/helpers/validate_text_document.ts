@@ -2,7 +2,7 @@ import * as _p from 'pareto-core/dist/assign'
 import * as helpers from './range'
 import * as t_unmarshall_result_to_diagnostics from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/diagnostics"
 import * as t_resolve_result_to_diagnostics from "liana-authoring/dist/implementation/manual/transformers/resolve_result/diagnostics"
-import * as t_node_path_to_text from "pareto-resources/dist/implementation/manual/transformers/path/text"
+import * as t_node_path_to_text from "pareto-resources/dist/implementation/manual/transformers/unrestricted_path/text"
 import * as t_deserialize_to_diagnostic from "liana-authoring/dist/implementation/manual/transformers/deserialize/diagnostics"
 import { load_document } from '../to_be_backend/load_document'
 import { schema_cache } from '../schema_cache'

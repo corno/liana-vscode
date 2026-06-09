@@ -15,12 +15,12 @@ import * as d_deserialize from "liana-authoring/dist/interface/to_be_generated/d
 
 import * as d_temp_module_specifier from "pareto-liana/dist/interface/to_be_generated/temp_module_specifier"
 import * as d_get_schema from "liana-authoring/dist/interface/to_be_generated/get_schema"
-import { $$ as qr_stat } from "pareto-host-nodejs/dist/queries/stat_possible_node"
-import { $$ as qr_read_file } from "pareto-host-nodejs/dist/queries/read_file"
+import { $$ as qr_stat } from "pareto-host-nodejs/dist/file_system_unrestricted/queries/stat_possible_node"
+import { $$ as qr_read_file } from "pareto-host-nodejs/dist/file_system_unrestricted/queries/read_file"
 
 
-import * as r_path_from_text from "pareto-resources/dist/implementation/manual/refiners/path/text"
-import * as t_path_to_text from "pareto-resources/dist/implementation/manual/transformers/path/text"
+import * as r_path_from_text from "pareto-resources/dist/implementation/manual/refiners/path_unrestricted/text"
+import * as t_path_to_text from "pareto-resources/dist/implementation/manual/transformers/unrestricted_path/text"
 import { $$ as q_deserialize } from "liana-authoring/dist/implementation/manual/queries/deserialize"
 import { $$ as q_get_schema_path } from "liana-authoring/dist/implementation/manual/queries/get_schema_path"
 import { $$ as q_get_schema } from "liana-authoring/dist/implementation/manual/queries/get_schema"
@@ -37,9 +37,12 @@ export const load_document = <T>(
 
 	q_deserialize(
 		{
-			'get schema path': q_get_schema_path({
-				'stat': qr_stat
-			}),
+			'get schema path': q_get_schema_path(
+				{
+					'stat': qr_stat
+				},
+				null,
+			),
 			'get schema': ($p, e_t) => {
 				return __query_result(
 					(on_success, on_error) => {
@@ -51,6 +54,7 @@ export const load_document = <T>(
 									{
 										'read file': qr_read_file
 									},
+									null,
 								)(
 									$p,
 									($) => $
@@ -65,7 +69,8 @@ export const load_document = <T>(
 					}
 				)
 			}
-		}
+		},
+		null,
 	)(
 		{
 			'content': document.getText(),
