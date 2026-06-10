@@ -68,6 +68,9 @@ export const create_on_initialize: (
 				},
 				'documentFormattingProvider': true,
 				'selectionRangeProvider': true,
+				'documentLinkProvider': {
+					'resolveProvider': false
+				},
 			}
 		}
 		if (has_workspace_folder_capability) {

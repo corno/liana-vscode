@@ -15,6 +15,7 @@ import { create_on_code_action } from './connection/on_code_action'
 import { create_on_code_action_resolve } from './connection/on_code_action_resolve'
 import { create_on_document_formatting } from './connection/on_document_formatting'
 import { create_on_document_symbol } from './connection/on_document_symbol'
+import { create_on_document_link } from './connection/on_document_link'
 
 export const create_connection = (
 	document_settings: Map<string, Thenable<Settings>>,
@@ -107,6 +108,10 @@ export const create_connection = (
 
 	connection.onDocumentSymbol(
 		create_on_document_symbol(documents)
+	)
+
+	connection.onDocumentLinks(
+		create_on_document_link(documents)
 	)
 
 	// Handle shutdown gracefully
