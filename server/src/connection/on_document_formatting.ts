@@ -7,15 +7,15 @@ import * as t_parse_tree_to_text from "astn/dist/implementation/manual/transform
 
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
+import { Connection_Context } from '../connection_context'
 
 export const create_on_document_formatting: (
-	documents: vscode_node.TextDocuments<vscode_textdocument.TextDocument>,
-	connection: vscode_node.Connection,
-) => vscode_node.ServerRequestHandler<vscode_node.DocumentFormattingParams, vscode_node.TextEdit[] | null | undefined, never, void> = (documents, connection) => {
+	connection_context: Connection_Context,
+) => vscode_node.ServerRequestHandler<vscode_node.DocumentFormattingParams, vscode_node.TextEdit[] | null | undefined, never, void> = (connection_context) => {
 	return (params: vscode_node.DocumentFormattingParams): vscode_node.TextEdit[] => {
-		const document = documents.get(params.textDocument.uri)
+		const document = connection_context.documents.get(params.textDocument.uri)
 		if (document === undefined) {
-			connection.console.log('Document formatting called but document not found')
+			connection_context.connection.console.log('Document formatting called but document not found')
 			return []
 		}
 
@@ -57,9 +57,9 @@ export const create_on_document_formatting: (
 				]
 			},
 			($) => {
-				connection.window.showInformationMessage(`could not format document due to parsing error`)
-				return []
-			}
-		)
-	}
+			connection_context.connection.window.showInformationMessage(`could not format document due to parsing error`)
+			return []
+		}
+	)
+}
 }

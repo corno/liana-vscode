@@ -7,15 +7,16 @@ import { schema_cache } from '../schema_cache'
 
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
+import { Connection_Context } from '../connection_context'
 
 export const create_on_hover: (
-	documents: vscode_node.TextDocuments<vscode_textdocument.TextDocument>,
-) => vscode_node.ServerRequestHandler<vscode_node.HoverParams, vscode_node.Hover | null, never, void> = (documents) => {
+	connection_context: Connection_Context,
+) => vscode_node.ServerRequestHandler<vscode_node.HoverParams, vscode_node.Hover | null, never, void> = (connection_context) => {
 	return (hover_params, cancellation_token, workdone_progress, result_progress) => {
 		// The pass parameter contains the position of the text document in
 		// which code complete got requested.
 
-		const doc = documents.get(hover_params.textDocument.uri)
+		const doc = connection_context.documents.get(hover_params.textDocument.uri)
 		if (doc === undefined) {
 			return null
 		}

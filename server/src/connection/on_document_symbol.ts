@@ -9,12 +9,13 @@ import { schema_cache } from '../schema_cache'
 
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
+import { Connection_Context } from '../connection_context'
 
 export const create_on_document_symbol: (
-	documents: vscode_node.TextDocuments<vscode_textdocument.TextDocument>,
-) => vscode_node.ServerRequestHandler<vscode_node.DocumentSymbolParams, vscode_node.SymbolInformation[] | vscode_node.DocumentSymbol[] | undefined | null, vscode_node.SymbolInformation[] | vscode_node.DocumentSymbol[], void> = (documents) => {
+	connection_context: Connection_Context,
+) => vscode_node.ServerRequestHandler<vscode_node.DocumentSymbolParams, vscode_node.SymbolInformation[] | vscode_node.DocumentSymbol[] | undefined | null, vscode_node.SymbolInformation[] | vscode_node.DocumentSymbol[], void> = (connection_context) => {
 	return (params) => {
-		const doc = documents.get(params.textDocument.uri)
+		const doc = connection_context.documents.get(params.textDocument.uri)
 		if (doc === undefined) {
 			return []
 		}

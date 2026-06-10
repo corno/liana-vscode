@@ -1,22 +1,19 @@
 import * as vscode_node from 'vscode-languageserver/node'
+import { Connection_Context } from '../connection_context'
 
 export const create_on_initialized: (
-	connection: vscode_node.Connection,
-	has_configuration_capability: boolean,
-	has_workspace_folder_capability: boolean,
+	connection_context: Connection_Context,
 ) => vscode_node.NotificationHandler<vscode_node.InitializedParams> = (
-	connection,
-	has_configuration_capability,
-	has_workspace_folder_capability,
+	connection_context,
 ) => {
 	return () => {
-		if (has_configuration_capability) {
+		if (connection_context['has configuration capability']()) {
 			// Register for all configuration changes.
-			connection.client.register(vscode_node.DidChangeConfigurationNotification.type, undefined)
+			connection_context.connection.client.register(vscode_node.DidChangeConfigurationNotification.type, undefined)
 		}
-		if (has_workspace_folder_capability) {
-			connection.workspace.onDidChangeWorkspaceFolders(_event => {
-				connection.console.log('Workspace folder change event received.')
+		if (connection_context['has workspace folder capability']()) {
+			connection_context.connection.workspace.onDidChangeWorkspaceFolders(_event => {
+				connection_context.connection.console.log('Workspace folder change event received.')
 			})
 		}
 	}

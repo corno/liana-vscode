@@ -11,12 +11,13 @@ import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
 import * as path from 'path'
 import { pathToFileURL } from 'url'
+import { Connection_Context } from '../connection_context'
 
 export const create_on_document_link: (
-	documents: vscode_node.TextDocuments<vscode_textdocument.TextDocument>,
-) => vscode_node.ServerRequestHandler<vscode_node.DocumentLinkParams, vscode_node.DocumentLink[] | null, never, void> = (documents) => {
+	connection_context: Connection_Context,
+) => vscode_node.ServerRequestHandler<vscode_node.DocumentLinkParams, vscode_node.DocumentLink[] | null, never, void> = (connection_context) => {
 	return (link_params, cancellation_token, workdone_progress, result_progress) => {
-		const doc = documents.get(link_params.textDocument.uri)
+		const doc = connection_context.documents.get(link_params.textDocument.uri)
 		if (doc === undefined) {
 			return null
 		}

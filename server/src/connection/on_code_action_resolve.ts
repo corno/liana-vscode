@@ -9,6 +9,8 @@ import { schema_cache } from '../schema_cache'
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
 
+import { Connection_Context } from '../connection_context'
+
 function indent_replacement_text(
 	range: vscode_node.Range,
 	document: vscode_textdocument.TextDocument,
@@ -38,27 +40,26 @@ function indent_replacement_text(
 }
 
 export const create_on_code_action_resolve: (
-	documents: vscode_node.TextDocuments<vscode_textdocument.TextDocument>,
-	connection: vscode_node.Connection,
-) => (action: vscode_node.CodeAction) => Thenable<vscode_node.CodeAction> = (documents, connection) => {
+	connection_context: Connection_Context,
+) => (action: vscode_node.CodeAction) => Thenable<vscode_node.CodeAction> = (connection_context) => {
 	return (action: vscode_node.CodeAction) => {
 		return new Promise<vscode_node.CodeAction>((resolve) => {
 			if (!action.data) {
-				connection.console.log('Code action resolve called without data')
+				connection_context.connection.console.log('Code action resolve called without data')
 				resolve(action)
 				return
 			}
 
 			const { uri, position, style, shallow } = action.data
-			const document = documents.get(uri)
+			const document = connection_context.documents.get(uri)
 
 			if (document === undefined) {
-				connection.console.log('Code action resolve called but document not found')
+				connection_context.connection.console.log('Code action resolve called but document not found')
 				resolve(action)
 				return
 			}
 
-			connection.console.log(`Resolving code action: ${action.title}`)
+			connection_context.connection.console.log(`Resolving code action: ${action.title}`)
 
 			load_document(
 				document,

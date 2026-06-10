@@ -1,9 +1,10 @@
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
+import { Connection_Context } from '../connection_context'
 
 export const create_on_code_action: (
-	documents: vscode_node.TextDocuments<vscode_textdocument.TextDocument>,
-) => vscode_node.ServerRequestHandler<vscode_node.CodeActionParams, (vscode_node.Command | vscode_node.CodeAction)[] | null | undefined, (vscode_node.Command | vscode_node.CodeAction)[], void> = (documents) => {
+	connection_context: Connection_Context,
+) => vscode_node.ServerRequestHandler<vscode_node.CodeActionParams, (vscode_node.Command | vscode_node.CodeAction)[] | null | undefined, (vscode_node.Command | vscode_node.CodeAction)[], void> = (connection_context) => {
 	return (params: vscode_node.CodeActionParams) => (
 		[
 			['Convert to verbose notation (shallow)', 'verbose', true],

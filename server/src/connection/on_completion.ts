@@ -10,17 +10,17 @@ import { schema_cache } from '../schema_cache'
 
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
+import { Connection_Context } from '../connection_context'
 
 export const create_on_completion: (
-	documents: vscode_node.TextDocuments<vscode_textdocument.TextDocument>,
-	document_notation_styles: Map<string, 'verbose' | 'concise'>,
-) => vscode_node.ServerRequestHandler<vscode_node.CompletionParams, vscode_node.CompletionList | null, vscode_node.CompletionItem[], void> = (documents, document_notation_styles) => {
+	connection_context: Connection_Context,
+) => vscode_node.ServerRequestHandler<vscode_node.CompletionParams, vscode_node.CompletionList | null, vscode_node.CompletionItem[], void> = (connection_context) => {
 	return (params) => {
 		// The pass parameter contains the position of the text document in
 		// which code complete got requested. For the example we ignore this
 		// info and always provide the same completion items.
 
-		const doc = documents.get(params.textDocument.uri)
+		const doc = connection_context.documents.get(params.textDocument.uri)
 		if (doc === undefined) {
 			return null
 		}
@@ -56,11 +56,9 @@ export const create_on_completion: (
 						{
 							'indent': "    ",
 							'position': params.position,
-							'style': (document_notation_styles.get(params.textDocument.uri) || document_notation_styles.get('__default__') || 'verbose') === 'verbose' ? ['verbose', null] : ['concise', null]
-						}
-					).__decide(
-						($) => {
-							const type = $.type
+						'style': (connection_context['document notation styles'].get(params.textDocument.uri) || connection_context['document notation styles'].get('__default__') || 'verbose') === 'verbose' ? ['verbose', null] : ['concise', null]					}
+				).__decide(
+					($) => {							const type = $.type
 
 							// Backend signals semantic intent through type
 							// For missing value/option, hash must be present (assertion)

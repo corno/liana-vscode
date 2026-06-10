@@ -1,12 +1,13 @@
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
 import { validate_text_document } from '../helpers/validate_text_document'
+import { Connection_Context } from '../connection_context'
 
 export const create_on_diagnostics: (
-	documents: vscode_node.TextDocuments<vscode_textdocument.TextDocument>,
-) => vscode_node.ServerRequestHandler<vscode_node.DocumentDiagnosticParams, vscode_node.DocumentDiagnosticReport, vscode_node.DocumentDiagnosticReportPartialResult, vscode_node.DiagnosticServerCancellationData> = (documents) => {
+	connection_context: Connection_Context,
+) => vscode_node.ServerRequestHandler<vscode_node.DocumentDiagnosticParams, vscode_node.DocumentDiagnosticReport, vscode_node.DocumentDiagnosticReportPartialResult, vscode_node.DiagnosticServerCancellationData> = (connection_context) => {
 	return async (params) => {
-		const document = documents.get(params.textDocument.uri)
+		const document = connection_context.documents.get(params.textDocument.uri)
 		if (document !== undefined) {
 			return {
 				'kind': vscode_node.DocumentDiagnosticReportKind.Full,

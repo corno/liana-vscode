@@ -9,6 +9,7 @@ import { schema_cache } from '../schema_cache'
 
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
+import { Connection_Context } from '../connection_context'
 
 function convert_selecton_range($: d_unmarshall_result.Range_Stack): vscode_node.SelectionRange {
 	return {
@@ -21,17 +22,16 @@ function convert_selecton_range($: d_unmarshall_result.Range_Stack): vscode_node
 }
 
 export const create_on_selection_ranges: (
-	documents: vscode_node.TextDocuments<vscode_textdocument.TextDocument>,
-	connection: vscode_node.Connection,
-) => vscode_node.ServerRequestHandler<vscode_node.SelectionRangeParams, vscode_node.SelectionRange[] | null, vscode_node.SelectionRange[], void> = (documents, connection) => {
+	connection_context: Connection_Context,
+) => vscode_node.ServerRequestHandler<vscode_node.SelectionRangeParams, vscode_node.SelectionRange[] | null, vscode_node.SelectionRange[], void> = (connection_context) => {
 	return (params) => {
 
 		return new Promise<vscode_node.SelectionRange[]>(
 			(resolve) => {
-				connection.console.log(`Selection ranges requested at position: ${params.positions.map(p => `${p.line}:${p.character}`).join(', ')}`)
-				const doc = documents.get(params.textDocument.uri)
+				connection_context.connection.console.log(`Selection ranges requested at position: ${params.positions.map(p => `${p.line}:${p.character}`).join(', ')}`)
+				const doc = connection_context.documents.get(params.textDocument.uri)
 				if (doc === undefined) {
-					connection.console.log('Selection ranges: document not found, returning empty array')
+					connection_context.connection.console.log('Selection ranges: document not found, returning empty array')
 					resolve([])
 					return
 				}
@@ -39,7 +39,7 @@ export const create_on_selection_ranges: (
 					doc,
 					schema_cache,
 					($) => {
-						connection.console.log('Selection ranges: load_document failed (deserialize error), returning empty array')
+						connection_context.connection.console.log('Selection ranges: load_document failed (deserialize error), returning empty array')
 						return []
 					},
 					(instance) => {
@@ -55,15 +55,14 @@ export const create_on_selection_ranges: (
 								'positions': _p.list.literal(params.positions),
 							}
 						).__get_raw_copy().map(($): vscode_node.SelectionRange => convert_selecton_range($))
-						connection.console.log(`Selection ranges: backend returned ${result.length} range(s): ${JSON.stringify(result, null, 2)}`)
-						return result
-					},
-					(final_result) => {
-						connection.console.log(`Selection ranges: resolving with ${final_result.length} range(s)`)
-						resolve(final_result)
-					},
-				)
-			},
-		)
-	}
-}
+					connection_context.connection.console.log(`Selection ranges: backend returned ${result.length} range(s): ${JSON.stringify(result, null, 2)}`)
+					return result
+				},
+				(final_result) => {
+					connection_context.connection.console.log(`Selection ranges: resolving with ${final_result.length} range(s)`)
+					resolve(final_result)
+				},
+			)
+		},
+	)
+}}

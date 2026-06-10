@@ -1,11 +1,11 @@
 import * as vscode_node from 'vscode-languageserver/node'
+import { Connection_Context } from '../connection_context'
 
 export const create_on_update_notation_style: (
-	connection: vscode_node.Connection,
-	document_notation_styles: Map<string, 'verbose' | 'concise'>,
-) => vscode_node.RequestHandler<{ uri: string, style: 'verbose' | 'concise' }, void, void> = (connection, document_notation_styles) => {
+	connection_context: Connection_Context,
+) => vscode_node.RequestHandler<{ uri: string, style: 'verbose' | 'concise' }, void, void> = (connection_context) => {
 	return (params: { uri: string, style: 'verbose' | 'concise' }) => {
-		document_notation_styles.set(params.uri, params.style)
-		connection.console.log(`Notation style updated for ${params.uri}: ${params.style}`)
+		connection_context['document notation styles'].set(params.uri, params.style)
+		connection_context.connection.console.log(`Notation style updated for ${params.uri}: ${params.style}`)
 	}
 }

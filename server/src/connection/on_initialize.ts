@@ -1,21 +1,16 @@
 import * as vscode_node from 'vscode-languageserver/node'
+import { Connection_Context } from '../connection_context'
 
 export const create_on_initialize: (
-	document_notation_styles: Map<string, 'verbose' | 'concise'>,
-	set_has_configuration_capability: (value: boolean) => void,
-	set_has_workspace_folder_capability: (value: boolean) => void,
-	set_has_diagnostic_related_information_capability: (value: boolean) => void,
+	connection_context: Connection_Context,
 ) => vscode_node.ServerRequestHandler<vscode_node.InitializeParams, vscode_node.InitializeResult, never, vscode_node.InitializeError> = (
-	document_notation_styles,
-	set_has_configuration_capability,
-	set_has_workspace_folder_capability,
-	set_has_diagnostic_related_information_capability,
+	connection_context,
 ) => {
 	return (params: vscode_node.InitializeParams) => {
 		// Get notation style from initialization options (for initial document)
 		if (params.initializationOptions && params.initializationOptions.notationStyle) {
 			// Store as default for documents without specific preference
-			document_notation_styles.set('__default__', params.initializationOptions.notationStyle)
+			connection_context['document notation styles'].set('__default__', params.initializationOptions.notationStyle)
 		}
 
 		const capabilities = params.capabilities
@@ -34,9 +29,9 @@ export const create_on_initialize: (
 			capabilities.textDocument.publishDiagnostics.relatedInformation
 		)
 
-		set_has_configuration_capability(has_configuration_capability)
-		set_has_workspace_folder_capability(has_workspace_folder_capability)
-		set_has_diagnostic_related_information_capability(has_diagnostic_related_information_capability)
+		connection_context['set has configuration capability'](has_configuration_capability)
+		connection_context['set has workspace folder capability'](has_workspace_folder_capability)
+		connection_context['set has diagnostic related information capability'](has_diagnostic_related_information_capability)
 
 		const result: vscode_node.InitializeResult = {
 			'capabilities': {

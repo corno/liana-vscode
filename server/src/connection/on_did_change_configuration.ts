@@ -1,31 +1,24 @@
 import * as vscode_node from 'vscode-languageserver/node'
 import { Settings } from '../types'
+import { Connection_Context } from '../connection_context'
 
 export const create_on_did_change_configuration: (
-	connection: vscode_node.Connection,
-	document_settings: Map<string, Thenable<Settings>>,
-	has_configuration_capability: boolean,
-	default_settings: Settings,
-	set_global_settings: (settings: Settings) => void,
+	connection_context: Connection_Context,
 ) => vscode_node.NotificationHandler<vscode_node.DidChangeConfigurationParams> = (
-	connection,
-	document_settings,
-	has_configuration_capability,
-	default_settings,
-	set_global_settings,
+	connection_context,
 ) => {
 	return (change) => {
-		if (has_configuration_capability) {
+		if (connection_context['has configuration capability']()) {
 			// Reset all cached document settings
-			document_settings.clear()
+			connection_context['document settings'].clear()
 		} else {
-			set_global_settings(<Settings>(
-				(change.settings.languageServerExample || default_settings)
+			connection_context['set global settings'](<Settings>(
+				(change.settings.languageServerExample || connection_context['default settings'])
 			))
 		}
 		// Refresh the diagnostics since the `max_number_of_problems` could have changed.
 		// We could optimize things here and re-fetch the setting first can compare it
 		// to the existing setting, but this is out of scope for this example.
-		connection.languages.diagnostics.refresh()
+		connection_context.connection.languages.diagnostics.refresh()
 	}
 }
