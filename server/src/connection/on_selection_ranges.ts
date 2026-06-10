@@ -5,7 +5,6 @@ import * as t_unmarshall_result_to_selection_ranges from "liana-authoring/dist/i
 
 import * as helpers from '../helpers/range'
 import { load_document } from '../to_be_backend/load_document'
-import { schema_cache } from '../schema_cache'
 
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
@@ -37,7 +36,7 @@ export const create_on_selection_ranges: (
 				}
 				load_document(
 					doc,
-					schema_cache,
+					connection_context.cache,
 					($) => {
 						connection_context.connection.console.log('Selection ranges: load_document failed (deserialize error), returning empty array')
 						return []

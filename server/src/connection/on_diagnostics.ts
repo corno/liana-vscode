@@ -11,7 +11,7 @@ export const create_on_diagnostics: (
 		if (document !== undefined) {
 			return {
 				'kind': vscode_node.DocumentDiagnosticReportKind.Full,
-				'items': await validate_text_document(document)
+				'items': await validate_text_document(document, connection_context.cache)
 			}
 		} else {
 			// We don't know the document. We can either try to read it from disk

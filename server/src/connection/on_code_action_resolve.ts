@@ -4,7 +4,6 @@ import * as t_unmarshall_result_to_formatting_edits from "liana-authoring/dist/i
 
 import * as helpers from '../helpers/range'
 import { load_document } from '../to_be_backend/load_document'
-import { schema_cache } from '../schema_cache'
 
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
@@ -63,7 +62,7 @@ export const create_on_code_action_resolve: (
 
 			load_document(
 				document,
-				schema_cache,
+				connection_context.cache,
 				($) => null,
 				(instance) => t_unmarshall_result_to_formatting_edits.Document(
 					_p.decide.state(instance, ($) => {

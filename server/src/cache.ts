@@ -4,10 +4,23 @@ export type Cache_Entry<Result, Error> =
 	| ['success', Result]
 	| ['error', Error]
 
-export type Cache<Cache_Entry> = Map<string, Cache_Entry>
+type Pending_Request<Result, Error> = {
+	callbacks: Array<{
+		on_success: ($: Result) => void
+		on_error: ($: Error) => void
+	}>
+}
+
+export type Cache<Cache_Entry> = {
+	map: Map<string, Cache_Entry>
+	pending_requests: Map<string, Pending_Request<any, any>>
+}
 
 export function create_cache<Cache_Entry>(): Cache<Cache_Entry> {
-	return new Map<string, Cache_Entry>()
+	return {
+		map: new Map<string, Cache_Entry>(),
+		pending_requests: new Map<string, Pending_Request<any, any>>()
+	}
 }
 
 export function get_cached_or_fresh<Result, Error>(
@@ -20,7 +33,7 @@ export function get_cached_or_fresh<Result, Error>(
 	on_success: ($: Result) => void,
 	on_error: ($: Error) => void
 ): void {
-	const cached = cache.get(key)
+	const cached = cache.map.get(key)
 	if (cached !== undefined) {
 		// Cache hit - return immediately
 		switch (cached[0]) {
@@ -28,17 +41,41 @@ export function get_cached_or_fresh<Result, Error>(
 			case 'error': return on_error(cached[1])
 			default: return _p.au(cached[0])
 		}
-	} else {
-		// Cache miss - execute the query and cache the result
-		return if_not_in_cache(
-			(result) => {
-				cache.set(key, ['success', result])
-				on_success(result)
-			},
-			(error) => {
-				cache.set(key, ['error', error])
-				on_error(error)
-			}
-		)
 	}
+	
+	// Check if there's already a request in flight for this key
+	const pending = cache.pending_requests.get(key)
+	if (pending !== undefined) {
+		// Request already in progress - add our callbacks to the queue
+		pending.callbacks.push({ on_success, on_error })
+		return
+	}
+	
+	// No cache hit and no pending request - create a new pending request
+	const new_pending: Pending_Request<Result, Error> = {
+		callbacks: [{ on_success, on_error }]
+	}
+	cache.pending_requests.set(key, new_pending)
+	
+	// Execute the query once
+	if_not_in_cache(
+		(result) => {
+			cache.map.set(key, ['success', result])
+			// Notify all waiting callbacks
+			const pending = cache.pending_requests.get(key)
+			cache.pending_requests.delete(key)
+			if (pending) {
+				pending.callbacks.forEach(cb => cb.on_success(result))
+			}
+		},
+		(error) => {
+			cache.map.set(key, ['error', error])
+			// Notify all waiting callbacks
+			const pending = cache.pending_requests.get(key)
+			cache.pending_requests.delete(key)
+			if (pending) {
+				pending.callbacks.forEach(cb => cb.on_error(error))
+			}
+		}
+	)
 }

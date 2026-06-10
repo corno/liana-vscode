@@ -6,7 +6,6 @@ import _p_list_from_text from 'pareto-core/dist/_p_list_from_text'
 import * as t_unmarshall_result_to_completion_suggestions from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/completion_suggestions"
 
 import { load_document } from '../to_be_backend/load_document'
-import { schema_cache } from '../schema_cache'
 
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
@@ -41,7 +40,7 @@ export const create_on_completion: (
 
 			load_document(
 				doc,
-				schema_cache,
+				connection_context.cache,
 				($) => ({ 'isIncomplete': false, 'items': [] }),
 				(instance) => ({
 					'isIncomplete': false,

@@ -5,7 +5,6 @@ import * as t_unmarshall_result_to_document_links from "liana-authoring/dist/imp
 import * as helpers from '../helpers/range'
 
 import { load_document } from '../to_be_backend/load_document'
-import { schema_cache } from '../schema_cache'
 
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
@@ -26,7 +25,7 @@ export const create_on_document_link: (
 			(resolve) => {
 				load_document(
 					doc,
-					schema_cache,
+					connection_context.cache,
 					($) => [],
 					(instance) => {
 						// Get the directory of the current document for resolving relative paths

@@ -5,17 +5,18 @@ import * as t_resolve_result_to_diagnostics from "liana-authoring/dist/implement
 import * as t_node_path_to_text from "pareto-resources/dist/implementation/manual/transformers/unrestricted_path/text"
 import * as t_deserialize_to_diagnostic from "liana-authoring/dist/implementation/manual/transformers/deserialize/diagnostics"
 import { load_document } from '../to_be_backend/load_document'
-import { schema_cache } from '../schema_cache'
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
+import { Cache_Context } from '../connection_context'
 
 export async function validate_text_document(
-	text_document: vscode_textdocument.TextDocument
+	text_document: vscode_textdocument.TextDocument,
+	cache: Cache_Context,
 ): Promise<vscode_node.Diagnostic[]> {
 	return new Promise<vscode_node.Diagnostic[]>((resolve) => {
 		load_document(
 			text_document,
-			schema_cache,
+			cache,
 			($) => _p.list.literal([
 				t_deserialize_to_diagnostic.Error($)
 			]),

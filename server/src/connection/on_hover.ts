@@ -3,7 +3,6 @@ import * as _p from 'pareto-core/dist/assign'
 import * as t_unmarshall_result_to_hover_info from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/hover_info"
 
 import { load_document } from '../to_be_backend/load_document'
-import { schema_cache } from '../schema_cache'
 
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
@@ -25,7 +24,7 @@ export const create_on_hover: (
 			(resolve) => {
 				load_document(
 					doc,
-					schema_cache,
+					connection_context.cache,
 					($) => ({
 						'contents': []
 					}),
