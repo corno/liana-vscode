@@ -1,4 +1,4 @@
-import * as _p from 'pareto-core/dist/assign'
+import * as p_ from 'pareto-core/dist/assign'
 
 import * as t_unmarshall_result_to_document_links from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/document_links"
 
@@ -35,11 +35,11 @@ export const create_on_document_link: (
 						
 						// TODO: Replace with actual transformer call when available
 						return t_unmarshall_result_to_document_links.Document(
-						    _p.decide.state(instance, ($) => {
+						    p_.decide.state(instance, ($) => {
 						        switch ($[0]) {
-						            case 'constrained': return _p.ss($, ($) => $.unmarshalled)
-						            case 'unconstrained': return _p.ss($, ($) => $)
-						            default: return _p.au($[0])
+						            case 'constrained': return p_.ss($, ($) => $.unmarshalled)
+						            case 'unconstrained': return p_.ss($, ($) => $)
+						            default: return p_.au($[0])
 						        }
 						    }),
 						).__get_raw_copy().map(($) => {
@@ -50,14 +50,21 @@ export const create_on_document_link: (
 							
 							// Convert to file:// URI
 							const target_uri = pathToFileURL(target_path).toString()
+
+							let tooltip: string | undefined = undefined
+							$.tooltip.__extract_data(
+								($) => {
+									tooltip = $
+								},
+								() => {
+									tooltip = undefined
+								}
+							)
 							
 							return {
 								'range': helpers.create_range_from_range($.range),
 								'target': target_uri,
-								'tooltip': $.tooltip.__decide(
-									($) => $,
-									() => undefined
-								)
+								'tooltip': tooltip
 							}
 						})
 						

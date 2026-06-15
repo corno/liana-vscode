@@ -1,6 +1,5 @@
 import * as vscode_node from 'vscode-languageserver/node'
-import { Settings } from '../types'
-import { Connection_Context } from '../connection_context'
+import { Connection_Context, Settings } from '../connection_context'
 
 export const create_on_did_change_configuration: (
 	connection_context: Connection_Context,
@@ -12,9 +11,9 @@ export const create_on_did_change_configuration: (
 			// Reset all cached document settings
 			connection_context['document settings'].clear()
 		} else {
-			connection_context['set global settings'](<Settings>(
+			connection_context['set global settings'](
 				(change.settings.languageServerExample || connection_context['default settings'])
-			))
+			)
 		}
 		// Refresh the diagnostics since the `max_number_of_problems` could have changed.
 		// We could optimize things here and re-fetch the setting first can compare it

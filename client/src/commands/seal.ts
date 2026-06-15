@@ -1,7 +1,7 @@
-import * as _p from 'pareto-core/dist/assign'
+import * as p_ from 'pareto-core/dist/assign'
+import p_create_refinement_context from 'pareto-core/dist/implementation/__internal/sync/create_refinement_context'
 
 import { $$ as ttt_seal } from 'liana-authoring/dist/implementation/manual/text_to_text/seal'
-import create_refinement_context from 'pareto-core/dist/__internals/async/create_refinement_context'
 
 import * as fs from 'fs'
 import * as path from 'path'
@@ -21,30 +21,32 @@ export default ((deps) => () => {
 	load_applicable_schema(
 		editor.document,
 		($) => {
-			_p.decide.state($.type, ($) => {
+			p_.decide.state($.type, ($): null => {
 				switch ($[0]) {
-					case 'read file': return _p.ss($, ($) => {
+					case 'read file': return p_.ss($, ($) => {
 						vscode.window.showErrorMessage('Cannot seal because no .liana/schema.slna file could be found in the same directory as the liana file: ' + $.error.message)
+						return null
 					})
-					case 'parse schema': return _p.ss($, ($) => {
+					case 'parse schema': return p_.ss($, ($) => {
 						vscode.window.showErrorMessage('Cannot seal because the .liana/schema.slna file is not a valid schema.')
+						return null
 					})
-					default: return _p.au($[0])
+					default: return p_.au($[0])
 				}
 			})
 		},
 		($) => {
-			create_refinement_context<string, string>(
+			p_create_refinement_context<string, string>(
 				(abort) => ttt_seal(
 					editor.document.getText(),
 					($) => abort("Sealing failed because the file is not valid Liana."),
 					{
 						'unmarshall': {
-							'module': _p.decide.state($, ($) => {
+							'module': p_.decide.state($, ($) => {
 								switch ($[0]) {
-									case 'constrained': return _p.ss($, ($) => $['module resolver'].entry.signature.module)
-									case 'unconstrained': return _p.ss($, ($) => $.module.entry)
-									default: return _p.au($[0])
+									case 'constrained': return p_.ss($, ($) => $['module resolver'].entry.signature.module)
+									case 'unconstrained': return p_.ss($, ($) => $.module.entry)
+									default: return p_.au($[0])
 								}
 							}),
 							'tab size': 1, // vscode works with character, not with columns

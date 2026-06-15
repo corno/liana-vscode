@@ -1,4 +1,4 @@
-import create_refinement_context from 'pareto-core/dist/__internals/async/create_refinement_context'
+import p_create_refinement_context from 'pareto-core/dist/implementation/__internal/sync/create_refinement_context'
 
 
 import { $$ as ttt_convert_to_json } from "liana-authoring/dist/implementation/manual/text_to_text/convert_to_json"
@@ -15,7 +15,7 @@ export default ((deps) => () => {
 			return
 		}
 
-		create_refinement_context<string, string>(
+		p_create_refinement_context<string, string>(
 			(abort) => ttt_convert_to_json(
 				editor.document.getText(),
 				($) => abort('Saving as JSON failed because the file is not valid ASTN.'),

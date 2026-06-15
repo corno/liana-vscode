@@ -1,4 +1,4 @@
-import create_refinement_context from 'pareto-core/dist/__internals/async/create_refinement_context'
+import create_refinement_context from 'pareto-core/dist/implementation/__internal/sync/create_refinement_context'
 
 import { $$ as ttt_convert_to_json } from "liana-authoring/dist/implementation/manual/text_to_text/convert_to_json"
 
@@ -30,7 +30,7 @@ export default ((deps) => () => {
 		)
 	).__extract_data(
 		($) => {
-			void editor.edit((editBuilder) => {
+			editor.edit((editBuilder) => {
 				editBuilder.replace(
 					new vscode.Range(
 						new vscode.Position(0, 0),

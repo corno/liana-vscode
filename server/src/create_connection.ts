@@ -1,8 +1,6 @@
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
-import { Connection_Context } from './connection_context'
-
-import { Settings } from './types'
+import { Connection_Context, Settings } from './connection_context'
 
 import { create_on_initialize } from './connection/on_initialize'
 import { create_on_initialized } from './connection/on_initialized'

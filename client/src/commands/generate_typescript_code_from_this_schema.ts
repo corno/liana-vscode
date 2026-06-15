@@ -1,5 +1,5 @@
-import create_refinement_context from 'pareto-core/dist/__internals/async/create_refinement_context'
-import * as _p from 'pareto-core/dist/assign'
+import p_create_refinement_context from 'pareto-core/dist/implementation/__internal/sync/create_refinement_context'
+import * as p_ from 'pareto-core/dist/assign'
 
 import * as c_generate_typescript from "pareto-liana/dist/implementation/manual/commands/generate_typescript"
 import * as cx_copy from "pareto-host-nodejs/dist/file_system_unrestricted/commands/copy"
@@ -32,31 +32,33 @@ export default ((deps) => async () => {
 	load_applicable_schema(
 		editor.document,
 		($) => {
-			_p.decide.state($.type, ($) => {
+			p_.decide.state($.type, ($): null => {
 				switch ($[0]) {
-					case 'read file': return _p.ss($, ($) => {
+					case 'read file': return p_.ss($, ($) => {
 						vscode.window.showErrorMessage('Cannot generate TypeScript code because no .liana/schema.slna file could be found: ' + $.error.message)
+						return null
 					})
-					case 'parse schema': return _p.ss($, ($) => {
+					case 'parse schema': return p_.ss($, ($) => {
 						vscode.window.showErrorMessage('Cannot generate TypeScript code because the .liana/schema.slna file is not a valid schema.')
+						return null
 					})
-					default: return _p.au($[0])
+					default: return p_.au($[0])
 				}
 			})
 		},
 		async ($) => {
 			// Convert to verbose notation using seal
-			create_refinement_context<string, string>(
+			p_create_refinement_context<string, string>(
 				(abort) => ttt_seal(
 					editor.document.getText(),
 					($) => abort("Cannot generate TypeScript code because the file is not valid Liana."),
 					{
 						'unmarshall': {
-							'module': _p.decide.state($, ($) => {
+							'module': p_.decide.state($, ($) => {
 								switch ($[0]) {
-									case 'constrained': return _p.ss($, ($) => $['module resolver'].entry.signature.module)
-									case 'unconstrained': return _p.ss($, ($) => $.module.entry)
-									default: return _p.au($[0])
+									case 'constrained': return p_.ss($, ($) => $['module resolver'].entry.signature.module)
+									case 'unconstrained': return p_.ss($, ($) => $.module.entry)
+									default: return p_.au($[0])
 								}
 							}),
 							'tab size': 1, // vscode works with character, not with columns
@@ -92,7 +94,7 @@ export default ((deps) => async () => {
 						return
 					}
 
-					create_refinement_context(
+					p_create_refinement_context(
 						(abort) => r_path_from_text.Node_Path(
 							tmp_file_path,
 							($) => abort('The file path is not valid.'),
@@ -103,16 +105,16 @@ export default ((deps) => async () => {
 					).__extract_data(
 						($) => {
 							c_generate_typescript.$$(
+								null,
+								{
+									'read file': qx_read_file.$$,
+								},
 								{
 									'copy': cx_copy.$$,
 									'make directory': cx_make_directory.$$,
 									'remove': cx_remove.$$,
 									'write file': cx_write_file.$$,
 								},
-								{
-									'read file': qx_read_file.$$,
-								},
-								null,
 							).execute(
 								{
 									'type': ['module specification', null],

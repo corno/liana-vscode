@@ -1,6 +1,6 @@
-import _p_list_from_text from 'pareto-core/dist/_p_list_from_text'
-import _p_variables from 'pareto-core/dist/_p_variables'
-import create_refinement_context from 'pareto-core/dist/__internals/async/create_refinement_context'
+import p_list_from_text from 'pareto-core/dist/implementation/specials/list_from_text'
+import p_variables from 'pareto-core/dist/implementation/specials/variables'
+import create_refinement_context from 'pareto-core/dist/implementation/__internal/sync/create_refinement_context'
 
 import * as r_parse_tree_from_loc from "astn-core/dist/implementation/manual/refiners/parse_tree/list_of_characters"
 import * as t_parse_tree_to_text from "astn/dist/implementation/manual/transformers/parse_tree/text"
@@ -21,7 +21,7 @@ export const create_on_document_formatting: (
 
 		return create_refinement_context(
 			(abort) => r_parse_tree_from_loc.Document(
-				_p_list_from_text(
+				p_list_from_text(
 					document.getText(),
 					($) => $
 				),
@@ -35,7 +35,7 @@ export const create_on_document_formatting: (
 
 				return [
 					vscode_node.TextEdit.replace(
-						_p_variables(() => {
+						p_variables(() => {
 							// Create range covering the entire document
 							const last_line = document.lineCount - 1
 							const last_line_length = document.getText(vscode_node.Range.create(last_line, 0, last_line + 1, 0)).length

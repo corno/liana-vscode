@@ -1,4 +1,4 @@
-import * as _p from 'pareto-core/dist/assign'
+import * as p_ from 'pareto-core/dist/assign'
 
 import * as d_document_symbols from "liana-authoring/dist/interface/to_be_generated/document_symbols"
 import * as t_unmarshall_result_to_document_symbols from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/document_symbols"
@@ -27,17 +27,17 @@ export const create_on_document_symbol: (
 						return ({
 							'name': $.name === "" ? "-empty-" : $.name, //empty strings result in a 'falsy name' errors
 							'detail': $.detail,
-							'kind': _p.decide.state($.value.kind, ($) => {
+							'kind': p_.decide.state($.value.kind, ($) => {
 								switch ($[0]) {
-									case 'string': return _p.ss($, ($) => vscode_node.SymbolKind.String)
-									case 'number': return _p.ss($, ($) => vscode_node.SymbolKind.Number)
-									case 'boolean': return _p.ss($, ($) => vscode_node.SymbolKind.Boolean)
-									case 'null': return _p.ss($, ($) => vscode_node.SymbolKind.Null)
-									case 'object': return _p.ss($, ($) => vscode_node.SymbolKind.Object)
-									case 'struct': return _p.ss($, ($) => vscode_node.SymbolKind.Struct)
-									case 'array': return _p.ss($, ($) => vscode_node.SymbolKind.Array)
-									case 'enum member': return _p.ss($, ($) => vscode_node.SymbolKind.EnumMember)
-									default: return _p.au($[0])
+									case 'string': return p_.ss($, ($) => vscode_node.SymbolKind.String)
+									case 'number': return p_.ss($, ($) => vscode_node.SymbolKind.Number)
+									case 'boolean': return p_.ss($, ($) => vscode_node.SymbolKind.Boolean)
+									case 'null': return p_.ss($, ($) => vscode_node.SymbolKind.Null)
+									case 'object': return p_.ss($, ($) => vscode_node.SymbolKind.Object)
+									case 'struct': return p_.ss($, ($) => vscode_node.SymbolKind.Struct)
+									case 'array': return p_.ss($, ($) => vscode_node.SymbolKind.Array)
+									case 'enum member': return p_.ss($, ($) => vscode_node.SymbolKind.EnumMember)
+									default: return p_.au($[0])
 								}
 							}),
 							'range': helpers.create_range_from_range($.range),
@@ -51,11 +51,11 @@ export const create_on_document_symbol: (
 					doc,
 					connection_context.cache,
 					($) => [],
-					(instance) => convert_value(t_unmarshall_result_to_document_symbols.Document(_p.decide.state(instance, ($) => {
+					(instance) => convert_value(t_unmarshall_result_to_document_symbols.Document(p_.decide.state(instance, ($) => {
 						switch ($[0]) {
-							case 'constrained': return _p.ss($, ($) => $.unmarshalled)
-							case 'unconstrained': return _p.ss($, ($) => $)
-							default: return _p.au($[0])
+							case 'constrained': return p_.ss($, ($) => $.unmarshalled)
+							case 'unconstrained': return p_.ss($, ($) => $)
+							default: return p_.au($[0])
 						}
 					}))),
 					resolve,

@@ -72,10 +72,13 @@ ctrl+shift+p
 select 'Liana:initialize Liana schema authoring environment'
 and select (or create) a directory where you want to author your schemas
 
-you should now have a directory with 2 files:
+you should now have a directory with 1 file and 1 directory (containing 1 file as well):
 
-- liana-schema.slna
-- my_schema.liana.lna
+````
+.liana
+    schema.slna
+my_schema.liana.lna
+````
 
 you can now either author the `my_schema.liana.lna` file or create your own one; right click in the folder -> create liana file (make sure the file has the double extension '.liana.lna', more about this later).
 

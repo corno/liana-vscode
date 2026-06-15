@@ -1,4 +1,4 @@
-import * as _p from 'pareto-core/dist/assign'
+import * as p_ from 'pareto-core/dist/assign'
 
 import * as t_unmarshall_result_to_formatting_edits from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/formatting_edits"
 
@@ -65,11 +65,11 @@ export const create_on_code_action_resolve: (
 				connection_context.cache,
 				($) => null,
 				(instance) => t_unmarshall_result_to_formatting_edits.Document(
-					_p.decide.state(instance, ($) => {
+					p_.decide.state(instance, ($) => {
 						switch ($[0]) {
-							case 'constrained': return _p.ss($, ($) => $.unmarshalled)
-							case 'unconstrained': return _p.ss($, ($) => $)
-							default: return _p.au($[0])
+							case 'constrained': return p_.ss($, ($) => $.unmarshalled)
+							case 'unconstrained': return p_.ss($, ($) => $)
+							default: return p_.au($[0])
 						}
 					}),
 					{
@@ -87,21 +87,28 @@ export const create_on_code_action_resolve: (
 					if ($ === null) {
 						resolve(action)
 					} else {
+
+						let changes: vscode_node.TextEdit[] = []
+						$.__extract_data(
+							($) => {
+								changes = [
+									vscode_node.TextEdit.replace(
+										helpers.create_range_from_range($.range),
+										indent_replacement_text(
+											helpers.create_range_from_range($.range),
+											document,
+											$.text,
+										)
+									)
+								]
+							},
+							() => {
+								
+							}
+						)
 						action.edit = {
 							changes: {
-								[uri]: $.__decide(
-									($) => [
-										vscode_node.TextEdit.replace(
-											helpers.create_range_from_range($.range),
-											indent_replacement_text(
-												helpers.create_range_from_range($.range),
-												document,
-												$.text,
-											)
-										)
-									],
-									() => []
-								)
+								[uri]: changes
 							}
 						}
 						resolve(action)

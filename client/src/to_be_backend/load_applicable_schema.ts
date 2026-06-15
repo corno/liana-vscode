@@ -1,11 +1,9 @@
-import create_refinement_context from 'pareto-core/dist/__internals/async/create_refinement_context'
-import _p_list_from_text from 'pareto-core/dist/_p_list_from_text'
-import _p_unreachable from 'pareto-core/dist/_p_unreachable_code_path'
+import p_create_refinement_context from 'pareto-core/dist/implementation/__internal/sync/create_refinement_context'
+import p_list_from_text from 'pareto-core/dist/implementation/specials/list_from_text'
+import p_unreachable from 'pareto-core/dist/implementation/specials/unreachable_code_path'
 
 import * as d_deserialize_resolved from "liana-core/dist/interface/to_be_generated/deserialize_resolved"
-import * as d_unmarshall_result_from_lines_of_characters from "liana-authoring/dist/interface/to_be_generated/unmarshall_result_from_loc"
 import * as d_temp_module_specifier from "pareto-liana/dist/interface/to_be_generated/temp_module_specifier"
-import * as d_deserialize from "liana-authoring/dist/interface/to_be_generated/deserialize"
 
 //dependencies
 import * as r_temp_module_specifier_from_loc from "pareto-liana/dist/implementation/manual/refiners/temp_module_specifier/list_of_characters"
@@ -20,7 +18,10 @@ export type Load_Schema_Error = {
 	'schema path': string
 	'type':
 	| ['read file', {
-		'error': NodeJS.ErrnoException
+		// 'error': NodeJS.ErrnoException
+		'error': {
+			'message': string
+		}
 	}]
 	| ['parse schema', {
 		'error': d_deserialize_resolved.Error
@@ -47,13 +48,16 @@ export function load_applicable_schema(
 				on_error({
 					'schema path': schema_path,
 					'type': ['read file', {
-						'error': err,
+						// 'error': err,
+						'error': {
+							'message': err.message
+						},
 					}]
 				})
 			} else {
-				create_refinement_context<d_temp_module_specifier.Temp_Module_Specifier, d_deserialize_resolved.Error>(
+				p_create_refinement_context<d_temp_module_specifier.Temp_Module_Specifier, d_deserialize_resolved.Error>(
 					(abort) => r_temp_module_specifier_from_loc.Module_Specifier(
-						_p_list_from_text(data, ($) => $),
+						p_list_from_text(data, ($) => $),
 						($) => abort($)
 
 					)
@@ -61,7 +65,7 @@ export function load_applicable_schema(
 					($) => {
 						const parsed_schema_path = r_path_from_text.Node_Path(
 							schema_path,
-							() => _p_unreachable("the path is constructed above"),
+							() => p_unreachable("the path is constructed above"),
 							{
 								'pedantic': true
 							}

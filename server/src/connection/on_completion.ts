@@ -1,6 +1,4 @@
-import * as _p from 'pareto-core/dist/assign'
-import * as _pi from 'pareto-core/dist/interface'
-import _p_list_from_text from 'pareto-core/dist/_p_list_from_text'
+import * as p_ from 'pareto-core/dist/assign'
 
 //data types
 import * as t_unmarshall_result_to_completion_suggestions from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/completion_suggestions"
@@ -42,49 +40,52 @@ export const create_on_completion: (
 				doc,
 				connection_context.cache,
 				($) => ({ 'isIncomplete': false, 'items': [] }),
-				(instance) => ({
-					'isIncomplete': false,
-					'items': t_unmarshall_result_to_completion_suggestions.Document(
-						_p.decide.state(instance, ($) => {
+				(instance) => {
+					let items: vscode_node.CompletionItem[] = []
+
+					t_unmarshall_result_to_completion_suggestions.Document(
+						p_.decide.state(instance, ($) => {
 							switch ($[0]) {
-								case 'constrained': return _p.ss($, ($) => $.unmarshalled)
-								case 'unconstrained': return _p.ss($, ($) => $)
-								default: return _p.au($[0])
+								case 'constrained': return p_.ss($, ($) => $.unmarshalled)
+								case 'unconstrained': return p_.ss($, ($) => $)
+								default: return p_.au($[0])
 							}
 						}),
 						{
 							'indent': "    ",
 							'position': params.position,
-						'style': (connection_context['document notation styles'].get(params.textDocument.uri) || connection_context['document notation styles'].get('__default__') || 'verbose') === 'verbose' ? ['verbose', null] : ['concise', null]					}
-				).__decide(
-					($) => {							const type = $.type
+							'style': (connection_context['document notation styles'].get(params.textDocument.uri) || connection_context['document notation styles'].get('__default__') || 'verbose') === 'verbose' ? ['verbose', null] : ['concise', null]
+						}
+					).__extract_data(
+						($) => {
+							const type = $.type
 
 							// Backend signals semantic intent through type
 							// For missing value/option, hash must be present (assertion)
-							const shouldRemoveHash = _p.decide.state(type, ($) => {
+							const shouldRemoveHash = p_.decide.state(type, ($): boolean => {
 								switch ($[0]) {
-									case 'missing value': return _p.ss($, ($) => true)
-									case 'missing option': return _p.ss($, ($) => true)
-									case 'reference': return _p.ss($, ($) => false)
-									case 'property name': return _p.ss($, ($) => false)
-									case 'option name': return _p.ss($, ($) => false)
-									default: return _p.au($[0])
+									case 'missing value': return p_.ss($, ($) => true)
+									case 'missing option': return p_.ss($, ($) => true)
+									case 'reference': return p_.ss($, ($) => false)
+									case 'property name': return p_.ss($, ($) => false)
+									case 'option name': return p_.ss($, ($) => false)
+									default: return p_.au($[0])
 								}
 							})
 
 
-							return $.suggestions.__l_map(($) => {
+							items = $.suggestions.__get_raw_copy().map(($): vscode_node.CompletionItem => {
 								const completionItem: vscode_node.CompletionItem = {
 									'label': $.label,
 									'insertTextFormat': vscode_node.InsertTextFormat.Snippet,
-									'kind': _p.decide.state(type, ($): vscode_node.CompletionItemKind => {
+									'kind': p_.decide.state(type, ($): vscode_node.CompletionItemKind => {
 										switch ($[0]) {
-											case 'missing value': return _p.ss($, ($) => vscode_node.CompletionItemKind.Value)
-											case 'missing option': return _p.ss($, ($) => vscode_node.CompletionItemKind.EnumMember)
-											case 'reference': return _p.ss($, ($) => vscode_node.CompletionItemKind.Reference)
-											case 'property name': return _p.ss($, ($) => vscode_node.CompletionItemKind.Property)
-											case 'option name': return _p.ss($, ($) => vscode_node.CompletionItemKind.EnumMember)
-											default: return _p.au($[0])
+											case 'missing value': return p_.ss($, ($) => vscode_node.CompletionItemKind.Value)
+											case 'missing option': return p_.ss($, ($) => vscode_node.CompletionItemKind.EnumMember)
+											case 'reference': return p_.ss($, ($) => vscode_node.CompletionItemKind.Reference)
+											case 'property name': return p_.ss($, ($) => vscode_node.CompletionItemKind.Property)
+											case 'option name': return p_.ss($, ($) => vscode_node.CompletionItemKind.EnumMember)
+											default: return p_.au($[0])
 										}
 									}),
 									'documentation': {
@@ -141,11 +142,17 @@ export const create_on_completion: (
 								}
 
 								return completionItem
-							}).__get_raw_copy().map(($) => $)
+							})
 						},
-						() => []
+						() => {
+
+						}
 					)
-				}),
+					return {
+						'isIncomplete': false,
+						'items': items
+					}
+				},
 				resolve,
 			)
 		})

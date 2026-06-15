@@ -17,7 +17,7 @@ export const create_on_did_change_watched_files: (
 			const file_path = url.fileURLToPath(change.uri)
 			// Check if this is a schema file
 			if (file_path.endsWith(path.join('.liana', 'schema.slna'))) {
-				connection_context['cache']['schema'].map.delete(file_path)
+				connection_context['cache']['schemas'].map.delete(file_path)
 				connection_context.connection.console.log(`Schema cache invalidated for: ${file_path}`)
 
 				// Find the directory that contains the .liana folder
