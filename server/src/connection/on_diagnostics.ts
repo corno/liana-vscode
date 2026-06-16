@@ -22,7 +22,7 @@ export const create_on_diagnostics: (
 		if (document !== undefined) {
 
 
-			async function validate_text_document(
+			function validate_text_document(
 				text_document: vscode_textdocument.TextDocument,
 				cache: Cache_Context,
 			): Promise<vscode_node.Diagnostic[]> {

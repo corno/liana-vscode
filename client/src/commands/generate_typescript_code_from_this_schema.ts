@@ -46,7 +46,7 @@ export default ((deps) => async () => {
 				}
 			})
 		},
-		async ($) => {
+		($) => {
 			// Convert to verbose notation using seal
 			p_create_refinement_context<string, string>(
 				(abort) => ttt_seal(
@@ -70,7 +70,7 @@ export default ((deps) => async () => {
 					}
 				)
 			).__extract_data(
-				async ($) => {
+				($) => {
 					// Create a temporary file with verbose notation
 					const tmp_dir = os.tmpdir()
 					const tmp_file_name = `liana-verbose-${Date.now()}.liana.lna`
@@ -80,88 +80,88 @@ export default ((deps) => async () => {
 					fs.writeFileSync(tmp_file_path, $, 'utf8')
 
 					// Now proceed with TypeScript generation
-					const target_uris = await vscode.window.showOpenDialog({
+					void vscode.window.showOpenDialog({
 						canSelectFiles: false,
 						canSelectFolders: true,
 						canSelectMany: false,
 						openLabel: 'Select Target Directory',
 						title: 'Select directory to generate TypeScript code',
-					})
+					}).then((target_uris) => {
+						if (!target_uris || target_uris.length === 0) {
+							// Clean up temp file
+							fs.unlinkSync(tmp_file_path)
+							return
+						}
 
-					if (!target_uris || target_uris.length === 0) {
-						// Clean up temp file
-						fs.unlinkSync(tmp_file_path)
-						return
-					}
-
-					p_create_refinement_context(
-						(abort) => r_path_from_text.Node_Path(
-							tmp_file_path,
-							($) => abort('The file path is not valid.'),
-							{
-								'pedantic': true,
-							}
-						)
-					).__extract_data(
-						($) => {
-							c_generate_typescript.$$(
-								null,
+						p_create_refinement_context(
+							(abort) => r_path_from_text.Node_Path(
+								tmp_file_path,
+								($) => abort('The file path is not valid.'),
 								{
-									'read file': qx_read_file.$$,
-								},
-								{
-									'copy': cx_copy.$$,
-									'make directory': cx_make_directory.$$,
-									'remove': cx_remove.$$,
-									'write file': cx_write_file.$$,
-								},
-							).execute(
-								{
-									'type': ['module specification', null],
-									'source': $,
-									'target': r_path_from_text.Context_Path(target_uris[0].fsPath)
-								},
-								($) => $
-							).__start(
-								() => {
-									vscode.window.showInformationMessage('TypeScript code generated successfully')
-									// Clean up temp file
-									try {
-										fs.unlinkSync(tmp_file_path)
-									} catch (e) {
-										// Ignore cleanup errors
-									}
-								},
-								($) => {
-									const message: string = t_prose_to_text.Phrase(
-										t_generate_typescript_to_fp.Error($),
-										{
-											'indentation': "  ",
-											'newline': "\n",
-										}
-									)
-									vscode.window.showErrorMessage(`Error generating TypeScript: ${message}`)
-									// Clean up temp file
-									try {
-										fs.unlinkSync(tmp_file_path)
-									} catch (e) {
-										// Ignore cleanup errors
-									}
+									'pedantic': true,
 								}
 							)
-						},
-						($) => {
-							vscode.window.showErrorMessage(`Error: ${$}`)
-							// Clean up temp file
-							try {
-								fs.unlinkSync(tmp_file_path)
-							} catch (e) {
-								// Ignore cleanup errors
+						).__extract_data(
+							($) => {
+								c_generate_typescript.$$(
+									null,
+									{
+										'read file': qx_read_file.$$,
+									},
+									{
+										'copy': cx_copy.$$,
+										'make directory': cx_make_directory.$$,
+										'remove': cx_remove.$$,
+										'write file': cx_write_file.$$,
+									},
+								).execute(
+									{
+										'type': ['module specification', null],
+										'source': $,
+										'target': r_path_from_text.Context_Path(target_uris[0].fsPath)
+									},
+									($) => $
+								).__start(
+									() => {
+										vscode.window.showInformationMessage('TypeScript code generated successfully')
+										// Clean up temp file
+										try {
+											fs.unlinkSync(tmp_file_path)
+										} catch (e) {
+											// Ignore cleanup errors
+										}
+									},
+									($) => {
+										const message: string = t_prose_to_text.Phrase(
+											t_generate_typescript_to_fp.Error($),
+											{
+												'indentation': "  ",
+												'newline': "\n",
+											}
+										)
+										vscode.window.showErrorMessage(`Error generating TypeScript: ${message}`)
+										// Clean up temp file
+										try {
+											fs.unlinkSync(tmp_file_path)
+										} catch (e) {
+											// Ignore cleanup errors
+										}
+									}
+								)
+							},
+							($) => {
+								vscode.window.showErrorMessage(`Error: ${$}`)
+								// Clean up temp file
+								try {
+									fs.unlinkSync(tmp_file_path)
+								} catch (e) {
+									// Ignore cleanup errors
+								}
 							}
-						}
-					)
+						)
+					})
 				},
-				async ($) => {
+				($) => {
 					vscode.window.showErrorMessage(`Cannot convert to verbose notation: ${$}`)
 				}
 			)

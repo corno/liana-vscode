@@ -8,7 +8,7 @@ import { Connection_Context } from '../connection_context'
 export const create_on_did_change_watched_files: (
 	connection_context: Connection_Context,
 ) => vscode_node.NotificationHandler<vscode_node.DidChangeWatchedFilesParams> = (connection_context) => {
-	return async (_change) => {
+	return (_change) => {
 		// Monitored files have change in VSCode
 		connection_context.connection.console.log('We received a file change event')
 
