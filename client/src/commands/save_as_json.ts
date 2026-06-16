@@ -32,7 +32,7 @@ export default ((deps) => () => {
 			)
 		).__extract_data(
 			($) => {
-				void vscode.window.showSaveDialog({}).then((file_infos) => {
+				 vscode.window.showSaveDialog({}).then((file_infos) => {
 					if (!file_infos) {
 						return
 					}

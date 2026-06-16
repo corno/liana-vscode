@@ -41,7 +41,7 @@ export function load_applicable_schema(
 	on_success: (
 		$: d_temp_module_specifier.Temp_Module_Specifier,
 	) => void,
-): void {
+): undefined {
 
 	const schema_path = get_applicable_schema_path(text_document.uri.fsPath)
 

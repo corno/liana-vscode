@@ -25,5 +25,5 @@ export default ((deps) => () => {
 		const position = document.positionAt(target_index)
 		editor.selection = new vscode.Selection(position, position)
 		editor.revealRange(new vscode.Range(position, position))
-		void vscode.commands.executeCommand('editor.action.triggerSuggest')
+		 vscode.commands.executeCommand('editor.action.triggerSuggest')
 }) satisfies types.Register_Command

@@ -59,7 +59,7 @@ export default ((deps) => () => {
 				)
 			).__extract_data(
 				($) => {
-					void vscode.window.showSaveDialog({
+					 vscode.window.showSaveDialog({
 						filters: {
 							'Sealed Liana': ['slna'],
 						},
