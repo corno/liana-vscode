@@ -16,7 +16,6 @@ import {
 import * as vscode from 'vscode'
 
 import { register_commands } from './register_commands'
-import { Liana_Folder_Decorator } from './decorations/liana_folder_decorator'
 
 let client: LanguageClient
 
@@ -52,6 +51,35 @@ function update_status_bar(context: ExtensionContext, status_bar_item: vscode.St
 
 export function activate(context: ExtensionContext) {
 	// Register file decoration provider for .liana folders
+
+
+	class Liana_Folder_Decorator implements vscode.FileDecorationProvider {
+		private _on_did_change_file_decorations = new vscode.EventEmitter<vscode.Uri | vscode.Uri[] | undefined>()
+		readonly onDidChangeFileDecorations = this._on_did_change_file_decorations.event
+
+		provideFileDecoration(uri: vscode.Uri): vscode.FileDecoration | undefined {
+			// Check if this is a .liana directory or a file within it
+			const path_parts = uri.fsPath.split(path.sep)
+			const has_liana_dir = path_parts.includes('.liana')
+
+			if (has_liana_dir) {
+				// Gray out the folder/file and add a badge
+				// Don't propagate to avoid decorating parent directories
+				return {
+					badge: 'S', // S for "Sealed"
+					tooltip: 'Sealed Liana file - Do not edit manually',
+					color: new vscode.ThemeColor('descriptionForeground') // Grayed out
+				}
+			}
+
+			return undefined
+		}
+
+		refresh(): void {
+			this._on_did_change_file_decorations.fire(undefined)
+		}
+	}
+
 	const liana_decorator = new Liana_Folder_Decorator()
 	context.subscriptions.push(
 		vscode.window.registerFileDecorationProvider(liana_decorator)
@@ -61,20 +89,20 @@ export function activate(context: ExtensionContext) {
 	const status_bar_item = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100)
 	status_bar_item.command = 'liana.toggle_notation_style'
 	context.subscriptions.push(status_bar_item)
-	
+
 	// Update status bar for current editor
 	update_status_bar(context, status_bar_item, vscode.window.activeTextEditor)
-	
+
 	// Update status bar when active editor changes
 	context.subscriptions.push(
 		vscode.window.onDidChangeActiveTextEditor(editor => {
 			update_status_bar(context, status_bar_item, editor)
 			if (editor && editor.document.languageId === 'liana' && client) {
 				const style = get_notation_style(context, editor.document.uri.toString())
-				client.sendRequest('liana/update_notation_style', { 
-					uri: editor.document.uri.toString(), 
-					style 
-				}).catch(() => {})
+				client.sendRequest('liana/update_notation_style', {
+					uri: editor.document.uri.toString(),
+					style
+				}).catch(() => { })
 			}
 		})
 	)
@@ -140,7 +168,7 @@ export function activate(context: ExtensionContext) {
 	context.subscriptions.push(schema_watcher.onDidCreate(() => update_workspace_has_schema_context()))
 	context.subscriptions.push(schema_watcher.onDidDelete(() => update_workspace_has_schema_context()))
 	context.subscriptions.push(schema_watcher)
-	
+
 	register_commands({
 		context,
 		status_bar_item,

@@ -1,13 +1,12 @@
 import * as p_ from 'pareto-core/dist/assign'
 
-import * as d_document_symbols from "liana-authoring/dist/interface/to_be_generated/document_symbols"
+import * as d_document_symbols from "liana-authoring/dist/interface/data/document_symbols"
 import * as t_unmarshall_result_to_document_symbols from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/document_symbols"
 
 import * as helpers from '../helpers/range'
 import { load_document } from '../to_be_backend/load_document'
 
 import * as vscode_node from 'vscode-languageserver/node'
-import * as vscode_textdocument from 'vscode-languageserver-textdocument'
 import { Connection_Context } from '../connection_context'
 
 export const create_on_document_symbol: (

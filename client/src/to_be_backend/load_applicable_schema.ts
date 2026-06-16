@@ -2,16 +2,23 @@ import p_create_refinement_context from 'pareto-core/dist/implementation/__inter
 import p_list_from_text from 'pareto-core/dist/implementation/specials/list_from_text'
 import p_unreachable from 'pareto-core/dist/implementation/specials/unreachable_code_path'
 
-import * as d_deserialize_resolved from "liana-core/dist/interface/to_be_generated/deserialize_resolved"
-import * as d_temp_module_specifier from "pareto-liana/dist/interface/to_be_generated/temp_module_specifier"
+import * as d_deserialize_resolved from "liana-core/dist/interface/data/deserialize_resolved"
+import * as d_temp_module_specifier from "pareto-liana/dist/interface/data/temp_module_specifier"
 
 //dependencies
 import * as r_temp_module_specifier_from_loc from "pareto-liana/dist/implementation/manual/refiners/temp_module_specifier/list_of_characters"
 import * as r_path_from_text from "pareto-resources/dist/implementation/manual/refiners/path_unrestricted/text"
 
 import * as fs from "fs"
-import * as path from "path"
-import get_applicable_schema_path from './get_applicable_schema_path'
+import path from 'path'
+
+
+function get_applicable_schema_path(document_path: string): string {
+	//fixme: shoudl be retrieved with the get_schema_path query, but for now we can just assume it's always in the same place
+	const schema_path = path.join(path.dirname(document_path), ".liana", "schema.slna")
+	return schema_path
+}
+
 import { TextDocument } from 'vscode'
 
 export type Load_Schema_Error = {

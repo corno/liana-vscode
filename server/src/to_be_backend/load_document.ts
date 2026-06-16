@@ -1,14 +1,13 @@
 import p_unreachable_code_path from 'pareto-core/dist/implementation/specials/unreachable_code_path'
-import __query_result from 'pareto-core/dist/implementation/query/__query_result'
+import __query_result from 'pareto-core/dist/implementation/query/query_result'
 
 import {
-	DocumentUri,
 	TextDocument,
 } from 'vscode-languageserver-textdocument'
 
 import * as url from "url"
 
-import * as d_deserialize from "liana-authoring/dist/interface/to_be_generated/deserialize"
+import * as d_deserialize from "liana-authoring/dist/interface/data/deserialize"
 
 import { $$ as qr_stat } from "pareto-host-nodejs/dist/file_system_unrestricted/queries/stat_possible_node"
 import { $$ as qr_read_file } from "pareto-host-nodejs/dist/file_system_unrestricted/queries/read_file"
@@ -19,7 +18,7 @@ import * as t_path_to_text from "pareto-resources/dist/implementation/manual/tra
 import { $$ as q_deserialize } from "liana-authoring/dist/implementation/manual/queries/deserialize"
 import { $$ as q_get_schema_path } from "liana-authoring/dist/implementation/manual/queries/get_schema_path"
 import { $$ as q_get_schema } from "liana-authoring/dist/implementation/manual/queries/get_schema"
-import { Cache, get_cached_or_fresh } from '../core/cache'
+import { get_cached_or_fresh } from '../core/cache'
 import { Cache_Context } from '../connection_context'
 
 export const load_document = <T>(
