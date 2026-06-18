@@ -1,4 +1,4 @@
-import * as p_ from 'pareto-core/dist/assign'
+import * as p_ from 'pareto-core/dist/implementation/transformer'
 import p_create_refinement_context from 'pareto-core/dist/implementation/__internal/sync/create_refinement_context'
 
 import { $$ as ttt_seal } from 'liana-authoring/dist/implementation/manual/text_to_text/seal'
@@ -21,7 +21,7 @@ export default ((deps) => () => {
 	load_applicable_schema(
 		editor.document,
 		($) => {
-			p_.decide.state($.type, ($): null => {
+			p_.from.state($.type).decide(($): null => {
 				switch ($[0]) {
 					case 'read file': return p_.ss($, ($) => {
 						vscode.window.showErrorMessage('Cannot seal because no .liana/schema.slna file could be found in the same directory as the liana file: ' + $.error.message)
@@ -42,7 +42,7 @@ export default ((deps) => () => {
 					($) => abort("Sealing failed because the file is not valid Liana."),
 					{
 						'unmarshall': {
-							'module': p_.decide.state($, ($) => {
+							'module': p_.from.state($).decide(($) => {
 								switch ($[0]) {
 									case 'constrained': return p_.ss($, ($) => $['module resolver'].entry.signature.module)
 									case 'unconstrained': return p_.ss($, ($) => $.module.entry)

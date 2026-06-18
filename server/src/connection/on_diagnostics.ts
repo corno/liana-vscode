@@ -1,6 +1,6 @@
 import * as vscode_node from 'vscode-languageserver/node'
 import { Connection_Context } from '../connection_context'
-import * as p_ from 'pareto-core/dist/assign'
+import * as p_ from 'pareto-core/dist/implementation/transformer'
 import * as helpers from '../helpers/range'
 import { load_document } from '../to_be_backend/load_document'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
@@ -34,14 +34,14 @@ export const create_on_diagnostics: (
 							t_deserialize_to_diagnostic.Error($)
 						]),
 						($) => p_.literal.nested_list([
-							t_unmarshall_result_to_diagnostics.Document(p_.decide.state($, ($) => {
+							t_unmarshall_result_to_diagnostics.Document(p_.from.state($).decide(($) => {
 								switch ($[0]) {
 									case 'constrained': return p_.ss($, ($) => $.unmarshalled)
 									case 'unconstrained': return p_.ss($, ($) => $)
 									default: return p_.au($[0])
 								}
 							})),
-							p_.decide.state($, ($) => {
+							p_.from.state($).decide(($) => {
 								switch ($[0]) {
 									case 'constrained': return p_.ss($, ($) => t_resolve_result_to_diagnostics.Document($))
 									case 'unconstrained': return p_.ss($, ($) => p_.literal.list([]))
@@ -81,7 +81,7 @@ export const create_on_diagnostics: (
 											($) => helpers.create_range_from_possible_range($),
 											() => vscode_node.Range.create(0, 0, 0, 1) // if we don't have a range, we put it at the start of the document
 										),
-										source: p_.decide.state($.type, ($) => {
+										source: p_.from.state($.type).decide(($) => {
 											switch ($[0]) {
 												case 'semantic': return p_.ss($, ($) => "liana-semantic")
 												case 'deserialize': return p_.ss($, ($) => "liana-deserialize")

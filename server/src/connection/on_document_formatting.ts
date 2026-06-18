@@ -6,7 +6,6 @@ import * as r_parse_tree_from_loc from "astn-core/dist/implementation/manual/ref
 import * as t_parse_tree_to_text from "astn/dist/implementation/manual/transformers/parse_tree/text"
 
 import * as vscode_node from 'vscode-languageserver/node'
-import * as vscode_textdocument from 'vscode-languageserver-textdocument'
 import { Connection_Context } from '../connection_context'
 
 export const create_on_document_formatting: (

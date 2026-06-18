@@ -1,4 +1,4 @@
-import * as p_ from 'pareto-core/dist/assign'
+import * as p_ from 'pareto-core/dist/implementation/transformer'
 
 import * as d_astn_location from "astn-core/dist/interface/generated/liana/schemas/location/data"
 
@@ -26,7 +26,7 @@ export const create_position_from_location = (
 export const create_range_from_possible_range = (
 	$: d_astn_location.Possible_Range,
 ): vscode_node.Range => {
-	return p_.decide.state($, ($) => {
+	return p_.from.state($).decide(($) => {
 		switch ($[0]) {
 			case 'range': return p_.ss($, ($) => create_range_from_range($))
 			case 'end of document': return p_.ss($, ($) => {

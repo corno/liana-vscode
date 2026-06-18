@@ -1,4 +1,4 @@
-import * as p_ from 'pareto-core/dist/assign'
+import * as p_ from 'pareto-core/dist/implementation/transformer'
 
 //data types
 import * as t_unmarshall_result_to_completion_suggestions from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/completion_suggestions"
@@ -44,7 +44,7 @@ export const create_on_completion: (
 					let items: vscode_node.CompletionItem[] = []
 
 					t_unmarshall_result_to_completion_suggestions.Document(
-						p_.decide.state(instance, ($) => {
+						p_.from.state(instance).decide( ($) => {
 							switch ($[0]) {
 								case 'constrained': return p_.ss($, ($) => $.unmarshalled)
 								case 'unconstrained': return p_.ss($, ($) => $)
@@ -62,7 +62,7 @@ export const create_on_completion: (
 
 							// Backend signals semantic intent through type
 							// For missing value/option, hash must be present (assertion)
-							const shouldRemoveHash = p_.decide.state(type, ($): boolean => {
+							const shouldRemoveHash = p_.from.state(type).decide(($): boolean => {
 								switch ($[0]) {
 									case 'missing value': return p_.ss($, ($) => true)
 									case 'missing option': return p_.ss($, ($) => true)
@@ -78,7 +78,7 @@ export const create_on_completion: (
 								const completionItem: vscode_node.CompletionItem = {
 									'label': $.label,
 									'insertTextFormat': vscode_node.InsertTextFormat.Snippet,
-									'kind': p_.decide.state(type, ($): vscode_node.CompletionItemKind => {
+									'kind': p_.from.state(type).decide(($): vscode_node.CompletionItemKind => {
 										switch ($[0]) {
 											case 'missing value': return p_.ss($, ($) => vscode_node.CompletionItemKind.Value)
 											case 'missing option': return p_.ss($, ($) => vscode_node.CompletionItemKind.EnumMember)

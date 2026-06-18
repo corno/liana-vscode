@@ -1,4 +1,4 @@
-import * as p_ from 'pareto-core/dist/assign'
+import * as p_ from 'pareto-core/dist/implementation/transformer'
 
 import * as d_document_symbols from "liana-authoring/dist/interface/data/document_symbols"
 import * as t_unmarshall_result_to_document_symbols from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/document_symbols"
@@ -26,7 +26,7 @@ export const create_on_document_symbol: (
 						return ({
 							'name': $.name === "" ? "-empty-" : $.name, //empty strings result in a 'falsy name' errors
 							'detail': $.detail,
-							'kind': p_.decide.state($.value.kind, ($) => {
+							'kind': p_.from.state($.value.kind).decide(($) => {
 								switch ($[0]) {
 									case 'string': return p_.ss($, ($) => vscode_node.SymbolKind.String)
 									case 'number': return p_.ss($, ($) => vscode_node.SymbolKind.Number)
@@ -50,7 +50,7 @@ export const create_on_document_symbol: (
 					doc,
 					connection_context.cache,
 					($) => [],
-					(instance) => convert_value(t_unmarshall_result_to_document_symbols.Document(p_.decide.state(instance, ($) => {
+					(instance) => convert_value(t_unmarshall_result_to_document_symbols.Document(p_.from.state(instance).decide( ($) => {
 						switch ($[0]) {
 							case 'constrained': return p_.ss($, ($) => $.unmarshalled)
 							case 'unconstrained': return p_.ss($, ($) => $)
