@@ -22,7 +22,7 @@ export const create_on_document_symbol: (
 			(resolve) => {
 
 				function convert_value($: d_document_symbols.Value): vscode_node.DocumentSymbol[] {
-					return $.children.__get_raw_copy().map(($): vscode_node.DocumentSymbol => {
+					return $.children.__get_raw().map(($): vscode_node.DocumentSymbol => {
 						return ({
 							'name': $.name === "" ? "-empty-" : $.name, //empty strings result in a 'falsy name' errors
 							'detail': $.detail,

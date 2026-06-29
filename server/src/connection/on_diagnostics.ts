@@ -33,7 +33,7 @@ export const create_on_diagnostics: (
 						($) => p_.literal.list([
 							t_deserialize_to_diagnostic.Error($)
 						]),
-						($) => p_.literal.nested_list([
+						($) => p_.literal.segmented_list([
 							t_unmarshall_result_to_diagnostics.Document(p_.from.state($).decide(($) => {
 								switch ($[0]) {
 									case 'constrained': return p_.ss($, ($) => $.unmarshalled)
@@ -50,23 +50,21 @@ export const create_on_diagnostics: (
 							})
 						]),
 						($) => {
-							resolve($.__get_raw_copy().map(
+							resolve($.__get_raw().map(
 								($): vscode_node.Diagnostic => {
 									let related_information: vscode_node.DiagnosticRelatedInformation[] = []
-									$['related information'].__extract_data(
-										($) => {
-											related_information = $.__get_raw_copy().map(($) => ({
+									const related_information_raw = $['related information'].__get_raw()
+
+									if (related_information_raw !== null) {
+											related_information = related_information_raw[0].__get_raw().map(($) => ({
 												'location': {
 													'uri': t_node_path_to_text.Node_Path($.location['file path']),
 													'range': helpers.create_range_from_possible_range($.location.range),
 												},
 												'message': $.message,
 											}))
-										},
-										() => {
-
-										}
-									)
+									}
+									const range_raw = $.range.__get_raw()
 									return {
 										severity: (() => {
 											switch ($.severity[0]) {
@@ -77,10 +75,9 @@ export const create_on_diagnostics: (
 											}
 										})(),
 										message: $.message,
-										range: $.range.__decide(
-											($) => helpers.create_range_from_possible_range($),
-											() => vscode_node.Range.create(0, 0, 0, 1) // if we don't have a range, we put it at the start of the document
-										),
+										range: range_raw === null
+											? vscode_node.Range.create(0, 0, 0, 1) // if we don't have a range, we put it at the start of the document
+											: helpers.create_range_from_possible_range(range_raw[0]),
 										source: p_.from.state($.type).decide(($) => {
 											switch ($[0]) {
 												case 'semantic': return p_.ss($, ($) => "liana-semantic")

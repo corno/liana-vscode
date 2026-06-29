@@ -39,7 +39,7 @@ export const create_on_hover: (
 							{
 								'position': hover_params.position,
 							}
-						).__get_raw_copy().map(($) => $)
+						).__get_raw().map(($) => $)
 					}),
 					resolve,
 				)

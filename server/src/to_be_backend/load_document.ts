@@ -1,5 +1,5 @@
-import p_unreachable_code_path from 'pareto-core/dist/implementation/specials/unreachable_code_path'
-import __query_result from 'pareto-core/dist/implementation/query/query_result'
+import p_unreachable_code_path from 'pareto-core/dist/implementation/transformer/specials/unreachable_code_path'
+import __query_result from 'pareto-core/dist/implementation/query/__internal/query_result'
 
 import {
 	TextDocument,

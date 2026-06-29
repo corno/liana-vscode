@@ -43,8 +43,8 @@ export const create_on_completion: (
 				(instance) => {
 					let items: vscode_node.CompletionItem[] = []
 
-					t_unmarshall_result_to_completion_suggestions.Document(
-						p_.from.state(instance).decide( ($) => {
+					const completion_suggestions_raw = t_unmarshall_result_to_completion_suggestions.Document(
+						p_.from.state(instance).decide(($) => {
 							switch ($[0]) {
 								case 'constrained': return p_.ss($, ($) => $.unmarshalled)
 								case 'unconstrained': return p_.ss($, ($) => $)
@@ -56,98 +56,97 @@ export const create_on_completion: (
 							'position': params.position,
 							'style': (connection_context['document notation styles'].get(params.textDocument.uri) || connection_context['document notation styles'].get('__default__') || 'verbose') === 'verbose' ? ['verbose', null] : ['concise', null]
 						}
-					).__extract_data(
-						($) => {
-							const type = $.type
-
-							// Backend signals semantic intent through type
-							// For missing value/option, hash must be present (assertion)
-							const shouldRemoveHash = p_.from.state(type).decide(($): boolean => {
-								switch ($[0]) {
-									case 'missing value': return p_.ss($, ($) => true)
-									case 'missing option': return p_.ss($, ($) => true)
-									case 'reference': return p_.ss($, ($) => false)
-									case 'property name': return p_.ss($, ($) => false)
-									case 'option name': return p_.ss($, ($) => false)
-									default: return p_.au($[0])
-								}
-							})
+					).__get_raw()
+					if (completion_suggestions_raw !== null) {
+						const $ = completion_suggestions_raw[0]
 
 
-							items = $.suggestions.__get_raw_copy().map(($): vscode_node.CompletionItem => {
-								const completionItem: vscode_node.CompletionItem = {
-									'label': $.label,
-									'insertTextFormat': vscode_node.InsertTextFormat.Snippet,
-									'kind': p_.from.state(type).decide(($): vscode_node.CompletionItemKind => {
-										switch ($[0]) {
-											case 'missing value': return p_.ss($, ($) => vscode_node.CompletionItemKind.Value)
-											case 'missing option': return p_.ss($, ($) => vscode_node.CompletionItemKind.EnumMember)
-											case 'reference': return p_.ss($, ($) => vscode_node.CompletionItemKind.Reference)
-											case 'property name': return p_.ss($, ($) => vscode_node.CompletionItemKind.Property)
-											case 'option name': return p_.ss($, ($) => vscode_node.CompletionItemKind.EnumMember)
-											default: return p_.au($[0])
-										}
-									}),
-									'documentation': {
-										kind: vscode_node.MarkupKind.PlainText,
-										value: $.documentation
-									},
-									'data': {
-										'documentation': $.documentation
+						const type = $.type
+
+						// Backend signals semantic intent through type
+						// For missing value/option, hash must be present (assertion)
+						const shouldRemoveHash = p_.from.state(type).decide(($): boolean => {
+							switch ($[0]) {
+								case 'missing value': return p_.ss($, ($) => true)
+								case 'missing option': return p_.ss($, ($) => true)
+								case 'reference': return p_.ss($, ($) => false)
+								case 'property name': return p_.ss($, ($) => false)
+								case 'option name': return p_.ss($, ($) => false)
+								default: return p_.au($[0])
+							}
+						})
+
+
+						items = $.suggestions.__get_raw().map(($): vscode_node.CompletionItem => {
+							const completionItem: vscode_node.CompletionItem = {
+								'label': $.label,
+								'insertTextFormat': vscode_node.InsertTextFormat.Snippet,
+								'kind': p_.from.state(type).decide(($): vscode_node.CompletionItemKind => {
+									switch ($[0]) {
+										case 'missing value': return p_.ss($, ($) => vscode_node.CompletionItemKind.Value)
+										case 'missing option': return p_.ss($, ($) => vscode_node.CompletionItemKind.EnumMember)
+										case 'reference': return p_.ss($, ($) => vscode_node.CompletionItemKind.Reference)
+										case 'property name': return p_.ss($, ($) => vscode_node.CompletionItemKind.Property)
+										case 'option name': return p_.ss($, ($) => vscode_node.CompletionItemKind.EnumMember)
+										default: return p_.au($[0])
 									}
+								}),
+								'documentation': {
+									kind: vscode_node.MarkupKind.PlainText,
+									value: $.documentation
+								},
+								'data': {
+									'documentation': $.documentation
 								}
+							}
 
-								// Frontend handles hash + filter text removal based on backend's semantic signal
-								if (shouldRemoveHash) {
+							// Frontend handles hash + filter text removal based on backend's semantic signal
+							if (shouldRemoveHash) {
 
 
-									const fullLine = doc.getText({
-										start: { line: params.position.line, character: 0 },
-										end: { line: params.position.line + 1, character: 0 }
-									}).replace(/\r?\n$/, '')
+								const fullLine = doc.getText({
+									start: { line: params.position.line, character: 0 },
+									end: { line: params.position.line + 1, character: 0 }
+								}).replace(/\r?\n$/, '')
 
-									const textAfterCursor = fullLine.substring(params.position.character)
+								const textAfterCursor = fullLine.substring(params.position.character)
 
-									// Check if there's a # immediately after the cursor
-									const hasHashAfterCursor = textAfterCursor.startsWith('#')
-									if (!hasHashAfterCursor) {
-										console.log(`INFO: Backend indicated ${type[0]} but no hash found after cursor`)
-									}
-									// Position cursor at beginning for missing data (need to fill it in)
-									const insertTextWithCursor = '$0' + $['insert text']
+								// Check if there's a # immediately after the cursor
+								const hasHashAfterCursor = textAfterCursor.startsWith('#')
+								if (!hasHashAfterCursor) {
+									console.log(`INFO: Backend indicated ${type[0]} but no hash found after cursor`)
+								}
+								// Position cursor at beginning for missing data (need to fill it in)
+								const insertTextWithCursor = '$0' + $['insert text']
+								completionItem.textEdit = vscode_node.TextEdit.replace(
+									vscode_node.Range.create(
+										params.position.line,
+										filterStartIndex,  // Remove filter text
+										params.position.line,
+										params.position.character + (hasHashAfterCursor ? 1 : 0)  // +1 to include the # character
+									),
+									insertTextWithCursor
+								)
+							} else {
+								// Regular completion: cursor at end, only remove filter text if any
+								if (filterText.length > 0) {
 									completionItem.textEdit = vscode_node.TextEdit.replace(
 										vscode_node.Range.create(
 											params.position.line,
-											filterStartIndex,  // Remove filter text
+											filterStartIndex,
 											params.position.line,
-											params.position.character + (hasHashAfterCursor ? 1 : 0)  // +1 to include the # character
+											params.position.character
 										),
-										insertTextWithCursor
+										$['insert text']
 									)
 								} else {
-									// Regular completion: cursor at end, only remove filter text if any
-									if (filterText.length > 0) {
-										completionItem.textEdit = vscode_node.TextEdit.replace(
-											vscode_node.Range.create(
-												params.position.line,
-												filterStartIndex,
-												params.position.line,
-												params.position.character
-											),
-											$['insert text']
-										)
-									} else {
-										completionItem.insertText = $['insert text']
-									}
+									completionItem.insertText = $['insert text']
 								}
+							}
 
-								return completionItem
-							})
-						},
-						() => {
-
-						}
-					)
+							return completionItem
+						})
+					}
 					return {
 						'isIncomplete': false,
 						'items': items

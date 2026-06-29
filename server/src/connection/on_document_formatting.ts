@@ -1,5 +1,5 @@
-import p_list_from_text from 'pareto-core/dist/implementation/specials/list_from_text'
-import p_variables from 'pareto-core/dist/implementation/specials/variables'
+import p_list_from_text from 'pareto-core/dist/implementation/refiner/specials/list_from_text'
+import p_variables from 'pareto-core/dist/implementation/transformer/specials/variables'
 import create_refinement_context from 'pareto-core/dist/implementation/__internal/sync/create_refinement_context'
 
 import * as r_parse_tree_from_loc from "astn-core/dist/implementation/manual/refiners/parse_tree/list_of_characters"
@@ -18,7 +18,9 @@ export const create_on_document_formatting: (
 			return []
 		}
 
-		return create_refinement_context(
+		const result: vscode_node.TextEdit[] = []
+
+		create_refinement_context(
 			(abort) => r_parse_tree_from_loc.Document(
 				p_list_from_text(
 					document.getText(),
@@ -31,8 +33,7 @@ export const create_on_document_formatting: (
 			)
 		).__extract_data(
 			($) => {
-
-				return [
+				result.push(
 					vscode_node.TextEdit.replace(
 						p_variables(() => {
 							// Create range covering the entire document
@@ -53,12 +54,12 @@ export const create_on_document_formatting: (
 							}
 						)
 					)
-				]
+				)
 			},
 			($) => {
-			connection_context.connection.window.showInformationMessage(`could not format document due to parsing error`)
-			return []
-		}
-	)
-}
+				connection_context.connection.window.showInformationMessage(`could not format document due to parsing error`)
+			}
+		)
+		return result
+	}
 }

@@ -1,6 +1,6 @@
 import p_create_refinement_context from 'pareto-core/dist/implementation/__internal/sync/create_refinement_context'
-import p_list_from_text from 'pareto-core/dist/implementation/specials/list_from_text'
-import p_unreachable from 'pareto-core/dist/implementation/specials/unreachable_code_path'
+import p_list_from_text from 'pareto-core/dist/implementation/refiner/specials/list_from_text'
+import p_unreachable from 'pareto-core/dist/implementation/transformer/specials/unreachable_code_path'
 
 import * as d_deserialize_resolved from "liana-core/dist/interface/data/deserialize_resolved"
 import * as d_temp_module_specifier from "pareto-liana/dist/interface/data/temp_module_specifier"

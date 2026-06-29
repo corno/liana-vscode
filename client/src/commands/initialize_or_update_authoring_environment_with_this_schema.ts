@@ -36,7 +36,7 @@ export default ((deps) => async () => {
 				}
 			})
 		},
-		async ($) => {
+		($) => {
 			p_create_refinement_context<string, string>(
 				(abort) => ttt_seal(
 					editor.document.getText(),
@@ -59,7 +59,7 @@ export default ((deps) => async () => {
 					}
 				)
 			).__extract_data(
-				async ($) => {
+				($) => {
 					const new_text = $
 
 					// Get last selected directory for this schema file
@@ -67,54 +67,57 @@ export default ((deps) => async () => {
 					const last_directory = directory_map[schema_file_uri]
 					const default_uri = last_directory ? vscode.Uri.file(last_directory) : undefined
 
-					const target_uris = await vscode.window.showOpenDialog({
+					vscode.window.showOpenDialog({
 						canSelectFiles: false,
 						canSelectFolders: true,
 						canSelectMany: false,
 						openLabel: 'Select Directory',
 						title: 'Select directory to save .liana/schema.slna file',
 						defaultUri: default_uri,
+					}).then((target_uris) => {
+
+						if (!target_uris || target_uris.length === 0) {
+							return
+						}
+
+						const target_path = target_uris[0].fsPath
+
+						// Store the selected directory for this schema file
+						const updated_map = deps!.context.workspaceState.get<Record<string, string>>('liana.authoring_environment_directories', {})
+						updated_map[schema_file_uri] = target_path
+						deps!.context.workspaceState.update('liana.authoring_environment_directories', updated_map)
+
+						const schema_file_path = path.join(target_path, ".liana", "schema.slna")
+
+						const schema_dir = path.dirname(schema_file_path)
+						fs.mkdirSync(schema_dir, { recursive: true })
+
+						// If file exists and is readonly, make it writable first
+						if (fs.existsSync(schema_file_path)) {
+							fs.chmodSync(schema_file_path, 0o644)
+						}
+
+						fs.writeFileSync(schema_file_path, new_text, 'utf8')
+
+						// Make the schema file readonly at OS level
+						fs.chmodSync(schema_file_path, 0o444)
+
+						vscode.window.showInformationMessage(`authoring environment created: ${target_path}`)
+
+						vscode.window.showInformationMessage(
+							'Would you like to open the initialized authoring environment?',
+							'Yes', 'No'
+						).then(open_choice => {
+							if (open_choice === 'Yes') {
+								const uri = vscode.Uri.file(target_path)
+								vscode.commands.executeCommand('vscode.openFolder', uri, true)
+							}
+						})
+
 					})
 
-					if (!target_uris || target_uris.length === 0) {
-						return
-					}
-
-					const target_path = target_uris[0].fsPath
-
-					// Store the selected directory for this schema file
-					const updated_map = deps!.context.workspaceState.get<Record<string, string>>('liana.authoring_environment_directories', {})
-					updated_map[schema_file_uri] = target_path
-					deps!.context.workspaceState.update('liana.authoring_environment_directories', updated_map)
-
-					const schema_file_path = path.join(target_path, ".liana", "schema.slna")
-
-					const schema_dir = path.dirname(schema_file_path)
-					fs.mkdirSync(schema_dir, { recursive: true })
-
-					// If file exists and is readonly, make it writable first
-					if (fs.existsSync(schema_file_path)) {
-						fs.chmodSync(schema_file_path, 0o644)
-					}
-
-					fs.writeFileSync(schema_file_path, new_text, 'utf8')
-
-					// Make the schema file readonly at OS level
-					fs.chmodSync(schema_file_path, 0o444)
-
-					vscode.window.showInformationMessage(`authoring environment created: ${target_path}`)
-
-					const open_choice = await vscode.window.showInformationMessage(
-						'Would you like to open the initialized authoring environment?',
-						'Yes', 'No'
-					)
-
-					if (open_choice === 'Yes') {
-						const uri = vscode.Uri.file(target_path)
-						await vscode.commands.executeCommand('vscode.openFolder', uri, true)
-					}
 				},
-				async ($) => {
+				($) => {
 					vscode.window.showErrorMessage(`Cannot create schema: ${$}`)
 				}
 			)

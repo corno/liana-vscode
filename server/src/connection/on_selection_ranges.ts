@@ -10,18 +10,11 @@ import * as vscode_node from 'vscode-languageserver/node'
 import { Connection_Context } from '../connection_context'
 
 function convert_selecton_range($: d_unmarshall_result.Range_Stack): vscode_node.SelectionRange {
-	let parent: undefined | vscode_node.SelectionRange = undefined
-	$.parent.__extract_data(
-			($) => {
-				parent = convert_selecton_range($)
-			},
-			() => {
-
-			}
-		)
+	const parent_raw = $.parent.__get_raw()
+	
 	return {
 		'range': helpers.create_range_from_range($.range),
-		'parent': parent
+		'parent': parent_raw === null ? undefined : convert_selecton_range($),
 	}
 }
 
@@ -58,7 +51,7 @@ export const create_on_selection_ranges: (
 							{
 								'positions': p_.literal.list(params.positions),
 							}
-						).__get_raw_copy().map(($): vscode_node.SelectionRange => convert_selecton_range($))
+						).__get_raw().map(($): vscode_node.SelectionRange => convert_selecton_range($))
 					connection_context.connection.console.log(`Selection ranges: backend returned ${result.length} range(s): ${JSON.stringify(result, null, 2)}`)
 					return result
 				},

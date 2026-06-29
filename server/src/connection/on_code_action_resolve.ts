@@ -65,7 +65,7 @@ export const create_on_code_action_resolve: (
 				connection_context.cache,
 				($) => null,
 				(instance) => t_unmarshall_result_to_formatting_edits.Document(
-					p_.from.state(instance).decide( ($) => {
+					p_.from.state(instance).decide(($) => {
 						switch ($[0]) {
 							case 'constrained': return p_.ss($, ($) => $.unmarshalled)
 							case 'unconstrained': return p_.ss($, ($) => $)
@@ -89,23 +89,22 @@ export const create_on_code_action_resolve: (
 					} else {
 
 						let changes: vscode_node.TextEdit[] = []
-						$.__extract_data(
-							($) => {
-								changes = [
-									vscode_node.TextEdit.replace(
+
+						const $_raw = $.__get_raw()
+
+						if ($_raw !== null) {
+							const $ = $_raw[0]
+							changes = [
+								vscode_node.TextEdit.replace(
+									helpers.create_range_from_range($.range),
+									indent_replacement_text(
 										helpers.create_range_from_range($.range),
-										indent_replacement_text(
-											helpers.create_range_from_range($.range),
-											document,
-											$.text,
-										)
+										document,
+										$.text,
 									)
-								]
-							},
-							() => {
-								
-							}
-						)
+								)
+							]
+						}
 						action.edit = {
 							changes: {
 								[uri]: changes
