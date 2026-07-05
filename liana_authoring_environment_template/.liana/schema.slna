@@ -1150,9 +1150,11 @@
                 `text types`: {
                     'multi line text': (
                         `type`: | `multi line` ~
+                        `link`: | `no` ~
                     )
                     'text': (
                         `type`: | `single line` ~
+                        `link`: | `no` ~
                     )
                 }
                 `simple types`: {
@@ -1224,12 +1226,12 @@
                             )
                         )
                         'complexity': (
-                            `description`: _
+                            `description`: * "Whether this schema includes resolver definitions"
                             `value`: | `state` (
                                 `options`: {
                                     'constrained': (
                                         `constraints`: _
-                                        `description`: _
+                                        `description`: * "Schema has resolvers for validation and transformation"
                                         `value`: | `component` (
                                             `type`: | `internal` 'Resolver'
                                             `results`: _
@@ -1237,7 +1239,7 @@
                                     )
                                     'unconstrained': (
                                         `constraints`: _
-                                        `description`: _
+                                        `description`: * "Schema only defines structure, no resolvers"
                                         `value`: | `nothing` ~
                                     )
                                 }
@@ -1350,7 +1352,7 @@
                 'Dictionary': (
                     `root value`: | `group` {
                         'value': (
-                            `description`: _
+                            `description`: * "The type of each entry in this dictionary"
                             `value`: | `component` (
                                 `type`: | `internal` 'Value'
                                 `results`: _
@@ -1363,7 +1365,7 @@
                         `options`: {
                             'component': (
                                 `constraints`: _
-                                `description`: _
+                                `description`: * "Reference to another type defined in a module (reusable named type)"
                                 `value`: | `group` {
                                     'type': (
                                         `description`: _
@@ -1371,7 +1373,7 @@
                                             `options`: {
                                                 'external': (
                                                     `constraints`: _
-                                                    `description`: _
+                                                    `description`: * "Reference a type from an imported schema"
                                                     `value`: | `group` {
                                                         'import': (
                                                             `description`: _
@@ -1417,7 +1419,7 @@
                                                 )
                                                 'internal': (
                                                     `constraints`: _
-                                                    `description`: _
+                                                    `description`: * "Reference a type within the same schema (allows cycles)"
                                                     `value`: | `reference` (
                                                         `referent`: (
                                                             `module`: (
@@ -1438,7 +1440,7 @@
                                                 )
                                                 'internal acyclic': (
                                                     `constraints`: _
-                                                    `description`: _
+                                                    `description`: * "Reference a type within the same schema (no cycles)"
                                                     `value`: | `reference` (
                                                         `referent`: (
                                                             `module`: (
@@ -1472,7 +1474,7 @@
                             )
                             'dictionary': (
                                 `constraints`: _
-                                `description`: _
+                                `description`: * "Indexed collection of named values (like a map or hash table)"
                                 `value`: | `component` (
                                     `type`: | `internal` 'Dictionary'
                                     `results`: _
@@ -1480,7 +1482,7 @@
                             )
                             'group': (
                                 `constraints`: _
-                                `description`: _
+                                `description`: * "Ordered collection of properties, each with a specific name and type"
                                 `value`: | `component` (
                                     `type`: | `internal` 'Group'
                                     `results`: _
@@ -1488,7 +1490,7 @@
                             )
                             'list': (
                                 `constraints`: _
-                                `description`: _
+                                `description`: * "Ordered sequence of values of the same type"
                                 `value`: | `group` {
                                     'value': (
                                         `description`: _
@@ -1508,12 +1510,12 @@
                             )
                             'nothing': (
                                 `constraints`: _
-                                `description`: _
+                                `description`: * "Empty value (unit type, no data)"
                                 `value`: | `nothing` ~
                             )
                             'simple': (
                                 `constraints`: _
-                                `description`: _
+                                `description`: * "Primitive value types: boolean, number, or date"
                                 `value`: | `state` (
                                     `options`: {
                                         'global': (
@@ -1543,7 +1545,7 @@
                             )
                             'optional': (
                                 `constraints`: _
-                                `description`: _
+                                `description`: * "Value that may or may not be present"
                                 `value`: | `component` (
                                     `type`: | `internal` 'Value'
                                     `results`: _
@@ -1551,10 +1553,10 @@
                             )
                             'reference': (
                                 `constraints`: _
-                                `description`: _
+                                `description`: * "Pointer to another value in the data (like a foreign key)"
                                 `value`: | `group` {
                                     'referent': (
-                                        `description`: _
+                                        `description`: * "What this reference points to"
                                         `value`: | `component` (
                                             `type`: | `internal` 'Value Reference'
                                             `results`: _
@@ -1566,12 +1568,12 @@
                                             `options`: {
                                                 'derived': (
                                                     `constraints`: _
-                                                    `description`: _
+                                                    `description`: * "Reference type is automatically derived from the target"
                                                     `value`: | `nothing` ~
                                                 )
                                                 'selected': (
                                                     `constraints`: _
-                                                    `description`: _
+                                                    `description`: * "Explicitly select which dictionary entry to reference"
                                                     `value`: | `group` {
                                                         'dictionary': (
                                                             `description`: _
@@ -1590,22 +1592,22 @@
                                                             )
                                                         )
                                                         'dependency': (
-                                                            `description`: _
+                                                            `description`: * "How this reference affects dependency order"
                                                             `value`: | `state` (
                                                                 `options`: {
                                                                     'acyclic': (
                                                                         `constraints`: _
-                                                                        `description`: _
+                                                                        `description`: * "No circular dependencies (default for cross-module references)"
                                                                         `value`: | `nothing` ~
                                                                     )
                                                                     'cyclic': (
                                                                         `constraints`: _
-                                                                        `description`: _
+                                                                        `description`: * "Allows circular instance references (only within same dictionary)"
                                                                         `value`: | `nothing` ~
                                                                     )
                                                                     'stack': (
                                                                         `constraints`: _
-                                                                        `description`: _
+                                                                        `description`: * "Push onto dependency stack for multi-level lookups"
                                                                         `value`: | `nothing` ~
                                                                     )
                                                                 }
@@ -1629,10 +1631,10 @@
                             )
                             'state': (
                                 `constraints`: _
-                                `description`: _
+                                `description`: * "Tagged union: value is one of several named options (like a sum type or enum)"
                                 `value`: | `group` {
                                     'options': (
-                                        `description`: _
+                                        `description`: * "The possible variants, each with its own name and associated data"
                                         `value`: | `dictionary` (
                                             `value`: | `group` {
                                                 'constraints': (
@@ -1643,7 +1645,7 @@
                                                     )
                                                 )
                                                 'description': (
-                                                    `description`: _
+                                                    `description`: * "Documentation shown in IDE for this option"
                                                     `value`: | `optional` | `text` | `global` 'multi line text'
                                                 )
                                                 'value': (
@@ -1667,12 +1669,12 @@
                             )
                             'text': (
                                 `constraints`: _
-                                `description`: _
+                                `description`: * "String value (single-line or multi-line)"
                                 `value`: | `state` (
                                     `options`: {
                                         'global': (
                                             `constraints`: _
-                                            `description`: _
+                                            `description`: * "Use a globally defined text type"
                                             `value`: | `reference` (
                                                 `referent`: (
                                                     `module`: (
@@ -1693,7 +1695,7 @@
                                         )
                                         'local': (
                                             `constraints`: _
-                                            `description`: _
+                                            `description`: * "Define the text type inline"
                                             `value`: | `component` (
                                                 `type`: | `internal` 'Text Type'
                                                 `results`: _
@@ -2507,9 +2509,33 @@
                                 `results`: _
                             )
                         )
-                        'module': (
-                            `description`: * "the module that is the root of the document"
-                            `value`: | `text` | `global` 'text'
+                        'complexity': (
+                            `description`: _
+                            `value`: | `state` (
+                                `options`: {
+                                    'constrained': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `group` {
+                                            'module resolver': (
+                                                `description`: * "the module resolver that is the root of the document (the resolver gives access to the module definition as well)"
+                                                `value`: | `text` | `global` 'text'
+                                            )
+                                        }
+                                    )
+                                    'unconstrained': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `group` {
+                                            'module': (
+                                                `description`: * "the module that is the root of the document"
+                                                `value`: | `text` | `global` 'text'
+                                            )
+                                        }
+                                    )
+                                }
+                                `results`: _
+                            )
                         )
                     }
                 )
@@ -2544,13 +2570,40 @@
                                 `options`: {
                                     'multi line': (
                                         `constraints`: _
-                                        `description`: _
+                                        `description`: * "Text can contain line breaks (like a textarea)"
                                         `value`: | `nothing` ~
                                     )
                                     'single line': (
                                         `constraints`: _
+                                        `description`: * "Text on a single line (like an input field)"
+                                        `value`: | `nothing` ~
+                                    )
+                                }
+                                `results`: _
+                            )
+                        )
+                        'link': (
+                            `description`: _
+                            `value`: | `state` (
+                                `options`: {
+                                    'no': (
+                                        `constraints`: _
                                         `description`: _
                                         `value`: | `nothing` ~
+                                    )
+                                    'yes': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `group` {
+                                            'path prefix': (
+                                                `description`: _
+                                                `value`: | `text` | `global` 'text'
+                                            )
+                                            'path suffix': (
+                                                `description`: _
+                                                `value`: | `text` | `global` 'text'
+                                            )
+                                        }
                                     )
                                 }
                                 `results`: _
@@ -2653,12 +2706,12 @@
                         `options`: {
                             'optional': (
                                 `constraints`: _
-                                `description`: _
+                                `description`: * "This parameter may be omitted"
                                 `value`: | `nothing` ~
                             )
                             'required': (
                                 `constraints`: _
-                                `description`: _
+                                `description`: * "This parameter must be provided"
                                 `value`: | `nothing` ~
                             )
                         }
@@ -2740,11 +2793,11 @@
                     `root value`: | `dictionary` (
                         `value`: | `group` {
                             'description': (
-                                `description`: _
+                                `description`: * "Documentation shown in IDE for this property"
                                 `value`: | `optional` | `text` | `global` 'multi line text'
                             )
                             'value': (
-                                `description`: _
+                                `description`: * "The type of this property"
                                 `value`: | `component` (
                                     `type`: | `internal` 'Value'
                                     `results`: _
@@ -2774,18 +2827,18 @@
                 'Value Path': (
                     `root value`: | `group` {
                         'tail': (
-                            `description`: _
+                            `description`: * "Navigate through nested structures: groups, states, dictionaries, lists, optionals"
                             `value`: | `list` (
                                 `value`: | `state` (
                                     `options`: {
                                         'dictionary': (
                                             `constraints`: _
-                                            `description`: _
+                                            `description`: * "Navigate into a dictionary's values"
                                             `value`: | `nothing` ~
                                         )
                                         'group': (
                                             `constraints`: _
-                                            `description`: _
+                                            `description`: * "Navigate to a specific property in a group"
                                             `value`: | `reference` (
                                                 `referent`: (
                                                     `module`: (
@@ -2806,17 +2859,17 @@
                                         )
                                         'list': (
                                             `constraints`: _
-                                            `description`: _
+                                            `description`: * "Navigate into a list's elements"
                                             `value`: | `nothing` ~
                                         )
                                         'optional': (
                                             `constraints`: _
-                                            `description`: _
+                                            `description`: * "Navigate into an optional's value"
                                             `value`: | `nothing` ~
                                         )
                                         'state': (
                                             `constraints`: _
-                                            `description`: _
+                                            `description`: * "Navigate to a specific option in a state"
                                             `value`: | `reference` (
                                                 `referent`: (
                                                     `module`: (
@@ -2884,12 +2937,12 @@
                 'Module Reference': (
                     `root value`: | `group` {
                         'location': (
-                            `description`: _
+                            `description`: * "Where the referenced module is defined"
                             `value`: | `state` (
                                 `options`: {
                                     'internal': (
                                         `constraints`: _
-                                        `description`: _
+                                        `description`: * "Module is in the same schema"
                                         `value`: | `reference` (
                                             `referent`: (
                                                 `module`: (
@@ -2910,7 +2963,7 @@
                                     )
                                     'external': (
                                         `constraints`: _
-                                        `description`: _
+                                        `description`: * "Module is in an imported schema"
                                         `value`: | `group` {
                                             'import': (
                                                 `description`: _
@@ -5123,6 +5176,31 @@
                                         'single line': (
                                             `constraints`: {}
                                             `resolver`: | `nothing` ~
+                                        )
+                                    }
+                                )
+                            )
+                            'link': (
+                                `definition`: ~
+                                `resolver`: | `state` (
+                                    `definition`: ~
+                                    `options`: {
+                                        'no': (
+                                            `constraints`: {}
+                                            `resolver`: | `nothing` ~
+                                        )
+                                        'yes': (
+                                            `constraints`: {}
+                                            `resolver`: | `group` {
+                                                'path prefix': (
+                                                    `definition`: ~
+                                                    `resolver`: | `text` ~
+                                                )
+                                                'path suffix': (
+                                                    `definition`: ~
+                                                    `resolver`: | `text` ~
+                                                )
+                                            }
                                         )
                                     }
                                 )
@@ -9195,9 +9273,31 @@
                                     `result`: _
                                 )
                             )
-                            'module': (
+                            'complexity': (
                                 `definition`: ~
-                                `resolver`: | `text` ~
+                                `resolver`: | `state` (
+                                    `definition`: ~
+                                    `options`: {
+                                        'constrained': (
+                                            `constraints`: {}
+                                            `resolver`: | `group` {
+                                                'module resolver': (
+                                                    `definition`: ~
+                                                    `resolver`: | `text` ~
+                                                )
+                                            }
+                                        )
+                                        'unconstrained': (
+                                            `constraints`: {}
+                                            `resolver`: | `group` {
+                                                'module': (
+                                                    `definition`: ~
+                                                    `resolver`: | `text` ~
+                                                )
+                                            }
+                                        )
+                                    }
+                                )
                             )
                         }
                     )
