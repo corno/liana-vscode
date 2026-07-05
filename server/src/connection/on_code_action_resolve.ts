@@ -1,8 +1,9 @@
-import * as p_ from 'pareto-core/dist/implementation/transformer'
+import * as p_ from "pareto-core/implementation/transformer"
 
-import * as t_unmarshall_result_to_formatting_edits from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/formatting_edits"
+import * as t_unmarshall_result_to_formatting_edits from "liana-authoring/implementation/manual/transformers/unmarshall_result/formatting_edits"
 
-import * as helpers from '../helpers/range'
+import * as helpers_range from '../helpers/range'
+import * as helpers_pareto_optional_value from '../helpers/pareto_optional_value'
 import { load_document } from '../to_be_backend/load_document'
 
 import * as vscode_node from 'vscode-languageserver/node'
@@ -88,26 +89,23 @@ export const create_on_code_action_resolve: (
 						resolve(action)
 					} else {
 
-						let changes: vscode_node.TextEdit[] = []
 
-						const $_raw = $.__get_raw()
-
-						if ($_raw !== null) {
-							const $ = $_raw[0]
-							changes = [
-								vscode_node.TextEdit.replace(
-									helpers.create_range_from_range($.range),
-									indent_replacement_text(
-										helpers.create_range_from_range($.range),
-										document,
-										$.text,
-									)
-								)
-							]
-						}
 						action.edit = {
 							changes: {
-								[uri]: changes
+								[uri]: helpers_pareto_optional_value.optional_value_convert(
+									$,
+									($) => [
+										vscode_node.TextEdit.replace(
+											helpers_range.create_range_from_range($.range),
+											indent_replacement_text(
+												helpers_range.create_range_from_range($.range),
+												document,
+												$.text,
+											)
+										)
+									],
+									() => []
+								)
 							}
 						}
 						resolve(action)

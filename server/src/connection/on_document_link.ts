@@ -1,8 +1,9 @@
-import * as p_ from 'pareto-core/dist/implementation/transformer'
+import * as p_ from "pareto-core/implementation/transformer"
 
-import * as t_unmarshall_result_to_document_links from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/document_links"
+import * as t_unmarshall_result_to_document_links from "liana-authoring/implementation/manual/transformers/unmarshall_result/document_links"
 
-import * as helpers from '../helpers/range'
+import * as helpers_range from '../helpers/range'
+import * as helpers_pareto_optional_value from '../helpers/pareto_optional_value'
 
 import { load_document } from '../to_be_backend/load_document'
 
@@ -51,13 +52,10 @@ export const create_on_document_link: (
 							// Convert to file:// URI
 							const target_uri = pathToFileURL(target_path).toString()
 
-							const tooltip_raw = $.tooltip.__get_raw()
-
-
 							return {
-								'range': helpers.create_range_from_range($.range),
+								'range': helpers_range.create_range_from_range($.range),
 								'target': target_uri,
-								'tooltip': tooltip_raw === null ? undefined : tooltip_raw[0],
+								'tooltip': helpers_pareto_optional_value.optional_value_to_possibly_undefined($.tooltip, ($) => $),
 							}
 						})
 

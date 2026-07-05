@@ -1,13 +1,13 @@
-import p_create_refinement_context from 'pareto-core/dist/implementation/__internal/sync/create_refinement_context'
-import p_list_from_text from 'pareto-core/dist/implementation/refiner/specials/list_from_text'
-import p_unreachable from 'pareto-core/dist/implementation/transformer/specials/unreachable_code_path'
+import p_create_refinement_context from 'pareto-core/implementation/__internal/sync/create_refinement_context'
+import p_list_from_text from 'pareto-core/implementation/refiner/specials/list_from_text'
+import p_unreachable from 'pareto-core/implementation/transformer/specials/unreachable_code_path'
 
-import * as d_deserialize_resolved from "liana-core/dist/interface/data/deserialize_resolved"
-import * as d_temp_module_specifier from "pareto-liana/dist/interface/data/temp_module_specifier"
+import * as d_deserialize_resolved from "liana-core/interface/data/deserialize_resolved"
+import * as d_temp_module_specifier from "pareto-liana/interface/data/temp_module_specifier"
 
 //dependencies
-import * as r_temp_module_specifier_from_loc from "pareto-liana/dist/implementation/manual/refiners/temp_module_specifier/list_of_characters"
-import * as r_path_from_text from "pareto-resources/dist/implementation/manual/refiners/path_unrestricted/text"
+import * as r_temp_module_specifier_from_loc from "pareto-liana/implementation/manual/refiners/temp_module_specifier/list_of_characters"
+import * as r_path_from_text from "pareto-resources/implementation/manual/refiners/path_unrestricted/text"
 
 import * as fs from "fs"
 import path from 'path'

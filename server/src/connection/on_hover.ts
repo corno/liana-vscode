@@ -1,6 +1,6 @@
-import * as p_ from 'pareto-core/dist/implementation/transformer'
+import * as p_ from "pareto-core/implementation/transformer"
 
-import * as t_unmarshall_result_to_hover_info from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/hover_info"
+import * as t_unmarshall_result_to_hover_info from "liana-authoring/implementation/manual/transformers/unmarshall_result/hover_info"
 
 import { load_document } from '../to_be_backend/load_document'
 

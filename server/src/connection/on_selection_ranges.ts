@@ -1,20 +1,23 @@
-import * as p_ from 'pareto-core/dist/implementation/transformer'
+import * as p_ from "pareto-core/implementation/transformer"
 
-import * as d_unmarshall_result from "liana-authoring/dist/interface/data/unmarshall_result"
-import * as t_unmarshall_result_to_selection_ranges from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/selection_ranges"
+import * as d_unmarshall_result from "liana-authoring/interface/data/unmarshall_result"
+import * as t_unmarshall_result_to_selection_ranges from "liana-authoring/implementation/manual/transformers/unmarshall_result/selection_ranges"
 
-import * as helpers from '../helpers/range'
+import * as helpers_range from '../helpers/range'
+import * as helpers_pareto_optional_value from '../helpers/pareto_optional_value'
 import { load_document } from '../to_be_backend/load_document'
 
 import * as vscode_node from 'vscode-languageserver/node'
 import { Connection_Context } from '../connection_context'
 
 function convert_selecton_range($: d_unmarshall_result.Range_Stack): vscode_node.SelectionRange {
-	const parent_raw = $.parent.__get_raw()
-	
+
 	return {
-		'range': helpers.create_range_from_range($.range),
-		'parent': parent_raw === null ? undefined : convert_selecton_range($),
+		'range': helpers_range.create_range_from_range($.range),
+		'parent': helpers_pareto_optional_value.optional_value_to_possibly_undefined(
+			$.parent,
+			convert_selecton_range
+		),
 	}
 }
 
@@ -52,14 +55,15 @@ export const create_on_selection_ranges: (
 								'positions': p_.literal.list(params.positions),
 							}
 						).__get_raw().map(($): vscode_node.SelectionRange => convert_selecton_range($))
-					connection_context.connection.console.log(`Selection ranges: backend returned ${result.length} range(s): ${JSON.stringify(result, null, 2)}`)
-					return result
-				},
-				(final_result) => {
-					connection_context.connection.console.log(`Selection ranges: resolving with ${final_result.length} range(s)`)
-					resolve(final_result)
-				},
-			)
-		},
-	)
-}}
+						connection_context.connection.console.log(`Selection ranges: backend returned ${result.length} range(s): ${JSON.stringify(result, null, 2)}`)
+						return result
+					},
+					(final_result) => {
+						connection_context.connection.console.log(`Selection ranges: resolving with ${final_result.length} range(s)`)
+						resolve(final_result)
+					},
+				)
+			},
+		)
+	}
+}

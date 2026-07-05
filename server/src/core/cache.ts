@@ -1,4 +1,4 @@
-import * as p_ from 'pareto-core/dist/implementation/transformer'
+import * as p_ from "pareto-core/implementation/transformer"
 
 type Pending_Request<Result, Error> = {
 	callbacks: Array<{

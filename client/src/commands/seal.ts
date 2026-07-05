@@ -1,7 +1,7 @@
-import * as p_ from 'pareto-core/dist/implementation/transformer'
-import p_create_refinement_context from 'pareto-core/dist/implementation/__internal/sync/create_refinement_context'
+import * as p_ from "pareto-core/implementation/transformer"
+import p_create_refinement_context from "pareto-core/implementation/__internal/sync/create_refinement_context"
 
-import { $$ as ttt_seal } from 'liana-authoring/dist/implementation/manual/text_to_text/seal'
+import { $$ as ttt_seal } from "liana-authoring/implementation/manual/text_to_text/seal"
 
 import * as fs from 'fs'
 import * as path from 'path'

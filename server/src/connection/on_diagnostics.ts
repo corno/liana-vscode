@@ -1,16 +1,17 @@
 import * as vscode_node from 'vscode-languageserver/node'
 import { Connection_Context } from '../connection_context'
-import * as p_ from 'pareto-core/dist/implementation/transformer'
-import * as helpers from '../helpers/range'
+import * as p_ from "pareto-core/implementation/transformer"
+import * as helpers_range from '../helpers/range'
+import * as helpers_pareto_optional_value from '../helpers/pareto_optional_value'
 import { load_document } from '../to_be_backend/load_document'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
 import { Cache_Context } from '../connection_context'
 
 //dependencies
-import * as t_unmarshall_result_to_diagnostics from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/diagnostics"
-import * as t_resolve_result_to_diagnostics from "liana-authoring/dist/implementation/manual/transformers/resolve_result/diagnostics"
-import * as t_node_path_to_text from "pareto-resources/dist/implementation/manual/transformers/unrestricted_path/text"
-import * as t_deserialize_to_diagnostic from "liana-authoring/dist/implementation/manual/transformers/deserialize/diagnostics"
+import * as t_unmarshall_result_to_diagnostics from "liana-authoring/implementation/manual/transformers/unmarshall_result/diagnostics"
+import * as t_resolve_result_to_diagnostics from "liana-authoring/implementation/manual/transformers/resolve_result/diagnostics"
+import * as t_node_path_to_text from "pareto-resources/implementation/manual/transformers/unrestricted_path/text"
+import * as t_deserialize_to_diagnostic from "liana-authoring/implementation/manual/transformers/deserialize/diagnostics"
 
 
 
@@ -52,19 +53,19 @@ export const create_on_diagnostics: (
 						($) => {
 							resolve($.__get_raw().map(
 								($): vscode_node.Diagnostic => {
-									let related_information: vscode_node.DiagnosticRelatedInformation[] = []
-									const related_information_raw = $['related information'].__get_raw()
-
-									if (related_information_raw !== null) {
-											related_information = related_information_raw[0].__get_raw().map(($) => ({
+									const related_information: vscode_node.DiagnosticRelatedInformation[] = helpers_pareto_optional_value.optional_value_convert(
+										$['related information'],
+										($) => $.__get_raw().map(($) => ({
 												'location': {
 													'uri': t_node_path_to_text.Node_Path($.location['file path']),
-													'range': helpers.create_range_from_possible_range($.location.range),
+													'range': helpers_range.create_range_from_possible_range($.location.range),
 												},
 												'message': $.message,
-											}))
-									}
-									const range_raw = $.range.__get_raw()
+											})
+										),
+										() => []
+									)
+
 									return {
 										severity: (() => {
 											switch ($.severity[0]) {
@@ -75,9 +76,11 @@ export const create_on_diagnostics: (
 											}
 										})(),
 										message: $.message,
-										range: range_raw === null
-											? vscode_node.Range.create(0, 0, 0, 1) // if we don't have a range, we put it at the start of the document
-											: helpers.create_range_from_possible_range(range_raw[0]),
+										range: helpers_pareto_optional_value.optional_value_convert(
+											$.range,
+											(range) => helpers_range.create_range_from_possible_range(range),
+											() => vscode_node.Range.create(0, 0, 0, 1) // if we don't have a range, we put it at the start of the document
+										),
 										source: p_.from.state($.type).decide(($) => {
 											switch ($[0]) {
 												case 'semantic': return p_.ss($, ($) => "liana-semantic")

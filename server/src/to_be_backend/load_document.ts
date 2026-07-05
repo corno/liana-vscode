@@ -1,5 +1,5 @@
-import p_unreachable_code_path from 'pareto-core/dist/implementation/transformer/specials/unreachable_code_path'
-import __query_result from 'pareto-core/dist/implementation/query/__internal/query_result'
+import p_unreachable_code_path from "pareto-core/implementation/transformer/specials/unreachable_code_path"
+import __query_result from "pareto-core/implementation/query/__internal/query_result"
 
 import {
 	TextDocument,
@@ -7,17 +7,17 @@ import {
 
 import * as url from "url"
 
-import * as d_deserialize from "liana-authoring/dist/interface/data/deserialize"
+import * as d_deserialize from "liana-authoring/interface/data/deserialize"
 
-import { $$ as qr_stat } from "pareto-host-nodejs/dist/file_system_unrestricted/queries/stat_possible_node"
-import { $$ as qr_read_file } from "pareto-host-nodejs/dist/file_system_unrestricted/queries/read_file"
+import { $$ as qr_stat } from "pareto-host-nodejs/file_system_unrestricted/queries/stat_possible_node"
+import { $$ as qr_read_file } from "pareto-host-nodejs/file_system_unrestricted/queries/read_file"
 
 
-import * as r_path_from_text from "pareto-resources/dist/implementation/manual/refiners/path_unrestricted/text"
-import * as t_path_to_text from "pareto-resources/dist/implementation/manual/transformers/unrestricted_path/text"
-import { $$ as q_deserialize } from "liana-authoring/dist/implementation/manual/queries/deserialize"
-import { $$ as q_get_schema_path } from "liana-authoring/dist/implementation/manual/queries/get_schema_path"
-import { $$ as q_get_schema } from "liana-authoring/dist/implementation/manual/queries/get_schema"
+import * as r_path_from_text from "pareto-resources/implementation/manual/refiners/path_unrestricted/text"
+import * as t_path_to_text from "pareto-resources/implementation/manual/transformers/unrestricted_path/text"
+import { $$ as q_deserialize } from "liana-authoring/implementation/manual/queries/deserialize"
+import { $$ as q_get_schema_path } from "liana-authoring/implementation/manual/queries/get_schema_path"
+import { $$ as q_get_schema } from "liana-authoring/implementation/manual/queries/get_schema"
 import { get_cached_or_fresh } from '../core/cache'
 import { Cache_Context } from '../connection_context'
 

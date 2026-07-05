@@ -1,7 +1,7 @@
-import * as p_ from 'pareto-core/dist/implementation/transformer'
+import * as p_ from "pareto-core/implementation/transformer"
 
 //data types
-import * as t_unmarshall_result_to_completion_suggestions from "liana-authoring/dist/implementation/manual/transformers/unmarshall_result/completion_suggestions"
+import * as t_unmarshall_result_to_completion_suggestions from "liana-authoring/implementation/manual/transformers/unmarshall_result/completion_suggestions"
 
 import { load_document } from '../to_be_backend/load_document'
 
