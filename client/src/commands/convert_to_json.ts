@@ -1,6 +1,6 @@
 import create_refinement_context from "pareto-core/implementation/__internal/sync/create_refinement_context"
 
-import { $$ as ttt_convert_to_json } from "liana-authoring/implementation/manual/text_to_text/convert_to_json"
+import { $$ as ttt_convert_to_json } from "../helpers/convert_to_json"
 
 import * as vscode from 'vscode'
 

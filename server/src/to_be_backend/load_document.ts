@@ -1,5 +1,5 @@
 import p_unreachable_code_path from "pareto-core/implementation/transformer/specials/unreachable_code_path"
-import __query_result from "pareto-core/implementation/query/__internal/query_result"
+import query_result from "pareto-core/implementation/__internal/query/query_result"
 
 import {
 	TextDocument,
@@ -9,8 +9,8 @@ import * as url from "url"
 
 import * as d_deserialize from "liana-authoring/interface/data/deserialize"
 
-import { $$ as qr_stat } from "pareto-host-nodejs/file_system_unrestricted/queries/stat_possible_node"
-import { $$ as qr_read_file } from "pareto-host-nodejs/file_system_unrestricted/queries/read_file"
+import { $$ as qr_stat } from "pareto-resource-filesystem-unrestricted/queries/stat_possible_node"
+import { $$ as qr_read_file } from "pareto-resource-filesystem-unrestricted/queries/read_file"
 
 
 import * as r_path_from_text from "pareto-resources/implementation/manual/refiners/path_unrestricted/text"
@@ -45,7 +45,7 @@ export const load_document = <T>(
 						},
 					),
 					'get schema': ($p, e_t) => {
-						return __query_result(
+						return query_result(
 							(on_success, on_error) => {
 								get_cached_or_fresh(
 									cache.schemas,

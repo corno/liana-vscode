@@ -287,8 +287,8 @@
 		"esbuild": "^0.28.1"
 	},
 	"dependencies": {
-		"liana-authoring": "^0.1.65",
-		"pareto-host-nodejs": "^0.2.0",
+		"liana-authoring": "^0.1.75",
+		"pareto-resource-filesystem-unrestricted": "^0.1.4",
 		"typescript": "^6.0.3"
 	}
 }
