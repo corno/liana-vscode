@@ -13,11 +13,11 @@ import { $$ as qr_stat } from "pareto-resource-filesystem-unrestricted/queries/s
 import { $$ as qr_read_file } from "pareto-resource-filesystem-unrestricted/queries/read_file"
 
 
-import * as r_path_from_text from "pareto-resources/implementation/manual/refiners/path_unrestricted/text"
-import * as t_path_to_text from "pareto-resources/implementation/manual/transformers/unrestricted_path/text"
-import { $$ as q_deserialize } from "liana-authoring/implementation/manual/queries/deserialize"
-import { $$ as q_get_schema_path } from "liana-authoring/implementation/manual/queries/get_schema_path"
-import { $$ as q_get_schema } from "liana-authoring/implementation/manual/queries/get_schema"
+import * as r_path_from_text from "pareto-resources/implementation/refiners/path_unrestricted/text"
+import * as t_path_to_text from "pareto-resources/implementation/transformers/unrestricted_path/text"
+import { $$ as q_deserialize } from "liana-authoring/implementation/queries/deserialize"
+import { $$ as q_get_schema_path } from "liana-authoring/implementation/queries/get_schema_path"
+import { $$ as q_get_schema } from "liana-authoring/implementation/queries/get_schema"
 import { get_cached_or_fresh } from '../core/cache'
 import { Cache_Context } from '../connection_context'
 

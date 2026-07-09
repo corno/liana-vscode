@@ -6,8 +6,8 @@ import * as d_deserialize_resolved from "liana-core/interface/data/deserialize_r
 import * as d_temp_module_specifier from "pareto-liana/interface/data/temp_module_specifier"
 
 //dependencies
-import * as r_temp_module_specifier_from_loc from "pareto-liana/implementation/manual/refiners/temp_module_specifier/list_of_characters"
-import * as r_path_from_text from "pareto-resources/implementation/manual/refiners/path_unrestricted/text"
+import * as r_temp_module_specifier_from_loc from "pareto-liana/implementation/refiners/temp_module_specifier/list_of_characters"
+import * as r_path_from_text from "pareto-resources/implementation/refiners/path_unrestricted/text"
 
 import * as fs from "fs"
 import path from 'path'

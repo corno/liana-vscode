@@ -1,7 +1,7 @@
 import * as p_ from "pareto-core/implementation/transformer"
 
 import * as d_unmarshall_result from "liana-authoring/interface/data/unmarshall_result"
-import * as t_unmarshall_result_to_selection_ranges from "liana-authoring/implementation/manual/transformers/unmarshall_result/selection_ranges"
+import * as t_unmarshall_result_to_selection_ranges from "liana-authoring/implementation/transformers/unmarshall_result/selection_ranges"
 
 import * as helpers_range from '../helpers/range'
 import * as helpers_pareto_optional_value from '../helpers/pareto_optional_value'

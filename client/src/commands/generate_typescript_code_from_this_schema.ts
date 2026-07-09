@@ -12,10 +12,10 @@ import * as cx_write_file from "pareto-resource-filesystem-unrestricted/commands
 import * as qx_read_file from "pareto-resource-filesystem-unrestricted/queries/read_file"
 
 //dependencies
-import * as c_generate_typescript from "pareto-liana/implementation/manual/commands/generate_typescript"
-import * as r_path_from_text from "pareto-resources/implementation/manual/refiners/path_unrestricted/text"
-import * as t_generate_typescript_to_prose from "pareto-liana/implementation/manual/transformers/generate_typescript/prose"
-import * as t_prose_to_text from "pareto-fountain-pen/implementation/manual/transformers/prose/text"
+import * as c_generate_typescript from "pareto-liana/implementation/commands/generate_typescript"
+import * as r_path_from_text from "pareto-resources/implementation/refiners/path_unrestricted/text"
+import * as t_generate_typescript_to_prose from "pareto-liana/implementation/transformers/generate_typescript/prose"
+import * as t_prose_to_text from "pareto-fountain-pen/implementation/transformers/prose/text"
 import { $$ as ttt_seal } from "../helpers/seal"
 import { load_applicable_schema } from '../to_be_backend/load_applicable_schema'
 import * as fs from 'fs'

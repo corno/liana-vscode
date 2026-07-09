@@ -13,8 +13,8 @@ type Signature = p_ri.Refiner_With_Parameter<
 >
 
 //dependencies
-import * as r_sealed_target_from_loc from "liana-authoring/implementation/manual/refiners/astn_sealed_target/list_of_characters"
-import * as t_sealed_target_to_text from "astn-core/implementation/manual/transformers/sealed_target/text"
+import * as r_sealed_target_from_loc from "liana-authoring/implementation/refiners/astn_sealed_target/list_of_characters"
+import * as t_sealed_target_to_text from "astn-core/implementation/transformers/sealed_target/text"
 
 
 export const $$: Signature = ($, abort, $p) => t_sealed_target_to_text.Document(

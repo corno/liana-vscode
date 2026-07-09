@@ -13,9 +13,9 @@ type Signature = p_i.Refiner_With_Parameter<
 >
 
 //dependencies
-import * as t_ast_2_json from "astn/implementation/manual/transformers/parse_tree/json_target"
-import * as t_json_to_text from "pareto-json/implementation/manual/transformers/json_without_guaranteed_unique_keys/text"
-import * as r_astn_parse_tree_from_text from "astn-core/implementation/manual/refiners/parse_tree/text"
+import * as t_ast_2_json from "astn/implementation/transformers/parse_tree/json_target"
+import * as t_json_to_text from "pareto-json/implementation/transformers/json_without_guaranteed_unique_keys/text"
+import * as r_astn_parse_tree_from_text from "astn-core/implementation/refiners/parse_tree/text"
 
 
 export const $$: Signature = ($, abort, $p,) => t_json_to_text.Value(
