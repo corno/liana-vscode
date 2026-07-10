@@ -1,9 +1,9 @@
 import * as p_i from 'pareto-core/interface/refiner'
 
-import * as d_function from "liana-authoring/interface/generated/liana/schemas/convert_to_json/data"
-import * as d_function_deserialize_parse_tree from "astn-core/interface/generated/liana/schemas/deserialize_parse_tree/data"
-import * as d_out from "pareto-fountain-pen/interface/generated/liana/schemas/text/data"
-import * as d_in from "pareto-fountain-pen/interface/generated/liana/schemas/text/data"
+import * as d_function from "liana-authoring/interface/data/convert_to_json"
+import * as d_function_deserialize_parse_tree from "astn-core/interface/data/deserialize_parse_tree"
+import * as d_out from "pareto-fountain-pen/interface/data/text"
+import * as d_in from "pareto-fountain-pen/interface/data/text"
 
 type Signature = p_i.Refiner_With_Parameter<
     d_out.Text,

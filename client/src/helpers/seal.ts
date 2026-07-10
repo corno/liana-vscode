@@ -1,8 +1,8 @@
 import * as p_ri from 'pareto-core/interface/refiner'
 import p_list_from_text from 'pareto-core/implementation/refiner/specials/list_from_text'
 
-import * as d_out from "pareto-fountain-pen/interface/generated/liana/schemas/text/data"
-import * as d_in from "pareto-fountain-pen/interface/generated/liana/schemas/text/data"
+import * as d_out from "pareto-fountain-pen/interface/data/text"
+import * as d_in from "pareto-fountain-pen/interface/data/text"
 import * as d_function from "liana-authoring/interface/data/seal"
 
 type Signature = p_ri.Refiner_With_Parameter<

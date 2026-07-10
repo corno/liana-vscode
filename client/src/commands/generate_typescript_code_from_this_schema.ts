@@ -2,7 +2,7 @@ import * as p_ from 'pareto-core/implementation/transformer'
 import p_create_refinement_context from 'pareto-core/implementation/__internal/sync/create_refinement_context'
 
 //data types
-import * as d_path from "pareto-resources/interface/generated/liana/schemas/fs_unrestricted_path/data"
+import * as d_path from "pareto-resources/interface/data/fs_unrestricted_path"
 
 //resources
 import * as cx_copy from "pareto-resource-filesystem-unrestricted/commands/copy"
