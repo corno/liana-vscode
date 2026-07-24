@@ -2,12 +2,12 @@ import p_create_refinement_context from 'pareto-core/implementation/__internal/s
 import p_list_from_text from 'pareto-core/implementation/refiner/specials/list_from_text'
 import p_unreachable from 'pareto-core/implementation/transformer/specials/unreachable_code_path'
 
-import * as d_deserialize_resolved from "liana-core/interface/data/deserialize_resolved"
-import * as d_temp_module_specifier from "pareto-liana/interface/data/temp_module_specifier"
+import * as s_resolved_document_deserialization from "liana-core/modules/resolved_document_deserialization/schemas/resolved_document_deserialization"
+import * as s_temp_module_specifier from "pareto-liana/interface/schemas/temp_module_specifier"
 
 //dependencies
 import * as r_temp_module_specifier_from_loc from "pareto-liana/implementation/refiners/temp_module_specifier/list_of_characters"
-import * as r_path_from_text from "pareto-resources/implementation/refiners/path_unrestricted/text"
+import * as deser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/implementation/deserializers/path"
 
 import * as fs from "fs"
 import path from 'path'
@@ -31,7 +31,7 @@ export type Load_Schema_Error = {
 		}
 	}]
 	| ['parse schema', {
-		'error': d_deserialize_resolved.Error
+		'error': s_resolved_document_deserialization.Error
 	}]
 }
 
@@ -39,7 +39,7 @@ export function load_applicable_schema(
 	text_document: TextDocument,
 	on_error: ($: Load_Schema_Error) => void,
 	on_success: (
-		$: d_temp_module_specifier.Temp_Module_Specifier,
+		$: s_temp_module_specifier.Temp_Module_Specifier,
 	) => void,
 ): undefined {
 
@@ -62,7 +62,7 @@ export function load_applicable_schema(
 					}]
 				})
 			} else {
-				p_create_refinement_context<d_temp_module_specifier.Temp_Module_Specifier, d_deserialize_resolved.Error>(
+				p_create_refinement_context<s_temp_module_specifier.Temp_Module_Specifier, s_resolved_document_deserialization.Error>(
 					(abort) => r_temp_module_specifier_from_loc.Module_Specifier(
 						p_list_from_text(data, ($) => $),
 						($) => abort($)
@@ -70,7 +70,7 @@ export function load_applicable_schema(
 					)
 				).__extract_data(
 					($) => {
-						const parsed_schema_path = r_path_from_text.Node_Path(
+						const parsed_schema_path = deser_path.Node_Path(
 							schema_path,
 							() => p_unreachable("the path is constructed above"),
 							{

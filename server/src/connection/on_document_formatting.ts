@@ -2,8 +2,8 @@ import p_list_from_text from "pareto-core/implementation/refiner/specials/list_f
 import p_variables from "pareto-core/implementation/transformer/specials/variables"
 import create_refinement_context from "pareto-core/implementation/__internal/sync/create_refinement_context"
 
-import * as r_parse_tree_from_loc from "astn-core/implementation/refiners/parse_tree/list_of_characters"
-import * as t_parse_tree_to_text from "astn/implementation/transformers/parse_tree/text"
+import * as r_parse_tree_from_loc from "astn-core/modules/deserialization/implementation/refiners/parse_tree/list_of_characters"
+import * as t_parse_tree_to_text from "astn/modules//parse_tree/implementation/transformers/parse_tree/serialized"
 
 import * as vscode_node from 'vscode-languageserver/node'
 import { Connection_Context } from '../connection_context'
@@ -50,9 +50,8 @@ export const create_on_document_formatting: (
 							$,
 							{
 								'indentation': ' '.repeat(params.options.tabSize || 4),
-								'newline': '\n'
 							}
-						)
+						).__get_raw().join("\n") + "\n"
 					)
 				)
 			},

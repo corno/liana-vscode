@@ -1,6 +1,6 @@
 import * as p_ from "pareto-core/implementation/transformer"
 
-import * as d_astn_location from "astn-core/interface/data/location"
+import * as d_astn_location from "astn-core/modules/deserialization/schemas/location"
 
 import * as vscode_node from 'vscode-languageserver/node'
 

@@ -1,3 +1,4 @@
+import * as p_schema from 'pareto-core/interface/schema'
 import * as p_ from "pareto-core/implementation/transformer"
 import p_create_refinement_context from "pareto-core/implementation/__internal/sync/create_refinement_context"
 
@@ -37,7 +38,7 @@ export default ((deps) => async () => {
 			})
 		},
 		($) => {
-			p_create_refinement_context<string, string>(
+			p_create_refinement_context<p_schema.List<string>, string>(
 				(abort) => ttt_seal(
 					editor.document.getText(),
 					($) => abort("Cannot initialize authoring environment because the file is not valid Liana."),
@@ -97,7 +98,11 @@ export default ((deps) => async () => {
 							fs.chmodSync(schema_file_path, 0o644)
 						}
 
-						fs.writeFileSync(schema_file_path, new_text, 'utf8')
+						fs.writeFileSync(
+							schema_file_path,
+							new_text.__get_raw().join("\n") + "\n",
+							'utf8'
+						)
 
 						// Make the schema file readonly at OS level
 						fs.chmodSync(schema_file_path, 0o444)

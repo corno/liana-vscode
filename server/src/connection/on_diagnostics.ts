@@ -10,7 +10,7 @@ import { Cache_Context } from '../connection_context'
 //dependencies
 import * as t_unmarshall_result_to_diagnostics from "liana-authoring/implementation/transformers/unmarshall_result/diagnostics"
 import * as t_resolve_result_to_diagnostics from "liana-authoring/implementation/transformers/resolve_result/diagnostics"
-import * as t_node_path_to_text from "pareto-resources/implementation/transformers/unrestricted_path/text"
+import * as ser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/implementation/serializers/path"
 import * as t_deserialize_to_diagnostic from "liana-authoring/implementation/transformers/deserialize/diagnostics"
 
 
@@ -57,7 +57,9 @@ export const create_on_diagnostics: (
 										$['related information'],
 										($) => $.__get_raw().map(($) => ({
 												'location': {
-													'uri': t_node_path_to_text.Node_Path($.location['file path']),
+													'uri': ser_path.Node_Path(
+														$.location['file path']
+													),
 													'range': helpers_range.create_range_from_possible_range($.location.range),
 												},
 												'message': $.message,

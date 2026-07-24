@@ -80,8 +80,8 @@ export const create_on_code_action_resolve: (
 								? ['shallow with entities', null]
 								: ['deep', null]
 						},
-						'indent': "    ",
 						'position': position,
+						'indentation': "    ",
 					}
 				),
 				($) => {
@@ -100,7 +100,7 @@ export const create_on_code_action_resolve: (
 											indent_replacement_text(
 												helpers_range.create_range_from_range($.range),
 												document,
-												$.text,
+												$.lines.__get_raw().join("\n") + "\n",
 											)
 										)
 									],

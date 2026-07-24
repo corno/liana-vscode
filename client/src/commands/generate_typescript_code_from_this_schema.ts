@@ -1,8 +1,10 @@
 import * as p_ from 'pareto-core/implementation/transformer'
+import * as p_schema from 'pareto-core/interface/schema'
+
 import p_create_refinement_context from 'pareto-core/implementation/__internal/sync/create_refinement_context'
 
 //data types
-import * as d_path from "pareto-resources/interface/data/fs_unrestricted_path"
+import * as d_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/interface/schemas/path"
 
 //resources
 import * as cx_copy from "pareto-resource-filesystem-unrestricted/commands/copy"
@@ -13,9 +15,8 @@ import * as qx_read_file from "pareto-resource-filesystem-unrestricted/queries/r
 
 //dependencies
 import * as c_generate_typescript from "pareto-liana/implementation/commands/generate_typescript"
-import * as r_path_from_text from "pareto-resources/implementation/refiners/path_unrestricted/text"
-import * as t_generate_typescript_to_prose from "pareto-liana/implementation/transformers/generate_typescript/prose"
-import * as t_prose_to_text from "pareto-fountain-pen/implementation/transformers/prose/text"
+import * as deser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/implementation/deserializers/path"
+import * as t_generate_typescript_to_serialized from "pareto-liana/implementation/transformers/generate_typescript/serialized"
 import { $$ as ttt_seal } from "../helpers/seal"
 import { load_applicable_schema } from '../to_be_backend/load_applicable_schema'
 import * as fs from 'fs'
@@ -52,7 +53,7 @@ export default ((deps) => async () => {
 		},
 		($) => {
 			// Convert to verbose notation using seal
-			p_create_refinement_context<string, string>(
+			p_create_refinement_context<p_schema.List<string>, string>(
 				(abort) => ttt_seal(
 					editor.document.getText(),
 					($) => abort("Cannot generate TypeScript code because the file is not valid Liana."),
@@ -81,7 +82,11 @@ export default ((deps) => async () => {
 					const tmp_file_path = path.join(tmp_dir, tmp_file_name)
 
 					// Write verbose notation to temp file
-					fs.writeFileSync(tmp_file_path, $, 'utf8')
+					fs.writeFileSync(
+						tmp_file_path,
+						$.__get_raw().join("\n") + "\n",
+						'utf8'
+					)
 
 					// Now proceed with TypeScript generation
 					void vscode.window.showOpenDialog({
@@ -98,7 +103,7 @@ export default ((deps) => async () => {
 						}
 
 						p_create_refinement_context<d_path.Node_Path, string>(
-							(abort) => r_path_from_text.Node_Path(
+							(abort) => deser_path.Node_Path(
 								tmp_file_path,
 								($) => abort('The file path is not valid.'),
 								{
@@ -108,7 +113,10 @@ export default ((deps) => async () => {
 						).__extract_data(
 							($) => {
 								c_generate_typescript.$$(
-									null,
+									{
+										'file indentation': "    ",
+										'newline': '\n',
+									},
 									{
 										'read file': qx_read_file.$$,
 									},
@@ -122,7 +130,7 @@ export default ((deps) => async () => {
 									{
 										'type': ['module specification', null],
 										'source': $,
-										'target': r_path_from_text.Context_Path(target_uris[0].fsPath)
+										'target': deser_path.Context_Path(target_uris[0].fsPath)
 									},
 									($) => $
 								).__start(
@@ -136,13 +144,12 @@ export default ((deps) => async () => {
 										}
 									},
 									($) => {
-										const message: string = t_prose_to_text.Phrase(
-											t_generate_typescript_to_prose.Error($),
+										const message: string = t_generate_typescript_to_serialized.Error(
+											$,
 											{
 												'indentation': "  ",
-												'newline': "\n",
 											}
-										)
+										).__get_raw().join("\n")
 										vscode.window.showErrorMessage(`Error generating TypeScript: ${message}`)
 										// Clean up temp file
 										try {

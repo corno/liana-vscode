@@ -1,4 +1,5 @@
-import create_refinement_context from "pareto-core/implementation/__internal/sync/create_refinement_context"
+import create_refinement_context from 'pareto-core/implementation/__internal/sync/create_refinement_context'
+import p_schema from 'pareto-core/interface/schema'
 
 import { $$ as ttt_convert_to_json } from "../helpers/convert_to_json"
 
@@ -13,7 +14,7 @@ export default ((deps) => () => {
 		return
 	}
 
-	create_refinement_context<string, string>(
+	create_refinement_context<p_schema.List<string>, string>(
 		(abort) => ttt_convert_to_json(
 			editor.document.getText(),
 			($) => abort('Safe as JSON failed because the file is not valid ASTN.'),
@@ -24,7 +25,6 @@ export default ((deps) => () => {
 				},
 				'target': {
 					'indentation': '\t',
-					'newline': '\n',
 				},
 			}
 		)
@@ -36,7 +36,7 @@ export default ((deps) => () => {
 						new vscode.Position(0, 0),
 						editor.document.lineAt(editor.document.lineCount - 1).range.end,
 					),
-					$,
+					$.__get_raw().join("\n") + "\n",
 				)
 			})
 		},

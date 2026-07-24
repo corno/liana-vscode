@@ -7,14 +7,14 @@ import {
 
 import * as url from "url"
 
-import * as d_deserialize from "liana-authoring/interface/data/deserialize"
+import * as d_deserialize from "liana-authoring/interface/schemas/deserialization"
 
 import { $$ as qr_stat } from "pareto-resource-filesystem-unrestricted/queries/stat_possible_node"
 import { $$ as qr_read_file } from "pareto-resource-filesystem-unrestricted/queries/read_file"
 
 
-import * as r_path_from_text from "pareto-resources/implementation/refiners/path_unrestricted/text"
-import * as t_path_to_text from "pareto-resources/implementation/transformers/unrestricted_path/text"
+import * as deser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/implementation/deserializers/path"
+import * as ser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/implementation/serializers/path"
 import { $$ as q_deserialize } from "liana-authoring/implementation/queries/deserialize"
 import { $$ as q_get_schema_path } from "liana-authoring/implementation/queries/get_schema_path"
 import { $$ as q_get_schema } from "liana-authoring/implementation/queries/get_schema"
@@ -49,7 +49,7 @@ export const load_document = <T>(
 							(on_success, on_error) => {
 								get_cached_or_fresh(
 									cache.schemas,
-									t_path_to_text.Node_Path($p['schema path']),
+									ser_path.Node_Path($p['schema path']),
 									(on_cache_success, on_cache_error) => {
 										q_get_schema(
 											null,
@@ -75,7 +75,7 @@ export const load_document = <T>(
 				{
 					'content': document.getText(),
 					'tab size': 1, // LSP uses character offsets, not visual columns (tab = 1 character)
-					'file path': r_path_from_text.Node_Path(
+					'file path': deser_path.Node_Path(
 						url.fileURLToPath(document.uri),
 						() => p_unreachable_code_path("vscode is providing an unexpected file URI: " + url.fileURLToPath(document.uri)),
 						{

@@ -117,7 +117,7 @@ export const create_on_completion: (
 									console.log(`INFO: Backend indicated ${type[0]} but no hash found after cursor`)
 								}
 								// Position cursor at beginning for missing data (need to fill it in)
-								const insertTextWithCursor = '$0' + $['insert text']
+								const insertTextWithCursor = '$0' + $['insert lines'].__get_raw().join("\n") + "\n"
 								completionItem.textEdit = vscode_node.TextEdit.replace(
 									vscode_node.Range.create(
 										params.position.line,
@@ -137,10 +137,10 @@ export const create_on_completion: (
 											params.position.line,
 											params.position.character
 										),
-										$['insert text']
+										$['insert lines'].__get_raw().join("\n") + "\n"
 									)
 								} else {
-									completionItem.insertText = $['insert text']
+									completionItem.insertText = $['insert lines'].__get_raw().join("\n") + "\n"
 								}
 							}
 
