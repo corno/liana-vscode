@@ -38,6 +38,17 @@ export const create_on_did_change_watched_files: (
 
 				connection_context.connection.console.log(`Re-validating ${affected_documents.length} document(s) affected by schema change`)
 
+				// Invalidate document cache for affected documents so they are re-evaluated
+				// against the new schema (cache key is uri@version, so same version with
+				// different schema would otherwise return the old cached result)
+				for (const doc of affected_documents) {
+					for (const key of connection_context['cache']['documents'].map.keys()) {
+						if (key.startsWith(doc.uri + '@')) {
+							connection_context['cache']['documents'].map.delete(key)
+						}
+					}
+				}
+
 				// Trigger diagnostic refresh for affected documents
 				if (affected_documents.length > 0) {
 					connection_context.connection.languages.diagnostics.refresh()

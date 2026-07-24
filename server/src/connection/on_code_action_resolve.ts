@@ -100,7 +100,7 @@ export const create_on_code_action_resolve: (
 											indent_replacement_text(
 												helpers_range.create_range_from_range($.range),
 												document,
-												$.lines.__get_raw().join("\n") + "\n",
+												$.lines.__get_raw().join("\n"),
 											)
 										)
 									],

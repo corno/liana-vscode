@@ -51,7 +51,7 @@ export const create_on_document_formatting: (
 							{
 								'indentation': ' '.repeat(params.options.tabSize || 4),
 							}
-						).__get_raw().join("\n") + "\n"
+						).__get_raw().join("\n")
 					)
 				)
 			},
