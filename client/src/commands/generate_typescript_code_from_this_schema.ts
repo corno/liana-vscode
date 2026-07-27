@@ -14,9 +14,9 @@ import * as cx_write_file from "pareto-resource-filesystem-unrestricted/commands
 import * as qx_read_file from "pareto-resource-filesystem-unrestricted/queries/read_file"
 
 //dependencies
-import * as c_generate_typescript from "pareto-liana/implementation/commands/generate_typescript"
+// import * as c_generate_typescript from "pareto-liana/implementation/commands/generate_typescript"
 import * as deser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/implementation/deserializers/path"
-import * as t_generate_typescript_to_serialized from "pareto-liana/implementation/transformers/generate_typescript/serialized"
+// import * as t_generate_typescript_to_serialized from "pareto-liana/implementation/transformers/generate_typescript/serialized"
 import { $$ as ttt_seal } from "../helpers/seal"
 import { load_applicable_schema } from '../to_be_backend/load_applicable_schema'
 import * as fs from 'fs'
@@ -112,53 +112,55 @@ export default ((deps) => async () => {
 							)
 						).__extract_data(
 							($) => {
-								c_generate_typescript.$$(
-									{
-										'file indentation': "    ",
-										'newline': '\n',
-									},
-									{
-										'read file': qx_read_file.$$,
-									},
-									{
-										'copy': cx_copy.$$,
-										'make directory': cx_make_directory.$$,
-										'remove': cx_remove.$$,
-										'write file': cx_write_file.$$,
-									},
-								).execute(
-									{
-										'type': ['module specification', null],
-										'source': $,
-										'target': deser_path.Context_Path(target_uris[0].fsPath)
-									},
-									($) => $
-								).__start(
-									() => {
-										vscode.window.showInformationMessage('TypeScript code generated successfully')
-										// Clean up temp file
-										try {
-											fs.unlinkSync(tmp_file_path)
-										} catch (e) {
-											// Ignore cleanup errors
-										}
-									},
-									($) => {
-										const message: string = t_generate_typescript_to_serialized.Error(
-											$,
-											{
-												'indentation': "  ",
-											}
-										).__get_raw().join("\n")
-										vscode.window.showErrorMessage(`Error generating TypeScript: ${message}`)
-										// Clean up temp file
-										try {
-											fs.unlinkSync(tmp_file_path)
-										} catch (e) {
-											// Ignore cleanup errors
-										}
-									}
-								)
+								vscode.window.showErrorMessage(`NEEDS IMPLEMENTATION`)
+
+								// c_generate_typescript.$$(
+								// 	{
+								// 		'file indentation': "    ",
+								// 		'newline': '\n',
+								// 	},
+								// 	{
+								// 		'read file': qx_read_file.$$,
+								// 	},
+								// 	{
+								// 		'copy': cx_copy.$$,
+								// 		'make directory': cx_make_directory.$$,
+								// 		'remove': cx_remove.$$,
+								// 		'write file': cx_write_file.$$,
+								// 	},
+								// ).execute(
+								// 	{
+								// 		'type': ['module specification', null],
+								// 		'source': $,
+								// 		'target': deser_path.Context_Path(target_uris[0].fsPath)
+								// 	},
+								// 	($) => $
+								// ).__start(
+								// 	() => {
+								// 		vscode.window.showInformationMessage('TypeScript code generated successfully')
+								// 		// Clean up temp file
+								// 		try {
+								// 			fs.unlinkSync(tmp_file_path)
+								// 		} catch (e) {
+								// 			// Ignore cleanup errors
+								// 		}
+								// 	},
+								// 	($) => {
+								// 		const message: string = t_generate_typescript_to_serialized.Error(
+								// 			$,
+								// 			{
+								// 				'indentation': "  ",
+								// 			}
+								// 		).__get_raw().join("\n")
+								// 		vscode.window.showErrorMessage(`Error generating TypeScript: ${message}`)
+								// 		// Clean up temp file
+								// 		try {
+								// 			fs.unlinkSync(tmp_file_path)
+								// 		} catch (e) {
+								// 			// Ignore cleanup errors
+								// 		}
+								// 	}
+								// )
 							},
 							($) => {
 								vscode.window.showErrorMessage(`Error: ${$}`)
