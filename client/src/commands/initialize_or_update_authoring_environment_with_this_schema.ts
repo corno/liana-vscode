@@ -100,7 +100,7 @@ export default ((deps) => async () => {
 
 						fs.writeFileSync(
 							schema_file_path,
-							new_text.__get_raw().join("\n") + "\n",
+							new_text.__get_raw().join(""),
 							'utf8'
 						)
 

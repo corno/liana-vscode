@@ -76,7 +76,7 @@ export default ((deps) => () => {
 							return
 						}
 
-						fs.writeFileSync(file_infos.fsPath, $.__get_raw().join("\n") + "\n", 'utf8')
+						fs.writeFileSync(file_infos.fsPath, $.__get_raw().join(""), 'utf8')
 						vscode.window.showInformationMessage('File saved as sealed Liana')
 					})
 				},
