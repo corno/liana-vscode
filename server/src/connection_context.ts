@@ -3,9 +3,9 @@ import * as vscode_textdocument from 'vscode-languageserver-textdocument'
 import { Cache } from './core/cache'
 
 
-import * as d_temp_module_specifier from "pareto-liana/interface/schemas/temp_module_specifier"
-import * as d_get_schema from "liana-authoring/interface/schemas/retrieval_of_schema"
-import * as d_deserialize from "liana-authoring/interface/schemas/deserialization"
+import * as d_temp_module_specifier from "pareto-liana/schemas/temp_module_specifier/schema"
+import * as d_get_schema from "liana-authoring/schemas/retrieval_of_schema/schema"
+import * as d_deserialize from "liana-authoring/schemas/deserialization/schema"
 
 export interface Settings {
 	max_number_of_problems: number

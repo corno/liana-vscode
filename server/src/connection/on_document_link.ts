@@ -1,6 +1,6 @@
 import * as p_ from "pareto-core/implementation/transformer"
 
-import * as t_unmarshall_result_to_document_links from "liana-authoring/implementation/transformers/unmarshall_result/document_links"
+import * as t_unmarshall_result_to_document_links from "liana-authoring/schemas/unmarshall_result/transformers/document_links"
 
 import * as helpers_range from '../helpers/range'
 import * as helpers_pareto_optional_value from '../helpers/pareto_optional_value'

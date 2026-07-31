@@ -7,17 +7,17 @@ import {
 
 import * as url from "url"
 
-import * as d_deserialize from "liana-authoring/interface/schemas/deserialization"
+import * as d_deserialize from "liana-authoring/schemas/deserialization/schema"
 
-import { $$ as qr_stat } from "pareto-resource-filesystem-unrestricted/queries/stat_possible_node"
-import { $$ as qr_read_file } from "pareto-resource-filesystem-unrestricted/queries/read_file"
+import { $$ as qr_stat } from "pareto-resource-filesystem-unrestricted/queries/implementations/stat_possible_node"
+import { $$ as qr_read_file } from "pareto-resource-filesystem-unrestricted/queries/implementations/read_file"
 
 
-import * as deser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/implementation/deserializers/path"
-import * as ser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/implementation/serializers/path"
-import { $$ as q_deserialize } from "liana-authoring/implementation/queries/deserialize"
-import { $$ as q_get_schema_path } from "liana-authoring/implementation/queries/get_schema_path"
-import { $$ as q_get_schema } from "liana-authoring/implementation/queries/get_schema"
+import * as deser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/deserializers"
+import * as ser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/serializers"
+import { $$ as q_deserialize } from "liana-authoring/queries/implementations/deserialize"
+import { $$ as q_get_schema_path } from "liana-authoring/queries/implementations/get_schema_path"
+import { $$ as q_get_schema } from "liana-authoring/queries/implementations/get_schema"
 import { get_cached_or_fresh } from '../core/cache'
 import { Cache_Context } from '../connection_context'
 

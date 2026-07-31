@@ -4,18 +4,18 @@ import * as p_schema from 'pareto-core/interface/schema'
 import p_create_refinement_context from 'pareto-core/implementation/__internal/sync/create_refinement_context'
 
 //data types
-import * as d_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/interface/schemas/path"
+import * as d_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/schema"
 
 //resources
-import * as cx_copy from "pareto-resource-filesystem-unrestricted/commands/copy"
-import * as cx_make_directory from "pareto-resource-filesystem-unrestricted/commands/make_directory"
-import * as cx_remove from "pareto-resource-filesystem-unrestricted/commands/remove"
-import * as cx_write_file from "pareto-resource-filesystem-unrestricted/commands/write_file"
-import * as qx_read_file from "pareto-resource-filesystem-unrestricted/queries/read_file"
+import * as cx_copy from "pareto-resource-filesystem-unrestricted/commands/implementations/copy"
+import * as cx_make_directory from "pareto-resource-filesystem-unrestricted/commands/implementations/make_directory"
+import * as cx_remove from "pareto-resource-filesystem-unrestricted/commands/implementations/remove"
+import * as cx_write_file from "pareto-resource-filesystem-unrestricted/commands/implementations/write_file"
+import * as qx_read_file from "pareto-resource-filesystem-unrestricted/queries/implementations/read_file"
 
 //dependencies
 // import * as c_generate_typescript from "pareto-liana/implementation/commands/generate_typescript"
-import * as deser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/implementation/deserializers/path"
+import * as deser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/deserializers"
 // import * as t_generate_typescript_to_serialized from "pareto-liana/implementation/transformers/generate_typescript/serialized"
 import { $$ as ttt_seal } from "../helpers/seal"
 import { load_applicable_schema } from '../to_be_backend/load_applicable_schema'

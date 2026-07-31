@@ -8,10 +8,10 @@ import * as vscode_textdocument from 'vscode-languageserver-textdocument'
 import { Cache_Context } from '../connection_context'
 
 //dependencies
-import * as t_unmarshall_result_to_diagnostics from "liana-authoring/implementation/transformers/unmarshall_result/diagnostics"
-import * as t_resolve_result_to_diagnostics from "liana-authoring/implementation/transformers/resolve_result/diagnostics"
-import * as ser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/implementation/serializers/path"
-import * as t_deserialize_to_diagnostic from "liana-authoring/implementation/transformers/deserialize/diagnostics"
+import * as t_unmarshall_result_to_diagnostics from "liana-authoring/schemas/unmarshall_result/transformers/diagnostics"
+import * as t_resolve_result_to_diagnostics from "liana-authoring/schemas/resolve_result/transformers/diagnostics"
+import * as ser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/serializers"
+import * as t_deserialize_to_diagnostic from "liana-authoring/schemas/deserialize/transformers/diagnostics"
 
 
 

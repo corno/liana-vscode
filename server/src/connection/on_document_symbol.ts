@@ -1,7 +1,7 @@
 import * as p_ from "pareto-core/implementation/transformer"
 
-import * as d_document_symbols from "liana-authoring/interface/schemas/document_symbols"
-import * as t_unmarshall_result_to_document_symbols from "liana-authoring/implementation/transformers/unmarshall_result/document_symbols"
+import * as d_document_symbols from "liana-authoring/schemas/document_symbols/schema"
+import * as t_unmarshall_result_to_document_symbols from "liana-authoring/schemas/unmarshall_result/transformers/document_symbols"
 
 import * as helpers from '../helpers/range'
 import { load_document } from '../to_be_backend/load_document'

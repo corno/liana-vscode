@@ -2,12 +2,12 @@ import p_create_refinement_context from 'pareto-core/implementation/__internal/s
 import p_list_from_text from 'pareto-core/implementation/refiner/specials/list_from_text'
 import p_unreachable from 'pareto-core/implementation/transformer/specials/unreachable_code_path'
 
-import * as s_resolved_document_deserialization from "liana-core/modules/resolved_document_deserialization/schemas/resolved_document_deserialization"
-import * as s_temp_module_specifier from "pareto-liana/interface/schemas/temp_module_specifier"
+import * as s_resolved_document_deserialization from "liana-core/modules/resolved_document_deserialization/schemas/resolved_document_deserialization/schema"
+import * as s_temp_module_specifier from "pareto-liana/schemas/temp_module_specifier/schema"
 
 //dependencies
-import * as r_temp_module_specifier_from_loc from "pareto-liana/implementation/refiners/temp_module_specifier/list_of_characters"
-import * as deser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/implementation/deserializers/path"
+import * as r_temp_module_specifier_from_loc from "pareto-liana/schemas/temp_module_specifier/refiners/list_of_characters"
+import * as deser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/deserializers"
 
 import * as fs from "fs"
 import path from 'path'
