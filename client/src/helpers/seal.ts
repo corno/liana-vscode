@@ -1,5 +1,5 @@
-import * as p_ri from 'pareto-core/interface/refiner'
-import p_list_from_text from 'pareto-core/implementation/refiner/specials/list_from_text'
+import * as p_ri from 'pareto-core/refiner'
+import p_list_from_text from 'pareto-core/refiner/specials/list_from_text'
 
 import * as d_out from "pareto-fountain-pen/modules/paragraph/schemas/serialized/schema"
 import * as d_function from "liana-authoring/schemas/sealing/schema"

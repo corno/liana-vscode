@@ -1,6 +1,6 @@
-import p_create_refinement_context from 'pareto-core/implementation/__internal/sync/create_refinement_context'
-import p_list_from_text from 'pareto-core/implementation/refiner/specials/list_from_text'
-import p_unreachable from 'pareto-core/implementation/transformer/specials/unreachable_code_path'
+import p_create_refinement_context from 'pareto-core/__internal/sync/create_refinement_context'
+import p_list_from_text from 'pareto-core/refiner/specials/list_from_text'
+import p_unreachable from 'pareto-core/transformer/specials/unreachable_code_path'
 
 import * as s_resolved_document_deserialization from "liana-core/modules/resolved_document_deserialization/schemas/resolved_document_deserialization/schema"
 import * as s_temp_module_specifier from "pareto-liana/schemas/temp_module_specifier/schema"
@@ -65,7 +65,10 @@ export function load_applicable_schema(
 				p_create_refinement_context<s_temp_module_specifier.Temp_Module_Specifier, s_resolved_document_deserialization.Error>(
 					(abort) => r_temp_module_specifier_from_loc.Module_Specifier(
 						p_list_from_text(data, ($) => $),
-						($) => abort($)
+						($) => abort($),
+						{
+							'tab size': 4//FIXME not hardcoded
+						}
 
 					)
 				).__extract_data(

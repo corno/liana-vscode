@@ -1,6 +1,6 @@
-import * as p_schema from 'pareto-core/interface/schema'
-import * as p_ from "pareto-core/implementation/transformer"
-import p_create_refinement_context from "pareto-core/implementation/__internal/sync/create_refinement_context"
+import * as p_schema from 'pareto-core/schema'
+import * as p_ from "pareto-core/transformer"
+import p_create_refinement_context from "pareto-core/__internal/sync/create_refinement_context"
 
 import { $$ as ttt_seal } from "../helpers/seal"
 
@@ -25,15 +25,15 @@ export default ((deps) => async () => {
 
 			p_.from.state($.type).decide(($): null => {
 				switch ($[0]) {
-					case 'read file': return p_.ss($, ($) => {
+					case 'read file': return p_.option($, ($) => {
 						vscode.window.showErrorMessage('Cannot initialize authoring environment because no .liana/schema.slna file could be found in the same directory as the liana file: ' + $.error.message)
 						return null
 					})
-					case 'parse schema': return p_.ss($, ($) => {
+					case 'parse schema': return p_.option($, ($) => {
 						vscode.window.showErrorMessage('Cannot initialize authoring environment because the .liana/schema.slna file is not a valid schema.')
 						return null
 					})
-					default: return p_.au($[0])
+					default: return p_.exhaustive($[0])
 				}
 			})
 		},
@@ -46,9 +46,9 @@ export default ((deps) => async () => {
 						'unmarshall': {
 							'module': p_.from.state($).decide(($) => {
 								switch ($[0]) {
-									case 'constrained': return p_.ss($, ($) => $['module resolver'].entry.signature.module)
-									case 'unconstrained': return p_.ss($, ($) => $.module.entry)
-									default: return p_.au($[0])
+									case 'constrained': return p_.option($, ($) => $['module resolver'].entry.signature.module)
+									case 'unconstrained': return p_.option($, ($) => $.module.entry)
+									default: return p_.exhaustive($[0])
 								}
 							}),
 							'tab size': 1, // vscode works with character, not with columns

@@ -1,4 +1,4 @@
-import * as p_ from "pareto-core/implementation/transformer"
+import * as p_ from "pareto-core/transformer"
 
 type Pending_Request<Result, Error> = {
 	callbacks: Array<{
@@ -42,7 +42,7 @@ export function get_cached_or_fresh<Result, Error>(
 				cached[1].callbacks.push({ on_success, on_error })
 				return
 			}
-			default: return p_.au(cached[0])
+			default: return p_.exhaustive(cached[0])
 		}
 	}
 	

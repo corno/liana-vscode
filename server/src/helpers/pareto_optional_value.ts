@@ -1,4 +1,4 @@
-import * as p_di from "pareto-core/interface/data"
+import * as p_di from 'pareto-core/schema'
 
 export const optional_value_to_possibly_undefined = <T extends p_di.Value, RT>(
 	$: p_di.Optional_Value<T>,

@@ -1,4 +1,4 @@
-import * as p_ from "pareto-core/implementation/transformer"
+import * as p_ from "pareto-core/transformer"
 
 import * as d_document_symbols from "liana-authoring/schemas/document_symbols/schema"
 import * as t_unmarshall_result_to_document_symbols from "liana-authoring/schemas/unmarshall_result/transformers/document_symbols"
@@ -28,15 +28,15 @@ export const create_on_document_symbol: (
 							'detail': $.detail,
 							'kind': p_.from.state($.value.kind).decide(($) => {
 								switch ($[0]) {
-									case 'string': return p_.ss($, ($) => vscode_node.SymbolKind.String)
-									case 'number': return p_.ss($, ($) => vscode_node.SymbolKind.Number)
-									case 'boolean': return p_.ss($, ($) => vscode_node.SymbolKind.Boolean)
-									case 'null': return p_.ss($, ($) => vscode_node.SymbolKind.Null)
-									case 'object': return p_.ss($, ($) => vscode_node.SymbolKind.Object)
-									case 'struct': return p_.ss($, ($) => vscode_node.SymbolKind.Struct)
-									case 'array': return p_.ss($, ($) => vscode_node.SymbolKind.Array)
-									case 'enum member': return p_.ss($, ($) => vscode_node.SymbolKind.EnumMember)
-									default: return p_.au($[0])
+									case 'string': return p_.option($, ($) => vscode_node.SymbolKind.String)
+									case 'number': return p_.option($, ($) => vscode_node.SymbolKind.Number)
+									case 'boolean': return p_.option($, ($) => vscode_node.SymbolKind.Boolean)
+									case 'null': return p_.option($, ($) => vscode_node.SymbolKind.Null)
+									case 'object': return p_.option($, ($) => vscode_node.SymbolKind.Object)
+									case 'struct': return p_.option($, ($) => vscode_node.SymbolKind.Struct)
+									case 'array': return p_.option($, ($) => vscode_node.SymbolKind.Array)
+									case 'enum member': return p_.option($, ($) => vscode_node.SymbolKind.EnumMember)
+									default: return p_.exhaustive($[0])
 								}
 							}),
 							'range': helpers.create_range_from_range($.range),
@@ -52,9 +52,9 @@ export const create_on_document_symbol: (
 					($) => [],
 					(instance) => convert_value(t_unmarshall_result_to_document_symbols.Document(p_.from.state(instance).decide( ($) => {
 						switch ($[0]) {
-							case 'constrained': return p_.ss($, ($) => $.unmarshalled)
-							case 'unconstrained': return p_.ss($, ($) => $)
-							default: return p_.au($[0])
+							case 'constrained': return p_.option($, ($) => $.unmarshalled)
+							case 'unconstrained': return p_.option($, ($) => $)
+							default: return p_.exhaustive($[0])
 						}
 					}))),
 					resolve,

@@ -1,4 +1,4 @@
-import * as p_ from "pareto-core/implementation/transformer"
+import * as p_ from "pareto-core/transformer"
 
 import * as d_unmarshall_result from "liana-authoring/schemas/unmarshall_result/schema"
 import * as t_unmarshall_result_to_selection_ranges from "liana-authoring/schemas/unmarshall_result/transformers/selection_ranges"
@@ -46,9 +46,9 @@ export const create_on_selection_ranges: (
 						const result = t_unmarshall_result_to_selection_ranges.Document(
 							p_.from.state(instance).decide(($) => {
 								switch ($[0]) {
-									case 'constrained': return p_.ss($, ($) => $.unmarshalled)
-									case 'unconstrained': return p_.ss($, ($) => $)
-									default: return p_.au($[0])
+									case 'constrained': return p_.option($, ($) => $.unmarshalled)
+									case 'unconstrained': return p_.option($, ($) => $)
+									default: return p_.exhaustive($[0])
 								}
 							}),
 							{

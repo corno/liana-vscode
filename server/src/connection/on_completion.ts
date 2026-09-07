@@ -1,4 +1,4 @@
-import * as p_ from "pareto-core/implementation/transformer"
+import * as p_ from "pareto-core/transformer"
 
 //data types
 import * as t_unmarshall_result_to_completion_suggestions from "liana-authoring/schemas/unmarshall_result/transformers/completion_suggestions"
@@ -46,9 +46,9 @@ export const create_on_completion: (
 					const completion_suggestions_raw = t_unmarshall_result_to_completion_suggestions.Document(
 						p_.from.state(instance).decide(($) => {
 							switch ($[0]) {
-								case 'constrained': return p_.ss($, ($) => $.unmarshalled)
-								case 'unconstrained': return p_.ss($, ($) => $)
-								default: return p_.au($[0])
+								case 'constrained': return p_.option($, ($) => $.unmarshalled)
+								case 'unconstrained': return p_.option($, ($) => $)
+								default: return p_.exhaustive($[0])
 							}
 						}),
 						{
@@ -67,12 +67,12 @@ export const create_on_completion: (
 						// For missing value/option, hash must be present (assertion)
 						const shouldRemoveHash = p_.from.state(type).decide(($): boolean => {
 							switch ($[0]) {
-								case 'missing value': return p_.ss($, ($) => true)
-								case 'missing option': return p_.ss($, ($) => true)
-								case 'reference': return p_.ss($, ($) => false)
-								case 'property name': return p_.ss($, ($) => false)
-								case 'option name': return p_.ss($, ($) => false)
-								default: return p_.au($[0])
+								case 'missing value': return p_.option($, ($) => true)
+								case 'missing option': return p_.option($, ($) => true)
+								case 'reference': return p_.option($, ($) => false)
+								case 'property name': return p_.option($, ($) => false)
+								case 'option name': return p_.option($, ($) => false)
+								default: return p_.exhaustive($[0])
 							}
 						})
 
@@ -83,12 +83,12 @@ export const create_on_completion: (
 								'insertTextFormat': vscode_node.InsertTextFormat.Snippet,
 								'kind': p_.from.state(type).decide(($): vscode_node.CompletionItemKind => {
 									switch ($[0]) {
-										case 'missing value': return p_.ss($, ($) => vscode_node.CompletionItemKind.Value)
-										case 'missing option': return p_.ss($, ($) => vscode_node.CompletionItemKind.EnumMember)
-										case 'reference': return p_.ss($, ($) => vscode_node.CompletionItemKind.Reference)
-										case 'property name': return p_.ss($, ($) => vscode_node.CompletionItemKind.Property)
-										case 'option name': return p_.ss($, ($) => vscode_node.CompletionItemKind.EnumMember)
-										default: return p_.au($[0])
+										case 'missing value': return p_.option($, ($) => vscode_node.CompletionItemKind.Value)
+										case 'missing option': return p_.option($, ($) => vscode_node.CompletionItemKind.EnumMember)
+										case 'reference': return p_.option($, ($) => vscode_node.CompletionItemKind.Reference)
+										case 'property name': return p_.option($, ($) => vscode_node.CompletionItemKind.Property)
+										case 'option name': return p_.option($, ($) => vscode_node.CompletionItemKind.EnumMember)
+										default: return p_.exhaustive($[0])
 									}
 								}),
 								'documentation': {

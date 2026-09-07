@@ -1,6 +1,6 @@
-import p_list_from_text from "pareto-core/implementation/refiner/specials/list_from_text"
-import p_variables from "pareto-core/implementation/transformer/specials/variables"
-import create_refinement_context from "pareto-core/implementation/__internal/sync/create_refinement_context"
+import p_list_from_text from "pareto-core/refiner/specials/list_from_text"
+import p_variables from "pareto-core/transformer/specials/variables"
+import create_refinement_context from "pareto-core/__internal/sync/create_refinement_context"
 
 import * as r_parse_tree_from_loc from "astn-core/modules/deserialization/schemas/parse_tree/refiners/list_of_characters"
 import * as t_parse_tree_to_text from "astn/modules/parse_tree/schemas/parse_tree/transformers/serialized"

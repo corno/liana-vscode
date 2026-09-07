@@ -1,4 +1,4 @@
-import * as p_ from "pareto-core/implementation/transformer"
+import * as p_ from "pareto-core/transformer"
 
 import * as d_astn_location from "astn-core/modules/deserialization/schemas/location/schema"
 
@@ -28,15 +28,15 @@ export const create_range_from_possible_range = (
 ): vscode_node.Range => {
 	return p_.from.state($).decide(($) => {
 		switch ($[0]) {
-			case 'range': return p_.ss($, ($) => create_range_from_range($))
-			case 'end of document': return p_.ss($, ($) => {
+			case 'range': return p_.option($, ($) => create_range_from_range($))
+			case 'end of document': return p_.option($, ($) => {
 
 				return vscode_node.Range.create(
 					vscode_node.Position.create($.end.relative.line, $.end.relative.column),
 					vscode_node.Position.create($.end.relative.line, $.end.relative.column),
 				)
 			})
-			default: return p_.au($[0])
+			default: return p_.exhaustive($[0])
 		}
 	})
 }

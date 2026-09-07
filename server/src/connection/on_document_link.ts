@@ -1,4 +1,4 @@
-import * as p_ from "pareto-core/implementation/transformer"
+import * as p_ from "pareto-core/transformer"
 
 import * as t_unmarshall_result_to_document_links from "liana-authoring/schemas/unmarshall_result/transformers/document_links"
 
@@ -38,9 +38,9 @@ export const create_on_document_link: (
 						return t_unmarshall_result_to_document_links.Document(
 							p_.from.state(instance).decide(($) => {
 								switch ($[0]) {
-									case 'constrained': return p_.ss($, ($) => $.unmarshalled)
-									case 'unconstrained': return p_.ss($, ($) => $)
-									default: return p_.au($[0])
+									case 'constrained': return p_.option($, ($) => $.unmarshalled)
+									case 'unconstrained': return p_.option($, ($) => $)
+									default: return p_.exhaustive($[0])
 								}
 							}),
 						).__get_raw().map(($) => {

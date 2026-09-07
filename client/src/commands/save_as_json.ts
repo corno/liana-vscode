@@ -1,5 +1,5 @@
-import * as p_schema from 'pareto-core/interface/schema'
-import p_create_refinement_context from "pareto-core/implementation/__internal/sync/create_refinement_context"
+import * as p_schema from 'pareto-core/schema'
+import p_create_refinement_context from "pareto-core/__internal/sync/create_refinement_context"
 
 
 import { $$ as ttt_convert_to_json } from "../helpers/convert_to_json"

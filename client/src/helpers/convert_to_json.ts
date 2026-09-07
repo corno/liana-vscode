@@ -1,5 +1,5 @@
-import * as p_i from 'pareto-core/interface/refiner'
-import p_list_from_text from 'pareto-core/implementation/refiner/specials/list_from_text'
+import * as p_i from 'pareto-core/refiner'
+import p_list_from_text from 'pareto-core/refiner/specials/list_from_text'
 
 import * as s_function from "liana-authoring/schemas/conversion_to_json/schema"
 import * as s_parse_tree_deserialization from "astn-core/modules/deserialization/schemas/parse_tree_deserialization/schema"

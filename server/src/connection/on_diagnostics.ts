@@ -1,6 +1,6 @@
 import * as vscode_node from 'vscode-languageserver/node'
 import { Connection_Context } from '../connection_context'
-import * as p_ from "pareto-core/implementation/transformer"
+import * as p_ from "pareto-core/transformer"
 import * as helpers_range from '../helpers/range'
 import * as helpers_pareto_optional_value from '../helpers/pareto_optional_value'
 import { load_document } from '../to_be_backend/load_document'
@@ -11,7 +11,7 @@ import { Cache_Context } from '../connection_context'
 import * as t_unmarshall_result_to_diagnostics from "liana-authoring/schemas/unmarshall_result/transformers/diagnostics"
 import * as t_resolve_result_to_diagnostics from "liana-authoring/schemas/resolve_result/transformers/diagnostics"
 import * as ser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/serializers"
-import * as t_deserialize_to_diagnostic from "liana-authoring/schemas/deserialize/transformers/diagnostics"
+import * as t_deserialize_to_diagnostic from "liana-authoring/schemas/deserialization/transformers/diagnostics"
 
 
 
@@ -37,16 +37,16 @@ export const create_on_diagnostics: (
 						($) => p_.literal.segmented_list([
 							t_unmarshall_result_to_diagnostics.Document(p_.from.state($).decide(($) => {
 								switch ($[0]) {
-									case 'constrained': return p_.ss($, ($) => $.unmarshalled)
-									case 'unconstrained': return p_.ss($, ($) => $)
-									default: return p_.au($[0])
+									case 'constrained': return p_.option($, ($) => $.unmarshalled)
+									case 'unconstrained': return p_.option($, ($) => $)
+									default: return p_.exhaustive($[0])
 								}
 							})),
 							p_.from.state($).decide(($) => {
 								switch ($[0]) {
-									case 'constrained': return p_.ss($, ($) => t_resolve_result_to_diagnostics.Document($))
-									case 'unconstrained': return p_.ss($, ($) => p_.literal.list([]))
-									default: return p_.au($[0])
+									case 'constrained': return p_.option($, ($) => t_resolve_result_to_diagnostics.Document($))
+									case 'unconstrained': return p_.option($, ($) => p_.literal.list([]))
+									default: return p_.exhaustive($[0])
 								}
 							})
 						]),
@@ -85,10 +85,10 @@ export const create_on_diagnostics: (
 										),
 										source: p_.from.state($.type).decide(($) => {
 											switch ($[0]) {
-												case 'semantic': return p_.ss($, ($) => "liana-semantic")
-												case 'deserialize': return p_.ss($, ($) => "liana-deserialize")
-												case 'schema': return p_.ss($, ($) => "schema")
-												default: return p_.au($[0])
+												case 'semantic': return p_.option($, ($) => "liana-semantic")
+												case 'deserialize': return p_.option($, ($) => "liana-deserialize")
+												case 'schema': return p_.option($, ($) => "schema")
+												default: return p_.exhaustive($[0])
 											}
 										}),
 										relatedInformation: related_information

@@ -1,4 +1,4 @@
-import * as p_ from "pareto-core/implementation/transformer"
+import * as p_ from "pareto-core/transformer"
 
 import * as t_unmarshall_result_to_hover_info from "liana-authoring/schemas/unmarshall_result/transformers/hover_info"
 
@@ -31,9 +31,9 @@ export const create_on_hover: (
 						'contents': t_unmarshall_result_to_hover_info.Document(
 							p_.from.state(instance).decide(($) => {
 								switch ($[0]) {
-									case 'constrained': return p_.ss($, ($) => $.unmarshalled)
-									case 'unconstrained': return p_.ss($, ($) => $)
-									default: return p_.au($[0])
+									case 'constrained': return p_.option($, ($) => $.unmarshalled)
+									case 'unconstrained': return p_.option($, ($) => $)
+									default: return p_.exhaustive($[0])
 								}
 							}),
 							{

@@ -1,5 +1,5 @@
-import p_unreachable_code_path from "pareto-core/implementation/transformer/specials/unreachable_code_path"
-import query_result from "pareto-core/implementation/__internal/query/query_result"
+import p_unreachable_code_path from "pareto-core/transformer/specials/unreachable_code_path"
+import query_result from "pareto-core/__internal/query/query_result"
 
 import {
 	TextDocument,
@@ -52,7 +52,9 @@ export const load_document = <T>(
 									ser_path.Node_Path($p['schema path']),
 									(on_cache_success, on_cache_error) => {
 										q_get_schema(
-											null,
+											{
+												'tab size': 4 //FIXME not hardcoded
+											},
 											{
 												'read file': qr_read_file
 											},
