@@ -13,8 +13,6 @@ import * as t_resolve_result_to_diagnostics from "liana-authoring/schemas/resolv
 import * as ser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/serializers"
 import * as t_deserialize_to_diagnostic from "liana-authoring/schemas/deserialization/transformers/diagnostics"
 
-
-
 export const create_on_diagnostics: (
 	connection_context: Connection_Context,
 ) => vscode_node.ServerRequestHandler<vscode_node.DocumentDiagnosticParams, vscode_node.DocumentDiagnosticReport, vscode_node.DocumentDiagnosticReportPartialResult, vscode_node.DiagnosticServerCancellationData> = (connection_context) => {

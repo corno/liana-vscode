@@ -33,7 +33,7 @@ Install the extension from the VS Code Marketplace or install manually from VSIX
 | Command | Shortcut | Description |
 |---------|----------|-------------|
 | Jump to next missing data | `Ctrl+D` or `Ctrl+3` | Navigate to the next `#` marker |
-| Toggle notation style | `Ctrl+Alt+N` | Switch between verbose and concise notation |
+| Toggle notation style | `Ctrl+Alt+N` | Set the default notation style for all values that will be code completed |
 
 ### Commands
 
@@ -57,7 +57,7 @@ Liana uses ASTN as its notation language. ASTN supports two notation styles:
 - **Verbose** - Explicitly names all properties for clarity: `( `name`: "value" `age`: 42 )`
 - **Concise** - Relies on value order like programming languages: `< "value", 42 >`
 
-Toggle between styles with `Ctrl+Alt+N` or use code actions (right-click → Refactor) for selective conversion.
+Toggle the document's default style with `Ctrl+Alt+N`; all values that will be code-completed will use the selected verbose or concise notation. Use code actions (right-click → Refactor) for selective conversion of existing values.
 
 ## Tutorial: Creating Your First Language
 
@@ -92,6 +92,7 @@ The suggestion you will get might indicate that they are either verbose or conci
 The verbose option explicitly names all the properties, the concise option relies on the order of the values to interpret the data, much like programming languages.
 
 I would advise to start with the verbose options to get a feel for the language and then later you can switch to concise.
+You can toggle the document's default between verbose and concise notation with `Ctrl+Alt+N`. This sets the style for all new entries in the document; use code actions to selectively convert entries that already exist.
 
 ## creating your first schema
 - select ctrl-d, which should give you a couple of suggestions. 

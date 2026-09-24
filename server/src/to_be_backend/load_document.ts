@@ -31,72 +31,79 @@ export const load_document = <T>(
 
 	const cache_key = `${document.uri}@${document.version}`
 
-	get_cached_or_fresh(
-		cache.documents,
-		cache_key,
-		(on_cache_success, on_cache_error) => {
-			q_deserialize(
-				null,
-				{
-					'get schema path': q_get_schema_path(
-						null,
-						{
-							'stat': qr_stat
-						},
-					),
-					'get schema': ($p, e_t) => {
-						return query_result(
-							(on_success, on_error) => {
-								get_cached_or_fresh(
-									cache.schemas,
-									ser_path.Node_Path($p['schema path']),
-									(on_cache_success, on_cache_error) => {
-										q_get_schema(
-											{
-												'tab size': 4 //FIXME not hardcoded
-											},
-											{
-												'read file': qr_read_file
-											},
-										)(
-											$p,
-											($) => $
-										).__extract_data(
-											on_cache_success,
-											on_cache_error,
-										)
-									},
-									on_success,
-									($) => on_error(e_t($)),
-								)
-							}
-						)
-					}
-				},
-			)(
-				{
-					'content': document.getText(),
-					'tab size': 1, // LSP uses character offsets, not visual columns (tab = 1 character)
-					'file path': deser_path.Node_Path(
-						url.fileURLToPath(document.uri),
-						() => p_unreachable_code_path("vscode is providing an unexpected file URI: " + url.fileURLToPath(document.uri)),
-						{
-							'pedantic': false
+	try {
+
+		get_cached_or_fresh(
+			cache.documents,
+			cache_key,
+			(on_cache_success, on_cache_error) => {
+				q_deserialize(
+					null,
+					{
+						'get schema path': q_get_schema_path(
+							null,
+							{
+								'stat': qr_stat
+							},
+						),
+						'get schema': ($p, e_t) => {
+							return query_result(
+								(on_success, on_error) => {
+									get_cached_or_fresh(
+										cache.schemas,
+										ser_path.Node_Path($p['schema path']),
+										(on_cache_success, on_cache_error) => {
+											q_get_schema(
+												{
+													'tab size': 4 //FIXME not hardcoded
+												},
+												{
+													'read file': qr_read_file
+												},
+											)(
+												$p,
+												($) => $
+											).__extract_data(
+												on_cache_success,
+												on_cache_error,
+											)
+										},
+										on_success,
+										($) => on_error(e_t($)),
+									)
+								}
+							)
 						}
-					),
-				},
-				($): d_deserialize.Error => $
-			).__extract_data(
-				on_cache_success,
-				on_cache_error,
-			)
-		},
-		($) => {
-			resolve(on_successx($))
-		},
-		($) => {
-			resolve(on_errorx($))
-		},
-	)
+					},
+				)(
+					{
+						'content': document.getText(),
+						'tab size': 1, // LSP uses character offsets, not visual columns (tab = 1 character)
+						'file path': deser_path.Node_Path(
+							url.fileURLToPath(document.uri),
+							() => p_unreachable_code_path("vscode is providing an unexpected file URI: " + url.fileURLToPath(document.uri)),
+							{
+								'pedantic': false
+							}
+						),
+					},
+					($): d_deserialize.Error => $
+				).__extract_data(
+					on_cache_success,
+					on_cache_error,
+				)
+			},
+			($) => {
+				resolve(on_successx($))
+			},
+			($) => {
+				resolve(on_errorx($))
+			},
+		)
+	} catch (error) {
+		console.log("CSCH: Error occurred while loading document:", error)
+		throw error
+	}
+
 
 }

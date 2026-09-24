@@ -214,8 +214,8 @@ export function activate(context: ExtensionContext) {
 
 	// Create the language client and start the client.
 	client = new LanguageClient(
-		'ASNTLanguageServer',
-		'ASTN Language Server',
+		'LianaLanguageServer',
+		'Liana Language Server',
 		server_options,
 		client_options
 	)
