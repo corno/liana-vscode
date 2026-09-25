@@ -5,6 +5,10 @@ import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
 import { Connection_Context } from '../connection_context'
 
+import p_unreachable_code_path from "pareto-core/transformer/specials/unreachable_code_path"
+import * as deser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/deserializers"
+import * as ser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/serializers"
+
 export const create_on_did_change_watched_files: (
 	connection_context: Connection_Context,
 ) => vscode_node.NotificationHandler<vscode_node.DidChangeWatchedFilesParams> = (connection_context) => {
@@ -17,8 +21,18 @@ export const create_on_did_change_watched_files: (
 			const file_path = url.fileURLToPath(change.uri)
 			// Check if this is a schema file
 			if (file_path.endsWith(path.join('.liana', 'schema.slna'))) {
-				connection_context['cache']['schemas'].map.delete(file_path)
-				connection_context.connection.console.log(`Schema cache invalidated for: ${file_path}`)
+				// The schemas cache is keyed by the same serialized Node_Path format used
+				// for document paths in load_document.ts, not by this raw fs path string,
+				// so round-trip it through the same (de)serializer pair to get a matching key.
+				const cache_key = ser_path.Node_Path(
+					deser_path.Node_Path(
+						file_path,
+						() => p_unreachable_code_path("unexpected schema file path: " + file_path),
+						{ 'pedantic': false }
+					)
+				)
+				connection_context['cache']['schemas'].map.delete(cache_key)
+				connection_context.connection.console.log(`Schema cache invalidated for: ${file_path} (${cache_key})`)
 
 				// Find the directory that contains the .liana folder
 				// Schema path is like: /path/to/project/.liana/schema.slna
