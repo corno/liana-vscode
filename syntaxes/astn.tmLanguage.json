@@ -245,8 +245,7 @@
 			"name": "string.quoted.double.astn",
 			"patterns": [
 				{
-					"match": "[^\"\\\\]+",
-					"name": "string.unescaped.content"
+					"match": "[^\"\\\\]+"
 				},
 				{
 					"match": "\\\\.",
