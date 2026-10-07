@@ -59,7 +59,41 @@ Liana uses ASTN as its notation language. ASTN supports two notation styles:
 
 Toggle the document's default style with `Ctrl+Alt+N`; all values that will be code-completed will use the selected verbose or concise notation. Use code actions (right-click → Refactor) for selective conversion of existing values.
 
+All three string delimiters (double quotes, single quotes and backticks) support
+literal newlines as well as escaped `\n` and `\r`. Empty identifiers are valid
+ASTN too. Highlighting does not mark these as syntax errors. Files open as
+written; the extension does not normalize string contents when opening them.
+
 ## Tutorial: Creating Your First Language
+
+### Module selection compatibility
+
+Schema loading accepts reference-based module specifications as well as legacy
+flat schema paths. A new `schema path` contains `tail` and a derived `result`:
+
+```astn
+`schema path`: (
+    `tail`: [ | `set` 'nested' | `set` 'user' ]
+    `result`: ~
+)
+`complexity`: | `unconstrained` (
+    `module`: 'Root'
+)
+```
+
+Each step requires a schema set; the final result must be a schema. An empty
+tail selects a directly supplied schema. `module` and `module resolver` are
+references into that schema's module and resolver-module dictionaries.
+Unknown entries and invalid tree/complexity selections produce schema-loading
+diagnostics rather than internal implementation errors. The bundled authoring
+template includes these reference definitions.
+
+The client commands and language server both use the published shared loader
+from `pareto-liana` (version 0.1.81 or later). The server uses the authoring
+package's schema query directly; no local compatibility bridge is needed.
+The ASTN Core to ASTN Runtime dependency migration is still a separate follow-up.
+
+Validate with `npm run compile` and `node --test test/*.test.mjs`.
 
 Below is a step-by-step guide to creating your first Liana language.
 

@@ -2494,51 +2494,83 @@
                     )
                 )
                 'Module Specification': (
-                    `root value`: | `group` {
-                        'schema': (
-                            `description`: * "select 'schema' if you want to have 1 schema, if you have or need multple, select 'set'"
-                            `value`: | `component` (
-                                `type`: | `internal` 'Schema Tree'
-                                `results`: _
-                            )
+                `root value`: | `group` {
+                    'schema': (
+                        `description`: * "select 'schema' if you want to have 1 schema, if you have or need multple, select 'set'"
+                        `value`: | `component` (
+                            `type`: | `internal` 'Schema Tree'
+                            `results`: _
                         )
-                        'schema path': (
-                            `description`: * "selects the schema in which the module is specified"
-                            `value`: | `list` (
-                                `value`: | `text` | `global` 'text'
-                                `results`: _
-                            )
+                    )
+                    'schema path': (
+                        `description`: * "Selects a schema from the explicitly supplied schema tree."
+                        `value`: | `component` (
+                            `type`: | `internal` 'Schema Path'
+                            `results`: _
                         )
-                        'complexity': (
-                            `description`: _
-                            `value`: | `state` (
-                                `options`: {
-                                    'constrained': (
-                                        `constraints`: _
-                                        `description`: _
-                                        `value`: | `group` {
-                                            'module resolver': (
-                                                `description`: * "the module resolver that is the root of the document (the resolver gives access to the module definition as well)"
-                                                `value`: | `text` | `global` 'text'
+                    )
+                    'complexity': (
+                        `description`: _
+                        `value`: | `state` (
+                            `options`: {
+                                'constrained': (
+                                    `constraints`: _
+                                    `description`: _
+                                    `value`: | `group` {
+                                        'module resolver': (
+                                            `description`: * "the module resolver that is the root of the document (the resolver gives access to the module definition as well)"
+                                            `value`: | `reference` (
+                                                `referent`: (
+                                                    `module`: (
+                                                        `location`: | `internal` 'Resolver Modules'
+                                                        `resulting module`: ~
+                                                    )
+                                                    `path`: (
+                                                        `tail`: [ ]
+                                                        `resulting node`: ~
+                                                    )
+                                                )
+                                                `type`: | `selected` (
+                                                    `dictionary`: ~
+                                                    `dependency`: | `acyclic` ~
+                                                    `results`: _
+                                                )
                                             )
-                                        }
-                                    )
-                                    'unconstrained': (
-                                        `constraints`: _
-                                        `description`: _
-                                        `value`: | `group` {
-                                            'module': (
-                                                `description`: * "the module that is the root of the document"
-                                                `value`: | `text` | `global` 'text'
+                                        )
+                                    }
+                                )
+                                'unconstrained': (
+                                    `constraints`: _
+                                    `description`: _
+                                    `value`: | `group` {
+                                        'module': (
+                                            `description`: * "the module that is the root of the document"
+                                            `value`: | `reference` (
+                                                `referent`: (
+                                                    `module`: (
+                                                        `location`: | `internal` 'Modules'
+                                                        `resulting module`: ~
+                                                    )
+                                                    `path`: (
+                                                        `tail`: [ ]
+                                                        `resulting node`: ~
+                                                    )
+                                                )
+                                                `type`: | `selected` (
+                                                    `dictionary`: ~
+                                                    `dependency`: | `acyclic` ~
+                                                    `results`: _
+                                                )
                                             )
-                                        }
-                                    )
-                                }
-                                `results`: _
-                            )
+                                        )
+                                    }
+                                )
+                            }
+                            `results`: _
                         )
-                    }
-                )
+                    )
+                }
+            )
                 'Schema Tree': (
                     `root value`: | `state` (
                         `options`: {
@@ -4129,7 +4161,82 @@
                         `results`: _
                     )
                 )
-            }
+
+                'Schema Path': (
+                `root value`: | `group` {
+                    'tail': (
+                        `description`: * "Each step requires the current tree to be a set, then selects a child."
+                        `value`: | `list` (
+                            `value`: | `state` (
+                                `options`: {
+                                    'set': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `reference` (
+                                            `referent`: (
+                                                `module`: (
+                                                    `location`: | `internal` 'Schemas'
+                                                    `resulting module`: ~
+                                                )
+                                                `path`: (
+                                                    `tail`: [ ]
+                                                    `resulting node`: ~
+                                                )
+                                            )
+                                            `type`: | `selected` (
+                                                `dictionary`: ~
+                                                `dependency`: | `acyclic` ~
+                                                `results`: _
+                                            )
+                                        )
+                                    )
+                                }
+                                `results`: * {
+                                    'tree': (
+                                        `module`: (
+                                            `location`: | `internal` 'Schema Tree'
+                                            `resulting module`: ~
+                                        )
+                                        `path`: (
+                                            `tail`: [ ]
+                                            `resulting node`: ~
+                                        )
+                                    )
+                                }
+                            )
+                            `results`: * {
+                                'tree': (
+                                    `module`: (
+                                        `location`: | `internal` 'Schema Tree'
+                                        `resulting module`: ~
+                                    )
+                                    `path`: (
+                                        `tail`: [ ]
+                                        `resulting node`: ~
+                                    )
+                                )
+                            }
+                        )
+                    )
+                    'result': (
+                        `description`: _
+                        `value`: | `reference` (
+                            `referent`: (
+                                `module`: (
+                                    `location`: | `internal` 'Schema Tree'
+                                    `resulting module`: ~
+                                )
+                                `path`: (
+                                    `tail`: [ ]
+                                    `resulting node`: ~
+                                )
+                            )
+                            `type`: | `derived` ~
+                        )
+                    )
+                }
+            )
+}
             `complexity`: | `constrained` (
                 `signatures`: (
                     `signatures`: {
@@ -4945,7 +5052,24 @@
                             )
                             `resolved parameters`: ~
                         )
-                    }
+
+                        'Schema Path': (
+                        `module`: ~
+                        `parameters`: | `local` (
+                            `modules`: {
+                                'tree': (
+                                    `module`: (
+                                        `location`: | `internal` 'Schema Tree'
+                                        `resulting module`: ~
+                                    )
+                                    `presence`: | `required` ~
+                                )
+                            }
+                            `lookups`: {}
+                        )
+                        `resolved parameters`: ~
+                    )
+}
                 )
                 `modules`: {
                     'Package': (
@@ -9248,59 +9372,160 @@
                         )
                     )
                     'Module Specification': (
-                        `signature`: ~
-                        `root value resolver`: | `group` {
-                            'schema': (
+                    `signature`: ~
+                    `root value resolver`: | `group` {
+                        'schema': (
+                            `definition`: ~
+                            `resolver`: | `component` (
                                 `definition`: ~
-                                `resolver`: | `component` (
-                                    `definition`: ~
-                                    `location`: | `internal` 'Schema Tree'
-                                    `signature`: ~
-                                    `arguments`: * (
-                                        `modules`: * {}
-                                        `lookups`: * {
-                                            'sibling schemas': | `stack` | `empty` ~
-                                        }
-                                    )
-                                    `constraints`: {}
-                                )
-                            )
-                            'schema path': (
-                                `definition`: ~
-                                `resolver`: | `list` (
-                                    `definition`: ~
-                                    `resolver`: | `text` ~
-                                    `result`: _
-                                )
-                            )
-                            'complexity': (
-                                `definition`: ~
-                                `resolver`: | `state` (
-                                    `definition`: ~
-                                    `options`: {
-                                        'constrained': (
-                                            `constraints`: {}
-                                            `resolver`: | `group` {
-                                                'module resolver': (
-                                                    `definition`: ~
-                                                    `resolver`: | `text` ~
-                                                )
-                                            }
-                                        )
-                                        'unconstrained': (
-                                            `constraints`: {}
-                                            `resolver`: | `group` {
-                                                'module': (
-                                                    `definition`: ~
-                                                    `resolver`: | `text` ~
-                                                )
-                                            }
-                                        )
+                                `location`: | `internal` 'Schema Tree'
+                                `signature`: ~
+                                `arguments`: * (
+                                    `modules`: * {}
+                                    `lookups`: * {
+                                        'sibling schemas': | `stack` | `empty` ~
                                     }
                                 )
+                                `constraints`: {}
                             )
-                        }
-                    )
+                        )
+                        'schema path': (
+                            `definition`: ~
+                            `resolver`: | `component` (
+                                `definition`: ~
+                                `location`: | `internal` 'Schema Path'
+                                `signature`: ~
+                                `arguments`: * (
+                                    `modules`: * {
+                                        'tree': | `required` (
+                                            `start`: | `sibling` 'schema'
+                                            `tail`: (
+                                                `path`: [ | `component` ~ ]
+                                                `resulting node`: ~
+                                            )
+                                            `resulting node`: ~
+                                        )
+                                    }
+                                    `lookups`: * {}
+                                )
+                                `constraints`: {
+                                    'schema': (
+                                        `start`: | `value` ~
+                                        `constraint`: (
+                                            `selection`: (
+                                                `path`: [ | `group` 'result' | `reference` (
+                                                    `definition`: ~
+                                                ) ]
+                                                `resulting node`: ~
+                                            )
+                                            `type`: | `state` (
+                                                `selected state`: ~
+                                                `option`: 'schema'
+                                            )
+                                        )
+                                    )
+                                }
+                            )
+                        )
+                        'complexity': (
+                            `definition`: ~
+                            `resolver`: | `state` (
+                                `definition`: ~
+                                `options`: {
+                                    'constrained': (
+                                        `constraints`: {
+                                            'resolver': | `state` (
+                                                `selection`: (
+                                                    `start`: | `constraint` | `component` (
+                                                        `property`: 'schema path'
+                                                        `constraint`: 'schema'
+                                                    )
+                                                    `tail`: (
+                                                        `path`: [ | `component` ~ | `group` 'complexity' ]
+                                                        `resulting node`: ~
+                                                    )
+                                                    `resulting node`: ~
+                                                )
+                                                `selected state`: ~
+                                                `option`: 'constrained'
+                                            )
+                                        }
+                                        `resolver`: | `group` {
+                                            'module resolver': (
+                                                `definition`: ~
+                                                `resolver`: | `reference` (
+                                                    `definition`: ~
+                                                    `type`: | `selected` (
+                                                        `definition`: ~
+                                                        `lookup`: (
+                                                            `type`: | `acyclic` | `resolved dictionary` (
+                                                                `selection`: (
+                                                                    `start`: | `option constraint` 'resolver'
+                                                                    `tail`: (
+                                                                        `path`: [ | `component` ~ | `group` 'modules' | `component` ~ ]
+                                                                        `resulting node`: ~
+                                                                    )
+                                                                    `resulting node`: ~
+                                                                )
+                                                                `selected dictionary`: ~
+                                                            )
+                                                            `resulting dictionary`: ~
+                                                        )
+                                                        `constraints`: {}
+                                                    )
+                                                )
+                                            )
+                                        }
+                                    )
+                                    'unconstrained': (
+                                        `constraints`: {
+                                            'schema': | `state` (
+                                                `selection`: (
+                                                    `start`: | `sibling` 'schema path'
+                                                    `tail`: (
+                                                        `path`: [ | `component` ~ | `group` 'result' | `reference` (
+                                                            `definition`: ~
+                                                        ) ]
+                                                        `resulting node`: ~
+                                                    )
+                                                    `resulting node`: ~
+                                                )
+                                                `selected state`: ~
+                                                `option`: 'schema'
+                                            )
+                                        }
+                                        `resolver`: | `group` {
+                                            'module': (
+                                                `definition`: ~
+                                                `resolver`: | `reference` (
+                                                    `definition`: ~
+                                                    `type`: | `selected` (
+                                                        `definition`: ~
+                                                        `lookup`: (
+                                                            `type`: | `acyclic` | `resolved dictionary` (
+                                                                `selection`: (
+                                                                    `start`: | `option constraint` 'schema'
+                                                                    `tail`: (
+                                                                        `path`: [ | `component` ~ | `group` 'modules' | `component` ~ ]
+                                                                        `resulting node`: ~
+                                                                    )
+                                                                    `resulting node`: ~
+                                                                )
+                                                                `selected dictionary`: ~
+                                                            )
+                                                            `resulting dictionary`: ~
+                                                        )
+                                                        `constraints`: {}
+                                                    )
+                                                )
+                                            )
+                                        }
+                                    )
+                                }
+                            )
+                        )
+                    }
+                )
                     'Schema Tree': (
                         `signature`: ~
                         `root value resolver`: | `state` (
@@ -9591,12 +9816,89 @@
                             `benchmark`: _
                         )
                     )
-                }
+
+                    'Schema Path': (
+                    `signature`: ~
+                    `root value resolver`: | `group` {
+                        'tail': (
+                            `definition`: ~
+                            `resolver`: | `list` (
+                                `definition`: ~
+                                `resolver`: | `state` (
+                                    `definition`: ~
+                                    `options`: {
+                                        'set': (
+                                            `constraints`: {
+                                                'set': | `state` (
+                                                    `selection`: (
+                                                        `start`: | `list cursor` ~
+                                                        `tail`: (
+                                                            `path`: [ ]
+                                                            `resulting node`: ~
+                                                        )
+                                                        `resulting node`: ~
+                                                    )
+                                                    `selected state`: ~
+                                                    `option`: 'set'
+                                                )
+                                            }
+                                            `resolver`: | `reference` (
+                                                `definition`: ~
+                                                `type`: | `selected` (
+                                                    `definition`: ~
+                                                    `lookup`: (
+                                                        `type`: | `acyclic` | `resolved dictionary` (
+                                                            `selection`: (
+                                                                `start`: | `option constraint` 'set'
+                                                                `tail`: (
+                                                                    `path`: [ | `component` ~ ]
+                                                                    `resulting node`: ~
+                                                                )
+                                                                `resulting node`: ~
+                                                            )
+                                                            `selected dictionary`: ~
+                                                        )
+                                                        `resulting dictionary`: ~
+                                                    )
+                                                    `constraints`: {}
+                                                )
+                                            )
+                                        )
+                                    }
+                                )
+                                `result`: * (
+                                    `location`: | `internal` 'Schema Tree'
+                                    `resulting module`: ~
+                                )
+                            )
+                        )
+                        'result': (
+                            `definition`: ~
+                            `resolver`: | `reference` (
+                                `definition`: ~
+                                `type`: | `derived` (
+                                    `value`: (
+                                        `start`: | `result` | `list` (
+                                            `property`: 'tail'
+                                            `list result`: ~
+                                        )
+                                        `tail`: (
+                                            `path`: [ ]
+                                            `resulting node`: ~
+                                        )
+                                        `resulting node`: ~
+                                    )
+                                )
+                            )
+                        )
+                    }
+                )
+}
             )
         )
     }
-    `schema path`: [ "schema" ]
+    `schema path`: ( `tail`: [ | `set` 'schema' ] `result`: ~ )
     `complexity`: | `constrained` (
-        `module resolver`: "Module Specification"
+        `module resolver`: 'Module Specification'
     )
 )

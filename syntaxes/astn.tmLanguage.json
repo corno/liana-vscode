@@ -275,10 +275,6 @@
 				{
 					"match": "\\\\.",
 					"name": "constant.character.escape support.type.apostrophed_string.astn"
-				},
-				{
-					"match": "\\n",
-					"name": "invalid.illegal.newline_in_apostrophed_string.astn"
 				}
 			]
 		},
@@ -304,10 +300,6 @@
 				{
 					"match": "\\\\.",
 					"name": "constant.character.escape support.type.backticked_string.astn"
-				},
-				{
-					"match": "\\n",
-					"name": "invalid.illegal.newline_in_backticked_string.astn"
 				}
 			]
 		},

@@ -2,7 +2,7 @@ import p_create_refinement_context from 'pareto-core/__internal/sync/create_refi
 import p_list_from_text from 'pareto-core/refiner/specials/list_from_text'
 import p_unreachable from 'pareto-core/transformer/specials/unreachable_code_path'
 
-import * as s_resolved_document_deserialization from "liana-core/modules/resolved_document_deserialization/schemas/resolved_document_deserialization/schema"
+import * as s_resolved_document_deserialization from "liana-runtime/modules/resolved_document_deserialization/schemas/resolved_document_deserialization/schema"
 import * as s_temp_module_specifier from "pareto-liana/schemas/temp_module_specifier/schema"
 
 //dependencies
