@@ -26,6 +26,38 @@ const tokenRange = (source, id) => {
 }
 const correctedSource = source => source.replace("'Texdt'", "'Text'").replace("'Valuke'", "'Value'")
 const sqlExampleSource = () => readFileSync(new URL('../../newstyle_projects/projects/sql_query/sketch/examples/orders.sq.lna', import.meta.url), 'utf8')
+const sqlMissingHeadSource = () => {
+    const source = sqlExampleSource()
+    const path = /\(\s*`head`:\s*'id'\s*`tail`:\s*\[\s*\]\s*\)/
+    assert.match(source, path)
+    return source.replace(path, '( `head`: # `tail`: [] )')
+}
+
+test('Liana Next global types resolve through component-valued module arguments', async () => {
+    const path = fileURLToPath(new URL('../../newstyle_projects/projects/liana_next/sketch/definition/schema.liana.lna', import.meta.url))
+    const uri = pathToFileURL(path).href
+    const source = readFileSync(path, 'utf8')
+    let document = TextDocument.create(uri, 'liana', 1, source)
+    const context = {
+        cache: { schemas: create_cache(), documents: create_cache() },
+        documents: { get: id => id === uri ? document : undefined },
+        'document notation styles': new Map(),
+    }
+    const report = create_on_diagnostics(context)
+    const initial = (await report({ textDocument: { uri } })).items
+    assert.deepEqual(initial.filter(error => error.severity === 1), [])
+    const implementationHints = initial.filter(error => error.message.includes('interpreter has not implemented'))
+    assert.ok(implementationHints.length > 0)
+    assert.ok(implementationHints.every(error => error.severity === 4))
+    const selection = /(\|\s*`global`\s*)'multi line text'/
+    assert.match(source, selection)
+    const invalid = source.replace(selection, "$1'absent global'")
+    document = TextDocument.create(uri, 'liana', 2, invalid)
+    const reported = (await report({ textDocument: { uri } })).items.filter(error => error.severity === 1)
+    assert.equal(reported.length, 1, JSON.stringify(reported))
+    assert.match(reported[0].message, /No such dictionary entry.*absent global/)
+    assert.deepEqual(reported[0].range, tokenRange(invalid, 'absent global'))
+})
 
 test('SQL instance completion suggests tables at an empty from reference', async () => {
     const path = fileURLToPath(new URL('../../newstyle_projects/projects/sql_query/sketch/transformers/sql_sketch/tests/fixtures/orders.sq.lna', import.meta.url))
@@ -125,11 +157,10 @@ test('SQL list paths complete in their selected table and diagnose only scalar i
     assert.match(scalarHeadErrors[0].message, /Expected state "reference".*found "value"/)
 })
 
-test('SQL requires a head selection and completes the unfinished foo projection in the user fixture', async () => {
+test('SQL requires a head selection and completes an unfinished projection', async () => {
     const path = fileURLToPath(new URL('../../newstyle_projects/projects/sql_query/sketch/transformers/sql_sketch/tests/fixtures/orders.sq.lna', import.meta.url))
     const uri = pathToFileURL(path).href
-    const source = readFileSync(path, 'utf8')
-    assert.match(source, /'foo':\s*\(\s*`head`:\s*#/)
+    const source = sqlMissingHeadSource()
     let document = TextDocument.create(uri, 'liana', 1, source)
     const context = {
         cache: { schemas: create_cache(), documents: create_cache() },
@@ -140,7 +171,7 @@ test('SQL requires a head selection and completes the unfinished foo projection 
     const errors = (await report({ textDocument: { uri } })).items
     assert.ok(errors.length > 0, 'A missing head must not be accepted')
     assert.ok(errors.every(error => error.severity === 1))
-    const offset = source.indexOf('#', source.indexOf("'foo'"))
+    const offset = source.indexOf('#')
     const result = await create_on_completion(context)({ textDocument: { uri }, position: document.positionAt(offset) })
     assert.deepEqual(result.items.map(item => item.label).sort(), ['customer_id', 'id', 'total'])
     const selected = result.items.find(item => item.label === 'id')
@@ -337,8 +368,8 @@ test('bundled server sends the reference error over LSP and clears it on didChan
             })
             assert.deepEqual((await connection.sendRequest('textDocument/diagnostic', { textDocument: { uri: sqlUri } })).items, [])
         }
-        const unfinished = readFileSync(sqlPath, 'utf8')
-        const headOffset = unfinished.indexOf('#', unfinished.indexOf("'foo'"))
+        const unfinished = sqlMissingHeadSource()
+        const headOffset = unfinished.indexOf('#')
         assert.ok(headOffset >= 0)
         await connection.sendNotification('textDocument/didChange', {
             textDocument: { uri: sqlUri, version: sqlVersion++ }, contentChanges: [{ text: unfinished }],
