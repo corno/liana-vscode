@@ -8,7 +8,6 @@ import * as lookup from '../../newstyle_projects/tools/dependencies/node_modules
 import * as paragraph from '../../newstyle_projects/tools/dependencies/node_modules/pareto-fountain-pen/dist/modules/paragraph/schemas/paragraph/transformers/serialized.js'
 import * as parse from '../../newstyle_projects/projects/liana/sketch/transformers/pareto_next_sketch/typescript/dist/modules/source.liana.generated/schemas/unresolved/refiners/list_of_characters.js'
 import * as produce from '../../newstyle_projects/projects/liana/sketch/transformers/pareto_next_sketch/typescript/dist/transform.js'
-import * as serialize_schema from '../../newstyle_projects/projects/liana_legacy/sketch/transformers/pareto_next_sketch/typescript/dist/modules/source.liana.generated/schemas/unresolved/transformers/serialized_paragraph.js'
 import * as resolve from '../../newstyle_projects/projects/programming_languages/pareto_next/sketch/transformers/typescript_light/typescript/dist/resolve.js'
 import * as emit from '../../newstyle_projects/projects/programming_languages/pareto_next/sketch/transformers/typescript_light/typescript/dist/transform.js'
 import * as files from '../../newstyle_projects/projects/programming_languages/typescript_light/sketch/transformers/file_tree/typescript/dist/transform.js'
@@ -57,7 +56,48 @@ const seal_text = (text: string, module: ReturnType<typeof syntax_grammar>): str
         unmarshall: { module, 'tab size': 1 },
     }), { indentation: '    ' }).__get_raw().join('\n') + '\n'
 const record = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === 'object'
-type Runtime_Function = (value: unknown, abort: (error: unknown) => never, ...parameters: unknown[]) => unknown
+type Runtime_Function = (value: unknown, abort: (error: unknown) => never, ...parameters: unknown[]) => schema_runtime.Value
+
+type Reference_Edit = (id: string) => schema_runtime.Value
+const is_dictionary = (value: schema_runtime.Value): value is schema_runtime.Dictionary<schema_runtime.Value> =>
+    record(value) && value.__dictionary === true
+const is_list = (value: schema_runtime.Value): value is schema_runtime.List<schema_runtime.Value> =>
+    record(value) && value.__list === true
+const is_optional = (value: schema_runtime.Value): value is schema_runtime.Optional_Value<schema_runtime.Value> =>
+    record(value) && value.__optional_value === true
+
+function reference_edit(value: schema_runtime.Value, marker: string): Reference_Edit | undefined {
+    if (value === marker) return id => id
+    if (value === null || typeof value !== 'object') return undefined
+    if (is_dictionary(value)) {
+        const entries = value.__get_raw().map(([key, child]) => ({ key, child, edit: reference_edit(child, marker) }))
+        if (!entries.some(entry => entry.edit !== undefined)) return undefined
+        return id => p.literal.dictionary(Object.fromEntries(entries.map(entry =>
+            [entry.key, entry.edit === undefined ? entry.child : entry.edit(id)])))
+    }
+    if (is_list(value)) {
+        const children = value.__get_raw()
+        const edits = children.map(child => reference_edit(child, marker))
+        if (!edits.some(edit => edit !== undefined)) return undefined
+        return id => p.literal.list(children.map((child, index) => edits[index]?.(id) ?? child))
+    }
+    if (is_optional(value)) {
+        const child = value.__get_raw()
+        if (child === null) return undefined
+        const edit = reference_edit(child[0], marker)
+        return edit === undefined ? undefined : id => p.literal.set(edit(id))
+    }
+    if (Array.isArray(value)) {
+        const edit = reference_edit(value[1], marker)
+        return edit === undefined ? undefined : id => [value[0], edit(id)]
+    }
+    if ('get_circular_dependent' in value)
+        throw new Error('Unresolved native completion input contains a circular dependency')
+    const properties = Object.entries(value).map(([key, child]) => ({ key, child, edit: reference_edit(child, marker) }))
+    if (!properties.some(property => property.edit !== undefined)) return undefined
+    return id => Object.fromEntries(properties.map(property =>
+        [property.key, property.edit === undefined ? property.child : property.edit(id)]))
+}
 
 function runtime_function(exports: unknown, name: string): Runtime_Function {
     if (!record(exports) || typeof exports[name] !== 'function')
@@ -189,8 +229,7 @@ function runtime(sources: ReadonlyMap<string, string>) {
 
 export function prepare_native_schema(text: string): Native_Contract {
     const source = parse.Root(characters(seal_text(text, authoring)), abort, { 'tab size': 1 })
-    const syntax = serialize_schema.Module_Specification(produce.Syntax(source, abort), { indentation: '    ' })
-        .__get_raw().join('\n') + '\n'
+    const syntax = produce.Syntax_Lines(source, abort).join('\n') + '\n'
     const output = files.Root(emit.Root(resolve.Root(produce.Root(source, abort), abort))).node
     const typescript = new Map<string, string>()
     const visit = (node: typeof output, filename: string): void => {
@@ -252,19 +291,25 @@ export function prepare_native_schema(text: string): Native_Contract {
             if (resolve_instance === undefined) return { candidates: [] }
             if (requires_root_arguments)
                 return { candidates: [], error: { type: 'editor root parameters and lookups are not configured', id: source[1].root, path: [] } }
+            let unresolved: schema_runtime.Value
             try {
-                const unresolved = parse_instance(characters(seal_text(text, instance_grammar)), abort, { 'tab size': 1 })
+                unresolved = parse_instance(characters(seal_text(text, instance_grammar)), abort, { 'tab size': 1 })
                 with_completion(marker, () => resolve_instance(unresolved, abort, null, null))
                 return { candidates: [] }
             } catch (error) {
                 if (error instanceof Completion_Result) {
-                    const token = "'" + marker + "'"
-                    if (!text.includes(token)) throw new Error('Native completion requires a single-quoted marker token')
+                    const edit = reference_edit(unresolved!, marker)
+                    if (edit === undefined) throw new Error('Native completion marker is absent from the parsed instance')
                     return {
                         candidates: error.candidates.filter(id => {
-                            const quoted = "'" + id.replace(/\\/g, '\\\\').replace(/'/g, "\\'")
-                                .replace(/\n/g, '\\n').replace(/\r/g, '\\r') + "'"
-                            return this.validate(text.replace(token, quoted)) === undefined
+                            try {
+                                resolve_instance(edit(id), abort, null, null)
+                                return true
+                            } catch (error) {
+                                if (!(error instanceof Refinement_Error)) throw error
+                                native_error(error.detail)
+                                return false
+                            }
                         }),
                     }
                 }
