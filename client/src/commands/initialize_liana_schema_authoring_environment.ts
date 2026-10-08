@@ -60,7 +60,7 @@ export default ((deps) => async () => {
 			}
 
 			// Make any .slna files in .liana folder readonly at OS level
-			for (const filename of ['schema.slna', 'schema.native.slna']) {
+			for (const filename of ['schema.to_be_removed.slna', 'schema.slna']) {
 				const schema_file_path = path.join(target_path, '.liana', filename)
 				if (!fs.existsSync(schema_file_path)) continue
 				// Ensure it's writable first, then make it readonly

@@ -45,6 +45,13 @@ class Completion_Result extends Error {
 
 const abort = (detail: unknown): never => { throw new Refinement_Error(detail) }
 const characters = (text: string) => p.literal.list(Array.from(text, character => character.codePointAt(0)!))
+export function is_native_schema(text: string): boolean {
+    const value = parse_tree.Document(characters(text), abort, { 'tab size': 1 }).content.type
+    if (value[0] !== 'concrete' || value[1][0] !== 'state') return false
+    const state = value[1][1].status
+    return state[0] === 'set' && ['astn', 'liana'].includes(state[1].option.token.value)
+}
+
 const syntax_grammar = (text: string) => {
     const specification = read_grammar.Module_Specifier(characters(text), abort, { 'tab size': 1 })
     if (specification[0] !== 'unconstrained') throw new Error('Native bootstrap grammars must be syntax-only')

@@ -25,7 +25,7 @@ export default (deps => async () => {
         const directory = targets[0].fsPath
         const schema_directory = path.join(directory, '.liana')
         fs.mkdirSync(schema_directory, { recursive: true })
-        for (const [filename, content] of [['schema.slna', schema.syntax], ['schema.native.slna', text]]) {
+        for (const [filename, content] of [['schema.to_be_removed.slna', schema.syntax], ['schema.slna', text]]) {
             const destination = path.join(schema_directory, filename)
             if (fs.existsSync(destination)) fs.chmodSync(destination, 0o644)
             fs.writeFileSync(destination, content)

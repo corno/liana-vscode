@@ -25,7 +25,7 @@ const definitions = (values, namespaces = '{}') => `(namespaces: ${namespaces} v
 const source = (values, root = '_', namespaces = '{}') =>
     `(schema: _ id: _ defs: ${definitions(values, namespaces)} 'root value': ${root})`
 const sysml_directory = new URL('../../newstyle_projects/projects/liana/sketch/temp/lioncore/', import.meta.url)
-const sysml_schema = readFileSync(new URL('.liana/schema.native.slna', sysml_directory), 'utf8')
+const sysml_schema = readFileSync(new URL('.liana/schema.slna', sysml_directory), 'utf8')
 const sysml = readFileSync(new URL('sysml.lna', sysml_directory), 'utf8')
 const boekhouding_schema = readFileSync(new URL('../../newstyle_projects/projects/liana/sketch/examples/boekhouding.liana.lna', import.meta.url), 'utf8')
 const boekhouding = readFileSync(new URL('fixtures/boekhouding.lna', import.meta.url), 'utf8')
@@ -33,8 +33,8 @@ const boekhouding = readFileSync(new URL('fixtures/boekhouding.lna', import.meta
 function environment(text = schema) {
     const directory = mkdtempSync(join(tmpdir(), 'liana-native-editor-'))
     mkdirSync(join(directory, '.liana'))
-    writeFileSync(join(directory, '.liana/schema.slna'), 'not a legacy schema')
-    writeFileSync(join(directory, '.liana/schema.native.slna'), text)
+    writeFileSync(join(directory, '.liana/schema.to_be_removed.slna'), 'not a legacy schema')
+    writeFileSync(join(directory, '.liana/schema.slna'), text)
     const uri = pathToFileURL(join(directory, 'instance.lna')).href
     let document
     const context = {
@@ -401,8 +401,8 @@ test('native client commands create actual contracts and generate ASTN APIs inst
         await command('initialize_or_update_authoring_environment_with_this_schema')({
             context: { workspaceState: { get: () => ({}), update: async () => {} } },
         })()
-        assert.equal(readFileSync(join(directory, '.liana/schema.native.slna'), 'utf8'), native)
-        assert.equal(readFileSync(join(directory, '.liana/schema.slna'), 'utf8'), prepare_native_schema(native).syntax)
+        assert.equal(readFileSync(join(directory, '.liana/schema.slna'), 'utf8'), native)
+        assert.equal(readFileSync(join(directory, '.liana/schema.to_be_removed.slna'), 'utf8'), prepare_native_schema(native).syntax)
         rmSync(join(directory, '.liana'), { recursive: true })
         await command('generate_typescript_code_from_this_schema')()()
         const expected = prepare_native_schema(native).typescript
@@ -506,7 +506,7 @@ test('native external reference completion follows namespace selection and exclu
 test('malformed native contracts report schema errors instead of falling back to a valid legacy grammar', async () => {
     const env = environment('not native')
     try {
-        writeFileSync(join(env.directory, '.liana/schema.slna'), prepare_native_schema(schema).syntax)
+        writeFileSync(join(env.directory, '.liana/schema.to_be_removed.slna'), prepare_native_schema(schema).syntax)
         env.open(source('{}'))
         const errors = (await create_on_diagnostics(env.context)({ textDocument: { uri: env.uri } })).items
         assert.equal(errors.length, 1)
@@ -522,9 +522,9 @@ test('a nearest native-only contract overrides an enclosing legacy environment w
     try {
         const child = join(env.directory, 'child')
         mkdirSync(join(child, '.liana'), { recursive: true })
-        writeFileSync(join(child, '.liana/schema.native.slna'), schema)
-        writeFileSync(join(env.directory, '.liana/schema.slna'), 'invalid enclosing legacy grammar')
-        rmSync(join(env.directory, '.liana/schema.native.slna'))
+        writeFileSync(join(child, '.liana/schema.slna'), schema)
+        writeFileSync(join(env.directory, '.liana/schema.to_be_removed.slna'), 'invalid enclosing legacy grammar')
+        rmSync(join(env.directory, '.liana/schema.slna'))
         const uri = pathToFileURL(join(child, 'instance.lna')).href
         const document = TextDocument.create(uri, 'liana', 1, source(`{self: ${local('self')}}`))
         const context = {
@@ -549,7 +549,7 @@ test('native schema changes invalidate structural and document caches and refres
         assert.equal(env.context.cache.schemas.map.size, 1)
         let refreshed = 0
         env.context.connection = { console: { log() {} }, languages: { diagnostics: { refresh: () => refreshed++ } } }
-        const native_path = join(env.directory, '.liana/schema.native.slna')
+        const native_path = join(env.directory, '.liana/schema.slna')
         writeFileSync(native_path, 'not native')
         create_on_did_change_watched_files(env.context)({ changes: [{ uri: pathToFileURL(native_path).href, type: 2 }] })
         assert.equal(env.context.cache.schemas.map.size, 0)

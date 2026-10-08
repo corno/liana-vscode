@@ -1,16 +1,18 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { Native_Contract, prepare_native_schema } from '../../../native/out'
+import { Native_Contract, prepare_native_schema, is_native_schema } from '../../../native/out'
 import type * as unmarshalled from 'liana-authoring/schemas/unmarshall_result/schema'
 import type * as location from 'astn-core/modules/deserialization/schemas/location/schema'
 
 const contracts = new Map<string, { text: string, contract: Native_Contract }>()
 
 export function load_native_schema(schema_path: string): Native_Contract | undefined {
-    const native_path = path.join(path.dirname(schema_path), 'schema.native.slna')
+    const native_path = path.join(path.dirname(schema_path), 'schema.slna')
     if (!fs.existsSync(native_path)) return undefined
     const text = fs.readFileSync(native_path, 'utf8')
+    if (!fs.existsSync(path.join(path.dirname(native_path), 'schema.to_be_removed.slna'))
+        && !is_native_schema(text)) return undefined
     const cached = contracts.get(native_path)
     if (cached?.text === text) return cached.contract
     const contract = prepare_native_schema(text)
@@ -22,8 +24,8 @@ export function native_schema_path_for_document(uri: string): string | undefined
     let directory = path.dirname(fileURLToPath(uri))
     while (true) {
         const schema_path = path.join(directory, '.liana', 'schema.slna')
-        if (fs.existsSync(path.join(directory, '.liana', 'schema.native.slna'))) return schema_path
-        if (fs.existsSync(schema_path)) return undefined
+        if (fs.existsSync(schema_path))
+            return load_native_schema(schema_path) === undefined ? undefined : schema_path
         const parent = path.dirname(directory)
         if (parent === directory) return undefined
         directory = parent

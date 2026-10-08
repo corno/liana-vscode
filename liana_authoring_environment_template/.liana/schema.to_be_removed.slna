@@ -1,0 +1,2603 @@
+(
+    `schema`: | `set` {
+        'schema 0': | `schema` (
+            `schema imports`: {}
+            `resolver imports`: {}
+            `globals`: (
+                `complexity`: | `unconstrained` ~
+                `text types`: {}
+                `simple types`: {
+                    'Natural': (
+                        `type`: | `number` (
+                            `precision`: | `exact` (
+                                `number of fractional digits`: _
+                                `type`: | `natural` ~
+                            )
+                        )
+                    )
+                    'boolean': (
+                        `type`: | `boolean` ~
+                    )
+                }
+            )
+            `modules`: {
+                'Types': (
+                    `root value`: | `dictionary` (
+                        `value`: | `component` (
+                            `type`: | `internal` 'Type'
+                            `results`: _
+                        )
+                    )
+                )
+                'Globals': (
+                    `root value`: | `group` {
+                        'simple types': (
+                            `description`: _
+                            `value`: | `dictionary` (
+                                `value`: | `component` (
+                                    `type`: | `internal` 'Simple Type'
+                                    `results`: _
+                                )
+                            )
+                        )
+                    }
+                )
+                'Dictionary': (
+                    `root value`: | `group` {
+                        'value': (
+                            `description`: * "The type of each entry in this dictionary"
+                            `value`: | `component` (
+                                `type`: | `internal` 'Value'
+                                `results`: _
+                            )
+                        )
+                    }
+                )
+                'Value': (
+                    `root value`: | `state` (
+                        `options`: {
+                            'component': (
+                                `constraints`: _
+                                `description`: * "Reference to a reusable named type"
+                                `value`: | `group` {
+                                    'type': (
+                                        `description`: _
+                                        `value`: | `state` (
+                                            `options`: {
+                                                'external': (
+                                                    `constraints`: _
+                                                    `description`: * "Reference a type from an imported schema"
+                                                    `value`: | `group` {
+                                                        'import': (
+                                                            `description`: _
+                                                            `value`: | `reference` (
+                                                                `referent`: (
+                                                                    `module`: (
+                                                                        `location`: | `internal` 'syntax reference entries'
+                                                                        `resulting module`: ~
+                                                                    )
+                                                                    `path`: (
+                                                                        `tail`: [ ]
+                                                                        `resulting node`: ~
+                                                                    )
+                                                                )
+                                                                `type`: | `selected` (
+                                                                    `dictionary`: ~
+                                                                    `dependency`: | `acyclic` ~
+                                                                    `results`: _
+                                                                )
+                                                            )
+                                                        )
+                                                        'type': (
+                                                            `description`: _
+                                                            `value`: | `reference` (
+                                                                `referent`: (
+                                                                    `module`: (
+                                                                        `location`: | `internal` 'syntax reference entries'
+                                                                        `resulting module`: ~
+                                                                    )
+                                                                    `path`: (
+                                                                        `tail`: [ ]
+                                                                        `resulting node`: ~
+                                                                    )
+                                                                )
+                                                                `type`: | `selected` (
+                                                                    `dictionary`: ~
+                                                                    `dependency`: | `acyclic` ~
+                                                                    `results`: _
+                                                                )
+                                                            )
+                                                        )
+                                                    }
+                                                )
+                                                'internal': (
+                                                    `constraints`: _
+                                                    `description`: * "Reference a type within the same schema (allows cycles)"
+                                                    `value`: | `reference` (
+                                                        `referent`: (
+                                                            `module`: (
+                                                                `location`: | `internal` 'syntax reference entries'
+                                                                `resulting module`: ~
+                                                            )
+                                                            `path`: (
+                                                                `tail`: [ ]
+                                                                `resulting node`: ~
+                                                            )
+                                                        )
+                                                        `type`: | `selected` (
+                                                            `dictionary`: ~
+                                                            `dependency`: | `acyclic` ~
+                                                            `results`: _
+                                                        )
+                                                    )
+                                                )
+                                                'internal acyclic': (
+                                                    `constraints`: _
+                                                    `description`: * "Reference a type within the same schema (no cycles)"
+                                                    `value`: | `reference` (
+                                                        `referent`: (
+                                                            `module`: (
+                                                                `location`: | `internal` 'syntax reference entries'
+                                                                `resulting module`: ~
+                                                            )
+                                                            `path`: (
+                                                                `tail`: [ ]
+                                                                `resulting node`: ~
+                                                            )
+                                                        )
+                                                        `type`: | `selected` (
+                                                            `dictionary`: ~
+                                                            `dependency`: | `acyclic` ~
+                                                            `results`: _
+                                                        )
+                                                    )
+                                                )
+                                            }
+                                            `results`: _
+                                        )
+                                    )
+                                    'results': (
+                                        `description`: _
+                                        `value`: | `component` (
+                                            `type`: | `internal` 'Value Results'
+                                            `results`: _
+                                        )
+                                    )
+                                }
+                            )
+                            'dictionary': (
+                                `constraints`: _
+                                `description`: * "Indexed collection of named values (like a map or hash table)"
+                                `value`: | `component` (
+                                    `type`: | `internal` 'Dictionary'
+                                    `results`: _
+                                )
+                            )
+                            'group': (
+                                `constraints`: _
+                                `description`: * "Ordered collection of properties, each with a specific name and type"
+                                `value`: | `component` (
+                                    `type`: | `internal` 'Group'
+                                    `results`: _
+                                )
+                            )
+                            'list': (
+                                `constraints`: _
+                                `description`: * "Ordered sequence of values of the same type"
+                                `value`: | `group` {
+                                    'value': (
+                                        `description`: _
+                                        `value`: | `component` (
+                                            `type`: | `internal` 'Value'
+                                            `results`: _
+                                        )
+                                    )
+                                    'results': (
+                                        `description`: _
+                                        `value`: | `component` (
+                                            `type`: | `internal` 'Value Results'
+                                            `results`: _
+                                        )
+                                    )
+                                }
+                            )
+                            'nothing': (
+                                `constraints`: _
+                                `description`: * "Empty value (unit type, no data)"
+                                `value`: | `nothing` ~
+                            )
+                            'simple': (
+                                `constraints`: _
+                                `description`: * "A named primitive or syntax-only value type"
+                                `value`: | `reference` (
+                                    `referent`: (
+                                        `module`: (
+                                            `location`: | `internal` 'syntax reference entries'
+                                            `resulting module`: ~
+                                        )
+                                        `path`: (
+                                            `tail`: [ ]
+                                            `resulting node`: ~
+                                        )
+                                    )
+                                    `type`: | `selected` (
+                                        `dictionary`: ~
+                                        `dependency`: | `acyclic` ~
+                                        `results`: _
+                                    )
+                                )
+                            )
+                            'optional': (
+                                `constraints`: _
+                                `description`: * "Value that may or may not be present"
+                                `value`: | `component` (
+                                    `type`: | `internal` 'Value'
+                                    `results`: _
+                                )
+                            )
+                            'reference': (
+                                `constraints`: _
+                                `description`: * "Pointer to another value in the data (like a foreign key)"
+                                `value`: | `group` {
+                                    'referent': (
+                                        `description`: * "What this reference points to"
+                                        `value`: | `component` (
+                                            `type`: | `internal` 'Value Reference'
+                                            `results`: _
+                                        )
+                                    )
+                                    'type': (
+                                        `description`: _
+                                        `value`: | `state` (
+                                            `options`: {
+                                                'selected': (
+                                                    `constraints`: _
+                                                    `description`: * "Explicitly select which dictionary entry to reference"
+                                                    `value`: | `group` {
+                                                        'dependency': (
+                                                            `description`: * "How this reference affects dependency order"
+                                                            `value`: | `state` (
+                                                                `options`: {
+                                                                    'acyclic': (
+                                                                        `constraints`: _
+                                                                        `description`: * "No circular dependencies (default for cross-type references)"
+                                                                        `value`: | `nothing` ~
+                                                                    )
+                                                                    'cyclic': (
+                                                                        `constraints`: _
+                                                                        `description`: * "Allows circular instance references (only within same dictionary)"
+                                                                        `value`: | `nothing` ~
+                                                                    )
+                                                                    'stack': (
+                                                                        `constraints`: _
+                                                                        `description`: * "Push onto dependency stack for multi-level lookups"
+                                                                        `value`: | `nothing` ~
+                                                                    )
+                                                                }
+                                                                `results`: _
+                                                            )
+                                                        )
+                                                        'results': (
+                                                            `description`: _
+                                                            `value`: | `component` (
+                                                                `type`: | `internal` 'Value Results'
+                                                                `results`: _
+                                                            )
+                                                        )
+                                                    }
+                                                )
+                                            }
+                                            `results`: _
+                                        )
+                                    )
+                                }
+                            )
+                            'state': (
+                                `constraints`: _
+                                `description`: * "Tagged union: value is one of several named options (like a sum type or enum)"
+                                `value`: | `group` {
+                                    'options': (
+                                        `description`: * "The possible variants, each with its own name and associated data"
+                                        `value`: | `dictionary` (
+                                            `value`: | `group` {
+                                                'constraints': (
+                                                    `description`: _
+                                                    `value`: | `component` (
+                                                        `type`: | `internal` 'Option Constraints'
+                                                        `results`: _
+                                                    )
+                                                )
+                                                'description': (
+                                                    `description`: * "Documentation shown in IDE for this option"
+                                                    `value`: | `optional` | `text` | `local` (
+                                                        `type`: | `multi line` ~
+                                                        `link`: | `no` ~
+                                                    )
+                                                )
+                                                'value': (
+                                                    `description`: _
+                                                    `value`: | `component` (
+                                                        `type`: | `internal` 'Value'
+                                                        `results`: _
+                                                    )
+                                                )
+                                            }
+                                        )
+                                    )
+                                    'results': (
+                                        `description`: _
+                                        `value`: | `component` (
+                                            `type`: | `internal` 'Value Results'
+                                            `results`: _
+                                        )
+                                    )
+                                }
+                            )
+                        }
+                        `results`: _
+                    )
+                )
+                'Resolver': (
+                    `root value`: | `group` {
+                        'signatures': (
+                            `description`: _
+                            `value`: | `group` {
+                                'signatures': (
+                                    `description`: _
+                                    `value`: | `component` (
+                                        `type`: | `internal` 'Resolver Signatures'
+                                        `results`: _
+                                    )
+                                )
+                            }
+                        )
+                        'types': (
+                            `description`: _
+                            `value`: | `component` (
+                                `type`: | `internal` 'Resolver Types'
+                                `results`: _
+                            )
+                        )
+                    }
+                )
+                'Resolver Signatures': (
+                    `root value`: | `dictionary` (
+                        `value`: | `component` (
+                            `type`: | `internal` 'Resolver Signature'
+                            `results`: _
+                        )
+                    )
+                )
+                'Resolver Signature Parameters': (
+                    `root value`: | `group` {
+                        'types': (
+                            `description`: _
+                            `value`: | `dictionary` (
+                                `value`: | `group` {
+                                    'type': (
+                                        `description`: _
+                                        `value`: | `component` (
+                                            `type`: | `internal` 'Type Reference'
+                                            `results`: _
+                                        )
+                                    )
+                                    'presence': (
+                                        `description`: _
+                                        `value`: | `component` (
+                                            `type`: | `internal` 'Presence'
+                                            `results`: _
+                                        )
+                                    )
+                                }
+                            )
+                        )
+                        'lookups': (
+                            `description`: _
+                            `value`: | `dictionary` (
+                                `value`: | `group` {
+                                    'referent': (
+                                        `description`: _
+                                        `value`: | `component` (
+                                            `type`: | `internal` 'Type Reference'
+                                            `results`: _
+                                        )
+                                    )
+                                    'type': (
+                                        `description`: _
+                                        `value`: | `state` (
+                                            `options`: {
+                                                'cyclic': (
+                                                    `constraints`: _
+                                                    `description`: _
+                                                    `value`: | `nothing` ~
+                                                )
+                                                'acyclic': (
+                                                    `constraints`: _
+                                                    `description`: _
+                                                    `value`: | `nothing` ~
+                                                )
+                                                'stack': (
+                                                    `constraints`: _
+                                                    `description`: _
+                                                    `value`: | `nothing` ~
+                                                )
+                                            }
+                                            `results`: _
+                                        )
+                                    )
+                                    'presence': (
+                                        `description`: _
+                                        `value`: | `component` (
+                                            `type`: | `internal` 'Presence'
+                                            `results`: _
+                                        )
+                                    )
+                                }
+                            )
+                        )
+                    }
+                )
+                'Resolver Value': (
+                    `root value`: | `state` (
+                        `options`: {
+                            'with results': (
+                                `constraints`: _
+                                `description`: * "Compute metadata from the resolved payload and enclosing resolver context"
+                                `value`: | `group` {
+                                    'results': (
+                                        `description`: _
+                                        `value`: | `dictionary` (
+                                            `value`: | `component` (
+                                                `type`: | `internal` 'Resolver Guaranteed Value Selection'
+                                                `results`: _
+                                            )
+                                        )
+                                    )
+                                    'resolver': (
+                                        `description`: _
+                                        `value`: | `component` (
+                                            `type`: | `internal` 'Resolver Value'
+                                            `results`: _
+                                        )
+                                    )
+                                }
+                            )
+                            'with constraints': (
+                                `constraints`: _
+                                `description`: * "Retain named selection results as inferred group metadata"
+                                `value`: | `group` {
+                                    'constraints': (
+                                        `description`: _
+                                        `value`: | `dictionary` (
+                                            `value`: | `component` (
+                                                `type`: | `internal` 'Resolver Guaranteed Value Selection'
+                                                `results`: _
+                                            )
+                                        )
+                                    )
+                                    'resolver': (
+                                        `description`: _
+                                        `value`: | `component` (
+                                            `type`: | `internal` 'Resolver Value Group'
+                                            `results`: _
+                                        )
+                                    )
+                                }
+                            )
+                            'assert identity': (
+                                `constraints`: _
+                                `description`: * "Assert two selections reach the same node without exposing a constraint result"
+                                `value`: | `group` {
+                                    'left': (
+                                        `description`: _
+                                        `value`: | `component` (
+                                            `type`: | `internal` 'Resolver Guaranteed Value Selection'
+                                            `results`: _
+                                        )
+                                    )
+                                    'right': (
+                                        `description`: _
+                                        `value`: | `component` (
+                                            `type`: | `internal` 'Resolver Guaranteed Value Selection'
+                                            `results`: _
+                                        )
+                                    )
+                                    'resolver': (
+                                        `description`: _
+                                        `value`: | `component` (
+                                            `type`: | `internal` 'Resolver Value'
+                                            `results`: _
+                                        )
+                                    )
+                                }
+                            )
+                            'component': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `group` {
+                                    'location': (
+                                        `description`: _
+                                        `value`: | `state` (
+                                            `options`: {
+                                                'external': (
+                                                    `constraints`: _
+                                                    `description`: _
+                                                    `value`: | `group` {
+                                                        'schema import': (
+                                                            `description`: _
+                                                            `value`: | `reference` (
+                                                                `referent`: (
+                                                                    `module`: (
+                                                                        `location`: | `internal` 'syntax reference entries'
+                                                                        `resulting module`: ~
+                                                                    )
+                                                                    `path`: (
+                                                                        `tail`: [ ]
+                                                                        `resulting node`: ~
+                                                                    )
+                                                                )
+                                                                `type`: | `selected` (
+                                                                    `dictionary`: ~
+                                                                    `dependency`: | `acyclic` ~
+                                                                    `results`: _
+                                                                )
+                                                            )
+                                                        )
+                                                        'resolver import': (
+                                                            `description`: _
+                                                            `value`: | `reference` (
+                                                                `referent`: (
+                                                                    `module`: (
+                                                                        `location`: | `internal` 'syntax reference entries'
+                                                                        `resulting module`: ~
+                                                                    )
+                                                                    `path`: (
+                                                                        `tail`: [ ]
+                                                                        `resulting node`: ~
+                                                                    )
+                                                                )
+                                                                `type`: | `selected` (
+                                                                    `dictionary`: ~
+                                                                    `dependency`: | `acyclic` ~
+                                                                    `results`: _
+                                                                )
+                                                            )
+                                                        )
+                                                        'signature': (
+                                                            `description`: _
+                                                            `value`: | `reference` (
+                                                                `referent`: (
+                                                                    `module`: (
+                                                                        `location`: | `internal` 'syntax reference entries'
+                                                                        `resulting module`: ~
+                                                                    )
+                                                                    `path`: (
+                                                                        `tail`: [ ]
+                                                                        `resulting node`: ~
+                                                                    )
+                                                                )
+                                                                `type`: | `selected` (
+                                                                    `dictionary`: ~
+                                                                    `dependency`: | `acyclic` ~
+                                                                    `results`: _
+                                                                )
+                                                            )
+                                                        )
+                                                    }
+                                                )
+                                                'internal': (
+                                                    `constraints`: _
+                                                    `description`: _
+                                                    `value`: | `reference` (
+                                                        `referent`: (
+                                                            `module`: (
+                                                                `location`: | `internal` 'syntax reference entries'
+                                                                `resulting module`: ~
+                                                            )
+                                                            `path`: (
+                                                                `tail`: [ ]
+                                                                `resulting node`: ~
+                                                            )
+                                                        )
+                                                        `type`: | `selected` (
+                                                            `dictionary`: ~
+                                                            `dependency`: | `acyclic` ~
+                                                            `results`: _
+                                                        )
+                                                    )
+                                                )
+                                            }
+                                            `results`: _
+                                        )
+                                    )
+                                    'arguments': (
+                                        `description`: _
+                                        `value`: | `optional` | `group` {
+                                            'types': (
+                                                `description`: _
+                                                `value`: | `optional` | `dictionary` (
+                                                    `value`: | `state` (
+                                                        `options`: {
+                                                            'optional': (
+                                                                `constraints`: _
+                                                                `description`: _
+                                                                `value`: | `component` (
+                                                                    `type`: | `internal` 'Resolver Optional Value Initialization'
+                                                                    `results`: _
+                                                                )
+                                                            )
+                                                            'required': (
+                                                                `constraints`: _
+                                                                `description`: _
+                                                                `value`: | `component` (
+                                                                    `type`: | `internal` 'Resolver Guaranteed Value Selection'
+                                                                    `results`: _
+                                                                )
+                                                            )
+                                                            'parameter': (
+                                                                `constraints`: _
+                                                                `description`: _
+                                                                `value`: | `reference` (
+                                                                    `referent`: (
+                                                                        `module`: (
+                                                                            `location`: | `internal` 'syntax reference entries'
+                                                                            `resulting module`: ~
+                                                                        )
+                                                                        `path`: (
+                                                                            `tail`: [ ]
+                                                                            `resulting node`: ~
+                                                                        )
+                                                                    )
+                                                                    `type`: | `selected` (
+                                                                        `dictionary`: ~
+                                                                        `dependency`: | `acyclic` ~
+                                                                        `results`: _
+                                                                    )
+                                                                )
+                                                            )
+                                                        }
+                                                        `results`: _
+                                                    )
+                                                )
+                                            )
+                                            'lookups': (
+                                                `description`: _
+                                                `value`: | `optional` | `dictionary` (
+                                                    `value`: | `state` (
+                                                        `options`: {
+                                                            'stack': (
+                                                                `constraints`: _
+                                                                `description`: _
+                                                                `value`: | `state` (
+                                                                    `options`: {
+                                                                        'empty': (
+                                                                            `constraints`: _
+                                                                            `description`: _
+                                                                            `value`: | `nothing` ~
+                                                                        )
+                                                                        'push': (
+                                                                            `constraints`: _
+                                                                            `description`: _
+                                                                            `value`: | `group` {
+                                                                                'stack': (
+                                                                                    `description`: _
+                                                                                    `value`: | `component` (
+                                                                                        `type`: | `internal` 'Resolver Lookup Selection'
+                                                                                        `results`: _
+                                                                                    )
+                                                                                )
+                                                                                'item': (
+                                                                                    `description`: _
+                                                                                    `value`: | `component` (
+                                                                                        `type`: | `internal` 'Resolver Lookup Selection'
+                                                                                        `results`: _
+                                                                                    )
+                                                                                )
+                                                                            }
+                                                                        )
+                                                                    }
+                                                                    `results`: _
+                                                                )
+                                                            )
+                                                            'acyclic': (
+                                                                `constraints`: _
+                                                                `description`: _
+                                                                `value`: | `state` (
+                                                                    `options`: {
+                                                                        'not set': (
+                                                                            `constraints`: _
+                                                                            `description`: _
+                                                                            `value`: | `nothing` ~
+                                                                        )
+                                                                    }
+                                                                    `results`: _
+                                                                )
+                                                            )
+                                                            'cyclic': (
+                                                                `constraints`: _
+                                                                `description`: _
+                                                                `value`: | `state` (
+                                                                    `options`: {
+                                                                        'not set': (
+                                                                            `constraints`: _
+                                                                            `description`: _
+                                                                            `value`: | `nothing` ~
+                                                                        )
+                                                                    }
+                                                                    `results`: _
+                                                                )
+                                                            )
+                                                            'selection': (
+                                                                `constraints`: _
+                                                                `description`: _
+                                                                `value`: | `component` (
+                                                                    `type`: | `internal` 'Resolver Lookup Selection'
+                                                                    `results`: _
+                                                                )
+                                                            )
+                                                        }
+                                                        `results`: _
+                                                    )
+                                                )
+                                            )
+                                        }
+                                    )
+                                    'constraints': (
+                                        `description`: _
+                                        `value`: | `component` (
+                                            `type`: | `internal` 'Resolver Value Constraints'
+                                            `results`: _
+                                        )
+                                    )
+                                }
+                            )
+                            'dictionary': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `group` {
+                                    'resolver': (
+                                        `description`: _
+                                        `value`: | `component` (
+                                            `type`: | `internal` 'Resolver Value'
+                                            `results`: _
+                                        )
+                                    )
+                                    'benchmark': (
+                                        `description`: _
+                                        `value`: | `optional` | `component` (
+                                            `type`: | `internal` 'Resolver Benchmark'
+                                            `results`: _
+                                        )
+                                    )
+                                }
+                            )
+                            'group': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `component` (
+                                    `type`: | `internal` 'Resolver Value Group'
+                                    `results`: _
+                                )
+                            )
+                            'list': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `group` {
+                                    'resolver': (
+                                        `description`: _
+                                        `value`: | `component` (
+                                            `type`: | `internal` 'Resolver Value'
+                                            `results`: _
+                                        )
+                                    )
+                                    'result': (
+                                        `description`: _
+                                        `value`: | `optional` | `component` (
+                                            `type`: | `internal` 'Resolver Value List Result'
+                                            `results`: _
+                                        )
+                                    )
+                                }
+                            )
+                            'nothing': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `nothing` ~
+                            )
+                            'simple': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `nothing` ~
+                            )
+                            'optional': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `group` {
+                                    'constraints': (
+                                        `description`: _
+                                        `value`: | `component` (
+                                            `type`: | `internal` 'Resolver Option Constraints'
+                                            `results`: _
+                                        )
+                                    )
+                                    'resolver': (
+                                        `description`: _
+                                        `value`: | `component` (
+                                            `type`: | `internal` 'Resolver Value'
+                                            `results`: _
+                                        )
+                                    )
+                                }
+                            )
+                            'reference': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `group` {
+                                    'type': (
+                                        `description`: _
+                                        `value`: | `state` (
+                                            `options`: {
+                                                'selected': (
+                                                    `constraints`: _
+                                                    `description`: _
+                                                    `value`: | `group` {
+                                                        'lookup': (
+                                                            `description`: _
+                                                            `value`: | `component` (
+                                                                `type`: | `internal` 'Resolver Lookup Selection'
+                                                                `results`: _
+                                                            )
+                                                        )
+                                                        'constraints': (
+                                                            `description`: _
+                                                            `value`: | `component` (
+                                                                `type`: | `internal` 'Resolver Value Constraints'
+                                                                `results`: _
+                                                            )
+                                                        )
+                                                    }
+                                                )
+                                            }
+                                            `results`: _
+                                        )
+                                    )
+                                }
+                            )
+                            'state': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `group` {
+                                    'options': (
+                                        `description`: _
+                                        `value`: | `dictionary` (
+                                            `value`: | `group` {
+                                                'constraints': (
+                                                    `description`: _
+                                                    `value`: | `component` (
+                                                        `type`: | `internal` 'Resolver Option Constraints'
+                                                        `results`: _
+                                                    )
+                                                )
+                                                'resolver': (
+                                                    `description`: _
+                                                    `value`: | `component` (
+                                                        `type`: | `internal` 'Resolver Value'
+                                                        `results`: _
+                                                    )
+                                                )
+                                            }
+                                        )
+                                    )
+                                }
+                            )
+                        }
+                        `results`: _
+                    )
+                )
+                'Text Type': (
+                    `root value`: | `group` {
+                        'type': (
+                            `description`: _
+                            `value`: | `state` (
+                                `options`: {
+                                    'multi line': (
+                                        `constraints`: _
+                                        `description`: * "Text can contain line breaks (like a textarea)"
+                                        `value`: | `nothing` ~
+                                    )
+                                    'single line': (
+                                        `constraints`: _
+                                        `description`: * "Text on a single line (like an input field)"
+                                        `value`: | `nothing` ~
+                                    )
+                                }
+                                `results`: _
+                            )
+                        )
+                        'link': (
+                            `description`: _
+                            `value`: | `state` (
+                                `options`: {
+                                    'no': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `nothing` ~
+                                    )
+                                    'yes': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `group` {
+                                            'path prefix': (
+                                                `description`: _
+                                                `value`: | `text` | `local` (
+                                                    `type`: | `single line` ~
+                                                    `link`: | `no` ~
+                                                )
+                                            )
+                                            'path suffix': (
+                                                `description`: _
+                                                `value`: | `text` | `local` (
+                                                    `type`: | `single line` ~
+                                                    `link`: | `no` ~
+                                                )
+                                            )
+                                        }
+                                    )
+                                }
+                                `results`: _
+                            )
+                        )
+                    }
+                )
+                'Simple Type': (
+                    `root value`: | `group` {
+                        'type': (
+                            `description`: _
+                            `value`: | `state` (
+                                `options`: {
+                                    'text': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `component` (
+                                            `type`: | `internal` 'Text Type'
+                                            `results`: _
+                                        )
+                                    )
+                                    'reference': (
+                                        `constraints`: _
+                                        `description`: * "Single-quoted syntax only, without a semantic target"
+                                        `value`: | `nothing` ~
+                                    )
+                                    'id': (
+                                        `constraints`: _
+                                        `description`: * "Single-quoted identifier syntax only"
+                                        `value`: | `nothing` ~
+                                    )
+                                    'boolean': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `nothing` ~
+                                    )
+                                    'date': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `nothing` ~
+                                    )
+                                    'number': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `group` {
+                                            'precision': (
+                                                `description`: _
+                                                `value`: | `state` (
+                                                    `options`: {
+                                                        'approximation': (
+                                                            `constraints`: _
+                                                            `description`: _
+                                                            `value`: | `group` {
+                                                                'significant digits': (
+                                                                    `description`: _
+                                                                    `value`: | `simple` | `global` 'Natural'
+                                                                )
+                                                            }
+                                                        )
+                                                        'exact': (
+                                                            `constraints`: _
+                                                            `description`: _
+                                                            `value`: | `group` {
+                                                                'number of fractional digits': (
+                                                                    `description`: _
+                                                                    `value`: | `optional` | `simple` | `global` 'Natural'
+                                                                )
+                                                                'type': (
+                                                                    `description`: _
+                                                                    `value`: | `state` (
+                                                                        `options`: {
+                                                                            'integer': (
+                                                                                `constraints`: _
+                                                                                `description`: _
+                                                                                `value`: | `nothing` ~
+                                                                            )
+                                                                            'natural': (
+                                                                                `constraints`: _
+                                                                                `description`: _
+                                                                                `value`: | `nothing` ~
+                                                                            )
+                                                                            'positive natural': (
+                                                                                `constraints`: _
+                                                                                `description`: _
+                                                                                `value`: | `nothing` ~
+                                                                            )
+                                                                        }
+                                                                        `results`: _
+                                                                    )
+                                                                )
+                                                            }
+                                                        )
+                                                    }
+                                                    `results`: _
+                                                )
+                                            )
+                                        }
+                                    )
+                                }
+                                `results`: _
+                            )
+                        )
+                    }
+                )
+                'Type': (
+                    `root value`: | `group` {
+                        'root value': (
+                            `description`: _
+                            `value`: | `component` (
+                                `type`: | `internal` 'Value'
+                                `results`: _
+                            )
+                        )
+                    }
+                )
+                'Presence': (
+                    `root value`: | `state` (
+                        `options`: {
+                            'optional': (
+                                `constraints`: _
+                                `description`: * "This parameter may be omitted"
+                                `value`: | `nothing` ~
+                            )
+                            'required': (
+                                `constraints`: _
+                                `description`: * "This parameter must be provided"
+                                `value`: | `nothing` ~
+                            )
+                        }
+                        `results`: _
+                    )
+                )
+                'Resolver Types': (
+                    `root value`: | `dictionary` (
+                        `value`: | `group` {
+                            'root value resolver': (
+                                `description`: _
+                                `value`: | `component` (
+                                    `type`: | `internal` 'Resolver Value'
+                                    `results`: _
+                                )
+                            )
+                        }
+                    )
+                )
+                'Resolver Benchmark': (
+                    `root value`: | `group` {
+                        'selection': (
+                            `description`: _
+                            `value`: | `component` (
+                                `type`: | `internal` 'Resolver Guaranteed Value Selection'
+                                `results`: _
+                            )
+                        )
+                        'dense': (
+                            `description`: _
+                            `value`: | `simple` | `global` 'boolean'
+                        )
+                    }
+                )
+                'Group': (
+                    `root value`: | `dictionary` (
+                        `value`: | `group` {
+                            'description': (
+                                `description`: * "Documentation shown in IDE for this property"
+                                `value`: | `optional` | `text` | `local` (
+                                    `type`: | `multi line` ~
+                                    `link`: | `no` ~
+                                )
+                            )
+                            'value': (
+                                `description`: * "The type of this property"
+                                `value`: | `component` (
+                                    `type`: | `internal` 'Value'
+                                    `results`: _
+                                )
+                            )
+                        }
+                    )
+                )
+                'Value Reference': (
+                    `root value`: | `group` {
+                        'type': (
+                            `description`: _
+                            `value`: | `component` (
+                                `type`: | `internal` 'Type Reference'
+                                `results`: _
+                            )
+                        )
+                        'path': (
+                            `description`: _
+                            `value`: | `component` (
+                                `type`: | `internal` 'Value Path'
+                                `results`: _
+                            )
+                        )
+                    }
+                )
+                'Value Path': (
+                    `root value`: | `group` {
+                        'tail': (
+                            `description`: * "Navigate through nested structures: groups, states, dictionaries, lists, optionals"
+                            `value`: | `list` (
+                                `value`: | `state` (
+                                    `options`: {
+                                        'dictionary': (
+                                            `constraints`: _
+                                            `description`: * "Navigate into a dictionary's values"
+                                            `value`: | `nothing` ~
+                                        )
+                                        'group': (
+                                            `constraints`: _
+                                            `description`: * "Navigate to a specific property in a group"
+                                            `value`: | `reference` (
+                                                `referent`: (
+                                                    `module`: (
+                                                        `location`: | `internal` 'syntax reference entries'
+                                                        `resulting module`: ~
+                                                    )
+                                                    `path`: (
+                                                        `tail`: [ ]
+                                                        `resulting node`: ~
+                                                    )
+                                                )
+                                                `type`: | `selected` (
+                                                    `dictionary`: ~
+                                                    `dependency`: | `acyclic` ~
+                                                    `results`: _
+                                                )
+                                            )
+                                        )
+                                        'list': (
+                                            `constraints`: _
+                                            `description`: * "Navigate into a list's elements"
+                                            `value`: | `nothing` ~
+                                        )
+                                        'optional': (
+                                            `constraints`: _
+                                            `description`: * "Navigate into an optional's value"
+                                            `value`: | `nothing` ~
+                                        )
+                                        'state': (
+                                            `constraints`: _
+                                            `description`: * "Navigate to a specific option in a state"
+                                            `value`: | `reference` (
+                                                `referent`: (
+                                                    `module`: (
+                                                        `location`: | `internal` 'syntax reference entries'
+                                                        `resulting module`: ~
+                                                    )
+                                                    `path`: (
+                                                        `tail`: [ ]
+                                                        `resulting node`: ~
+                                                    )
+                                                )
+                                                `type`: | `selected` (
+                                                    `dictionary`: ~
+                                                    `dependency`: | `acyclic` ~
+                                                    `results`: _
+                                                )
+                                            )
+                                        )
+                                    }
+                                    `results`: _
+                                )
+                                `results`: _
+                            )
+                        )
+                    }
+                )
+                'Type Reference': (
+                    `root value`: | `group` {
+                        'location': (
+                            `description`: * "Where the referenced type is defined"
+                            `value`: | `state` (
+                                `options`: {
+                                    'internal': (
+                                        `constraints`: _
+                                        `description`: * "Type is in the same schema"
+                                        `value`: | `reference` (
+                                            `referent`: (
+                                                `module`: (
+                                                    `location`: | `internal` 'syntax reference entries'
+                                                    `resulting module`: ~
+                                                )
+                                                `path`: (
+                                                    `tail`: [ ]
+                                                    `resulting node`: ~
+                                                )
+                                            )
+                                            `type`: | `selected` (
+                                                `dictionary`: ~
+                                                `dependency`: | `acyclic` ~
+                                                `results`: _
+                                            )
+                                        )
+                                    )
+                                    'external': (
+                                        `constraints`: _
+                                        `description`: * "Type is in an imported schema"
+                                        `value`: | `group` {
+                                            'import': (
+                                                `description`: _
+                                                `value`: | `reference` (
+                                                    `referent`: (
+                                                        `module`: (
+                                                            `location`: | `internal` 'syntax reference entries'
+                                                            `resulting module`: ~
+                                                        )
+                                                        `path`: (
+                                                            `tail`: [ ]
+                                                            `resulting node`: ~
+                                                        )
+                                                    )
+                                                    `type`: | `selected` (
+                                                        `dictionary`: ~
+                                                        `dependency`: | `acyclic` ~
+                                                        `results`: _
+                                                    )
+                                                )
+                                            )
+                                            'type': (
+                                                `description`: _
+                                                `value`: | `reference` (
+                                                    `referent`: (
+                                                        `module`: (
+                                                            `location`: | `internal` 'syntax reference entries'
+                                                            `resulting module`: ~
+                                                        )
+                                                        `path`: (
+                                                            `tail`: [ ]
+                                                            `resulting node`: ~
+                                                        )
+                                                    )
+                                                    `type`: | `selected` (
+                                                        `dictionary`: ~
+                                                        `dependency`: | `acyclic` ~
+                                                        `results`: _
+                                                    )
+                                                )
+                                            )
+                                        }
+                                    )
+                                }
+                                `results`: _
+                            )
+                        )
+                    }
+                )
+                'Resolver Signature': (
+                    `root value`: | `group` {
+                        'parameters': (
+                            `description`: _
+                            `value`: | `state` (
+                                `options`: {
+                                    'local': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `component` (
+                                            `type`: | `internal` 'Resolver Signature Parameters'
+                                            `results`: _
+                                        )
+                                    )
+                                    'same as': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `reference` (
+                                            `referent`: (
+                                                `module`: (
+                                                    `location`: | `internal` 'syntax reference entries'
+                                                    `resulting module`: ~
+                                                )
+                                                `path`: (
+                                                    `tail`: [ ]
+                                                    `resulting node`: ~
+                                                )
+                                            )
+                                            `type`: | `selected` (
+                                                `dictionary`: ~
+                                                `dependency`: | `acyclic` ~
+                                                `results`: _
+                                            )
+                                        )
+                                    )
+                                }
+                                `results`: _
+                            )
+                        )
+                    }
+                )
+                'Resolver Relative Value Selection': (
+                    `root value`: | `group` {
+                        'path': (
+                            `description`: _
+                            `value`: | `list` (
+                                `value`: | `state` (
+                                    `options`: {
+                                        'meta': (
+                                            `constraints`: _
+                                            `description`: * "Select a stored inferred metadata result"
+                                            `value`: | `text` | `local` (
+                                                `type`: | `single line` ~
+                                                `link`: | `no` ~
+                                            )
+                                        )
+                                        'state': (
+                                            `constraints`: _
+                                            `description`: * "Assert the selected state option and select its payload"
+                                            `value`: | `reference` (
+                                                `referent`: (
+                                                    `module`: (
+                                                        `location`: | `internal` 'syntax reference entries'
+                                                        `resulting module`: ~
+                                                    )
+                                                    `path`: (
+                                                        `tail`: [ ]
+                                                        `resulting node`: ~
+                                                    )
+                                                )
+                                                `type`: | `selected` (
+                                                    `dictionary`: ~
+                                                    `dependency`: | `acyclic` ~
+                                                    `results`: _
+                                                )
+                                            )
+                                        )
+                                        'component': (
+                                            `constraints`: _
+                                            `description`: _
+                                            `value`: | `nothing` ~
+                                        )
+                                        'group': (
+                                            `constraints`: _
+                                            `description`: _
+                                            `value`: | `reference` (
+                                                `referent`: (
+                                                    `module`: (
+                                                        `location`: | `internal` 'syntax reference entries'
+                                                        `resulting module`: ~
+                                                    )
+                                                    `path`: (
+                                                        `tail`: [ ]
+                                                        `resulting node`: ~
+                                                    )
+                                                )
+                                                `type`: | `selected` (
+                                                    `dictionary`: ~
+                                                    `dependency`: | `acyclic` ~
+                                                    `results`: _
+                                                )
+                                            )
+                                        )
+                                        'reference': (
+                                            `constraints`: _
+                                            `description`: _
+                                            `value`: | `group` {}
+                                        )
+                                    }
+                                    `results`: _
+                                )
+                                `results`: _
+                            )
+                        )
+                    }
+                )
+                'Resolver Lookup Selection': (
+                    `root value`: | `group` {
+                        'type': (
+                            `description`: _
+                            `value`: | `state` (
+                                `options`: {
+                                    'acyclic': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `state` (
+                                            `options`: {
+                                                'siblings': (
+                                                    `constraints`: _
+                                                    `description`: _
+                                                    `value`: | `nothing` ~
+                                                )
+                                                'resolved dictionary': (
+                                                    `constraints`: _
+                                                    `description`: _
+                                                    `value`: | `group` {
+                                                        'selection': (
+                                                            `description`: _
+                                                            `value`: | `component` (
+                                                                `type`: | `internal` 'Resolver Guaranteed Value Selection'
+                                                                `results`: _
+                                                            )
+                                                        )
+                                                    }
+                                                )
+                                            }
+                                            `results`: _
+                                        )
+                                    )
+                                    'cyclic': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `state` (
+                                            `options`: {
+                                                'siblings': (
+                                                    `constraints`: _
+                                                    `description`: _
+                                                    `value`: | `nothing` ~
+                                                )
+                                            }
+                                            `results`: _
+                                        )
+                                    )
+                                    'parameter': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `reference` (
+                                            `referent`: (
+                                                `module`: (
+                                                    `location`: | `internal` 'syntax reference entries'
+                                                    `resulting module`: ~
+                                                )
+                                                `path`: (
+                                                    `tail`: [ ]
+                                                    `resulting node`: ~
+                                                )
+                                            )
+                                            `type`: | `selected` (
+                                                `dictionary`: ~
+                                                `dependency`: | `acyclic` ~
+                                                `results`: _
+                                            )
+                                        )
+                                    )
+                                }
+                                `results`: _
+                            )
+                        )
+                    }
+                )
+                'Resolver Constraint': (
+                    `root value`: | `group` {
+                        'selection': (
+                            `description`: _
+                            `value`: | `component` (
+                                `type`: | `internal` 'Resolver Relative Value Selection'
+                                `results`: _
+                            )
+                        )
+                        'type': (
+                            `description`: _
+                            `value`: | `state` (
+                                `options`: {
+                                    'state': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `group` {
+                                            'option': (
+                                                `description`: _
+                                                `value`: | `reference` (
+                                                    `referent`: (
+                                                        `module`: (
+                                                            `location`: | `internal` 'syntax reference entries'
+                                                            `resulting module`: ~
+                                                        )
+                                                        `path`: (
+                                                            `tail`: [ ]
+                                                            `resulting node`: ~
+                                                        )
+                                                    )
+                                                    `type`: | `selected` (
+                                                        `dictionary`: ~
+                                                        `dependency`: | `acyclic` ~
+                                                        `results`: _
+                                                    )
+                                                )
+                                            )
+                                        }
+                                    )
+                                    'optional value': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `group` {}
+                                    )
+                                }
+                                `results`: _
+                            )
+                        )
+                    }
+                )
+                'Resolver Option Constraints': (
+                    `root value`: | `dictionary` (
+                        `value`: | `state` (
+                            `options`: {
+                                'state': (
+                                    `constraints`: _
+                                    `description`: _
+                                    `value`: | `group` {
+                                        'selection': (
+                                            `description`: _
+                                            `value`: | `component` (
+                                                `type`: | `internal` 'Resolver Guaranteed Value Selection'
+                                                `results`: _
+                                            )
+                                        )
+                                        'option': (
+                                            `description`: _
+                                            `value`: | `reference` (
+                                                `referent`: (
+                                                    `module`: (
+                                                        `location`: | `internal` 'syntax reference entries'
+                                                        `resulting module`: ~
+                                                    )
+                                                    `path`: (
+                                                        `tail`: [ ]
+                                                        `resulting node`: ~
+                                                    )
+                                                )
+                                                `type`: | `selected` (
+                                                    `dictionary`: ~
+                                                    `dependency`: | `acyclic` ~
+                                                    `results`: _
+                                                )
+                                            )
+                                        )
+                                    }
+                                )
+                                'assert is set': (
+                                    `constraints`: _
+                                    `description`: _
+                                    `value`: | `component` (
+                                        `type`: | `internal` 'Resolver Possible Value Selection'
+                                        `results`: _
+                                    )
+                                )
+                            }
+                            `results`: _
+                        )
+                    )
+                )
+                'Resolver Optional Value Constraints': (
+                    `root value`: | `optional` | `component` (
+                        `type`: | `internal` 'Resolver Value Constraints'
+                        `results`: _
+                    )
+                )
+                'Resolver Value Constraints': (
+                    `root value`: | `dictionary` (
+                        `value`: | `component` (
+                            `type`: | `internal` 'Resolver Value Constraint'
+                            `results`: _
+                        )
+                    )
+                )
+                'Resolver Reference To Value Constraint': (
+                    `root value`: | `reference` (
+                        `referent`: (
+                            `module`: (
+                                `location`: | `internal` 'syntax reference entries'
+                                `resulting module`: ~
+                            )
+                            `path`: (
+                                `tail`: [ ]
+                                `resulting node`: ~
+                            )
+                        )
+                        `type`: | `selected` (
+                            `dictionary`: ~
+                            `dependency`: | `acyclic` ~
+                            `results`: _
+                        )
+                    )
+                )
+                'Resolver Value Constraint': (
+                    `root value`: | `group` {
+                        'start': (
+                            `description`: _
+                            `value`: | `state` (
+                                `options`: {
+                                    'value': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `nothing` ~
+                                    )
+                                    'sibling': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `component` (
+                                            `type`: | `internal` 'Resolver Reference To Value Constraint'
+                                            `results`: _
+                                        )
+                                    )
+                                }
+                                `results`: _
+                            )
+                        )
+                        'constraint': (
+                            `description`: _
+                            `value`: | `component` (
+                                `type`: | `internal` 'Resolver Constraint'
+                                `results`: _
+                            )
+                        )
+                    }
+                )
+                'Resolver Optional Value Initialization': (
+                    `root value`: | `state` (
+                        `options`: {
+                            'not set': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `nothing` ~
+                            )
+                            'set': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `component` (
+                                    `type`: | `internal` 'Resolver Guaranteed Value Selection'
+                                    `results`: _
+                                )
+                            )
+                            'selection': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `component` (
+                                    `type`: | `internal` 'Resolver Possible Value Selection'
+                                    `results`: _
+                                )
+                            )
+                        }
+                        `results`: _
+                    )
+                )
+                'Resolver Value Group': (
+                    `root value`: | `dictionary` (
+                        `value`: | `group` {
+                            'resolver': (
+                                `description`: _
+                                `value`: | `component` (
+                                    `type`: | `internal` 'Resolver Value'
+                                    `results`: _
+                                )
+                            )
+                        }
+                    )
+                )
+                'Resolver Value List Result': (
+                    `root value`: | `component` (
+                        `type`: | `internal` 'Type Reference'
+                        `results`: _
+                    )
+                )
+                'Value Results': (
+                    `root value`: | `optional` | `dictionary` (
+                        `value`: | `component` (
+                            `type`: | `internal` 'Value Reference'
+                            `results`: _
+                        )
+                    )
+                )
+                'Option Constraints': (
+                    `root value`: | `optional` | `dictionary` (
+                        `value`: | `component` (
+                            `type`: | `internal` 'Value Reference'
+                            `results`: _
+                        )
+                    )
+                )
+                'Resolver Guaranteed Value Selection': (
+                    `root value`: | `group` {
+                        'start': (
+                            `description`: _
+                            `value`: | `state` (
+                                `options`: {
+                                    'resolved value': (
+                                        `constraints`: _
+                                        `description`: * "Select the payload resolved by the enclosing with-results resolver"
+                                        `value`: | `nothing` ~
+                                    )
+                                    'metadata': (
+                                        `constraints`: _
+                                        `description`: * "Select another metadata result in this group"
+                                        `value`: | `text` | `local` (
+                                            `type`: | `single line` ~
+                                            `link`: | `no` ~
+                                        )
+                                    )
+                                    'previous item': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `group` {
+                                            'initial': (
+                                                `description`: _
+                                                `value`: | `component` (
+                                                    `type`: | `internal` 'Resolver Guaranteed Value Selection'
+                                                    `results`: _
+                                                )
+                                            )
+                                        }
+                                    )
+                                    'last item': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `group` {
+                                            'property': (
+                                                `description`: _
+                                                `value`: | `reference` (
+                                                    `referent`: (
+                                                        `module`: (
+                                                            `location`: | `internal` 'syntax reference entries'
+                                                            `resulting module`: ~
+                                                        )
+                                                        `path`: (
+                                                            `tail`: [ ]
+                                                            `resulting node`: ~
+                                                        )
+                                                    )
+                                                    `type`: | `selected` (
+                                                        `dictionary`: ~
+                                                        `dependency`: | `acyclic` ~
+                                                        `results`: _
+                                                    )
+                                                )
+                                            )
+                                            'initial': (
+                                                `description`: _
+                                                `value`: | `component` (
+                                                    `type`: | `internal` 'Resolver Guaranteed Value Selection'
+                                                    `results`: _
+                                                )
+                                            )
+                                        }
+                                    )
+                                    'sibling': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `reference` (
+                                            `referent`: (
+                                                `module`: (
+                                                    `location`: | `internal` 'syntax reference entries'
+                                                    `resulting module`: ~
+                                                )
+                                                `path`: (
+                                                    `tail`: [ ]
+                                                    `resulting node`: ~
+                                                )
+                                            )
+                                            `type`: | `selected` (
+                                                `dictionary`: ~
+                                                `dependency`: | `acyclic` ~
+                                                `results`: _
+                                            )
+                                        )
+                                    )
+                                    'optional sibling': (
+                                        `constraints`: _
+                                        `description`: * "Select an optional sibling's value and tail when set, otherwise select initial"
+                                        `value`: | `group` {
+                                            'property': (
+                                                `description`: _
+                                                `value`: | `reference` (
+                                                    `referent`: (
+                                                        `module`: (
+                                                            `location`: | `internal` 'syntax reference entries'
+                                                            `resulting module`: ~
+                                                        )
+                                                        `path`: (
+                                                            `tail`: [ ]
+                                                            `resulting node`: ~
+                                                        )
+                                                    )
+                                                    `type`: | `selected` (
+                                                        `dictionary`: ~
+                                                        `dependency`: | `acyclic` ~
+                                                        `results`: _
+                                                    )
+                                                )
+                                            )
+                                            'initial': (
+                                                `description`: _
+                                                `value`: | `component` (
+                                                    `type`: | `internal` 'Resolver Guaranteed Value Selection'
+                                                    `results`: _
+                                                )
+                                            )
+                                        }
+                                    )
+                                    'parent sibling': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `reference` (
+                                            `referent`: (
+                                                `module`: (
+                                                    `location`: | `internal` 'syntax reference entries'
+                                                    `resulting module`: ~
+                                                )
+                                                `path`: (
+                                                    `tail`: [ ]
+                                                    `resulting node`: ~
+                                                )
+                                            )
+                                            `type`: | `selected` (
+                                                `dictionary`: ~
+                                                `dependency`: | `acyclic` ~
+                                                `results`: _
+                                            )
+                                        )
+                                    )
+                                    'option constraint': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `reference` (
+                                            `referent`: (
+                                                `module`: (
+                                                    `location`: | `internal` 'syntax reference entries'
+                                                    `resulting module`: ~
+                                                )
+                                                `path`: (
+                                                    `tail`: [ ]
+                                                    `resulting node`: ~
+                                                )
+                                            )
+                                            `type`: | `selected` (
+                                                `dictionary`: ~
+                                                `dependency`: | `acyclic` ~
+                                                `results`: _
+                                            )
+                                        )
+                                    )
+                                    'list cursor': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `nothing` ~
+                                    )
+                                    'linked entry': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `nothing` ~
+                                    )
+                                    'constraint': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `state` (
+                                            `options`: {
+                                                'component': (
+                                                    `constraints`: _
+                                                    `description`: _
+                                                    `value`: | `group` {
+                                                        'property': (
+                                                            `description`: _
+                                                            `value`: | `reference` (
+                                                                `referent`: (
+                                                                    `module`: (
+                                                                        `location`: | `internal` 'syntax reference entries'
+                                                                        `resulting module`: ~
+                                                                    )
+                                                                    `path`: (
+                                                                        `tail`: [ ]
+                                                                        `resulting node`: ~
+                                                                    )
+                                                                )
+                                                                `type`: | `selected` (
+                                                                    `dictionary`: ~
+                                                                    `dependency`: | `acyclic` ~
+                                                                    `results`: _
+                                                                )
+                                                            )
+                                                        )
+                                                        'constraint': (
+                                                            `description`: _
+                                                            `value`: | `reference` (
+                                                                `referent`: (
+                                                                    `module`: (
+                                                                        `location`: | `internal` 'syntax reference entries'
+                                                                        `resulting module`: ~
+                                                                    )
+                                                                    `path`: (
+                                                                        `tail`: [ ]
+                                                                        `resulting node`: ~
+                                                                    )
+                                                                )
+                                                                `type`: | `selected` (
+                                                                    `dictionary`: ~
+                                                                    `dependency`: | `acyclic` ~
+                                                                    `results`: _
+                                                                )
+                                                            )
+                                                        )
+                                                    }
+                                                )
+                                                'reference': (
+                                                    `constraints`: _
+                                                    `description`: _
+                                                    `value`: | `group` {
+                                                        'property': (
+                                                            `description`: _
+                                                            `value`: | `reference` (
+                                                                `referent`: (
+                                                                    `module`: (
+                                                                        `location`: | `internal` 'syntax reference entries'
+                                                                        `resulting module`: ~
+                                                                    )
+                                                                    `path`: (
+                                                                        `tail`: [ ]
+                                                                        `resulting node`: ~
+                                                                    )
+                                                                )
+                                                                `type`: | `selected` (
+                                                                    `dictionary`: ~
+                                                                    `dependency`: | `acyclic` ~
+                                                                    `results`: _
+                                                                )
+                                                            )
+                                                        )
+                                                        'constraint': (
+                                                            `description`: _
+                                                            `value`: | `reference` (
+                                                                `referent`: (
+                                                                    `module`: (
+                                                                        `location`: | `internal` 'syntax reference entries'
+                                                                        `resulting module`: ~
+                                                                    )
+                                                                    `path`: (
+                                                                        `tail`: [ ]
+                                                                        `resulting node`: ~
+                                                                    )
+                                                                )
+                                                                `type`: | `selected` (
+                                                                    `dictionary`: ~
+                                                                    `dependency`: | `acyclic` ~
+                                                                    `results`: _
+                                                                )
+                                                            )
+                                                        )
+                                                    }
+                                                )
+                                            }
+                                            `results`: _
+                                        )
+                                    )
+                                    'parameter': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `reference` (
+                                            `referent`: (
+                                                `module`: (
+                                                    `location`: | `internal` 'syntax reference entries'
+                                                    `resulting module`: ~
+                                                )
+                                                `path`: (
+                                                    `tail`: [ ]
+                                                    `resulting node`: ~
+                                                )
+                                            )
+                                            `type`: | `selected` (
+                                                `dictionary`: ~
+                                                `dependency`: | `acyclic` ~
+                                                `results`: _
+                                            )
+                                        )
+                                    )
+                                    'result': (
+                                        `constraints`: _
+                                        `description`: _
+                                        `value`: | `state` (
+                                            `options`: {
+                                                'list': (
+                                                    `constraints`: _
+                                                    `description`: _
+                                                    `value`: | `group` {
+                                                        'property': (
+                                                            `description`: _
+                                                            `value`: | `reference` (
+                                                                `referent`: (
+                                                                    `module`: (
+                                                                        `location`: | `internal` 'syntax reference entries'
+                                                                        `resulting module`: ~
+                                                                    )
+                                                                    `path`: (
+                                                                        `tail`: [ ]
+                                                                        `resulting node`: ~
+                                                                    )
+                                                                )
+                                                                `type`: | `selected` (
+                                                                    `dictionary`: ~
+                                                                    `dependency`: | `acyclic` ~
+                                                                    `results`: _
+                                                                )
+                                                            )
+                                                        )
+                                                    }
+                                                )
+                                                'state': (
+                                                    `constraints`: _
+                                                    `description`: _
+                                                    `value`: | `group` {
+                                                        'property': (
+                                                            `description`: _
+                                                            `value`: | `reference` (
+                                                                `referent`: (
+                                                                    `module`: (
+                                                                        `location`: | `internal` 'syntax reference entries'
+                                                                        `resulting module`: ~
+                                                                    )
+                                                                    `path`: (
+                                                                        `tail`: [ ]
+                                                                        `resulting node`: ~
+                                                                    )
+                                                                )
+                                                                `type`: | `selected` (
+                                                                    `dictionary`: ~
+                                                                    `dependency`: | `acyclic` ~
+                                                                    `results`: _
+                                                                )
+                                                            )
+                                                        )
+                                                        'result': (
+                                                            `description`: _
+                                                            `value`: | `component` (
+                                                                `type`: | `internal` 'Type Reference'
+                                                                `results`: _
+                                                            )
+                                                        )
+                                                    }
+                                                )
+                                                'optional value': (
+                                                    `constraints`: _
+                                                    `description`: _
+                                                    `value`: | `group` {
+                                                        'property': (
+                                                            `description`: _
+                                                            `value`: | `reference` (
+                                                                `referent`: (
+                                                                    `module`: (
+                                                                        `location`: | `internal` 'syntax reference entries'
+                                                                        `resulting module`: ~
+                                                                    )
+                                                                    `path`: (
+                                                                        `tail`: [ ]
+                                                                        `resulting node`: ~
+                                                                    )
+                                                                )
+                                                                `type`: | `selected` (
+                                                                    `dictionary`: ~
+                                                                    `dependency`: | `acyclic` ~
+                                                                    `results`: _
+                                                                )
+                                                            )
+                                                        )
+                                                        'result': (
+                                                            `description`: _
+                                                            `value`: | `component` (
+                                                                `type`: | `internal` 'Type Reference'
+                                                                `results`: _
+                                                            )
+                                                        )
+                                                    }
+                                                )
+                                            }
+                                            `results`: _
+                                        )
+                                    )
+                                }
+                                `results`: _
+                            )
+                        )
+                        'tail': (
+                            `description`: _
+                            `value`: | `component` (
+                                `type`: | `internal` 'Resolver Relative Value Selection'
+                                `results`: _
+                            )
+                        )
+                    }
+                )
+                'Resolver Possible Value Selection': (
+                    `root value`: | `state` (
+                        `options`: {
+                            'parameter': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `reference` (
+                                    `referent`: (
+                                        `module`: (
+                                            `location`: | `internal` 'syntax reference entries'
+                                            `resulting module`: ~
+                                        )
+                                        `path`: (
+                                            `tail`: [ ]
+                                            `resulting node`: ~
+                                        )
+                                    )
+                                    `type`: | `selected` (
+                                        `dictionary`: ~
+                                        `dependency`: | `acyclic` ~
+                                        `results`: _
+                                    )
+                                )
+                            )
+                            'result': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `state` (
+                                    `options`: {
+                                        'state': (
+                                            `constraints`: _
+                                            `description`: _
+                                            `value`: | `group` {
+                                                'property': (
+                                                    `description`: _
+                                                    `value`: | `reference` (
+                                                        `referent`: (
+                                                            `module`: (
+                                                                `location`: | `internal` 'syntax reference entries'
+                                                                `resulting module`: ~
+                                                            )
+                                                            `path`: (
+                                                                `tail`: [ ]
+                                                                `resulting node`: ~
+                                                            )
+                                                        )
+                                                        `type`: | `selected` (
+                                                            `dictionary`: ~
+                                                            `dependency`: | `acyclic` ~
+                                                            `results`: _
+                                                        )
+                                                    )
+                                                )
+                                                'result': (
+                                                    `description`: _
+                                                    `value`: | `component` (
+                                                        `type`: | `internal` 'Type Reference'
+                                                        `results`: _
+                                                    )
+                                                )
+                                            }
+                                        )
+                                        'optional value': (
+                                            `constraints`: _
+                                            `description`: _
+                                            `value`: | `group` {
+                                                'property': (
+                                                    `description`: _
+                                                    `value`: | `reference` (
+                                                        `referent`: (
+                                                            `module`: (
+                                                                `location`: | `internal` 'syntax reference entries'
+                                                                `resulting module`: ~
+                                                            )
+                                                            `path`: (
+                                                                `tail`: [ ]
+                                                                `resulting node`: ~
+                                                            )
+                                                        )
+                                                        `type`: | `selected` (
+                                                            `dictionary`: ~
+                                                            `dependency`: | `acyclic` ~
+                                                            `results`: _
+                                                        )
+                                                    )
+                                                )
+                                                'result': (
+                                                    `description`: _
+                                                    `value`: | `component` (
+                                                        `type`: | `internal` 'Type Reference'
+                                                        `results`: _
+                                                    )
+                                                )
+                                            }
+                                        )
+                                    }
+                                    `results`: _
+                                )
+                            )
+                        }
+                        `results`: _
+                    )
+                )
+                'Root': (
+                    `root value`: | `state` (
+                        `options`: {
+                            'astn': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `component` (
+                                    `type`: | `internal` 'ASTN Schema'
+                                    `results`: _
+                                )
+                            )
+                            'liana': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `component` (
+                                    `type`: | `internal` 'Liana Schema'
+                                    `results`: _
+                                )
+                            )
+                        }
+                        `results`: _
+                    )
+                )
+                'ASTN Imports': (
+                    `root value`: | `dictionary` (
+                        `value`: | `component` (
+                            `type`: | `internal` 'ASTN Schema'
+                            `results`: _
+                        )
+                    )
+                )
+                'Schema Imports': (
+                    `root value`: | `dictionary` (
+                        `value`: | `component` (
+                            `type`: | `internal` 'Liana Schema'
+                            `results`: _
+                        )
+                    )
+                )
+                'Resolver Imports': (
+                    `root value`: | `dictionary` (
+                        `value`: | `reference` (
+                            `referent`: (
+                                `module`: (
+                                    `location`: | `internal` 'syntax reference entries'
+                                    `resulting module`: ~
+                                )
+                                `path`: (
+                                    `tail`: [ ]
+                                    `resulting node`: ~
+                                )
+                            )
+                            `type`: | `selected` (
+                                `dictionary`: ~
+                                `dependency`: | `acyclic` ~
+                                `results`: _
+                            )
+                        )
+                    )
+                )
+                'ASTN Schema': (
+                    `root value`: | `group` {
+                        'imports': (
+                            `description`: _
+                            `value`: | `component` (
+                                `type`: | `internal` 'ASTN Imports'
+                                `results`: _
+                            )
+                        )
+                        'globals': (
+                            `description`: _
+                            `value`: | `component` (
+                                `type`: | `internal` 'Syntax Globals'
+                                `results`: _
+                            )
+                        )
+                        'types': (
+                            `description`: _
+                            `value`: | `component` (
+                                `type`: | `internal` 'ASTN Types'
+                                `results`: _
+                            )
+                        )
+                        'root': (
+                            `description`: _
+                            `value`: | `reference` (
+                                `referent`: (
+                                    `module`: (
+                                        `location`: | `internal` 'syntax reference entries'
+                                        `resulting module`: ~
+                                    )
+                                    `path`: (
+                                        `tail`: [ ]
+                                        `resulting node`: ~
+                                    )
+                                )
+                                `type`: | `selected` (
+                                    `dictionary`: ~
+                                    `dependency`: | `acyclic` ~
+                                    `results`: _
+                                )
+                            )
+                        )
+                    }
+                )
+                'Liana Schema': (
+                    `root value`: | `group` {
+                        'imports': (
+                            `description`: _
+                            `value`: | `component` (
+                                `type`: | `internal` 'Schema Imports'
+                                `results`: _
+                            )
+                        )
+                        'globals': (
+                            `description`: _
+                            `value`: | `component` (
+                                `type`: | `internal` 'Syntax Globals'
+                                `results`: _
+                            )
+                        )
+                        'types': (
+                            `description`: _
+                            `value`: | `component` (
+                                `type`: | `internal` 'Types'
+                                `results`: _
+                            )
+                        )
+                        'resolver': (
+                            `description`: _
+                            `value`: | `component` (
+                                `type`: | `internal` 'Resolver'
+                                `results`: _
+                            )
+                        )
+                        'root': (
+                            `description`: _
+                            `value`: | `reference` (
+                                `referent`: (
+                                    `module`: (
+                                        `location`: | `internal` 'syntax reference entries'
+                                        `resulting module`: ~
+                                    )
+                                    `path`: (
+                                        `tail`: [ ]
+                                        `resulting node`: ~
+                                    )
+                                )
+                                `type`: | `selected` (
+                                    `dictionary`: ~
+                                    `dependency`: | `acyclic` ~
+                                    `results`: _
+                                )
+                            )
+                        )
+                    }
+                )
+                'Syntax Globals': (
+                    `root value`: | `group` {
+                        'simple types': (
+                            `description`: _
+                            `value`: | `dictionary` (
+                                `value`: | `component` (
+                                    `type`: | `internal` 'Simple Type'
+                                    `results`: _
+                                )
+                            )
+                        )
+                    }
+                )
+                'ASTN Types': (
+                    `root value`: | `dictionary` (
+                        `value`: | `group` {
+                            'root value': (
+                                `description`: _
+                                `value`: | `component` (
+                                    `type`: | `internal` 'ASTN Value'
+                                    `results`: _
+                                )
+                            )
+                        }
+                    )
+                )
+                'ASTN Property': (
+                    `root value`: | `group` {
+                        'description': (
+                            `description`: _
+                            `value`: | `optional` | `text` | `local` (
+                                `type`: | `multi line` ~
+                                `link`: | `no` ~
+                            )
+                        )
+                        'value': (
+                            `description`: _
+                            `value`: | `component` (
+                                `type`: | `internal` 'ASTN Value'
+                                `results`: _
+                            )
+                        )
+                    }
+                )
+                'ASTN Value': (
+                    `root value`: | `state` (
+                        `options`: {
+                            'component': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `state` (
+                                    `options`: {
+                                        'internal': (
+                                            `constraints`: _
+                                            `description`: _
+                                            `value`: | `reference` (
+                                                `referent`: (
+                                                    `module`: (
+                                                        `location`: | `internal` 'syntax reference entries'
+                                                        `resulting module`: ~
+                                                    )
+                                                    `path`: (
+                                                        `tail`: [ ]
+                                                        `resulting node`: ~
+                                                    )
+                                                )
+                                                `type`: | `selected` (
+                                                    `dictionary`: ~
+                                                    `dependency`: | `acyclic` ~
+                                                    `results`: _
+                                                )
+                                            )
+                                        )
+                                        'external': (
+                                            `constraints`: _
+                                            `description`: _
+                                            `value`: | `group` {
+                                                'import': (
+                                                    `description`: _
+                                                    `value`: | `reference` (
+                                                        `referent`: (
+                                                            `module`: (
+                                                                `location`: | `internal` 'syntax reference entries'
+                                                                `resulting module`: ~
+                                                            )
+                                                            `path`: (
+                                                                `tail`: [ ]
+                                                                `resulting node`: ~
+                                                            )
+                                                        )
+                                                        `type`: | `selected` (
+                                                            `dictionary`: ~
+                                                            `dependency`: | `acyclic` ~
+                                                            `results`: _
+                                                        )
+                                                    )
+                                                )
+                                                'type': (
+                                                    `description`: _
+                                                    `value`: | `reference` (
+                                                        `referent`: (
+                                                            `module`: (
+                                                                `location`: | `internal` 'syntax reference entries'
+                                                                `resulting module`: ~
+                                                            )
+                                                            `path`: (
+                                                                `tail`: [ ]
+                                                                `resulting node`: ~
+                                                            )
+                                                        )
+                                                        `type`: | `selected` (
+                                                            `dictionary`: ~
+                                                            `dependency`: | `acyclic` ~
+                                                            `results`: _
+                                                        )
+                                                    )
+                                                )
+                                            }
+                                        )
+                                    }
+                                    `results`: _
+                                )
+                            )
+                            'dictionary': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `component` (
+                                    `type`: | `internal` 'ASTN Dictionary'
+                                    `results`: _
+                                )
+                            )
+                            'group': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `dictionary` (
+                                    `value`: | `component` (
+                                        `type`: | `internal` 'ASTN Property'
+                                        `results`: _
+                                    )
+                                )
+                            )
+                            'list': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `component` (
+                                    `type`: | `internal` 'ASTN Value'
+                                    `results`: _
+                                )
+                            )
+                            'optional': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `component` (
+                                    `type`: | `internal` 'ASTN Value'
+                                    `results`: _
+                                )
+                            )
+                            'state': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `dictionary` (
+                                    `value`: | `component` (
+                                        `type`: | `internal` 'ASTN Property'
+                                        `results`: _
+                                    )
+                                )
+                            )
+                            'nothing': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `nothing` ~
+                            )
+                            'simple': (
+                                `constraints`: _
+                                `description`: _
+                                `value`: | `reference` (
+                                    `referent`: (
+                                        `module`: (
+                                            `location`: | `internal` 'syntax reference entries'
+                                            `resulting module`: ~
+                                        )
+                                        `path`: (
+                                            `tail`: [ ]
+                                            `resulting node`: ~
+                                        )
+                                    )
+                                    `type`: | `selected` (
+                                        `dictionary`: ~
+                                        `dependency`: | `acyclic` ~
+                                        `results`: _
+                                    )
+                                )
+                            )
+                        }
+                        `results`: _
+                    )
+                )
+                'ASTN Dictionary': (
+                    `root value`: | `group` {
+                        'value': (
+                            `description`: _
+                            `value`: | `component` (
+                                `type`: | `internal` 'ASTN Value'
+                                `results`: _
+                            )
+                        )
+                    }
+                )
+                'syntax reference entries': (
+                    `root value`: | `dictionary` (
+                        `value`: | `nothing` ~
+                    )
+                )
+            }
+            `complexity`: | `unconstrained` ~
+        )
+    }
+    `schema path`: (
+        `tail`: [ | `set` 'schema 0' ]
+        `result`: ~
+    )
+    `complexity`: | `unconstrained` (
+        `module`: 'Root'
+    )
+)

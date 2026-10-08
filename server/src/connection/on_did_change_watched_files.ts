@@ -20,8 +20,8 @@ export const create_on_did_change_watched_files: (
 		for (const change of _change.changes) {
 			const file_path = url.fileURLToPath(change.uri)
 			// Check if this is a schema file
-			if (file_path.endsWith(path.join('.liana', 'schema.slna'))
-				|| file_path.endsWith(path.join('.liana', 'schema.native.slna'))) {
+			if (file_path.endsWith(path.join('.liana', 'schema.to_be_removed.slna'))
+				|| file_path.endsWith(path.join('.liana', 'schema.slna'))) {
 				// The schemas cache is keyed by the same serialized Node_Path format used
 				// for document paths in load_document.ts, not by this raw fs path string,
 				// so round-trip it through the same (de)serializer pair to get a matching key.
@@ -33,10 +33,15 @@ export const create_on_did_change_watched_files: (
 					)
 				)
 				connection_context['cache']['schemas'].map.delete(cache_key)
+				connection_context['cache']['schemas'].map.delete(ser_path.Node_Path(
+					deser_path.Node_Path(path.join(path.dirname(file_path), 'schema.to_be_removed.slna'),
+						() => p_unreachable_code_path("unexpected schema file path: " + file_path),
+						{ 'pedantic': false })
+				))
 				connection_context.connection.console.log(`Schema cache invalidated for: ${file_path} (${cache_key})`)
 
 				// Find the directory that contains the .liana folder
-				// Schema path is like: /path/to/project/.liana/schema.slna
+				// Schema path is like: /path/to/project/.liana/schema.to_be_removed.slna
 				// We want to re-validate all .liana files in /path/to/project/
 				const schema_dir = path.dirname(file_path) // .../project/.liana
 				const project_dir = path.dirname(schema_dir) // .../project

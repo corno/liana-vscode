@@ -43,14 +43,14 @@ test('module selection failures return structured diagnostics at the selected id
 })
 
 test('the bundled authoring template uses the canonical native schema document and its structural API', () => {
-    const loaded = parse(readFileSync(new URL('../liana_authoring_environment_template/.liana/schema.slna', import.meta.url), 'utf8'))
+    const loaded = parse(readFileSync(new URL('../liana_authoring_environment_template/.liana/schema.to_be_removed.slna', import.meta.url), 'utf8'))
     assert.equal(loaded[0], 'unconstrained')
     assert.equal(loaded[1].module.id, 'Root')
     const entry = (dictionary, name) => p.from.dictionary(dictionary).get_possible_entry(name, value => value, () => assert.fail(name))
     const root = loaded[1].module.entry['root value']
     assert.equal(root[0], 'state')
     assert.deepEqual(root[1].options.__get_raw().map(([name]) => name), ['astn', 'liana'])
-    const native = readFileSync(new URL('../liana_authoring_environment_template/.liana/schema.native.slna', import.meta.url), 'utf8')
+    const native = readFileSync(new URL('../liana_authoring_environment_template/.liana/schema.slna', import.meta.url), 'utf8')
     const canonical = readFileSync(new URL('../../newstyle_projects/projects/liana/sketch/definition/schema.liana.lna', import.meta.url), 'utf8')
     assert.equal(native, canonical)
     const { prepare_native_schema } = require('../native/out')
@@ -65,7 +65,7 @@ test('document loading uses the shared schema query, preserves caching and repor
     const dir = mkdtempSync(join(tmpdir(), 'liana-server-selection-'))
     try {
         mkdirSync(join(dir, '.liana'))
-        const schemaPath = join(dir, '.liana', 'schema.slna')
+        const schemaPath = join(dir, '.liana', 'schema.to_be_removed.slna')
         writeFileSync(schemaPath, specification(`| \`set\` { 'nested': ${schema} }`, "| `set` 'nested'"))
         const cache = { schemas: create_cache(), documents: create_cache() }
         const load = (version, caches = cache) => new Promise(resolve => {

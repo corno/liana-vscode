@@ -38,8 +38,8 @@ schema's declared semantic resolver. Generation requires an empty destination.
 
 **Initialize or update authoring environment with this schema** installs:
 
-- `.liana/schema.native.slna`: the actual native contract.
-- `.liana/schema.slna`: its syntax-only bootstrap projection for existing
+- `.liana/schema.slna`: the actual native contract.
+- `.liana/schema.to_be_removed.slna`: its syntax-only bootstrap projection for existing
   structural editing and sealing.
 
 PBV installs the same pair for native examples, fixtures and parameter
@@ -177,8 +177,8 @@ you should now have a starter schema and its authoring contracts:
 
 ````
 .liana
+    schema.to_be_removed.slna
     schema.slna
-    schema.native.slna
 my_schema.liana.lna
 ````
 

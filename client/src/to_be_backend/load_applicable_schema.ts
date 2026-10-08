@@ -11,7 +11,7 @@ import * as deser_path from "pareto-filesystem-unrestricted-api/modules/unrestri
 
 import * as fs from "fs"
 import path from 'path'
-import { prepare_native_schema } from '../../../native/out'
+import { prepare_native_schema, is_native_schema } from '../../../native/out'
 
 
 function get_applicable_schema_path(document_path: string): string {
@@ -66,14 +66,14 @@ export function load_applicable_schema(
 					}]
 				})
 			} else {
-				const native_path = path.join(path.dirname(schema_path), 'schema.native.slna')
-				if (fs.existsSync(native_path)) {
+				if (fs.existsSync(path.join(path.dirname(schema_path), 'schema.to_be_removed.slna'))
+					|| is_native_schema(data)) {
 					try {
-						data = prepare_native_schema(fs.readFileSync(native_path, 'utf8')).syntax
+						data = prepare_native_schema(data).syntax
 					} catch (error) {
 						console.error('Cannot load native schema for sealing:', error)
 						on_error({
-							'schema path': native_path,
+							'schema path': schema_path,
 							type: ['native schema', { error: { message: error instanceof Error ? error.message : String(error) } }],
 						})
 						return
