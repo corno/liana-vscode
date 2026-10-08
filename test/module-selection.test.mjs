@@ -42,22 +42,23 @@ test('module selection failures return structured diagnostics at the selected id
     })
 })
 
-test('the bundled authoring template exposes constrained schema paths and module references', () => {
+test('the bundled authoring template uses the canonical native schema document and its structural API', () => {
     const loaded = parse(readFileSync(new URL('../liana_authoring_environment_template/.liana/schema.slna', import.meta.url), 'utf8'))
-    assert.equal(loaded[1]['module resolver'].id, 'Module Specification')
-    const properties = loaded[1]['module resolver'].entry.signature.module['root value'][1]
+    assert.equal(loaded[0], 'unconstrained')
+    assert.equal(loaded[1].module.id, 'Root')
     const entry = (dictionary, name) => p.from.dictionary(dictionary).get_possible_entry(name, value => value, () => assert.fail(name))
-    assert.equal(entry(properties, 'schema path').value[0], 'component')
-    const options = entry(properties, 'complexity').value[1].options
-    assert.equal(entry(entry(options, 'unconstrained').value[1], 'module').value[0], 'reference')
-    assert.equal(entry(entry(options, 'constrained').value[1], 'module resolver').value[0], 'reference')
-    const relative = entry(loaded[1].resolver.modules, 'Resolver Relative Value Selection').signature.module['root value']
-    const steps = entry(relative[1], 'path').value[1].value[1].options
-    assert.equal(entry(steps, 'state').value[0], 'reference')
-    const guaranteed = entry(loaded[1].resolver.modules, 'Resolver Guaranteed Value Selection').signature.module['root value']
-    const starts = entry(guaranteed[1], 'start').value[1].options
-    assert.equal(entry(entry(starts, 'previous item').value[1], 'initial').value[0], 'component')
-    assert.equal(entry(entry(starts, 'last item').value[1], 'initial').value[0], 'component')
+    const root = loaded[1].module.entry['root value']
+    assert.equal(root[0], 'state')
+    assert.deepEqual(root[1].options.__get_raw().map(([name]) => name), ['astn', 'liana'])
+    const native = readFileSync(new URL('../liana_authoring_environment_template/.liana/schema.native.slna', import.meta.url), 'utf8')
+    const canonical = readFileSync(new URL('../../newstyle_projects/projects/liana/sketch/definition/schema.liana.lna', import.meta.url), 'utf8')
+    assert.equal(native, canonical)
+    const { prepare_native_schema } = require('../native/out')
+    const schema = prepare_native_schema(native)
+    assert.equal(schema.language, 'astn')
+    assert.equal(schema.validate(readFileSync(new URL('../liana_authoring_environment_template/my_schema.liana.lna', import.meta.url), 'utf8')), undefined)
+    assert.equal(schema.typescript.has('schemas/resolved/schema.ts'), false)
+    assert.equal(entry(root[1].options, 'astn').value[0], 'component')
 })
 
 test('document loading uses the shared schema query, preserves caching and reports schema errors', async () => {

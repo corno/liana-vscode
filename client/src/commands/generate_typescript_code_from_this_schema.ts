@@ -1,183 +1,37 @@
-import * as p_ from 'pareto-core/transformer'
-import * as p_schema from 'pareto-core/schema'
-
-import p_create_refinement_context from 'pareto-core/__internal/sync/create_refinement_context'
-
-//data types
-import * as d_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/schema"
-
-//resources
-import * as cx_copy from "pareto-resource-filesystem-unrestricted/commands/implementations/copy"
-import * as cx_make_directory from "pareto-resource-filesystem-unrestricted/commands/implementations/make_directory"
-import * as cx_remove from "pareto-resource-filesystem-unrestricted/commands/implementations/remove"
-import * as cx_write_file from "pareto-resource-filesystem-unrestricted/commands/implementations/write_file"
-import * as qx_read_file from "pareto-resource-filesystem-unrestricted/queries/implementations/read_file"
-
-//dependencies
-// import * as c_generate_typescript from "pareto-liana/implementation/commands/generate_typescript"
-import * as deser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/deserializers"
-// import * as t_generate_typescript_to_serialized from "pareto-liana/implementation/transformers/generate_typescript/serialized"
-import { $$ as ttt_seal } from "../helpers/seal"
-import { load_applicable_schema } from '../to_be_backend/load_applicable_schema'
-import * as fs from 'fs'
-import * as os from 'os'
-import * as path from 'path'
+import * as fs from 'node:fs'
+import * as path from 'node:path'
 import * as vscode from 'vscode'
+import { prepare_native_schema } from '../../../native/out'
+import * as types from '../types'
 
-import * as types from "../types"
-
-export default ((deps) => async () => {
-	const editor = vscode.window.activeTextEditor
-	if (!editor) {
-		vscode.window.showInformationMessage('Open a liana file first to generate TypeScript code')
-		return
-	}
-
-	// First, load the schema and convert to verbose notation
-	load_applicable_schema(
-		editor.document,
-		($) => {
-			p_.from.state($.type).decide(($): null => {
-				switch ($[0]) {
-					case 'read file': return p_.option($, ($) => {
-						vscode.window.showErrorMessage('Cannot generate TypeScript code because no .liana/schema.slna file could be found: ' + $.error.message)
-						return null
-					})
-					case 'parse schema': return p_.option($, ($) => {
-						vscode.window.showErrorMessage('Cannot generate TypeScript code because the .liana/schema.slna file is not a valid schema.')
-						return null
-					})
-					default: return p_.exhaustive($[0])
-				}
-			})
-		},
-		($) => {
-			// Convert to verbose notation using seal
-			p_create_refinement_context<p_schema.List<string>, string>(
-				(abort) => ttt_seal(
-					editor.document.getText(),
-					($) => abort("Cannot generate TypeScript code because the file is not valid Liana."),
-					{
-						'unmarshall': {
-							'module': p_.from.state($).decide(($) => {
-								switch ($[0]) {
-									case 'constrained': return p_.option($, ($) => $['module resolver'].entry.signature.module)
-									case 'unconstrained': return p_.option($, ($) => $.module.entry)
-									default: return p_.exhaustive($[0])
-								}
-							}),
-							'tab size': 1, // vscode works with character, not with columns
-						},
-						'target': {
-							'indentation': '\t',
-							'newline': '\n',
-						},
-					}
-				)
-			).__extract_data(
-				($) => {
-					// Create a temporary file with verbose notation
-					const tmp_dir = os.tmpdir()
-					const tmp_file_name = `liana-verbose-${Date.now()}.liana.lna`
-					const tmp_file_path = path.join(tmp_dir, tmp_file_name)
-
-					// Write verbose notation to temp file
-					fs.writeFileSync(
-						tmp_file_path,
-						$.__get_raw().join("\n") + "\n",
-						'utf8'
-					)
-
-					// Now proceed with TypeScript generation
-					void vscode.window.showOpenDialog({
-						canSelectFiles: false,
-						canSelectFolders: true,
-						canSelectMany: false,
-						openLabel: 'Select Target Directory',
-						title: 'Select directory to generate TypeScript code',
-					}).then((target_uris) => {
-						if (!target_uris || target_uris.length === 0) {
-							// Clean up temp file
-							fs.unlinkSync(tmp_file_path)
-							return
-						}
-
-						p_create_refinement_context<d_path.Node_Path, string>(
-							(abort) => deser_path.Node_Path(
-								tmp_file_path,
-								($) => abort('The file path is not valid.'),
-								{
-									'pedantic': true,
-								}
-							)
-						).__extract_data(
-							($) => {
-								vscode.window.showErrorMessage(`NEEDS IMPLEMENTATION`)
-
-								// c_generate_typescript.$$(
-								// 	{
-								// 		'file indentation': "    ",
-								// 		'newline': '\n',
-								// 	},
-								// 	{
-								// 		'read file': qx_read_file.$$,
-								// 	},
-								// 	{
-								// 		'copy': cx_copy.$$,
-								// 		'make directory': cx_make_directory.$$,
-								// 		'remove': cx_remove.$$,
-								// 		'write file': cx_write_file.$$,
-								// 	},
-								// ).execute(
-								// 	{
-								// 		'type': ['module specification', null],
-								// 		'source': $,
-								// 		'target': deser_path.Context_Path(target_uris[0].fsPath)
-								// 	},
-								// 	($) => $
-								// ).__start(
-								// 	() => {
-								// 		vscode.window.showInformationMessage('TypeScript code generated successfully')
-								// 		// Clean up temp file
-								// 		try {
-								// 			fs.unlinkSync(tmp_file_path)
-								// 		} catch (e) {
-								// 			// Ignore cleanup errors
-								// 		}
-								// 	},
-								// 	($) => {
-								// 		const message: string = t_generate_typescript_to_serialized.Error(
-								// 			$,
-								// 			{
-								// 				'indentation': "  ",
-								// 			}
-								// 		).__get_raw().join("\n")
-								// 		vscode.window.showErrorMessage(`Error generating TypeScript: ${message}`)
-								// 		// Clean up temp file
-								// 		try {
-								// 			fs.unlinkSync(tmp_file_path)
-								// 		} catch (e) {
-								// 			// Ignore cleanup errors
-								// 		}
-								// 	}
-								// )
-							},
-							($) => {
-								vscode.window.showErrorMessage(`Error: ${$}`)
-								// Clean up temp file
-								try {
-									fs.unlinkSync(tmp_file_path)
-								} catch (e) {
-									// Ignore cleanup errors
-								}
-							}
-						)
-					})
-				},
-				($) => {
-					vscode.window.showErrorMessage(`Cannot convert to verbose notation: ${$}`)
-				}
-			)
-		}
-	)
+export default ((_deps?: types.Command_Dependencies) => async () => {
+    const editor = vscode.window.activeTextEditor
+    if (!editor) {
+        void vscode.window.showInformationMessage('Open a native Liana schema first to generate TypeScript code')
+        return
+    }
+    try {
+        const schema = prepare_native_schema(editor.document.getText())
+        const targets = await vscode.window.showOpenDialog({
+            canSelectFiles: false, canSelectFolders: true, canSelectMany: false,
+            openLabel: 'Select Target Directory', title: 'Select an empty directory for generated TypeScript',
+        })
+        if (!targets?.length) return
+        const directory = targets[0].fsPath
+        if (fs.readdirSync(directory).length !== 0)
+            throw new Error('Generation requires an empty output directory')
+        for (const [filename, content] of schema.typescript) {
+            const destination = path.join(directory, filename)
+            fs.mkdirSync(path.dirname(destination), { recursive: true })
+            fs.writeFileSync(destination, content)
+        }
+        void vscode.window.showInformationMessage(
+            `Generated ${schema.typescript.size} TypeScript files using native Liana`,
+        )
+    } catch (error) {
+        console.error('Native TypeScript generation failed:', error)
+        void vscode.window.showErrorMessage(
+            'Cannot generate TypeScript: ' + (error instanceof Error ? error.message : String(error)),
+        )
+    }
 }) satisfies types.Register_Command

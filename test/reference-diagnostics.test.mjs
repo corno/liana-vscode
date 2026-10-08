@@ -33,8 +33,8 @@ const sqlMissingHeadSource = () => {
     return source.replace(path, '( `head`: # `tail`: [] )')
 }
 
-test('Liana Next global types resolve through component-valued module arguments', async () => {
-    const path = fileURLToPath(new URL('../../newstyle_projects/projects/liana_next/sketch/definition/schema.liana.lna', import.meta.url))
+test('legacy Liana global types retain editor diagnostics through component-valued module arguments', async () => {
+    const path = fileURLToPath(new URL('../../newstyle_projects/projects/liana_legacy/sketch/temp/editor_bootstrap/schema.liana.lna', import.meta.url))
     const uri = pathToFileURL(path).href
     const source = readFileSync(path, 'utf8')
     let document = TextDocument.create(uri, 'liana', 1, source)

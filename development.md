@@ -1,7 +1,15 @@
 
 ## Running the Liana extension
 
+- The native bundle currently builds against the sibling `newstyle_projects`
+  checkout. Its canonical Liana producer, explicit shared legacy backend,
+  Pareto Next emitter and TypeScript Light file-tree emitter must already be
+  built. The installed VSIX has no dependency on these checkout paths.
 - Run `npm install` in this folder. This installs all necessary npm modules in both the client and server folder
+- Run `npm run compile` before starting watch mode. This type-checks and bundles
+  the native library and regenerates the native authoring template as well as
+  compiling the client/server. Native library changes require another full
+  compile before rebundling.
 - Open VS Code on this folder.
 - Press Ctrl+Shift+B to start compiling the client and server in [watch mode](https://code.visualstudio.com/docs/editor/tasks#:~:text=The%20first%20entry%20executes,the%20HelloWorld.js%20file.).
 - Switch to the Run and Debug View in the Sidebar (Ctrl+Shift+D).
@@ -24,6 +32,13 @@ npm run compile
 npm run bundle
 node --test test/reference-diagnostics.test.mjs test/module-selection.test.mjs
 ```
+
+Run `node --test test/*.test.mjs` for all editor regressions. Native tests execute
+declared resolvers for cyclic values, computed namespace paths and SQL
+uniqueness constraints; exercise both native authoring commands; test contract
+invalidation and no-fallback behavior; and copy the bundled server into an
+isolated directory to verify native diagnostics and completion over LSP without
+checkout or installed-package access.
 
 The reference diagnostics tests exercise the actual YABNF example, including
 the bundled server over LSP. They introduce intentional terminal (`Texdt`) and

@@ -154,7 +154,7 @@ export function activate(context: ExtensionContext) {
 
 	async function update_workspace_has_schema_context() {
 		try {
-			const schema_files = await vscode.workspace.findFiles("**/.liana/schema.slna", null, 1)
+			const schema_files = await vscode.workspace.findFiles("**/.liana/{schema.slna,schema.native.slna}", null, 1)
 			const has_schema = schema_files.length > 0
 			vscode.commands.executeCommand('setContext', 'liana.workspaceHasSchema', has_schema)
 		} catch (error) {
@@ -164,7 +164,7 @@ export function activate(context: ExtensionContext) {
 
 	update_workspace_has_schema_context()
 
-	const schema_watcher = vscode.workspace.createFileSystemWatcher("**/.liana/schema.slna")
+	const schema_watcher = vscode.workspace.createFileSystemWatcher("**/.liana/{schema.slna,schema.native.slna}")
 	context.subscriptions.push(schema_watcher.onDidCreate(() => update_workspace_has_schema_context()))
 	context.subscriptions.push(schema_watcher.onDidDelete(() => update_workspace_has_schema_context()))
 	context.subscriptions.push(schema_watcher)

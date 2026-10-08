@@ -1,1 +1,16 @@
-#
+| `astn` (
+    `imports`: {}
+    `globals`: (
+        `simple types`: {
+            'Text': ( `type`: | `text` < | `single line` ~ | `no` ~ > )
+        }
+    )
+    `types`: {
+        'Root': (
+            `root value`: | `group` {
+                'name': < _ | `simple` 'Text' >
+            }
+        )
+    }
+    `root`: 'Root'
+)

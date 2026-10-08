@@ -32,6 +32,10 @@ export default ((deps) => () => {
 						vscode.window.showErrorMessage('Cannot seal because the .liana/schema.slna file is not a valid schema.')
 						return null
 					})
+					case 'native schema': return p_.option($, ($) => {
+						void vscode.window.showErrorMessage('Cannot seal because the native schema cannot be loaded: ' + $.error.message)
+						return null
+					})
 					default: return p_.exhaustive($[0])
 				}
 			})

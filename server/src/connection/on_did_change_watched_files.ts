@@ -20,13 +20,14 @@ export const create_on_did_change_watched_files: (
 		for (const change of _change.changes) {
 			const file_path = url.fileURLToPath(change.uri)
 			// Check if this is a schema file
-			if (file_path.endsWith(path.join('.liana', 'schema.slna'))) {
+			if (file_path.endsWith(path.join('.liana', 'schema.slna'))
+				|| file_path.endsWith(path.join('.liana', 'schema.native.slna'))) {
 				// The schemas cache is keyed by the same serialized Node_Path format used
 				// for document paths in load_document.ts, not by this raw fs path string,
 				// so round-trip it through the same (de)serializer pair to get a matching key.
 				const cache_key = ser_path.Node_Path(
 					deser_path.Node_Path(
-						file_path,
+						path.join(path.dirname(file_path), 'schema.slna'),
 						() => p_unreachable_code_path("unexpected schema file path: " + file_path),
 						{ 'pedantic': false }
 					)

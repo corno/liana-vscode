@@ -1,5 +1,18 @@
 # Change Log
 
+## [0.1.51]
+
+### Added
+- Bundled native Liana compiler and declared-resolver execution for semantic diagnostics.
+- Scoped native reference completion, including local cyclic values and namespace paths.
+- Explicit native schema contracts with cache invalidation and no legacy fallback.
+- Working native TypeScript generation and native authoring-environment initialization.
+- Canonical native ASTN schema authoring template.
+
+### Preserved
+- Legacy environments remain usable until their schema and consumer migrations finish.
+- Structural editing, sealing and syntax diagnostics still use syntax-only bootstrap machinery.
+
 ## [0.1.28]
 
 ### Added

@@ -9,6 +9,8 @@ import { load_document } from '../to_be_backend/load_document'
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
 import { Connection_Context } from '../connection_context'
+import { native_schema_for_document, native_references } from '../to_be_backend/native_schema'
+import { create_range_from_range } from '../helpers/range'
 
 export const create_on_completion: (
 	connection_context: Connection_Context,
@@ -39,6 +41,37 @@ export const create_on_completion: (
 				($) => ({ 'isIncomplete': false, 'items': [] }),
 				(instance) => {
 					let items: vscode_node.CompletionItem[] = []
+					const native = native_schema_for_document(doc.uri)
+					if (native !== undefined && instance[0] === 'unconstrained') {
+						const offset = doc.offsetAt(params.position)
+						const reference = native_references(instance[1], native.root).find(reference => {
+							const range = create_range_from_range(reference.range)
+							return doc.offsetAt(range.start) <= offset && offset <= doc.offsetAt(range.end)
+						})
+						if (reference !== undefined) {
+							const range = create_range_from_range(reference.range)
+							const source = doc.getText()
+							const token = doc.getText(range)
+							let marker = 'liana editor completion'
+							while (source.includes(marker)) marker += ' next'
+							const completed = native.complete(
+								source.slice(0, doc.offsetAt(range.start)) + "'" + marker + "'"
+									+ source.slice(doc.offsetAt(range.end)), marker,
+							)
+							return {
+								isIncomplete: false,
+								items: completed.candidates.map(id => ({
+									label: id,
+									filterText: token[0] === '#' ? '#' + id : token[0] + id + token[0],
+									kind: vscode_node.CompletionItemKind.Reference,
+									insertTextFormat: vscode_node.InsertTextFormat.PlainText,
+									textEdit: vscode_node.TextEdit.replace(range,
+										"'" + id.replace(/\\/g, '\\\\').replace(/'/g, "\\'")
+											.replace(/\n/g, '\\n').replace(/\r/g, '\\r') + "'"),
+								})),
+							}
+						}
+					}
 
 					const completionParameters: {
 						indent: string, position: vscode_node.Position, style: ['verbose', null] | ['concise', null],

@@ -28,6 +28,42 @@ Liana is a tool to create textual languages. If you feel that editing data for y
 
 Install the extension from the VS Code Marketplace or install manually from VSIX.
 
+### Native Liana
+
+The bundled compiler supports the canonical native `astn`/`liana` model. New
+schema authoring environments use its ASTN self-definition, and **Generate
+TypeScript code from this schema** runs the native generation pipeline.
+ASTN generates only an unresolved structural API; Liana also generates the
+schema's declared semantic resolver. Generation requires an empty destination.
+
+**Initialize or update authoring environment with this schema** installs:
+
+- `.liana/schema.native.slna`: the actual native contract.
+- `.liana/schema.slna`: its syntax-only bootstrap projection for existing
+  structural editing and sealing.
+
+PBV installs the same pair for native examples, fixtures and parameter
+environments. Native contract presence explicitly selects native loading.
+Malformed native contracts report errors; they never fall back to legacy
+interpretation. Environments with only the legacy contract remain supported
+while their schemas and consumers migrate.
+
+Native semantic diagnostics execute the generated declared resolver rather
+than a separate validator. Reference completion observes that resolver's
+actual dictionary/namespace lookups, including local cyclic references and
+nearest-scope namespace lookup. Native contract changes refresh open documents.
+Token ranges are reported when a resolver path identifies a unique reference;
+ambiguous paths are reported at the document start rather than at an invented
+location. Root resolvers requiring external parameters/lookups report an
+explicit configuration diagnostic; the editor does not invent those arguments.
+
+The installed extension is self-contained: native parsing, generation and
+resolver execution require neither the project checkout nor a separate compiler
+installation. Building the extension currently still uses the canonical
+producer's intentionally shared legacy backend and syntax-bootstrap machinery.
+This does not yet retire those build-time dependencies or implement semantic
+self-resolution of the ASTN schema-document definition.
+
 ### Keyboard Shortcuts
 
 | Command | Shortcut | Description |
@@ -66,7 +102,7 @@ written; the extension does not normalize string contents when opening them.
 
 ## Tutorial: Creating Your First Language
 
-### Module selection compatibility
+### Legacy module selection compatibility
 
 Schema loading accepts reference-based module specifications as well as legacy
 flat schema paths. A new `schema path` contains `tail` and a derived `result`:
@@ -85,13 +121,12 @@ Each step requires a schema set; the final result must be a schema. An empty
 tail selects a directly supplied schema. `module` and `module resolver` are
 references into that schema's module and resolver-module dictionaries.
 Unknown entries and invalid tree/complexity selections produce schema-loading
-diagnostics rather than internal implementation errors. The bundled authoring
-template includes these reference definitions.
+diagnostics rather than internal implementation errors. These rules apply to
+explicit legacy environments, not the new native authoring template.
 
-The client commands and language server both use the published shared loader
-from `pareto-liana` (version 0.1.81 or later). The server uses the authoring
-package's schema query directly; no local compatibility bridge is needed.
-The ASTN Core to ASTN Runtime dependency migration is still a separate follow-up.
+Legacy environments use the shared loader from `pareto-liana` (version 0.1.81
+or later). Native environments instead use the bundled native compiler and
+generated declared resolver, with a syntax projection for structural editing.
 
 Validate with `npm run compile` and `node --test test/*.test.mjs`.
 
@@ -106,17 +141,19 @@ ctrl+shift+p
 select 'Liana:initialize Liana schema authoring environment'
 and select (or create) a directory where you want to author your schemas
 
-you should now have a directory with 1 file and 1 directory (containing 1 file as well):
+you should now have a starter schema and its authoring contracts:
 
 ````
 .liana
     schema.slna
+    schema.native.slna
 my_schema.liana.lna
 ````
 
 you can now either author the `my_schema.liana.lna` file or create your own one; right click in the folder -> create liana file (make sure the file has the double extension '.liana.lna', more about this later).
 
-you should now see a file with a single '#' character.
+The supplied starter is a native ASTN schema with a `Root` group and a text
+property. Newly created files start with a single `#` character.
 
 ## '#' (missing data) and ctrl-d
  The '#' character means 'missing data'. By selecting ctrl-d, you will jump to the first next '#' and you will get code completion suggestions for this location. You will use ctrl-d extensively to fill in all the missing data.
@@ -129,10 +166,10 @@ I would advise to start with the verbose options to get a feel for the language 
 You can toggle the document's default between verbose and concise notation with `Ctrl+Alt+N`. This sets the style for all new entries in the document; use code actions to selectively convert entries that already exist.
 
 ## creating your first schema
-- select ctrl-d, which should give you a couple of suggestions. 
-- Choose 'schema (verbose)', and then again select ctrl-d and choose 'unconstrained' twice.
-- set the \``module`\` property to the text value `"root"`
-- add a module in \``modules`\` named '`root`' (this is the module that the \``module`\` property will refer to)
+- For a new file, select ctrl-d and choose `astn`. This branch describes syntax
+  without a semantic resolver.
+- Set `root` to `'Root'`.
+- Add a type named `'Root'` in `types`; `root` selects this type.
 - type a colon (:). It should be automatically expanded to ': #'.
 - use ctrl-d, select, use ctrl-d again, select 'group'. You have now configured your first value. You will be doing this a lot.
 - in the {}, add a property named 'my dictionary', and configure this value to be a dictionary.
@@ -142,43 +179,25 @@ You can toggle the document's default between verbose and concise notation with 
 If all went well, you ended up with a file that looks like this
 
 ````
-(
-    `schema`: | `schema` (
-        `schema imports`: {}
-        `resolver imports`: {}
-        `globals`: (
-            `complexity`: | `unconstrained` ~
-            `text types`: {}
-            `simple types`: {}
-        )
-        `modules`: {
-            'root': (
-                `root value`: | `group` {
-                    'my dictionary': (
-                        `description`: _
-                        `value`: | `state` (
-                            `options`: {
-                                'a': (
-                                    `constraints`: _
-                                    `description`: _
-                                    `value`: | `nothing` ~
-                                )
-                                'b': (
-                                    `constraints`: _
-                                    `description`: _
-                                    `value`: | `nothing` ~
-                                )
-                            }
-                            `results`: _
-                        )
+| `astn` (
+    `imports`: {}
+    `globals`: ( `simple types`: {} )
+    `types`: {
+        'Root': (
+            `root value`: | `group` {
+                'my dictionary': (
+                    `description`: _
+                    `value`: | `dictionary` (
+                        `value`: | `state` {
+                            'a': ( `description`: _ `value`: | `nothing` ~ )
+                            'b': ( `description`: _ `value`: | `nothing` ~ )
+                        }
                     )
-                }
-            )
-        }
-        `complexity`: | `unconstrained` ~
-    )
-    `schema path`: []
-    `module`: "root"
+                )
+            }
+        )
+    }
+    `root`: 'Root'
 )
 ````
 

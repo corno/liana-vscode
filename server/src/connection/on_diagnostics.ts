@@ -12,6 +12,8 @@ import * as t_unmarshall_result_to_diagnostics from "liana-authoring/schemas/unm
 import * as t_resolve_result_to_diagnostics from "liana-authoring/schemas/resolve_result/transformers/diagnostics"
 import * as ser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/serializers"
 import * as t_deserialize_to_diagnostic from "liana-authoring/schemas/deserialization/transformers/diagnostics"
+import { native_schema_for_document, native_references } from '../to_be_backend/native_schema'
+import type { Native_Contract } from '../../../native/out'
 
 export const create_on_diagnostics: (
 	connection_context: Connection_Context,
@@ -19,7 +21,21 @@ export const create_on_diagnostics: (
 	return async (params) => {
 		const document = connection_context.documents.get(params.textDocument.uri)
 		if (document !== undefined) {
-
+			let native: Native_Contract | undefined
+			try {
+				native = native_schema_for_document(document.uri)
+			} catch (error) {
+				return {
+					kind: vscode_node.DocumentDiagnosticReportKind.Full,
+					items: [{
+						range: vscode_node.Range.create(0, 0, 0, 1),
+						severity: vscode_node.DiagnosticSeverity.Error,
+						source: 'liana-native-schema',
+						message: 'Cannot load native schema: ' + (error instanceof Error ? error.message : JSON.stringify(error)),
+					}],
+				}
+			}
+			let native_diagnostics: vscode_node.Diagnostic[] = []
 
 			function validate_text_document(
 				text_document: vscode_textdocument.TextDocument,
@@ -32,7 +48,25 @@ export const create_on_diagnostics: (
 						($) => p_.literal.list([
 							t_deserialize_to_diagnostic.Error($)
 						]),
-						($) => p_.literal.segmented_list([
+						($) => {
+							if (native !== undefined && $[0] === 'unconstrained') {
+								const structural = t_unmarshall_result_to_diagnostics.Document($[1]).__get_raw()
+								if (!structural.some(diagnostic => diagnostic.severity[0] === 'error')) {
+									const error = native.validate(text_document.getText())
+									if (error !== undefined) {
+										const matches = native_references($[1], native.root).filter(reference =>
+											reference.id === error.id && reference.schema_path.join('/') === error.path.join('/'))
+										native_diagnostics = [{
+											range: matches.length === 1 ? helpers_range.create_range_from_range(matches[0].range)
+												: vscode_node.Range.create(0, 0, 0, 1),
+											severity: vscode_node.DiagnosticSeverity.Error,
+											source: 'liana-native-resolver',
+											message: `${error.type}: ${JSON.stringify(error.id)} (${error.path.join(' / ')})`,
+										}]
+									}
+								}
+							}
+							return p_.literal.segmented_list([
 							t_unmarshall_result_to_diagnostics.Document(p_.from.state($).decide(($) => {
 								switch ($[0]) {
 									case 'constrained': return p_.option($, ($) => $.unmarshalled)
@@ -47,7 +81,8 @@ export const create_on_diagnostics: (
 									default: return p_.exhaustive($[0])
 								}
 							})
-						]),
+							])
+						},
 						($) => {
 							resolve($.__get_raw().map(
 								($): vscode_node.Diagnostic => {
@@ -100,7 +135,7 @@ export const create_on_diagnostics: (
 
 			return {
 				'kind': vscode_node.DocumentDiagnosticReportKind.Full,
-				'items': await validate_text_document(document, connection_context.cache)
+				'items': [...await validate_text_document(document, connection_context.cache), ...native_diagnostics]
 			}
 		} else {
 			// We don't know the document. We can either try to read it from disk

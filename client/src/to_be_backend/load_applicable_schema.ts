@@ -11,6 +11,7 @@ import * as deser_path from "pareto-filesystem-unrestricted-api/modules/unrestri
 
 import * as fs from "fs"
 import path from 'path'
+import { prepare_native_schema } from '../../../native/out'
 
 
 function get_applicable_schema_path(document_path: string): string {
@@ -32,6 +33,9 @@ export type Load_Schema_Error = {
 	}]
 	| ['parse schema', {
 		'error': s_resolved_document_deserialization.Error
+	}]
+	| ['native schema', {
+		'error': { 'message': string }
 	}]
 }
 
@@ -62,6 +66,19 @@ export function load_applicable_schema(
 					}]
 				})
 			} else {
+				const native_path = path.join(path.dirname(schema_path), 'schema.native.slna')
+				if (fs.existsSync(native_path)) {
+					try {
+						data = prepare_native_schema(fs.readFileSync(native_path, 'utf8')).syntax
+					} catch (error) {
+						console.error('Cannot load native schema for sealing:', error)
+						on_error({
+							'schema path': native_path,
+							type: ['native schema', { error: { message: error instanceof Error ? error.message : String(error) } }],
+						})
+						return
+					}
+				}
 				p_create_refinement_context<s_temp_module_specifier.Temp_Module_Specifier, s_resolved_document_deserialization.Error>(
 					(abort) => r_temp_module_specifier_from_loc.Module_Specifier(
 						p_list_from_text(data, ($) => $),

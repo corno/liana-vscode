@@ -1,4 +1,5 @@
 /out
+/native/out
 /node_modules
 /client/node_modules
 /client/out
