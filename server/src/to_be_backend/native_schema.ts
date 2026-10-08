@@ -56,7 +56,7 @@ export function native_references(document: unmarshalled.Document, root: string)
             case 'dictionary':
                 for (const [, entry] of result[1].derived.entries.__get_raw()) {
                     if (entry.result[0] === 'success' && entry.result[1].value[0] === 'set')
-                        visit(entry.result[1].value[1], schema_path)
+                        visit(entry.result[1].value[1], [...schema_path, 'dictionary'])
                 }
                 break
             case 'group':
@@ -65,10 +65,11 @@ export function native_references(document: unmarshalled.Document, root: string)
                 }
                 break
             case 'list':
-                for (const item of result[1].derived.items.__get_raw()) visit(item, schema_path)
+                for (const item of result[1].derived.items.__get_raw()) visit(item, [...schema_path, 'list'])
                 break
             case 'optional':
-                if (result[1].derived.status[0] === 'set') visit(result[1].derived.status[1]['child value'], schema_path)
+                if (result[1].derived.status[0] === 'set')
+                    visit(result[1].derived.status[1]['child value'], [...schema_path, 'optional'])
                 break
             case 'state':
                 if (result[1].derived['option status'][0] === 'set') {

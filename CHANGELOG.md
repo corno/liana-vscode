@@ -1,5 +1,17 @@
 # Change Log
 
+## [Unreleased]
+
+### Improved
+- SysML / LionCore native diagnostics and scoped reference completion, verified against the full SysML fixture.
+- Reference completion reuses parsed instance data instead of sealing and parsing the document for every candidate.
+- Boekhouding fiscal, ledger-category and tax-correction reference diagnostics and scoped completion coverage.
+- Multi-year Boekhouding coverage for carry-forward, trade contracts, VAT, mutation references and year cycles; declared schema limitations are documented.
+
+### Fixed
+- Native diagnostic reference paths now include dictionary, list and optional boundaries, matching generated resolver paths.
+- Boekhouding optional year selection now uses that year's purchases, sales and VAT periods, matching the handwritten resolver without changing accounting data.
+
 ## [0.1.51]
 
 ### Added

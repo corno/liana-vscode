@@ -57,10 +57,42 @@ ambiguous paths are reported at the document start rather than at an invented
 location. Root resolvers requiring external parameters/lookups report an
 explicit configuration diagnostic; the editor does not invent those arguments.
 
+### SysML / LionCore
+
+Open `newstyle_projects/projects/liana/sketch/temp/lioncore/sysml.lna` in
+the checkout. Its local `.liana` environment selects the native LionCore
+contract. Diagnostics validate entity targets and acyclic dependencies;
+reference completion offers the current language's entities for local
+references and dependency-language entities for external references.
+`local cyclic` allows self-references, whereas `local` completion filters out
+targets that introduce cycles. Completion parses the instance once and reuses
+its unresolved data when checking candidates, including the large SysML model.
+
+### Boekhouding
+
+Native accounting reference coverage uses the canonical `boekhouding` schema
+and `test/fixtures/boekhouding.lna`. Fiscal subcategory completion follows the
+selected fiscal parent; ledger subcategory completion follows the selected
+ledger category. Tax-correction references select only correction types.
+Missing targets report token-level diagnostics when the resolver path and ID
+identify one reference. Repeated IDs at the same schema path remain ambiguous
+and report at the document start.
+
+The multi-year fixture additionally covers account carry-forward, purchase and
+sale branches, customer/project/quotation/license scopes, VAT periods, mutation
+benchmarks and previous-year cycles. Generated-resolver identity tests verify
+targets and the complete root serialization round-trip.
+
+`Rekening Mutatie.Jaar` selects that year's transactions and VAT periods when
+set, and current-year parameters when unset, matching the handwritten accounting
+resolver without changing the data format. VAT-period `1. BTW-categorieen`
+dictionary keys remain unconstrained.
+The editor executes these declared semantics; it does not invent extra rules.
+
 The installed extension is self-contained: native parsing, generation and
 resolver execution require neither the project checkout nor a separate compiler
-installation. Building the extension currently still uses the canonical
-producer's intentionally shared legacy backend and syntax-bootstrap machinery.
+installation. Building the extension uses the canonical producer's native-owned
+backend and syntax-bootstrap machinery.
 This does not yet retire those build-time dependencies or implement semantic
 self-resolution of the ASTN schema-document definition.
 

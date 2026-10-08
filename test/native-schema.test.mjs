@@ -7,6 +7,7 @@ import { pathToFileURL } from 'node:url'
 import test from 'node:test'
 import { spawn } from 'node:child_process'
 import { runInNewContext } from 'node:vm'
+import { boekhoudingYears } from './fixtures/boekhouding-years.mjs'
 
 const require = createRequire(import.meta.url)
 const { prepare_native_schema } = require('../native/out/index.js')
@@ -23,6 +24,11 @@ const local = id => value(`| ref | local '${id}'`)
 const definitions = (values, namespaces = '{}') => `(namespaces: ${namespaces} values: ${values})`
 const source = (values, root = '_', namespaces = '{}') =>
     `(schema: _ id: _ defs: ${definitions(values, namespaces)} 'root value': ${root})`
+const sysml_directory = new URL('../../newstyle_projects/projects/liana/sketch/temp/lioncore/', import.meta.url)
+const sysml_schema = readFileSync(new URL('.liana/schema.native.slna', sysml_directory), 'utf8')
+const sysml = readFileSync(new URL('sysml.lna', sysml_directory), 'utf8')
+const boekhouding_schema = readFileSync(new URL('../../newstyle_projects/projects/liana/sketch/examples/boekhouding.liana.lna', import.meta.url), 'utf8')
+const boekhouding = readFileSync(new URL('fixtures/boekhouding.lna', import.meta.url), 'utf8')
 
 function environment(text = schema) {
     const directory = mkdtempSync(join(tmpdir(), 'liana-native-editor-'))
@@ -42,6 +48,260 @@ function environment(text = schema) {
         dispose: () => rmSync(directory, { recursive: true, force: true }),
     }
 }
+
+test('SysML LSP loads its native environment and reports missing targets at the edited token', async () => {
+    const env = environment(sysml_schema)
+    try {
+        env.open(sysml)
+        const report = create_on_diagnostics(env.context)
+        assert.deepEqual((await report({ textDocument: { uri: env.uri } })).items.filter(item => item.severity === 1), [])
+        const invalid = sysml.replace("'IElement'", "'MissingSysMLEntity'")
+        const document = env.open(invalid, 2)
+        const errors = (await report({ textDocument: { uri: env.uri } })).items.filter(item => item.severity === 1)
+        assert.equal(errors.length, 1, JSON.stringify(errors))
+        assert.equal(errors[0].source, 'liana-native-resolver')
+        assert.match(errors[0].message, /no such entry.*MissingSysMLEntity/)
+        const offset = invalid.indexOf("'MissingSysMLEntity'")
+        assert.deepEqual(errors[0].range, {
+            start: document.positionAt(offset), end: document.positionAt(offset + "'MissingSysMLEntity'".length),
+        })
+        env.open(sysml, 3)
+        assert.deepEqual((await report({ textDocument: { uri: env.uri } })).items.filter(item => item.severity === 1), [])
+    } finally {
+        env.dispose()
+    }
+})
+
+test('SysML LSP completion respects local cyclic, acyclic and external reference scopes', async () => {
+    const env = environment(sysml_schema)
+    try {
+        const complete = create_on_completion(env.context)
+        let version = 0
+        const at = async (pattern, replacement) => {
+            assert.match(sysml, pattern)
+            const text = sysml.replace(pattern, replacement)
+            const document = env.open(text, ++version)
+            const offset = text.indexOf("''")
+            assert.ok(offset >= 0)
+            const result = await complete({
+                textDocument: { uri: env.uri }, position: document.positionAt(offset + 1),
+            })
+            assert.deepEqual(result.items[0].textEdit.range, {
+                start: document.positionAt(offset), end: document.positionAt(offset + 2),
+            })
+            return result.items.map(item => item.label).sort()
+        }
+        const start = performance.now()
+        const cyclic = await at(/(`local cyclic`\s*<\s*)'IElement'/, "$1''")
+        assert.equal(cyclic.length, 222)
+        assert.ok(cyclic.includes('Subclassification'))
+        assert.ok(cyclic.includes('IElement'))
+        assert.ok(!cyclic.includes('Boolean'))
+        assert.ok(performance.now() - start < 5000, 'SysML completion should finish within five seconds')
+        const acyclic = await at(/(`local`\s*<\s*)'IElement'/, "$1''")
+        assert.ok(acyclic.includes('IElement'))
+        assert.ok(!acyclic.includes('Subclassification'), 'acyclic self-reference must not be suggested')
+        assert.deepEqual(await at(/(`external`\s*<\s*)'types' 'Boolean'/, "$1'' 'Boolean'"), ['types'])
+        assert.deepEqual(await at(/(`external`\s*<\s*'types'\s*)'Boolean'/, "$1''"),
+            ['Boolean', 'Integer', 'Real', 'String'])
+    } finally {
+        env.dispose()
+    }
+})
+
+test('Boekhouding LSP resolves fiscal and ledger references and clears scoped errors after correction', async () => {
+    const env = environment(boekhouding_schema)
+    try {
+        const report = create_on_diagnostics(env.context)
+        env.open(boekhouding)
+        assert.deepEqual((await report({ textDocument: { uri: env.uri } })).items.filter(item => item.severity === 1), [])
+        let version = 1
+        for (const [original, replacement, id] of [
+            ["'bezittingen' 'geld'", "'onbekend' 'geld'", 'onbekend'],
+            ["'bezittingen' 'geld'", "'bezittingen' 'ontbrekende balanspost'", 'ontbrekende balanspost'],
+            ["'uitgaven' 'inkoop'", "'uitgaven' 'ontbrekende resultaatpost'", 'ontbrekende resultaatpost'],
+            ["'activa' 'liquide'", "'activa' 'ontbrekende balanscategorie'", 'ontbrekende balanscategorie'],
+            ["'kosten' 'advies'", "'kosten' 'ontbrekende kostencategorie'", 'ontbrekende kostencategorie'],
+            ["| `Ja` < 'beperkt aftrekbaar'", "| `Ja` < 'onbekende correctie'", 'onbekende correctie'],
+        ]) {
+            assert.ok(boekhouding.includes(original), original)
+            const text = boekhouding.replace(original, replacement)
+            const document = env.open(text, ++version)
+            const errors = (await report({ textDocument: { uri: env.uri } })).items.filter(item => item.severity === 1)
+            assert.equal(errors.length, 1, JSON.stringify(errors))
+            assert.equal(errors[0].source, 'liana-native-resolver')
+            assert.ok(errors[0].message.includes(JSON.stringify(id)), errors[0].message)
+            const offset = text.indexOf(replacement) + replacement.indexOf("'" + id + "'")
+            assert.deepEqual(errors[0].range, {
+                start: document.positionAt(offset), end: document.positionAt(offset + id.length + 2),
+            })
+            env.open(boekhouding, ++version)
+            assert.deepEqual((await report({ textDocument: { uri: env.uri } })).items.filter(item => item.severity === 1), [])
+        }
+    } finally {
+        env.dispose()
+    }
+})
+
+test('Boekhouding diagnoses a subcategory from the wrong fiscal parent without inventing an ambiguous token range', async () => {
+    const env = environment(boekhouding_schema)
+    try {
+        env.open(boekhouding.replace("'bezittingen' 'geld'", "'bezittingen' 'leningen'"))
+        const errors = (await create_on_diagnostics(env.context)({ textDocument: { uri: env.uri } })).items
+            .filter(item => item.severity === 1)
+        assert.equal(errors.length, 1)
+        assert.equal(errors[0].source, 'liana-native-resolver')
+        assert.match(errors[0].message, /no such entry.*leningen/)
+        assert.deepEqual(errors[0].range, {
+            start: { line: 0, character: 0 }, end: { line: 0, character: 1 },
+        })
+    } finally {
+        env.dispose()
+    }
+})
+
+test('Boekhouding reference completion follows selected fiscal and ledger categories', async () => {
+    const env = environment(boekhouding_schema)
+    try {
+        const complete = create_on_completion(env.context)
+        let version = 0
+        for (const [original, replacement, expected] of [
+            ["'bezittingen' 'geld'", "'' 'geld'", ['bezittingen']],
+            ["'bezittingen' 'geld'", "'bezittingen' ''", ['geld', 'voorraad']],
+            ["'schulden' 'leningen'", "'schulden' ''", ['leningen']],
+            ["'uitgaven' 'inkoop'", "'uitgaven' ''", ['diensten', 'inkoop']],
+            ["'inkomsten' 'omzet'", "'inkomsten' ''", ['omzet']],
+            ["'activa' 'liquide'", "'activa' ''", ['goederen', 'liquide']],
+            ["'passiva' 'lening'", "'passiva' ''", ['lening']],
+            ["'kosten' 'advies'", "'kosten' ''", ['aankopen', 'advies']],
+            ["'opbrengsten' 'verkoop'", "'opbrengsten' ''", ['verkoop']],
+            ["| `Ja` < 'beperkt aftrekbaar'", "| `Ja` < ''", ['beperkt aftrekbaar', 'niet aftrekbaar']],
+        ]) {
+            assert.ok(boekhouding.includes(original), original)
+            const text = boekhouding.replace(original, replacement)
+            const document = env.open(text, ++version)
+            const offset = text.indexOf("''")
+            const result = await complete({
+                textDocument: { uri: env.uri }, position: document.positionAt(offset + 1),
+            })
+            assert.deepEqual(result.items.map(item => item.label).sort(), expected, original)
+            for (const item of result.items) {
+                assert.deepEqual(item.textEdit.range, {
+                    start: document.positionAt(offset), end: document.positionAt(offset + 2),
+                })
+                assert.equal(item.textEdit.newText, "'" + item.label + "'")
+            }
+        }
+    } finally {
+        env.dispose()
+    }
+})
+
+test('multi-year Boekhouding resolves every transaction and mutation state and rejects missing or wrong-scope targets', () => {
+    const contract = prepare_native_schema(boekhouding_schema)
+    assert.equal(contract.validate(boekhoudingYears), undefined)
+    for (const [original, replacement, id] of [
+        ["| `Nee` < '2024' >", "| `Nee` < 'missing-year' >", 'missing-year'],
+        ["| `Nee` < 'zakelijk' >", "| `Nee` < 'missing-bank' >", 'missing-bank'],
+        ["| `Nee` < 'prive' >", "| `Nee` < 'missing-informal' >", 'missing-informal'],
+        ["| `Nee` < 'voorraad' >", "| `Nee` < 'missing-stock' >", 'missing-stock'],
+        ["'advieskosten' { 'maart'", "'missing-account' { 'maart'", 'missing-account'],
+        ["'bank' 'bank' 'bank' 'bank' 'bank'", "'missing-balance' 'bank' 'bank' 'bank' 'bank'", 'missing-balance'],
+        ["30 'kwartaal'", "30 'missing-vat-period'", 'missing-vat-period'],
+        ["| `Inkoop (met crediteur)` < 'leverancier'", "| `Inkoop (met crediteur)` < 'missing-supplier'", 'missing-supplier'],
+        ["| `Loonheffing` < 'maart'", "| `Loonheffing` < 'missing-payroll'", 'missing-payroll'],
+        ["| `Salaris` < 'maart' 'medewerker'", "| `Salaris` < 'maart' 'missing-employee'", 'missing-employee'],
+        ["| `Rekening courant` < 'prive'", "| `Rekening courant` < 'missing-current'", 'missing-current'],
+        ["| `Balans` < 'voorraad'", "| `Balans` < 'missing-item'", 'missing-item'],
+        ["| `Kosten` < 'advieskosten'", "| `Kosten` < 'missing-expense'", 'missing-expense'],
+        ["'klant' | `Project`", "'missing-customer' | `Project`", 'missing-customer'],
+        ["| `Project` < 'project' 'offerte'", "| `Project` < 'ander project' 'offerte'", 'ander project'],
+        ["'project' 'offerte'", "'project' 'andere offerte'", 'andere offerte'],
+        ["| `Project` < 'mijlpaal'", "| `Project` < 'andere mijlpaal'", 'andere mijlpaal'],
+        ["| `Licentieovereenkomst` < 'licentie'", "| `Licentieovereenkomst` < 'andere licentie'", 'andere licentie'],
+        ["| `Licentieovereenkomst` < 'periode'", "| `Licentieovereenkomst` < 'andere periode'", 'andere periode'],
+        ["| `Standaard` < 'standaard'", "| `Standaard` < 'missing-vat'", 'missing-vat'],
+        ["| `Opbrengsten` < 'verkopen'", "| `Opbrengsten` < 'missing-revenue'", 'missing-revenue'],
+        ["| `Inkoop` 'factuur'", "| `Inkoop` 'missing-purchase'", 'missing-purchase'],
+        ["| `Verkoop` 'projectfactuur'", "| `Verkoop` 'missing-sale'", 'missing-sale'],
+        ["| `BTW-periode` 'kwartaal'", "| `BTW-periode` 'missing-period'", 'missing-period'],
+        ["| `Informele rekening` < 'prive'", "| `Informele rekening` < 'missing-private'", 'missing-private'],
+        ["| `Verrekenpost` < 'verrekening'", "| `Verrekenpost` < 'missing-settlement'", 'missing-settlement'],
+        ["* '2024' | `Verkoop`", "* 'missing-previous' | `Verkoop`", 'missing-previous'],
+    ]) {
+        assert.ok(boekhoudingYears.includes(original), original)
+        const error = contract.validate(boekhoudingYears.replace(original, replacement))
+        assert.ok(error, original)
+        assert.equal(error.id, id, JSON.stringify(error))
+        assert.ok(['no such entry', 'no benchmark entry'].includes(error.type), JSON.stringify(error))
+    }
+    const selfCycle = boekhoudingYears.replace("| `Nee` < '2024' >", "| `Nee` < '2025' >")
+    assert.equal(contract.validate(selfCycle)?.type, 'cycle detected')
+    const mutualCycle = boekhoudingYears.replace('| `Ja` ~\n    <', "| `Nee` < '2025' >\n    <")
+    assert.notEqual(mutualCycle, boekhoudingYears)
+    assert.equal(contract.validate(mutualCycle)?.type, 'cycle detected')
+    assert.equal(contract.validate(boekhoudingYears.replace("'standaard': ~", "'authored-vat-key': ~")), undefined,
+        'VAT-period category dictionary keys have no declared benchmark/reference constraint')
+})
+
+test('multi-year Boekhouding completion follows customer, project, quotation, license and year scopes', async () => {
+    const env = environment(boekhouding_schema)
+    try {
+        const complete = create_on_completion(env.context)
+        let version = 0
+        for (const [original, replacement, expected] of [
+            ["| `Project` < 'project' 'offerte'", "| `Project` < '' 'offerte'", ['project']],
+            ["'project' 'offerte'", "'project' ''", ['offerte']],
+            ["| `Project` < 'mijlpaal'", "| `Project` < ''", ['mijlpaal']],
+            ["| `Licentieovereenkomst` < 'licentie'", "| `Licentieovereenkomst` < ''", ['licentie']],
+            ["| `Licentieovereenkomst` < 'periode'", "| `Licentieovereenkomst` < ''", ['periode']],
+            ["| `Inkoop (met crediteur)` < 'leverancier'", "| `Inkoop (met crediteur)` < ''", ['leverancier']],
+            ["| `Salaris` < 'maart' 'medewerker'", "| `Salaris` < 'maart' ''", ['medewerker']],
+            ["| `BTW-periode` 'kwartaal'", "| `BTW-periode` ''", ['kwartaal', 'open']],
+            ["| `Inkoop` 'factuur'", "| `Inkoop` ''", ['bon', 'factuur', 'loonheffing', 'salaris']],
+            ["| `Verkoop` 'projectfactuur'", "| `Verkoop` ''", ['licentiefactuur', 'projectfactuur']],
+            ["| `Nee` < '2024' >", "| `Nee` < '' >", ['2024']],
+            ["* '2024' | `Verkoop`", "* '' | `Verkoop`", ['2024']],
+        ]) {
+            assert.ok(boekhoudingYears.includes(original), original)
+            const text = boekhoudingYears.replace(original, replacement)
+            const document = env.open(text, ++version)
+            const result = await complete({
+                textDocument: { uri: env.uri }, position: document.positionAt(text.indexOf("''") + 1),
+            })
+            assert.deepEqual(result.items.map(item => item.label).sort(), expected, original)
+        }
+    } finally {
+        env.dispose()
+    }
+})
+
+test('optional year selection completes purchases, sales and VAT from the prior year rather than current-year parameters', () => {
+    const contract = prepare_native_schema(boekhouding_schema)
+    for (const [option, id] of [
+        ['Inkoop', 'factuur'], ['Verkoop', 'licentiefactuur'], ['BTW-periode', 'kwartaal'],
+    ]) {
+        const start = boekhoudingYears.indexOf("'2024':")
+        const end = boekhoudingYears.indexOf("'2025':")
+        const text = boekhoudingYears.slice(0, start)
+            + boekhoudingYears.slice(start, end).replaceAll("'" + id + "'", "'historische " + id + "'")
+            + boekhoudingYears.slice(end).replace("* '2024' | `Verkoop` 'licentiefactuur'",
+                "* '2024' | `" + option + "` 'completion-marker'")
+        const result = contract.complete(text, 'completion-marker')
+        assert.ok(result.candidates.includes('historische ' + id), option)
+        assert.ok(!result.candidates.includes(id), option + ' must exclude the current-year-only target')
+        assert.equal(contract.validate(text.replace("'completion-marker'", "'historische " + id + "'")), undefined)
+        assert.equal(contract.validate(text.replace("'completion-marker'", "'" + id + "'"))?.type, 'no such entry')
+    }
+})
+
+test('optional sibling selectors reject non-optional properties during native generation', () => {
+    const invalid = boekhouding_schema.replaceAll(
+        "| `optional sibling` < 'Jaar'", "| `optional sibling` < 'type'",
+    )
+    assert.notEqual(invalid, boekhouding_schema)
+    assert.throws(() => prepare_native_schema(invalid), /optional sibling requires optional value and resolver/)
+})
 
 test('native editor runtime executes local cyclic references and explicit namespace path computations', () => {
     const contract = prepare_native_schema(schema)
@@ -159,8 +419,28 @@ test('native client commands create actual contracts and generate ASTN APIs inst
     }
 })
 
-test('the shipped server runs native diagnostics and completion with only its bundle and an authoring environment', { timeout: 20000 }, async () => {
-    const env = environment()
+for (const fixture of [
+    {
+        name: 'native JSL', schema, text: source(`{self: ${local('missing')} target: ${value()}}`),
+        corrected: 'target', count: 2, included: ['self', 'target'],
+    },
+    {
+        name: 'SysML', schema: sysml_schema, text: sysml.replace("'IElement'", "'missing'"),
+        corrected: 'IElement', count: 222, included: ['IElement', 'Subclassification'],
+    },
+    {
+        name: 'Boekhouding', schema: boekhouding_schema,
+        text: boekhouding.replace("'bezittingen' 'geld'", "'bezittingen' 'missing'"),
+        corrected: 'geld', count: 2, included: ['geld', 'voorraad'],
+    },
+    {
+        name: 'multi-year Boekhouding', schema: boekhouding_schema,
+        text: boekhoudingYears.replace("| `Project` < 'mijlpaal'", "| `Project` < 'missing'"),
+        corrected: 'mijlpaal', count: 1, included: ['mijlpaal'],
+    },
+]) {
+test(`the shipped server runs ${fixture.name} diagnostics and completion without the checkout`, { timeout: 20000 }, async () => {
+    const env = environment(fixture.schema)
     const server_path = join(env.directory, 'server.cjs')
     cpSync(new URL('../server/out/server.js', import.meta.url), server_path)
     const server = spawn(process.execPath, [server_path, '--stdio'], {
@@ -177,7 +457,7 @@ test('the shipped server runs native diagnostics and completion with only its bu
             capabilities: { textDocument: { diagnostic: {} }, workspace: { diagnostics: { refreshSupport: true } } },
         })
         await connection.sendNotification('initialized', {})
-        const text = source(`{self: ${local('missing')} target: ${value()}}`)
+        const text = fixture.text
         const document = env.open(text)
         await connection.sendNotification('textDocument/didOpen', {
             textDocument: { uri: env.uri, languageId: 'liana', version: 1, text },
@@ -189,9 +469,11 @@ test('the shipped server runs native diagnostics and completion with only its bu
         const completion = await connection.sendRequest('textDocument/completion', {
             textDocument: { uri: env.uri }, position: document.positionAt(offset + 1),
         })
-        assert.deepEqual(completion.items.map(item => item.label).sort(), ['self', 'target'])
+        const labels = completion.items.map(item => item.label)
+        assert.equal(labels.length, fixture.count)
+        for (const id of fixture.included) assert.ok(labels.includes(id), id)
         await connection.sendNotification('textDocument/didChange', {
-            textDocument: { uri: env.uri, version: 2 }, contentChanges: [{ text: text.replace("'missing'", "'target'") }],
+            textDocument: { uri: env.uri, version: 2 }, contentChanges: [{ text: text.replace("'missing'", "'" + fixture.corrected + "'") }],
         })
         assert.deepEqual((await connection.sendRequest('textDocument/diagnostic', { textDocument: { uri: env.uri } })).items
             .filter(item => item.severity === 1), [])
@@ -203,6 +485,7 @@ test('the shipped server runs native diagnostics and completion with only its bu
         env.dispose()
     }
 })
+}
 
 test('native external reference completion follows namespace selection and excludes ancestor values', async () => {
     const env = environment()

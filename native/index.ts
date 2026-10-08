@@ -291,14 +291,14 @@ export function prepare_native_schema(text: string): Native_Contract {
             if (resolve_instance === undefined) return { candidates: [] }
             if (requires_root_arguments)
                 return { candidates: [], error: { type: 'editor root parameters and lookups are not configured', id: source[1].root, path: [] } }
-            let unresolved: schema_runtime.Value
+            let unresolved: schema_runtime.Value = null
             try {
                 unresolved = parse_instance(characters(seal_text(text, instance_grammar)), abort, { 'tab size': 1 })
                 with_completion(marker, () => resolve_instance(unresolved, abort, null, null))
                 return { candidates: [] }
             } catch (error) {
                 if (error instanceof Completion_Result) {
-                    const edit = reference_edit(unresolved!, marker)
+                    const edit = reference_edit(unresolved, marker)
                     if (edit === undefined) throw new Error('Native completion marker is absent from the parsed instance')
                     return {
                         candidates: error.candidates.filter(id => {

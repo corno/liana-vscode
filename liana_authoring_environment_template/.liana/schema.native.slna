@@ -1132,6 +1132,19 @@
                             `description`: _
                             `value`: | `simple` 'Reference 24'
                         )
+                        'optional sibling': (
+                            `description`: * "Select an optional sibling's value and tail when set, otherwise select initial"
+                            `value`: | `group` {
+                                'property': (
+                                    `description`: _
+                                    `value`: | `simple` 'Reference 24'
+                                )
+                                'initial': (
+                                    `description`: _
+                                    `value`: | `component` | `internal` 'Resolver Guaranteed Value Selection'
+                                )
+                            }
+                        )
                         'parent sibling': (
                             `description`: _
                             `value`: | `simple` 'Reference 25'

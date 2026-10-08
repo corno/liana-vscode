@@ -1,0 +1,54 @@
+(
+    `Fiscaal`: <
+        {
+            'bezittingen': < | `Activa` ~ { 'geld': ~ 'voorraad': ~ } >
+            'schulden': < | `Passiva` ~ { 'leningen': ~ } >
+        }
+        {
+            'uitgaven': < | `Kosten` ~ { 'inkoop': ~ 'diensten': ~ } >
+            'inkomsten': < | `Opbrengsten` ~ { 'omzet': ~ } >
+        }
+    >
+    `Categorieen`: <
+        { 'beperkt aftrekbaar': < 200 > 'niet aftrekbaar': < 1000 > }
+        {
+            'activa': < | `Activa` ~ {
+                'liquide': < 'bezittingen' 'geld' >
+                'goederen': < 'bezittingen' 'voorraad' >
+            } >
+            'passiva': < | `Passiva` ~ {
+                'lening': < 'schulden' 'leningen' >
+            } >
+        }
+        {
+            'kosten': < | `Kosten` ~ {
+                'aankopen': < 'uitgaven' 'inkoop' >
+                'advies': < 'uitgaven' 'diensten' >
+            } >
+            'opbrengsten': < | `Opbrengsten` ~ {
+                'verkoop': < 'inkomsten' 'omzet' >
+            } >
+        }
+    >
+    `Beheer`: <
+        { 'standaard': < | `Ja` < 210 > > 'vrijgesteld': < | `Nee` ~ > }
+        <
+            {
+                'bank': < 'activa' 'liquide' | `Activa` ~ >
+                'krediet': < 'passiva' 'lening' | `Passiva` ~ >
+            }
+            {
+                'advieskosten': < 'kosten' 'advies' | `Kosten` <
+                    | `Ja` < 'beperkt aftrekbaar' >
+                > >
+                'verkopen': < 'opbrengsten' 'verkoop' | `Opbrengsten` ~ >
+            }
+        >
+        < { 'zakelijk': ~ } { 'prive': ~ } >
+        {}
+        {}
+        {}
+        {}
+    >
+    `Jaren`: {}
+)
