@@ -17,6 +17,8 @@ directly by the extension:
 npm link ../packages/liana-authoring/typescript/lib \
   ../packages/liana-authoring/typescript/lib/node_modules/astn \
   ../packages/liana-authoring/typescript/lib/node_modules/pareto-json
+(cd ../packages/liana-authoring/typescript/lib && npm link --offline ../../../pareto-liana/typescript/lib)
+node ../newstyle_projects/tools/typescript.cjs -p ../packages/pareto-liana/typescript/lib
 node ../newstyle_projects/tools/typescript.cjs -p ../packages/liana-authoring/typescript/lib
 npm run compile
 npm run bundle
@@ -24,9 +26,24 @@ node --test test/reference-diagnostics.test.mjs test/module-selection.test.mjs
 ```
 
 The reference diagnostics tests exercise the actual YABNF example, including
-the bundled server over LSP. They introduce an intentional `Texdt` typo in memory
-and verify that correcting it to `Text` clears the error without changing the
-file on disk.
+the bundled server over LSP. They introduce intentional terminal (`Texdt`) and
+cyclic nonterminal (`Valuke`) typos in memory, verify their precise diagnostic
+ranges, and verify that correcting both clears the errors without changing the
+file on disk. Ranges are calculated from the current example rather than fixed
+line numbers.
+
+The same tests request instance-level completion for both typos, check the
+suggested `Text`/`Value` identifiers and whole-token replacement edits, and apply
+the actual LSP edits before verifying that diagnostics clear.
+
+SQL regressions also verify table-name completion at an empty `from` reference
+and uniqueness assertions on foreign-key fields. The uniqueness test uses the
+fixture's table definitions with empty statements in memory, isolating the
+constraint behavior. Full-path tests check first-field and subsequent-field
+completion through the previous resolved foreign-key field, apply actual LSP
+edits, and verify diagnostics clear. A scalar intermediate field produces an
+expected-`reference`/found-`value` diagnostic at the next field; final scalar and
+foreign-key fields remain valid.
 
 Rebundle after library changes and restart the extension host. To create a local
 VSIX without publishing, committing, or bumping the version:

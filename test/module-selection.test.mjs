@@ -51,6 +51,13 @@ test('the bundled authoring template exposes constrained schema paths and module
     const options = entry(properties, 'complexity').value[1].options
     assert.equal(entry(entry(options, 'unconstrained').value[1], 'module').value[0], 'reference')
     assert.equal(entry(entry(options, 'constrained').value[1], 'module resolver').value[0], 'reference')
+    const relative = entry(loaded[1].resolver.modules, 'Resolver Relative Value Selection').signature.module['root value']
+    const steps = entry(relative[1], 'path').value[1].value[1].options
+    assert.equal(entry(steps, 'state').value[0], 'reference')
+    const guaranteed = entry(loaded[1].resolver.modules, 'Resolver Guaranteed Value Selection').signature.module['root value']
+    const starts = entry(guaranteed[1], 'start').value[1].options
+    assert.equal(entry(entry(starts, 'previous item').value[1], 'initial').value[0], 'component')
+    assert.equal(entry(entry(starts, 'last item').value[1], 'initial').value[0], 'component')
 })
 
 test('document loading uses the shared schema query, preserves caching and reports schema errors', async () => {

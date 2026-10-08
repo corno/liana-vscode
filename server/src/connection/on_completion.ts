@@ -2,6 +2,7 @@ import * as p_ from "pareto-core/transformer"
 
 //data types
 import * as t_unmarshall_result_to_completion_suggestions from "liana-authoring/schemas/unmarshall_result/transformers/completion_suggestions"
+import * as t_resolve_result_to_completion_suggestions from "liana-authoring/schemas/resolve_result/transformers/completion_suggestions"
 
 import { load_document } from '../to_be_backend/load_document'
 
@@ -13,10 +14,6 @@ export const create_on_completion: (
 	connection_context: Connection_Context,
 ) => vscode_node.ServerRequestHandler<vscode_node.CompletionParams, vscode_node.CompletionList | null, vscode_node.CompletionItem[], void> = (connection_context) => {
 	return (params) => {
-		// The pass parameter contains the position of the text document in
-		// which code complete got requested. For the example we ignore this
-		// info and always provide the same completion items.
-
 		const doc = connection_context.documents.get(params.textDocument.uri)
 		if (doc === undefined) {
 			return null
@@ -43,20 +40,16 @@ export const create_on_completion: (
 				(instance) => {
 					let items: vscode_node.CompletionItem[] = []
 
-					const completion_suggestions_raw = t_unmarshall_result_to_completion_suggestions.Document(
-						p_.from.state(instance).decide(($) => {
-							switch ($[0]) {
-								case 'constrained': return p_.option($, ($) => $.unmarshalled)
-								case 'unconstrained': return p_.option($, ($) => $)
-								default: return p_.exhaustive($[0])
-							}
-						}),
-						{
+					const completionParameters: {
+						indent: string, position: vscode_node.Position, style: ['verbose', null] | ['concise', null],
+					} = {
 							'indent': "    ",
 							'position': params.position,
 							'style': (connection_context['document notation styles'].get(params.textDocument.uri) || connection_context['document notation styles'].get('__default__') || 'verbose') === 'verbose' ? ['verbose', null] : ['concise', null]
-						}
-					).__get_raw()
+					}
+					const completion_suggestions_raw = (instance[0] === 'constrained'
+						? t_resolve_result_to_completion_suggestions.Document(instance[1], completionParameters)
+						: t_unmarshall_result_to_completion_suggestions.Document(instance[1], completionParameters)).__get_raw()
 					if (completion_suggestions_raw !== null) {
 						const $ = completion_suggestions_raw[0]
 
@@ -101,7 +94,17 @@ export const create_on_completion: (
 							}
 
 							// Frontend handles hash + filter text removal based on backend's semantic signal
-							if (shouldRemoveHash) {
+							if (type[0] === 'reference' && completion_suggestions_raw[0]['replace range'] !== undefined) {
+								const range = completion_suggestions_raw[0]['replace range']
+								const token = doc.getText(range)
+								const delimiter = token[0]
+								completionItem.filterText = delimiter === "'" || delimiter === '"' || delimiter === '`'
+									? delimiter + $.label + delimiter : delimiter === '#' ? '#' + $.label : $.label
+								completionItem.insertTextFormat = vscode_node.InsertTextFormat.PlainText
+								completionItem.textEdit = vscode_node.TextEdit.replace(
+									range, $['insert lines'].__get_raw().join("\n"),
+								)
+							} else if (shouldRemoveHash) {
 
 
 								const fullLine = doc.getText({
