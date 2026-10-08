@@ -25,11 +25,12 @@ const tokenRange = (source, id) => {
     return { start, end: { ...start, character: start.character + id.length + 2 } }
 }
 const correctedSource = source => source.replace("'Texdt'", "'Text'").replace("'Valuke'", "'Value'")
+const sqlExampleSource = () => readFileSync(new URL('../../newstyle_projects/projects/sql_query/sketch/examples/orders.sq.lna', import.meta.url), 'utf8')
 
 test('SQL instance completion suggests tables at an empty from reference', async () => {
     const path = fileURLToPath(new URL('../../newstyle_projects/projects/sql_query/sketch/transformers/sql_sketch/tests/fixtures/orders.sq.lna', import.meta.url))
     const uri = pathToFileURL(path).href
-    const source = readFileSync(path, 'utf8').replace(/(`from`:\s*)'[^']*'/, "$1''")
+    const source = sqlExampleSource().replace(/(`from`:\s*)'[^']*'/, "$1''")
     const document = TextDocument.create(uri, 'liana', 1, source)
     const context = {
         cache: { schemas: create_cache(), documents: create_cache() },
@@ -49,7 +50,7 @@ test('SQL instance completion suggests tables at an empty from reference', async
 test('SQL reference constraints diagnose non-unique foreign-key targets at the field token', async () => {
     const path = fileURLToPath(new URL('../../newstyle_projects/projects/sql_query/sketch/transformers/sql_sketch/tests/fixtures/orders.sq.lna', import.meta.url))
     const uri = pathToFileURL(path).href
-    const fixture = readFileSync(path, 'utf8')
+    const fixture = sqlExampleSource()
     const statementStart = fixture.indexOf('`statements`:')
     assert.ok(statementStart >= 0)
     const source = fixture.slice(0, statementStart) + '`statements`: []\n)'
@@ -78,8 +79,8 @@ test('SQL reference constraints diagnose non-unique foreign-key targets at the f
 test('SQL list paths complete in their selected table and diagnose only scalar intermediate fields', async () => {
     const path = fileURLToPath(new URL('../../newstyle_projects/projects/sql_query/sketch/transformers/sql_sketch/tests/fixtures/orders.sq.lna', import.meta.url))
     const uri = pathToFileURL(path).href
-    const source = readFileSync(path, 'utf8')
-    const originalPath = "[ 'customer_id' 'country_id' 'name' ]"
+    const source = sqlExampleSource()
+    const originalPath = "( `head`: 'customer_id' `tail`: [ 'country_id' 'name' ] )"
     assert.ok(source.includes(originalPath))
     let document = TextDocument.create(uri, 'liana', 1, source)
     const context = {
@@ -92,9 +93,9 @@ test('SQL list paths complete in their selected table and diagnose only scalar i
     assert.deepEqual((await report({ textDocument: { uri } })).items, [])
     let version = 2
     for (const [path, expected] of [
-        ["[ 'absent' ]", ['customer_id', 'id', 'total']],
-        ["[ 'customer_id' 'absent' ]", ['country_id', 'id', 'name']],
-        ["[ 'customer_id' 'country_id' 'absent' ]", ['id', 'name']],
+        ["( `head`: 'absent' `tail`: [  ] )", ['customer_id', 'id', 'total']],
+        ["( `head`: 'customer_id' `tail`: [ 'absent' ] )", ['country_id', 'id', 'name']],
+        ["( `head`: 'customer_id' `tail`: [ 'country_id' 'absent' ] )", ['id', 'name']],
     ]) {
         const modified = source.replace(originalPath, path)
         document = TextDocument.create(uri, 'liana', version++, modified)
@@ -106,17 +107,53 @@ test('SQL list paths complete in their selected table and diagnose only scalar i
             assert.deepEqual(item.textEdit.range, { start: document.positionAt(offset), end: document.positionAt(offset + 8) })
         }
     }
-    const invalid = source.replace(originalPath, "[ 'customer_id' 'name' 'id' ]")
+    const invalid = source.replace(originalPath, "( `head`: 'customer_id' `tail`: [ 'name' 'id' ] )")
     document = TextDocument.create(uri, 'liana', version++, invalid)
     const errors = (await report({ textDocument: { uri } })).items
     assert.equal(errors.length, 1, JSON.stringify(errors))
     assert.match(errors[0].message, /Expected state "reference".*found "value"/)
     assert.equal(errors[0].severity, 1)
-    const offset = invalid.indexOf("'id'", invalid.indexOf("[ 'customer_id' 'name' 'id' ]"))
+    const offset = invalid.indexOf("'id'", invalid.indexOf("( `head`: 'customer_id' `tail`: [ 'name' 'id' ] )"))
     assert.deepEqual(errors[0].range, { start: document.positionAt(offset), end: document.positionAt(offset + 4) })
-    for (const path of ["[ 'customer_id' 'name' ]", "[ 'customer_id' 'country_id' ]"]) {
+    for (const path of ["( `head`: 'customer_id' `tail`: [ 'name' ] )", "( `head`: 'customer_id' `tail`: [ 'country_id' ] )"]) {
         document = TextDocument.create(uri, 'liana', version++, source.replace(originalPath, path))
         assert.deepEqual((await report({ textDocument: { uri } })).items, [])
+    }
+    document = TextDocument.create(uri, 'liana', version++, source.replace(originalPath, "( `head`: 'total' `tail`: [ 'id' ] )"))
+    const scalarHeadErrors = (await report({ textDocument: { uri } })).items
+    assert.equal(scalarHeadErrors.length, 1)
+    assert.match(scalarHeadErrors[0].message, /Expected state "reference".*found "value"/)
+})
+
+test('SQL requires a head selection and completes the unfinished foo projection in the user fixture', async () => {
+    const path = fileURLToPath(new URL('../../newstyle_projects/projects/sql_query/sketch/transformers/sql_sketch/tests/fixtures/orders.sq.lna', import.meta.url))
+    const uri = pathToFileURL(path).href
+    const source = readFileSync(path, 'utf8')
+    assert.match(source, /'foo':\s*\(\s*`head`:\s*#/)
+    let document = TextDocument.create(uri, 'liana', 1, source)
+    const context = {
+        cache: { schemas: create_cache(), documents: create_cache() },
+        documents: { get: id => id === uri ? document : undefined },
+        'document notation styles': new Map(),
+    }
+    const report = create_on_diagnostics(context)
+    const errors = (await report({ textDocument: { uri } })).items
+    assert.ok(errors.length > 0, 'A missing head must not be accepted')
+    assert.ok(errors.every(error => error.severity === 1))
+    const offset = source.indexOf('#', source.indexOf("'foo'"))
+    const result = await create_on_completion(context)({ textDocument: { uri }, position: document.positionAt(offset) })
+    assert.deepEqual(result.items.map(item => item.label).sort(), ['customer_id', 'id', 'total'])
+    const selected = result.items.find(item => item.label === 'id')
+    assert.deepEqual(selected.textEdit, {
+        range: { start: document.positionAt(offset), end: document.positionAt(offset + 1) }, newText: "'id'",
+    })
+    document = TextDocument.create(uri, 'liana', 2, source.slice(0, offset) + selected.textEdit.newText + source.slice(offset + 1))
+    assert.deepEqual((await report({ textDocument: { uri } })).items, [])
+    const example = sqlExampleSource()
+    const pathText = "( `head`: 'customer_id' `tail`: [ 'country_id' 'name' ] )"
+    for (const invalid of ['[]', '( `tail`: [] )']) {
+        document = TextDocument.create(uri, 'liana', 3, example.replace(pathText, invalid))
+        assert.ok((await report({ textDocument: { uri } })).items.length > 0, invalid)
     }
 })
 
@@ -231,7 +268,7 @@ test('bundled server sends the reference error over LSP and clears it on didChan
         assert.deepEqual(corrected.items, [])
         const sqlPath = fileURLToPath(new URL('../../newstyle_projects/projects/sql_query/sketch/transformers/sql_sketch/tests/fixtures/orders.sq.lna', import.meta.url))
         const sqlUri = pathToFileURL(sqlPath).href
-        const sqlFixture = readFileSync(sqlPath, 'utf8')
+        const sqlFixture = sqlExampleSource()
         const statementStart = sqlFixture.indexOf('`statements`:')
         assert.ok(statementStart >= 0)
         const sqlSource = sqlFixture.slice(0, statementStart) + '`statements`: []\n)'
@@ -252,12 +289,12 @@ test('bundled server sends the reference error over LSP and clears it on didChan
         })
         assert.deepEqual((await connection.sendRequest('textDocument/diagnostic', { textDocument: { uri: sqlUri } })).items, [])
         let sqlVersion = 3
-        const originalPath = "[ 'customer_id' 'country_id' 'name' ]"
+        const originalPath = "( `head`: 'customer_id' `tail`: [ 'country_id' 'name' ] )"
         assert.ok(sqlFixture.includes(originalPath))
         for (const [path, expected, replacement] of [
-            ["[ 'absent' ]", ['customer_id', 'id', 'total'], 'id'],
-            ["[ 'customer_id' 'absent' ]", ['country_id', 'id', 'name'], 'name'],
-            ["[ 'customer_id' 'country_id' 'absent' ]", ['id', 'name'], 'name'],
+            ["( `head`: 'absent' `tail`: [  ] )", ['customer_id', 'id', 'total'], 'id'],
+            ["( `head`: 'customer_id' `tail`: [ 'absent' ] )", ['country_id', 'id', 'name'], 'name'],
+            ["( `head`: 'customer_id' `tail`: [ 'country_id' 'absent' ] )", ['id', 'name'], 'name'],
         ]) {
             let text = sqlFixture.replace(originalPath, path)
             await connection.sendNotification('textDocument/didChange', {
@@ -279,7 +316,7 @@ test('bundled server sends the reference error over LSP and clears it on didChan
             })
             assert.deepEqual((await connection.sendRequest('textDocument/diagnostic', { textDocument: { uri: sqlUri } })).items, [])
         }
-        const scalarPath = "[ 'customer_id' 'name' 'id' ]"
+        const scalarPath = "( `head`: 'customer_id' `tail`: [ 'name' 'id' ] )"
         const scalarSql = sqlFixture.replace(originalPath, scalarPath)
         await connection.sendNotification('textDocument/didChange', {
             textDocument: { uri: sqlUri, version: sqlVersion++ }, contentChanges: [{ text: scalarSql }],
@@ -294,12 +331,32 @@ test('bundled server sends the reference error over LSP and clears it on didChan
         assert.deepEqual(scalarError.range, {
             start: scalarDocument.positionAt(scalarOffset), end: scalarDocument.positionAt(scalarOffset + 4),
         })
-        for (const path of ["[ 'customer_id' 'name' ]", "[ 'customer_id' 'country_id' ]"]) {
+        for (const path of ["( `head`: 'customer_id' `tail`: [ 'name' ] )", "( `head`: 'customer_id' `tail`: [ 'country_id' ] )"]) {
             await connection.sendNotification('textDocument/didChange', {
                 textDocument: { uri: sqlUri, version: sqlVersion++ }, contentChanges: [{ text: sqlFixture.replace(originalPath, path) }],
             })
             assert.deepEqual((await connection.sendRequest('textDocument/diagnostic', { textDocument: { uri: sqlUri } })).items, [])
         }
+        const unfinished = readFileSync(sqlPath, 'utf8')
+        const headOffset = unfinished.indexOf('#', unfinished.indexOf("'foo'"))
+        assert.ok(headOffset >= 0)
+        await connection.sendNotification('textDocument/didChange', {
+            textDocument: { uri: sqlUri, version: sqlVersion++ }, contentChanges: [{ text: unfinished }],
+        })
+        const missingHead = await connection.sendRequest('textDocument/diagnostic', { textDocument: { uri: sqlUri } })
+        assert.ok(missingHead.items.length > 0, JSON.stringify(missingHead) + stderr)
+        const headDocument = TextDocument.create(sqlUri, 'liana', sqlVersion, unfinished)
+        const headSuggestions = await connection.sendRequest('textDocument/completion', {
+            textDocument: { uri: sqlUri }, position: headDocument.positionAt(headOffset),
+        })
+        assert.deepEqual(headSuggestions.items.map(item => item.label).sort(), ['customer_id', 'id', 'total'])
+        const headEdit = headSuggestions.items.find(item => item.label === 'id').textEdit
+        const finished = unfinished.slice(0, headDocument.offsetAt(headEdit.range.start)) + headEdit.newText +
+            unfinished.slice(headDocument.offsetAt(headEdit.range.end))
+        await connection.sendNotification('textDocument/didChange', {
+            textDocument: { uri: sqlUri, version: sqlVersion++ }, contentChanges: [{ text: finished }],
+        })
+        assert.deepEqual((await connection.sendRequest('textDocument/diagnostic', { textDocument: { uri: sqlUri } })).items, [])
         await connection.sendRequest('shutdown')
         await connection.sendNotification('exit')
     } finally {
