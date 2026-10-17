@@ -287,8 +287,11 @@
 		"esbuild": "^0.28.1"
 	},
 	"dependencies": {
+		"astn": "^0.113.0",
 		"astn-core": "^0.5.158",
-		"liana-authoring": "^0.1.75",
+		"liana-authoring": "file:../liana_authoring",
+		"pareto-filesystem-unrestricted-api": "^0.1.39",
+		"pareto-json": "^0.3.0",
 		"pareto-liana": "^0.1.81",
 		"pareto-resource-filesystem-unrestricted": "^0.1.4",
 		"typescript": "^6.0.3"

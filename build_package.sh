@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd "$(dirname "$0")/vscode_extension" || exit 1
+
 OUTPUT_DIR=./out
 
 # Type check before bundling (will fail if there are TypeScript errors)
