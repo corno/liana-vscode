@@ -8,12 +8,12 @@
 			"name": "Launch Client",
 			"runtimeExecutable": "${execPath}",
 			"args": [
-				"--extensionDevelopmentPath=${workspaceRoot}",
+				"--extensionDevelopmentPath=${workspaceRoot}/vscode_extension",
 				"--disable-extensions"
 			],
 			"outFiles": [
-				"${workspaceRoot}/client/out/**/*.js",
-				"${workspaceRoot}/server/out/**/*.js"
+				"${workspaceRoot}/vscode_extension/client/out/**/*.js",
+				"${workspaceRoot}/vscode_extension/server/out/**/*.js"
 			],
 			"autoAttachChildProcesses": true,
 			"preLaunchTask": "npm: bundle"
@@ -24,12 +24,12 @@
 			"request": "launch",
 			"runtimeExecutable": "${execPath}",
 			"args": [
-				"--extensionDevelopmentPath=${workspaceRoot}",
-				"--extensionTestsPath=${workspaceRoot}/client/out/test/index",
-				"${workspaceRoot}/client/testFixture"
+				"--extensionDevelopmentPath=${workspaceRoot}/vscode_extension",
+				"--extensionTestsPath=${workspaceRoot}/vscode_extension/client/out/test/index",
+				"${workspaceRoot}/vscode_extension/client/testFixture"
 			],
 			"outFiles": [
-				"${workspaceRoot}/client/out/test/**/*.js"
+				"${workspaceRoot}/vscode_extension/client/out/test/**/*.js"
 			]
 		}
 	]

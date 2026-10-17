@@ -13,7 +13,7 @@
 				"$tsc"
 			],
 			"options": {
-				"cwd": "${workspaceRoot}"
+				"cwd": "${workspaceRoot}/vscode_extension"
 			}
 		},
 		{
@@ -28,7 +28,7 @@
 				"$esbuild"
 			],
 			"options": {
-				"cwd": "${workspaceRoot}"
+				"cwd": "${workspaceRoot}/vscode_extension"
 			}
 		},
 		{
@@ -47,7 +47,7 @@
 				"$tsc-watch"
 			],
 			"options": {
-				"cwd": "${workspaceRoot}"
+				"cwd": "${workspaceRoot}/vscode_extension"
 			}
 		}
 	]
