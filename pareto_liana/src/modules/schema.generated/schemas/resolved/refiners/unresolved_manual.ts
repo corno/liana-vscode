@@ -2248,7 +2248,6 @@ export const Schema_Tree: declarations.Schema_Tree_ = ($, abort, $l, $p) => p_va
                         'complexity': p_complexity,
                     })
                 })])
-            case 'set':
             case 'set': return p_.option($, ($) => ['set', Schemas(
                 $,
                 abort,

@@ -23,4 +23,4 @@ VERSION=$(node -p "require('./package.json').version")
 mkdir -p "$OUTPUT_DIR"
 
 # Package with full output path
-npx @vscode/vsce package -o "$OUTPUT_DIR/${NAME}-${VERSION}.vsix"
+npx @vscode/vsce package --no-dependencies -o "$OUTPUT_DIR/${NAME}-${VERSION}.vsix"
