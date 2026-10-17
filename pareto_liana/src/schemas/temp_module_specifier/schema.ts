@@ -3,7 +3,7 @@ import type * as s_schema from "../../modules/schema.generated/schemas/resolved/
 export type Temp_Module_Specifier =
     | ['constrained', {
         'resolver': s_schema.Resolver
-        'module resolver': {
+        'type resolver': {
             'entry': s_schema.Resolver_Modules.D,
             'id': string
         }

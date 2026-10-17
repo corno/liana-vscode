@@ -909,7 +909,7 @@ export const Schema: declarations.Schema_ = ($, abort) => p_change_context(
                     "schema imports": null,
                     "resolver imports": null,
                     "globals": null,
-                    "modules": null,
+                    "types": null,
                     "complexity": null,
                 },
             ),
@@ -977,14 +977,14 @@ export const Schema: declarations.Schema_ = ($, abort) => p_change_context(
                         ),
                     ),
                 ),
-                'modules': p_change_context(
+                'types': p_change_context(
                     v_unmarshalled_from_parse_tree.Property(
                         $,
                         ($) => abort(
                             $,
                         ),
                         {
-                            'id': 'modules',
+                            'id': 'types',
 
                         },
                     ),
@@ -4422,7 +4422,7 @@ export const Module_Specification: declarations.Module_Specification_ = ($, abor
                                                         {
                                                             'expected properties': p_.literal.dictionary(
                                                                 {
-                                                                    "module resolver": null,
+                                                                    "type resolver": null,
                                                                 },
                                                             ),
 
@@ -4435,14 +4435,14 @@ export const Module_Specification: declarations.Module_Specification_ = ($, abor
                                                                 $['value'],
                                                             )
                                                             return {
-                                                                'module resolver': p_change_context(
+                                                                'type resolver': p_change_context(
                                                                     v_unmarshalled_from_parse_tree.Property(
                                                                         $,
                                                                         ($) => abort(
                                                                             $,
                                                                         ),
                                                                         {
-                                                                            'id': 'module resolver',
+                                                                            'id': 'type resolver',
 
                                                                         },
                                                                     ),

@@ -2138,7 +2138,7 @@ export const Schema_Tree: declarations.Schema_Tree_ = ($, abort, $l, $p) => p_va
                         p_.literal.nothing(),
                     ))
                     const p_types: s_out.Modules = i_generic2.temp_resolve(
-                        $.modules['l dictionary'],
+                        $.types['l dictionary'],
                         ($, id, $acyclic, $cyclic) => {
                             const p_type = Value(
                                 $['l entry']['root value'],
@@ -2244,7 +2244,7 @@ export const Schema_Tree: declarations.Schema_Tree_ = ($, abort, $l, $p) => p_va
                         'schema imports': p_schema_imports,
                         'resolver imports': p_resolver_imports,
                         'globals': p_globals,
-                        'modules': p_types,
+                        'types': p_types,
                         'complexity': p_complexity,
                     })
                 })])
@@ -2289,7 +2289,7 @@ export const Module_Specification: declarations.Module_Specification_ = ($, abor
             ($) => {
                 switch ($[0]) {
                     case 'constrained': return p_.option($, ($) => ['constrained', {
-                        'module resolver': $['module resolver']
+                        'type resolver': $['type resolver']
                     }])
                     case 'unconstrained': return p_.option($, ($) => ['unconstrained', {
                         'module': $.module

@@ -31,7 +31,7 @@ export namespace Schema_ {
     
     export type globals = Globals_
     
-    export type modules = Modules_
+    export type types = Modules_
     
     export namespace complexity {
         
@@ -51,7 +51,7 @@ export type Schema_ = {
     readonly 'schema imports': Schema_.schema_imports
     readonly 'resolver imports': Schema_.resolver_imports
     readonly 'globals': Schema_.globals
-    readonly 'modules': Schema_.modules
+    readonly 'types': Schema_.types
     readonly 'complexity': Schema_.complexity
 }
 
@@ -938,12 +938,12 @@ export namespace Module_Specification_ {
         
         export namespace constrained {
             
-            export type module_resolver = string
+            export type type_resolver = string
             
         }
         
         export type constrained = {
-            readonly 'module resolver': constrained.module_resolver
+            readonly 'type resolver': constrained.type_resolver
         }
         
         export namespace unconstrained {

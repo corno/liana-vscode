@@ -3454,7 +3454,7 @@ export const Module_Reference: declarations.Module_Reference_ = ($, abort, $l, $
                 return ['external', {
                     'import': p_import,
                     'module': i_generic2.get_entry_acyclic(
-                        p_sl.acyclic.from_resolved_dictionary(p_import['l entry'].schema.modules),
+                        p_sl.acyclic.from_resolved_dictionary(p_import['l entry'].schema.types),
                         $.module,
                         abort,
                     )

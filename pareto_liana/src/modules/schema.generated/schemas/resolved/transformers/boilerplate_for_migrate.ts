@@ -250,8 +250,8 @@ export const Schema: t_signatures.Schema = ($) => ({
             $,
         ),
     ),
-    'modules': p_change_context(
-        $['modules'],
+    'types': p_change_context(
+        $['types'],
         ($) => Modules(
             $,
         ),
@@ -2103,8 +2103,8 @@ export const Module_Specification: t_signatures.Module_Specification = ($) => ({
                         case 'constrained': return p_.option(
                                 $,
                                 ($) => ['constrained', {
-                                    'module resolver': p_change_context(
-                                        $['module resolver'],
+                                    'type resolver': p_change_context(
+                                        $['type resolver'],
                                         ($) => $,
                                     ),
                                 }],

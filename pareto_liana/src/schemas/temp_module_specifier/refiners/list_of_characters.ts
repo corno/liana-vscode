@@ -68,17 +68,17 @@ export const Module_Specifier: p_.Refiner_With_Parameter<
         'expected properties': p_.literal.dictionary({ schema: null, 'schema path': null, complexity: null }),
     })
     const complexity = v.State(v.Property(group, unmarshalling_error, { id: 'complexity' }), unmarshalling_error)
-    const field = specification.complexity[0] === 'constrained' ? 'module resolver' : 'module'
+    const field = specification.complexity[0] === 'constrained' ? 'type resolver' : 'module'
     const selection = v.Property(v.Verbose_Group(complexity.value, unmarshalling_error, {
         'expected properties': specification.complexity[0] === 'constrained'
-            ? p_.literal.dictionary({ 'module resolver': null })
+            ? p_.literal.dictionary({ 'type resolver': null })
             : p_.literal.dictionary({ module: null }),
     }), unmarshalling_error, { id: field })
     const range = location.Value(selection)
     return p_.from.state(specification.complexity).decide(($): s_out.Temp_Module_Specifier => {
         switch ($[0]) {
             case 'constrained': return p_.option($, ($) => {
-                const id = $['module resolver']
+                const id = $['type resolver']
                 const resolver = p_.from.state(schema.complexity).decide(($): s_schema.Resolver => {
                     switch ($[0]) {
                         case 'constrained': return p_.option($, ($) => $)
@@ -91,7 +91,7 @@ export const Module_Specifier: p_.Refiner_With_Parameter<
                 })
                 return ['constrained', {
                     resolver,
-                    'module resolver': {
+                    'type resolver': {
                         id,
                         entry: p_t.from.dictionary(resolver.modules).get_possible_entry(
                             id, ($) => $, () => resolving_error(['lookup', ['no such entry', id]], range),
@@ -103,7 +103,7 @@ export const Module_Specifier: p_.Refiner_With_Parameter<
                 const id = $.module
                 return ['unconstrained', { module: {
                     id,
-                    entry: p_t.from.dictionary(schema.modules).get_possible_entry(
+                    entry: p_t.from.dictionary(schema.types).get_possible_entry(
                         id, ($) => $, () => resolving_error(['lookup', ['no such entry', id]], range),
                     ),
                 } }]

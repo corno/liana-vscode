@@ -52,14 +52,14 @@ export const $$: p_.Query_Implementation<
                             ),
                             ($) => abort(['deserialize parse tree', $]),
                             {
-                                'module': $['module resolver'].entry.signature.module,
+                                'module': $['type resolver'].entry.signature.module,
                                 'tab size': $d.deprecated['tab size'],
                             }
                         ),
                         {
                             'parameters': {
                                 'acyclic': p_temp_dictionary.map_value_dictionary_to_generic_dictionary(
-                                    p_t.from.dictionary($['module resolver'].entry.signature['resolved parameters'].lookups
+                                    p_t.from.dictionary($['type resolver'].entry.signature['resolved parameters'].lookups
                                     ).filter(
                                         ($) => p_t.from.state($.type).decide(
                                             ($) => $[0] === 'acyclic')
@@ -67,7 +67,7 @@ export const $$: p_.Query_Implementation<
                                     ($) => ['not found because of root', null]
                                 ),
                                 'cyclic': p_temp_dictionary.map_value_dictionary_to_generic_dictionary(
-                                    p_t.from.dictionary($['module resolver'].entry.signature['resolved parameters'].lookups
+                                    p_t.from.dictionary($['type resolver'].entry.signature['resolved parameters'].lookups
                                     ).filter(
                                         ($) => p_t.from.state($.type).decide(
                                             ($) => $[0] === 'cyclic')
@@ -75,7 +75,7 @@ export const $$: p_.Query_Implementation<
                                     ($) => ['not found because of root', null]
                                 ),
                                 'stack': p_temp_dictionary.map_value_dictionary_to_generic_dictionary(
-                                    p_t.from.dictionary($['module resolver'].entry.signature['resolved parameters'].lookups
+                                    p_t.from.dictionary($['type resolver'].entry.signature['resolved parameters'].lookups
                                     ).filter(
                                         ($) => p_t.from.state($.type).decide(
                                             ($) => $[0] === 'stack')
@@ -90,9 +90,9 @@ export const $$: p_.Query_Implementation<
                             },
                         },
                         {
-                            'definition': $['module resolver'].entry,
+                            'definition': $['type resolver'].entry,
                             'resolvers': $.resolver,
-                            'module parameters': p_t.from.dictionary($['module resolver'].entry.signature['resolved parameters'].modules).map(
+                            'module parameters': p_t.from.dictionary($['type resolver'].entry.signature['resolved parameters'].modules).map(
                                 ($) => ['not found because of root', null],
                             )
                         }

@@ -481,14 +481,14 @@ export const schema_ = (
     schema_imports: sh.Raw_Or_Normal_Dictionary<s_target.Schema_Imports.l_dictionary.D.l_entry>,
     resolver_imports: sh.Raw_Or_Normal_Dictionary<s_target.Resolver_Imports.l_dictionary.D.l_entry>,
     globals: s_target.Globals,
-    modules: s_target.Modules,
+    types: s_target.Modules,
     resolve: null | s_target.Schema.complexity.l_state.constrained,
 ): s_target.Schemas.l_dictionary.D.l_entry => {
     return sh.state(['schema', {
         'schema imports': sh.dictionary(schema_imports),
         'resolver imports': sh.dictionary(resolver_imports),
         'globals': globals,
-        'modules': modules,
+        'types': types,
         'complexity': resolve === null
             ? sh.state(['unconstrained', null])
             : sh.state(['constrained', resolve])

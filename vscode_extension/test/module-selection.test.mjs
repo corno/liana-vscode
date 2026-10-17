@@ -16,7 +16,7 @@ const p = require('pareto-core/transformer')
 const schema = `| \`schema\` (
     \`schema imports\`: {} \`resolver imports\`: {}
     \`globals\`: (\`complexity\`: | \`unconstrained\` ~ \`text types\`: {} \`simple types\`: {})
-    \`modules\`: { 'Root': (\`root value\`: | \`nothing\` ~) }
+    \`types\`: { 'Root': (\`root value\`: | \`nothing\` ~) }
     \`complexity\`: | \`unconstrained\` ~
 )`
 const specification = (tree = schema, tail = '', module = 'Root') =>
@@ -44,13 +44,13 @@ test('module selection failures return structured diagnostics at the selected id
 
 test('the bundled authoring template exposes constrained schema paths and module references', () => {
     const loaded = parse(readFileSync(new URL('../liana_authoring_environment_template/.liana/schema.slna', import.meta.url), 'utf8'))
-    assert.equal(loaded[1]['module resolver'].id, 'Module Specification')
-    const properties = loaded[1]['module resolver'].entry.signature.module['root value'][1]
+    assert.equal(loaded[1]['type resolver'].id, 'Module Specification')
+    const properties = loaded[1]['type resolver'].entry.signature.module['root value'][1]
     const entry = (dictionary, name) => p.from.dictionary(dictionary).get_possible_entry(name, value => value, () => assert.fail(name))
     assert.equal(entry(properties, 'schema path').value[0], 'component')
     const options = entry(properties, 'complexity').value[1].options
     assert.equal(entry(entry(options, 'unconstrained').value[1], 'module').value[0], 'reference')
-    assert.equal(entry(entry(options, 'constrained').value[1], 'module resolver').value[0], 'reference')
+    assert.equal(entry(entry(options, 'constrained').value[1], 'type resolver').value[0], 'reference')
 })
 
 test('document loading uses the shared schema query, preserves caching and reports schema errors', async () => {

@@ -46,7 +46,7 @@ export default ((deps) => async () => {
 						'unmarshall': {
 							'module': p_.from.state($).decide(($) => {
 								switch ($[0]) {
-									case 'constrained': return p_.option($, ($) => $['module resolver'].entry.signature.module)
+									case 'constrained': return p_.option($, ($) => $['type resolver'].entry.signature.module)
 									case 'unconstrained': return p_.option($, ($) => $.module.entry)
 									default: return p_.exhaustive($[0])
 								}

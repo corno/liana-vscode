@@ -82,8 +82,8 @@ flat schema paths. A new `schema path` contains `tail` and a derived `result`:
 ```
 
 Each step requires a schema set; the final result must be a schema. An empty
-tail selects a directly supplied schema. `module` and `module resolver` are
-references into that schema's module and resolver-module dictionaries.
+tail selects a directly supplied schema. `module` and `type resolver` are
+references into that schema's type and resolver-module dictionaries.
 Unknown entries and invalid tree/complexity selections produce schema-loading
 diagnostics rather than internal implementation errors. The bundled authoring
 template includes these reference definitions.
@@ -132,7 +132,7 @@ You can toggle the document's default between verbose and concise notation with 
 - select ctrl-d, which should give you a couple of suggestions. 
 - Choose 'schema (verbose)', and then again select ctrl-d and choose 'unconstrained' twice.
 - set the \``module`\` property to the text value `"root"`
-- add a module in \``modules`\` named '`root`' (this is the module that the \``module`\` property will refer to)
+- add a type in \``types`\` named '`root`' (this is the type that the \``module`\` property will refer to)
 - type a colon (:). It should be automatically expanded to ': #'.
 - use ctrl-d, select, use ctrl-d again, select 'group'. You have now configured your first value. You will be doing this a lot.
 - in the {}, add a property named 'my dictionary', and configure this value to be a dictionary.
@@ -151,7 +151,7 @@ If all went well, you ended up with a file that looks like this
             `text types`: {}
             `simple types`: {}
         )
-        `modules`: {
+        `types`: {
             'root': (
                 `root value`: | `group` {
                     'my dictionary': (

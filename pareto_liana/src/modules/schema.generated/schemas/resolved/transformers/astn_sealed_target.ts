@@ -225,8 +225,8 @@ export const Schema: t_signatures.Schema = ($) => ['group', ['verbose', p_.liter
                 $,
             ),
         ),
-        "modules": p_change_context(
-            $['modules'],
+        "types": p_change_context(
+            $['types'],
             ($) => Modules(
                 $,
             ),
@@ -1312,8 +1312,8 @@ export const Module_Specification: t_signatures.Module_Specification = ($) => ['
                                 'option': 'constrained',
                                 'value': ['group', ['verbose', p_.literal.dictionary(
                                     {
-                                        "module resolver": p_change_context(
-                                            $['module resolver'],
+                                        "type resolver": p_change_context(
+                                            $['type resolver'],
                                             ($) => ['text', {
                                                 'delimiter': ['quote', null],
                                                 'value': $,
