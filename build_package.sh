@@ -1,8 +1,10 @@
 #!/bin/bash
 
-cd "$(dirname "$0")/vscode_extension" || exit 1
+ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-OUTPUT_DIR=./out
+OUTPUT_DIR="$ROOT_DIR/out"
+
+cd "$ROOT_DIR/vscode_extension" || exit 1
 
 # Type check before bundling (will fail if there are TypeScript errors)
 npm run compile || exit 1
