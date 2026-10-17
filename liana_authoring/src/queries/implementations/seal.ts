@@ -1,0 +1,85 @@
+import * as p_ from 'pareto-core/query'
+import * as p_temp from 'pareto-core/transformer'
+
+import type * as query_interfaces_file_in_stream_out from "pareto-common/modules/file_in_stream_out/queries/interfaces"
+import type * as query_interfaces_pareto_filesystem_unrestricted_api from "pareto-filesystem-unrestricted-api/modules/unrestricted/queries/interfaces"
+import type * as s_paragraph_serialization from "pareto-fountain-pen/modules/paragraph/schemas/paragraph_serialization/schema"
+
+//data  types
+import type * as s_file_in_stream_out_query from "pareto-common/modules/file_in_stream_out/schemas/query/schema"
+
+//dependencies
+import { $$ as q_get_unmarshalled_file } from "./load_unmarshalled_file.js"
+import * as t_load_file_to_phrase from "../../schemas/get_unmarshalled_file/transformers/rich_phrase.js"
+import * as ser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/serializers"
+import * as r_astn_sealed_target_from_unmarshall_result from "../../schemas/astn_sealed_target/refiners/unmarshall_result.js"
+import * as t_auth_targ_from_unmarshall_result_to_rich_phrase from "../../schemas/sealed_target_from_unmarshall_result/transformers/rich_phrase.js"
+import * as t_astn_sealed_target_to_paragraph from "astn-runtime/modules/serialization/schemas/sealed_target/transformers/paragraph"
+
+//shorthands
+import * as sh from "pareto-fountain-pen/modules/paragraph/schemas/paragraph/shorthands/deprecated"
+
+export const $$: p_.Query_Implementation<
+    query_interfaces_file_in_stream_out.operation,
+    {
+        'tab size': number,
+        'serialization parameters': s_paragraph_serialization.Parameters,
+    },
+    {
+        'read file': query_interfaces_pareto_filesystem_unrestricted_api.read_file
+        'stat': query_interfaces_pareto_filesystem_unrestricted_api.stat_possible_node
+    }
+> = p_.query(
+    (e, $s, $q) => e.query(
+        ($d) => q_get_unmarshalled_file(
+            {
+                'tab size': $s['tab size']
+            },
+            {
+                'read file': $q['read file'],
+                'stat': $q['stat'],
+            },
+        )(
+            {
+                'file path': $d.path, //to determine the schema path
+                'tab size': $s['tab size'],
+            },
+            ($): s_file_in_stream_out_query.Error => ({
+                'message': sh.ph.composed([
+                    sh.ph.text(ser_path.Node_Path($d.path)),
+                    sh.ph.text(" FIX location: "),
+                    t_load_file_to_phrase.Error(
+                        $,
+                    )
+                ])
+            })
+        )
+    ).refine(
+        ($, abort) => r_astn_sealed_target_from_unmarshall_result.Value(
+            p_temp.from.state($).decide(
+                ($) => {
+                    switch ($[0]) {
+                        case 'unconstrained': return p_temp.option($, ($) => $.content)
+                        case 'constrained': return p_temp.option($, ($) => $.content.unmarshalled)
+                        default: return p_temp.exhaustive($[0])
+                    }
+                }),
+            ($) => abort(
+                {
+                    'message': sh.ph.composed([
+                        sh.ph.text(" FIX location: "),
+                        t_auth_targ_from_unmarshall_result_to_rich_phrase.Error(
+                            $,
+                        )
+                    ])
+                }
+            )
+        ),
+    ).transform(
+        ($): s_file_in_stream_out_query.Result => ({
+            'data': t_astn_sealed_target_to_paragraph.Document(
+                $,
+            ),
+        })
+    )
+)

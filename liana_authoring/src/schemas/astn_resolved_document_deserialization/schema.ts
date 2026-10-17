@@ -1,0 +1,1 @@
+export * from "liana-runtime/modules/resolved_document_deserialization/schemas/resolved_document_deserialization/schema"

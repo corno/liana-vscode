@@ -1,0 +1,185 @@
+import * as p_ from 'pareto-core/transformer'
+
+
+//schemas
+import type * as s_in from "../../../schemas/unmarshall_errors/schema.js"
+import type * as s_out from "pareto-fountain-pen/modules/rich_phrase/schemas/rich_phrase/schema"
+
+
+namespace declarations {
+    export type Error = p_.Transformer<
+        s_in.Errors.L,
+        s_out.Phrase
+    >
+    export type Warning = p_.Transformer<
+        s_in.Warnings.L,
+        s_out.Phrase
+    >
+}
+
+//dependencies
+
+//shorthands
+import * as sh from "pareto-fountain-pen/modules/rich_phrase/schemas/rich_phrase/shorthands/deprecated"
+
+export const Error: declarations.Error = ($) => sh.ph.composed(
+    p_.from.state($.type).decide(
+        ($): s_out.Phrases => {
+            switch ($[0]) {
+                case 'dictionary': return p_.option($, ($) => p_.from.state($).decide(
+                    ($) => {
+                        switch ($[0]) {
+                            case 'duplicate entry': return p_.option($, ($) => p_.literal.list([
+                                sh.ph.text("duplicate entry \""),
+                                sh.ph.text($.name),
+                                sh.ph.text("\"")
+                            ]
+                            ))
+
+                            default: return p_.exhaustive($[0])
+                        }
+                    }))
+                case 'value': return p_.option($, ($) => p_.from.state($).decide(
+                    ($) => {
+                        switch ($[0]) {
+                            case 'invalid type': return p_.option($, ($) => p_.literal.list([
+                                sh.ph.text("invalid value type, expected "),
+                                sh.ph.rich_phrase(
+                                    p_.from.list($.expected).map(
+                                        ($) => sh.ph.composed(p_.literal.list([
+                                            sh.ph.text("'"),
+                                            sh.ph.text(p_.from.state($).decide(
+                                                ($) => {
+                                                    switch ($[0]) {
+                                                        case 'dictionary': return "dictionary"
+                                                        case 'group': return "group"
+                                                        case 'list': return "list"
+                                                        case 'nothing': return "nothing"
+                                                        case 'optional': return "optional"
+                                                        case 'state': return "state"
+                                                        case 'text': return "text"
+                                                        default: return p_.exhaustive($[0])
+                                                    }
+                                                }
+                                            )),
+                                            sh.ph.text("'")
+                                        ]))
+                                    ),
+                                    sh.ph.text("something"),
+                                    null,
+                                    sh.ph.text(" or "),
+                                    null,
+
+                                )
+                            ]))
+                            case 'missing': return p_.option($, ($) => p_.literal.list([
+                                sh.ph.text("missing value")
+                            ]))
+
+                            default: return p_.exhaustive($[0])
+                        }
+                    }))
+                case 'group': return p_.option($, ($) => p_.from.state($).decide(
+                    ($) => {
+                        switch ($[0]) {
+                            case 'duplicate property': return p_.option($, ($) => p_.literal.list([
+                                sh.ph.text("duplicate property \""),
+                                sh.ph.text($.name),
+                                sh.ph.text("\"")
+                            ]))
+                            case 'missing property': return p_.option($, ($) => p_.literal.list([
+                                sh.ph.text("missing property '"),
+                                sh.ph.text($.name),
+                                sh.ph.text("'")
+                            ]))
+                            case 'missing property value': return p_.option($, ($) => p_.literal.list([
+                                sh.ph.text("missing property value'"),
+                                sh.ph.text($.name),
+                                sh.ph.text("'")
+                            ]))
+                            case 'superfluous property': return p_.option($, ($) => p_.literal.segmented_list([
+                                p_.literal.list([
+                                    sh.ph.text("superfluous property"),
+                                ]),
+                                p_.from.optional($.name).decide(
+                                    ($) => p_.literal.list([
+                                        sh.ph.text(" '"),
+                                        sh.ph.text($),
+                                        sh.ph.text("'")
+                                    ]),
+                                    () => p_.literal.list([])
+                                )
+                            ]))
+
+                            default: return p_.exhaustive($[0])
+                        }
+                    }))
+                case 'state': return p_.option($, ($) => p_.from.state($).decide(
+                    ($) => {
+                        switch ($[0]) {
+                            case 'missing option name': return p_.option($, ($) => p_.literal.list([
+                                sh.ph.text("missing option name")
+                            ]))
+                            case 'missing option': return p_.option($, ($) => p_.literal.list([
+                                sh.ph.text("missing option")
+                            ]))
+                            case 'missing value': return p_.option($, ($) => p_.literal.list([
+                                sh.ph.text("missing value")
+                            ]))
+                            case 'more than 2 items in list': return p_.option($, ($) => p_.literal.list([
+                                sh.ph.text("more than 2 items in list")
+                            ]))
+                            case 'option name is not a text': return p_.option($, ($) => p_.literal.list([
+                                sh.ph.text("option name is not a text")
+                            ]))
+                            case 'unknown option': return p_.option($, ($) => p_.literal.list([
+                                sh.ph.text("unknown option: '"),
+                                sh.ph.text($.found),
+                                sh.ph.text("', expected one of "), sh.ph.rich_phrase(
+                                    p_.from.dictionary($.expected).convert_to_list(
+                                        ($, id) => sh.ph.composed(p_.literal.list([
+                                            sh.ph.text("'"),
+                                            sh.ph.text(id),
+                                            sh.ph.text("'")
+                                        ]))
+                                    ),
+                                    sh.ph.text("something"),
+                                    null,
+                                    sh.ph.text(" or "),
+                                    null,
+
+                                )
+                            ]))
+                            default: return p_.exhaustive($[0])
+                        }
+                    }))
+                default: return p_.exhaustive($[0])
+            }
+        })
+)
+
+
+export const Warning: declarations.Warning = ($) => sh.ph.composed(
+    p_.from.state($.type).decide(
+        ($) => {
+            switch ($[0]) {
+                case 'expected apostrophed text': return p_.option($, ($) => p_.literal.list([
+                    sh.ph.text("Expected a text with apostrophes (')")
+                ]))
+                case 'expected backticked text': return p_.option($, ($) => p_.literal.list([
+                    sh.ph.text("Expected a text with backticks (`)")
+                ]))
+                case 'expected quoted text': return p_.option($, ($) => p_.literal.list([
+                    sh.ph.text("Expected a text with quotes (\")")
+                ]))
+                case 'expected undelimited text': return p_.option($, ($) => p_.literal.list([
+                    sh.ph.text("Expected a text without delimiters")
+                ]))
+                case 'expected a group': return p_.option($, ($) => p_.literal.list([
+                    sh.ph.text("Expected a group")
+                ]))
+                default: return p_.exhaustive($[0])
+            }
+        }
+    )
+)

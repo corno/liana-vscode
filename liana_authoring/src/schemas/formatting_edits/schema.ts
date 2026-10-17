@@ -1,0 +1,5 @@
+import * as p_ from 'pareto-core/schema'
+
+import type * as s_text_edits from "../text_edits/schema.js"
+
+export type Optional_Formatting_Edit = p_.Optional_Value<s_text_edits.Text_Edits.L.replace>
