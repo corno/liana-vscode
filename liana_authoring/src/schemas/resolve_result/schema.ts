@@ -10,6 +10,7 @@ export type Document = {
 }
 
 export type Value = {
+    'reference candidates'?: p_.Optional_Value<p_.List<string>>
     'constraints': p_.Dictionary<Selection>
     'definition': s_schema.Resolver_Value
     'unmarshalled': s_unmarshall_result.Value

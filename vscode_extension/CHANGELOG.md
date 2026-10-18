@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 ### Added
+- Lookup-driven reference completion, including dependent and cyclic sibling
+  lookups, with whole-token replacement and quoted identifier insertion.
 - Schema-driven selected-reference diagnostics at the identifier token, including
   missing dictionary entries and forbidden acyclic dependencies.
 - Deferred cyclic lookups and dependent lookup traversal through components,
@@ -13,6 +15,11 @@
   per-option payload/context selections; typed consumers verify producer types.
 
 ### Fixed
+- Normalize forwarded type-parameter values and derived component payloads using
+  their declared schema types, restoring signature-dependent argument diagnostics.
+- Argument benchmarks allow partial dictionaries as the handwritten resolver does;
+  supplied keys and forwarded parameter references are independently checked.
+- Reference skeleton completion inserts `#` instead of the placeholder `'...'`.
 - Dictionary benchmarks now reject unknown keys and enforce complete coverage
   when their explicit `dense` flag is set, including resolver/signature matching.
 - The authoring template binds local option constraints for state-option and

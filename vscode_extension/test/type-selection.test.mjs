@@ -23,6 +23,9 @@ const resolveErrors = require('liana-authoring/schemas/resolve_result/transforme
 const resolver = require('liana-authoring/schemas/unmarshall_result/transformers/resolve_result')
 const { $$: seal } = require('../client/out/helpers/seal.js')
 const { create_cache } = require('../server/out/core/cache.js')
+const { create_on_completion } = require('../server/out/connection/on_completion.js')
+const completion = require('liana-authoring/schemas/resolve_result/transformers/completion_suggestions')
+const unmarshalCompletion = require('liana-authoring/schemas/unmarshall_result/transformers/completion_suggestions')
 const p = require('pareto-core/transformer')
 
 const chars = source => p.literal.list(Array.from(source, c => c.codePointAt(0)))
@@ -59,6 +62,22 @@ const loadWithSchema = async (source, schema) => {
         if (result[0] === 'error') assert.fail(JSON.stringify(result[1]))
         assert.equal(result[1][0], 'constrained')
         return result[1][1]
+    } finally {
+        rmSync(dir, { recursive: true, force: true })
+    }
+}
+
+const complete = async (source, schema, offset) => {
+    const dir = mkdtempSync(join(tmpdir(), 'liana-completion-'))
+    try {
+        mkdirSync(join(dir, '.liana'))
+        writeFileSync(join(dir, '.liana', 'schema.slna'), schema)
+        const doc = TextDocument.create(pathToFileURL(join(dir, 'document.lna')).href, 'liana', 1, source)
+        return await create_on_completion({
+            documents: { get: () => doc },
+            cache: { schemas: create_cache(), documents: create_cache() },
+            'document notation styles': new Map(),
+        })({ textDocument: { uri: doc.uri }, position: doc.positionAt(offset) })
     } finally {
         rmSync(dir, { recursive: true, force: true })
     }
@@ -342,6 +361,57 @@ test('failed lookup sources do not produce cascading missing-reference errors', 
     }
 })
 
+test('reference skeleton completion inserts a missing marker rather than an ellipsis', () => {
+    const schema = dependentReferenceSchema()
+    const source = '(`member`: # `chosen`: # `entries`: {})'
+    const result = unmarshalCompletion.Document(document(source, schema), {
+        position: { line: 0, character: source.indexOf('#') }, indent: '    ', style: ['verbose', null],
+    }).__get_raw()[0]
+    assert.equal(result.suggestions.__get_raw()[0]['insert lines'].__get_raw().join('\n'), '#')
+})
+
+test('reference completion replaces missing markers and whole quoted tokens using dependent lookups', async () => {
+    const schema = dependentReferenceSchema()
+    for (const reference of ['#', "'part'", '"part"', '`part`', 'part', '"par\nt"']) {
+        const source = `(\`member\`: ${reference} \`chosen\`: 'Known' \`entries\`: {'Known': (\`members\`: {'alpha': ~ 'beta': ~})})`
+        const offset = source.indexOf(reference) + (reference === '#' ? 0 : 2)
+        const result = await complete(source, schema, offset)
+        assert.deepEqual(result.items.map(item => item.label), ['alpha', 'beta'])
+        const edit = result.items[0].textEdit
+        assert.equal(edit.range.start.character, source.indexOf(reference))
+        const doc = TextDocument.create('file:///completion.lna', 'liana', 1, source)
+        assert.deepEqual(edit.range.end, doc.positionAt(source.indexOf(reference) + reference.length))
+        assert.equal(edit.newText, '"alpha"')
+        assert.equal(result.items[0].insertTextFormat, 1)
+    }
+})
+
+test('reference completion quotes empty and special identifiers without snippet interpretation', async () => {
+    const schema = dependentReferenceSchema()
+    const source = "(`member`: # `chosen`: # `entries`: { '': (`members`: {}) \"a'b\\\\c$1}\": (`members`: {}) })"
+    const result = await complete(source, schema, source.indexOf('#', source.indexOf('#') + 1))
+    assert.equal(result.items.length, 2)
+    assert.equal(result.items[0].textEdit.newText, '""')
+    const special = result.items[1]
+    assert.equal(special.insertTextFormat, 1)
+    const updated = source.slice(0, special.textEdit.range.start.character) + special.textEdit.newText + source.slice(special.textEdit.range.end.character)
+    const diagnostics = resolveDiagnostics.Document(await loadWithSchema(updated, schema)).__get_raw()
+    assert.deepEqual(diagnostics, [])
+})
+
+test('reference completion supports cyclic sibling lookups forwarded through components and suppresses invalid sources', async () => {
+    for (const mode of ['internal', 'internal acyclic']) {
+        const source = specification(`| \`component\` (\`type\`: | \`${mode}\` # \`results\`: _)`)
+        const result = await complete(source, template(), source.indexOf('#'))
+        assert.ok(result.items.some(item => item.label === 'Root'))
+    }
+    const invalid = "(`member`: # `chosen`: 'missing' `entries`: #)"
+    const suggestions = completion.Document(await loadWithSchema(invalid, dependentReferenceSchema()), {
+        position: { line: 0, character: invalid.indexOf('#') }, indent: '    ', style: ['verbose', null],
+    }).__get_raw()[0]
+    assert.ok(!suggestions || suggestions.suggestions.__get_raw().every(item => item['insert lines'].__get_raw().join('') === '#'))
+})
+
 const benchmarkSchema = dense => specification(`| \`group\` {
     'supplied': (\`description\`: _ \`value\`: | \`dictionary\` (\`value\`: | \`nothing\` ~))
     'expected': (\`description\`: _ \`value\`: | \`dictionary\` (\`value\`: | \`nothing\` ~))
@@ -353,6 +423,59 @@ const benchmarkSchema = dense => specification(`| \`group\` {
             \`resulting dictionary\`: ~ \`dense\`: ${dense})))
     'expected': (\`definition\`: ~ \`resolver\`: | \`dictionary\` (\`definition\`: ~ \`resolver\`: | \`nothing\` ~ \`benchmark\`: _))
 }`)
+
+const argumentBindingSchema = args => {
+    const parameter = `(\`type\`: (\`location\`: | \`internal\` 'Leaf' \`resulting type\`: ~) \`presence\`: | \`optional\` ~)`
+    const signature = types => `(\`type\`: ~ \`parameters\`: | \`local\` (\`types\`: ${types} \`lookups\`: {}) \`resolved parameters\`: ~)`
+    return `(\`schema\`: (
+        \`basic types\`: {}
+        \`types\`: {
+            'Root': (\`root value\`: | \`component\` (\`type\`: | \`internal acyclic\` 'Leaf' \`results\`: _))
+            'Leaf': (\`root value\`: | \`nothing\` ~)
+        }
+        \`signatures\`: {
+            'Root': ${signature(`{ 'input': ${parameter} }`)}
+            'Leaf': ${signature(`{ 'child': ${parameter} }`)}
+        }
+        \`resolvers\`: {
+            'Root': (\`signature\`: ~ \`root value resolver\`: | \`component\` (
+                \`definition\`: ~ \`location\`: | \`internal\` 'Leaf' \`signature\`: ~
+                \`arguments\`: ${args} \`constraints\`: {}))
+            'Leaf': (\`signature\`: ~ \`root value resolver\`: | \`nothing\` ~)
+        }
+    ) \`root type\`: 'Root')`
+}
+
+test('argument diagnostics follow handwritten pass-through and partial-dictionary acceptance', async () => {
+    for (const args of [
+        '_',
+        '* (`types`: _ `lookups`: _)',
+        '* (`types`: * {} `lookups`: * {})',
+        '* (`types`: * { \'child\': | `parameter` \'input\' } `lookups`: * {})',
+        '* (`types`: * { \'child\': | `optional` | `not set` ~ } `lookups`: * {})',
+    ]) {
+        const source = argumentBindingSchema(args)
+        assert.doesNotThrow(() => parse(source))
+        assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(source, template())).__get_raw(), [])
+    }
+})
+
+test('argument keys and parameter references are independently checked against callee and caller signatures', async () => {
+    for (const [key, reference] of [['child', 'wrong-input'], ['wrong-child', 'input'], ['wrong-child', 'wrong-input']]) {
+        const source = argumentBindingSchema(`* (\`types\`: * { '${key}': | \`parameter\` '${reference}' } \`lookups\`: * {})`)
+        assert.throws(() => parse(source))
+        const diagnostics = resolveDiagnostics.Document(await loadWithSchema(source, template())).__get_raw()
+        const expected = []
+        if (key !== 'child') expected.push(`Entry '${key}' does not exist in the benchmark dictionary.`)
+        if (reference !== 'input') expected.push(`Reference '${reference}' does not exist.`)
+        assert.deepEqual(diagnostics.map(d => d.message).sort(), expected.sort())
+        for (const diagnostic of diagnostics) {
+            const range = diagnostic.range.__get_raw()[0][1]
+            const id = diagnostic.message.startsWith('Entry') ? key : reference
+            assert.equal(source.slice(range.start.absolute, range.end.absolute), `'${id}'`)
+        }
+    }
+})
 
 test('sparse benchmarks validate supplied keys without requiring complete coverage', async () => {
     const schema = benchmarkSchema(false)

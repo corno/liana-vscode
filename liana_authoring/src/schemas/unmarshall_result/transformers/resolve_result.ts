@@ -60,6 +60,7 @@ namespace temp {
         'siblings': {
             'acyclic': p_i.lookup.Acyclic<s_out.Entry>
             'cyclic': p_i.lookup.Cyclic<s_out.Entry>
+            'keys'?: p_di.List<string>
         }
         'properties'?: p_i.lookup.Acyclic<s_out.Property> | undefined
         'parent properties'?: p_i.lookup.Acyclic<s_out.Property> | undefined
@@ -79,8 +80,8 @@ namespace temp {
 
     export type Lookup =
         | ['constraint failed', string]
-        | ['acyclic', p_i.lookup.Acyclic<s_out.Entry>]
-        | ['cyclic', p_i.lookup.Cyclic<s_out.Entry>]
+        | ['acyclic', p_i.lookup.Acyclic<s_out.Entry>, p_di.List<string>?]
+        | ['cyclic', p_i.lookup.Cyclic<s_out.Entry>, p_di.List<string>?]
         | ['unavailable', null]
         | ['cycle', p_di.List<string>]
 
@@ -250,7 +251,26 @@ const Relative = (
                     default: return p_.exhaustive(step[0])
                 }
                 })
-                return next[0] === 'constraint failed' ? next : path(rest, next)
+                if (next[0] === 'constraint failed') return next
+                if (step[0] === 'reference' && next[0] === 'resolved') {
+                    const definition = step[1].definition
+                    const referent = definition.referent.path['resulting node']
+                    const target = definition.type[0] === 'selected' && referent[0] === 'dictionary' ? referent[1].value : referent
+                    if (target[0] === 'component') {
+                        const type = target[1].type
+                        const root = type[0] === 'internal'
+                            ? type[1]['l entry'].get_circular_dependent()['root value']
+                            : type[1]['l entry']['root value']
+                        // Derived selections can already expose the declared component payload.
+                        if (next[1].unmarshalled.definition === root) {
+                            return p_.from.list(rest).on_has_first_item(
+                                (following, tail) => following[0] === 'component' ? path(tail, next) : path(rest, next),
+                                () => next,
+                            )
+                        }
+                    }
+                }
+                return path(rest, next)
             },
             () => current
         )
@@ -374,14 +394,15 @@ const Lookup = ($: s_in_definition.Resolver_Lookup_Selection, context: temp.Cont
         case 'acyclic': {
             const lookup = $.type[1]
             switch (lookup[0]) {
-                case 'siblings': return ['acyclic', context.lookups.siblings.acyclic]
+                case 'siblings': return ['acyclic', context.lookups.siblings.acyclic, context.lookups.siblings.keys ?? p_.literal.list([])]
                 case 'resolved dictionary': {
                     const selection = Guaranteed(lookup[1].selection, context)
                     switch (selection[0]) {
                         case 'resolved': {
                             const value = selection[1]['unmarshall result']
                             return value[0] === 'success' && value[1][0] === 'dictionary'
-                                ? ['acyclic', p_lookup.acyclic.from_resolved_dictionary(value[1][1].entries)]
+                                ? ['acyclic', p_lookup.acyclic.from_resolved_dictionary(value[1][1].entries),
+                                    p_.from.dictionary(value[1][1].entries).convert_to_list((_, id) => id)]
                                 : ['unavailable', null]
                         }
                         case 'not set': return ['unavailable', null]
@@ -391,7 +412,7 @@ const Lookup = ($: s_in_definition.Resolver_Lookup_Selection, context: temp.Cont
                 default: return p_.exhaustive(lookup[0])
             }
         }
-        case 'cyclic': return ['cyclic', context.lookups.siblings.cyclic]
+        case 'cyclic': return ['cyclic', context.lookups.siblings.cyclic, context.lookups.siblings.keys ?? p_.literal.list([])]
         case 'parameter': {
             const parameter = $.type[1]
             switch (parameter['l entry'].type[0]) {
@@ -599,6 +620,15 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
     }
     const checks = constraints()
     return {
+        // Enumerate only when requested, after sibling resolution has finished.
+        get 'reference candidates'() {
+                const definition = $p.definition
+                if (definition[0] !== 'reference' || definition[1].type[0] !== 'selected') return p_.literal.not_set<p_di.List<string>>()
+                const lookup = Lookup(definition[1].type[1].lookup, context)
+                return lookup[0] === 'acyclic' || lookup[0] === 'cyclic'
+                    ? p_.literal.set(lookup[2] ?? p_.literal.list<string>([]))
+                    : p_.literal.not_set<p_di.List<string>>()
+        },
         'constraints': checks,
         'definition': $p.definition,
         'unmarshalled': $,
@@ -662,7 +692,7 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                                                                     }
                                                                                 }
                                                                             )
-                                                                            return p_i_temp.from_option_decide(
+                                                                            const assigned = p_i_temp.from_option_decide(
                                                                                 def.arguments,
                                                                                 ($) => p_i_temp.from_option_decide(
                                                                                     $.types,
@@ -688,6 +718,9 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                                                                 ),
                                                                                 omitted
                                                                             )
+                                                                            return assigned[0] === 'resolved'
+                                                                                ? Referenced_Value(assigned, parameter.type['resulting type']['root value'])
+                                                                                : assigned
                                                                         }
                                                                     ),
                                                                 }
@@ -700,6 +733,9 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                     })
                                     case 'dictionary': return p_.option($, ($) => {
                                         const def = $
+                                        const siblingKeys = unmarshalled_value[0] === 'dictionary'
+                                            ? p_.from.dictionary(unmarshalled_value[1].derived.entries).convert_to_list((_, id) => id)
+                                            : p_.literal.list<string>([])
                                         const benchmark = p_.from.optional(def.benchmark).map(($) => ({
                                             selection: Referenced_Value(Guaranteed($.selection, context), ['dictionary', $['resulting dictionary']]),
                                             dense: $.dense,
@@ -727,6 +763,7 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                                                                                     'siblings': {
                                                                                                         'acyclic': $al,
                                                                                                         'cyclic': $cl,
+                                                                                                        'keys': siblingKeys,
                                                                                                     },
                                                                                                     'linked entry': Linked_Entry(benchmark, id),
                                                                                                 },

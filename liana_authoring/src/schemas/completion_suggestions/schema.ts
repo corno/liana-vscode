@@ -5,6 +5,7 @@ import * as p_di from 'pareto-core/schema'
 import * as i_imports_location from "../location/schema.js"
 
 import * as i_imports_text_edits from "../text_edits/schema.js"
+import type * as s_location from "astn-runtime/modules/deserialization/schemas/location/schema"
 
 export namespace Completion_Suggestions_ {
     
@@ -56,6 +57,7 @@ export namespace Completion_Suggestions_ {
     }
     
     export type O = {
+        readonly 'replacement range'?: s_location.Range
         readonly 'type': O.type_
         readonly 'suggestions': O.suggestions
     }

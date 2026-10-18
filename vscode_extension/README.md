@@ -100,12 +100,24 @@ cyclic lookups allow forward and mutual references. Dependent dictionary lookups
 can navigate components, properties, and resolved references. Invalid lookup
 sources do not produce cascading missing-reference errors.
 
+Reference completion offers identifiers from the reference's actual lookup,
+including sibling, forwarded-parameter, and dependent dictionary lookups.
+Selecting a candidate replaces the whole reference token or `#` marker and
+inserts safely quoted text. Reference skeletons use `#`, not a fictitious
+`'...'` identifier. Derived references do not offer editable identifiers.
+
 Dictionary benchmarks validate every supplied identifier against the selected
 benchmark dictionary. The schema's explicit `dense` flag additionally requires
 every benchmark identifier to be present. Sparse benchmarks permit omissions,
 but not unknown identifiers. Unexpected entries are reported at their identifier;
 missing dense entries are reported on the supplied dictionary. Invalid inputs
 suppress cascading benchmark diagnostics.
+
+Component arguments follow the handwritten resolver: argument groups and
+categories can be omitted, and explicit dictionaries can be partial. Type
+parameter bindings resolve their source name against the caller's signature and
+their destination name against the callee's signature. Argument benchmarks are
+sparse; resolver/signature coverage remains dense.
 
 List and state results are explicitly declared by their producers. A list result
 declares its `type`, an `initial` selection, and a `next` selection evaluated after

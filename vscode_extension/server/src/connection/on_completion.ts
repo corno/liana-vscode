@@ -2,6 +2,7 @@ import * as p_ from "pareto-core/transformer"
 
 //data types
 import * as t_unmarshall_result_to_completion_suggestions from "liana-authoring/schemas/unmarshall_result/transformers/completion_suggestions"
+import * as t_resolved_completion from "liana-authoring/schemas/resolve_result/transformers/completion_suggestions"
 
 import { load_document } from '../to_be_backend/load_document'
 
@@ -43,25 +44,24 @@ export const create_on_completion: (
 				(instance) => {
 					let items: vscode_node.CompletionItem[] = []
 
-					const completion_suggestions_raw = t_unmarshall_result_to_completion_suggestions.Document(
-						p_.from.state(instance).decide(($) => {
-							switch ($[0]) {
-								case 'constrained': return p_.option($, ($) => $.unmarshalled)
-								case 'unconstrained': return p_.option($, ($) => $)
-								default: return p_.exhaustive($[0])
-							}
-						}),
-						{
+					const completionParameters: {
+						indent: string
+						position: vscode_node.Position
+						style: ['verbose', null] | ['concise', null]
+					} = {
 							'indent': "    ",
 							'position': params.position,
-							'style': (connection_context['document notation styles'].get(params.textDocument.uri) || connection_context['document notation styles'].get('__default__') || 'verbose') === 'verbose' ? ['verbose', null] : ['concise', null]
-						}
-					).__get_raw()
+							'style': (connection_context['document notation styles'].get(params.textDocument.uri) || connection_context['document notation styles'].get('__default__') || 'verbose') === 'verbose' ? ['verbose', null] : ['concise', null],
+					}
+					const completion_suggestions_raw = (instance[0] === 'constrained'
+						? t_resolved_completion.Document(instance[1], completionParameters)
+						: t_unmarshall_result_to_completion_suggestions.Document(instance[1], completionParameters)).__get_raw()
 					if (completion_suggestions_raw !== null) {
 						const $ = completion_suggestions_raw[0]
 
 
 						const type = $.type
+						const replacementRange = $['replacement range']
 
 						// Backend signals semantic intent through type
 						// For missing value/option, hash must be present (assertion)
@@ -101,7 +101,15 @@ export const create_on_completion: (
 							}
 
 							// Frontend handles hash + filter text removal based on backend's semantic signal
-							if (shouldRemoveHash) {
+							if (type[0] === 'reference' && replacementRange) {
+								const range = replacementRange
+								completionItem.insertTextFormat = vscode_node.InsertTextFormat.PlainText
+								completionItem.textEdit = vscode_node.TextEdit.replace(
+									vscode_node.Range.create(range.start.relative.line, range.start.relative.column,
+										range.end.relative.line, range.end.relative.column),
+									$['insert lines'].__get_raw().join("\n"),
+								)
+							} else if (shouldRemoveHash) {
 
 
 								const fullLine = doc.getText({

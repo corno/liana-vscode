@@ -83,17 +83,7 @@ export const Found: declarations_.Found = ($, $p) => {
                     case 'reference': return p_.option($, ($) => p_.literal.list<Minimal_Completion_Suggestion>([
                         {
                             'label': "",
-                            'insert value': {
-                                'data': ['concrete', {
-                                    'type': ['text', {
-                                        'delimiter': ['apostrophe', null],
-                                        'value': "...",
-                                        'trivia': {
-                                            'comments': p_.literal.list([])
-                                        }
-                                    }]
-                                }]
-                            },
+                            'insert value': t_liana_schema_to_authoring_target.Value(['reference', $], $p),
                         }
                     ]))
                     case 'group': return p_.option($, ($) => {
