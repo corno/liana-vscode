@@ -17,6 +17,8 @@
   per-option payload/context selections; typed consumers verify producer types.
 
 ### Fixed
+- Do not suggest replacing a missing reference with another `#` when its lookup
+  is unavailable or empty; keep reference markers in generated parent skeletons.
 - Keep reference suggestions visible inside existing quoted identifiers by
   matching completion filter text to the original token's delimiters.
 - Correct the bundled self-schema's `optional value` constraint to require an

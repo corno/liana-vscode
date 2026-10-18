@@ -361,13 +361,19 @@ test('failed lookup sources do not produce cascading missing-reference errors', 
     }
 })
 
-test('reference skeleton completion inserts a missing marker rather than an ellipsis', () => {
+test('parent skeletons retain reference markers without offering marker-to-marker completion', () => {
     const schema = dependentReferenceSchema()
     const source = '(`member`: # `chosen`: # `entries`: {})'
-    const result = unmarshalCompletion.Document(document(source, schema), {
+    assert.equal(unmarshalCompletion.Document(document(source, schema), {
         position: { line: 0, character: source.indexOf('#') }, indent: '    ', style: ['verbose', null],
+    }).__get_raw(), null)
+    const result = unmarshalCompletion.Document(document('#', schema), {
+        position: { line: 0, character: 0 }, indent: '    ', style: ['verbose', null],
     }).__get_raw()[0]
-    assert.equal(result.suggestions.__get_raw()[0]['insert lines'].__get_raw().join('\n'), '#')
+    const text = result.suggestions.__get_raw()[0]['insert lines'].__get_raw().join('\n')
+    assert.match(text, /`member`: #/)
+    assert.match(text, /`chosen`: #/)
+    assert.doesNotMatch(text, /'\.\.\.'/)
 })
 
 test('reference completion replaces missing markers and whole quoted tokens using dependent lookups', async () => {
@@ -430,11 +436,14 @@ test('reference completion supports cyclic sibling lookups forwarded through com
         const result = await complete(source, template(), source.indexOf('#'))
         assert.ok(result.items.some(item => item.label === 'Root'))
     }
-    const invalid = "(`member`: # `chosen`: 'missing' `entries`: #)"
-    const suggestions = completion.Document(await loadWithSchema(invalid, dependentReferenceSchema()), {
-        position: { line: 0, character: invalid.indexOf('#') }, indent: '    ', style: ['verbose', null],
-    }).__get_raw()[0]
-    assert.ok(!suggestions || suggestions.suggestions.__get_raw().every(item => item['insert lines'].__get_raw().join('') === '#'))
+    for (const invalid of [
+        "(`member`: # `chosen`: 'missing' `entries`: #)",
+        "(`member`: # `chosen`: 'Known' `entries`: {'Known': (`members`: {})})",
+        "(`member`: # `chosen`: 'Known' `entries`: {'Known': (`members`: #)})",
+    ]) {
+        const result = await complete(invalid, dependentReferenceSchema(), invalid.indexOf('#'))
+        assert.deepEqual(result.items, [])
+    }
 })
 
 const benchmarkSchema = dense => specification(`| \`group\` {

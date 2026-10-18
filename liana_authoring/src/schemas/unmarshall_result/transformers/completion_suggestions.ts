@@ -158,17 +158,12 @@ export const Found: declarations_.Found = ($, $p) => {
     switch ($[0]) {
         case 'value': return p_.option($, ($): s_out.Completion_Suggestions => {
             const definition = $.definition
+            if (definition[0] === 'reference') return p_.literal.not_set()
 
             return p_.from.state($.instance.type).decide(
                 ($) => {
                     switch ($[0]) {
-                        case 'concrete': return p_.option($, ($) => p_.from.state(definition).decide(
-                            ($) => {
-                                switch ($[0]) {
-                                    case 'reference': return p_.option($, ($) => p_.literal.not_set()) //FIXME
-                                    default: return p_.literal.not_set()
-                                }
-                            }))
+                        case 'concrete': return p_.literal.not_set()
                         case 'include': return p_.option($, ($) => p_.literal.not_set())
                         case 'missing': return p_.option($, ($) => p_.literal.set({
                             'type': ['missing value', null],

@@ -105,6 +105,10 @@ including sibling, forwarded-parameter, and dependent dictionary lookups.
 Selecting a candidate replaces the whole reference token or `#` marker and
 inserts safely quoted text. Reference skeletons use `#`, not a fictitious
 `'...'` identifier. Derived references do not offer editable identifiers.
+Completing a reference marker offers actual lookup identifiers only. If the
+lookup is unavailable or empty, no replacement is offered; completion never
+replaces a reference marker with another marker. Parent skeletons still contain
+`#` for references that need to be filled in.
 Press **Ctrl+Space** inside a quoted reference or at a `#` marker to request
 suggestions. Filtering respects the token's quotes; selecting a suggestion still
 replaces the whole token.
