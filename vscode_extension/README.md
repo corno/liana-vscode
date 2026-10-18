@@ -100,6 +100,26 @@ cyclic lookups allow forward and mutual references. Dependent dictionary lookups
 can navigate components, properties, and resolved references. Invalid lookup
 sources do not produce cascading missing-reference errors.
 
+Use **F12** (Go to Definition), **Alt+F12** (Peek Definition), or **Ctrl+Click**
+on a reference to navigate to its target dictionary entry in the same document.
+Navigation follows the resolved lookup, including dependent and forwarded
+acyclic/cyclic lookups. Missing or unresolved references have no navigation target;
+derived `~` values are not editable references.
+
+Within the current document:
+- **Shift+F12** finds references from either a dictionary entry or one of its
+  resolved references.
+- Placing the cursor on either highlights the declaration and related references.
+- **F2** renames an entry and its resolved references together. Identical names in
+  other dictionaries are not changed. Rename checks for collisions, reparses the
+  proposed document, and verifies diagnostics and reference bindings before
+  returning versioned edits. Names are inserted as safely double-quoted identifiers.
+
+Rename reports an error rather than making a partial change if it would break
+implicit name or benchmark dependencies that are not explicit references.
+Missing/unresolved references cannot be renamed. These features do not search or
+edit other files.
+
 Reference completion offers identifiers from the reference's actual lookup,
 including sibling, forwarded-parameter, and dependent dictionary lookups.
 Selecting a candidate replaces the whole reference token or `#` marker and

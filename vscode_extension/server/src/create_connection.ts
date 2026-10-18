@@ -11,6 +11,10 @@ import { create_on_update_notation_style } from './connection/on_update_notation
 import { create_on_completion } from './connection/on_completion'
 import { create_on_completion_resolve } from './connection/on_completion_resolve'
 import { create_on_hover } from './connection/on_hover'
+import { create_on_definition } from './connection/on_definition'
+import { create_on_references } from './connection/on_references'
+import { create_on_document_highlight } from './connection/on_document_highlight'
+import { create_on_prepare_rename, create_on_rename } from './connection/on_rename'
 import { create_on_selection_ranges } from './connection/on_selection_ranges'
 import { create_on_code_action } from './connection/on_code_action'
 import { create_on_code_action_resolve } from './connection/on_code_action_resolve'
@@ -93,6 +97,11 @@ export const create_connection = (
 	connection.onHover(
 		create_on_hover(connection_context)
 	)
+	connection.onDefinition(create_on_definition(connection_context))
+	connection.onReferences(create_on_references(connection_context))
+	connection.onDocumentHighlight(create_on_document_highlight(connection_context))
+	connection.onPrepareRename(create_on_prepare_rename(connection_context))
+	connection.onRenameRequest(create_on_rename(connection_context))
 
 	connection.onCodeAction(
 		create_on_code_action(connection_context)

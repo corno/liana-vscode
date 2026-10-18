@@ -24,6 +24,11 @@ const resolver = require('liana-authoring/schemas/unmarshall_result/transformers
 const { $$: seal } = require('../client/out/helpers/seal.js')
 const { create_cache } = require('../server/out/core/cache.js')
 const { create_on_completion } = require('../server/out/connection/on_completion.js')
+const { create_on_definition } = require('../server/out/connection/on_definition.js')
+const { create_on_references } = require('../server/out/connection/on_references.js')
+const { create_on_document_highlight } = require('../server/out/connection/on_document_highlight.js')
+const { create_on_prepare_rename, create_on_rename } = require('../server/out/connection/on_rename.js')
+const { create_on_initialize } = require('../server/out/connection/on_initialize.js')
 const completion = require('liana-authoring/schemas/resolve_result/transformers/completion_suggestions')
 const unmarshalCompletion = require('liana-authoring/schemas/unmarshall_result/transformers/completion_suggestions')
 const p = require('pareto-core/transformer')
@@ -67,21 +72,28 @@ const loadWithSchema = async (source, schema) => {
     }
 }
 
-const complete = async (source, schema, offset) => {
+const requestAt = async (source, schema, offset, createHandler, parameters = {}) => {
     const dir = mkdtempSync(join(tmpdir(), 'liana-completion-'))
     try {
         mkdirSync(join(dir, '.liana'))
         writeFileSync(join(dir, '.liana', 'schema.slna'), schema)
         const doc = TextDocument.create(pathToFileURL(join(dir, 'document.lna')).href, 'liana', 1, source)
-        return await create_on_completion({
+        return await createHandler({
             documents: { get: () => doc },
             cache: { schemas: create_cache(), documents: create_cache() },
             'document notation styles': new Map(),
-        })({ textDocument: { uri: doc.uri }, position: doc.positionAt(offset) })
+        })({ textDocument: { uri: doc.uri }, position: doc.positionAt(offset), ...parameters })
     } finally {
         rmSync(dir, { recursive: true, force: true })
     }
 }
+
+const complete = (source, schema, offset) => requestAt(source, schema, offset, create_on_completion)
+const definitionAt = (source, schema, offset) => requestAt(source, schema, offset, create_on_definition)
+const referencesAt = (source, schema, offset, includeDeclaration = false) =>
+    requestAt(source, schema, offset, create_on_references, { context: { includeDeclaration } })
+const renameAt = (source, schema, offset, newName) =>
+    requestAt(source, schema, offset, create_on_rename, { newName })
 
 test('the shared loader selects root type directly from the flat schema resolvers', () => {
     const loaded = parse(specification())
@@ -359,6 +371,213 @@ test('failed lookup sources do not produce cascading missing-reference errors', 
         assert.ok(diagnostics.length <= 1)
         assert.ok(diagnostics.every(d => d.message === "Reference 'missing' does not exist."))
     }
+})
+
+test('definition navigation follows dependent references to exact dictionary key ranges', async () => {
+    const schema = dependentReferenceSchema()
+    for (const token of ["'alpha'", '"alpha"', '`alpha`', 'alpha']) {
+        const source = `(\`member\`: ${token} \`chosen\`: 'Known' \`entries\`: {'Known': (\`members\`: {'alpha': ~})})`
+        const links = await definitionAt(source, schema, source.indexOf(token) + 2)
+        assert.equal(links.length, 1)
+        const doc = TextDocument.create('file:///test.lna', 'liana', 1, source)
+        assert.equal(doc.getText(links[0].originSelectionRange), token)
+        assert.equal(doc.getText(links[0].targetSelectionRange), "'alpha'")
+        assert.equal(doc.offsetAt(links[0].targetSelectionRange.start), source.lastIndexOf("'alpha'"))
+        assert.deepEqual(links[0].targetRange, links[0].targetSelectionRange)
+        assert.match(links[0].targetUri, /^file:.*document\.lna$/)
+    }
+    const multiline = "(\n\t`member`: \"a\\nb\" `chosen`: 'Known'\n\t`entries`: {'Known': (`members`: {\"a\\nb\": ~})})"
+    const links = await definitionAt(multiline, schema, multiline.indexOf('"a\\nb"') + 2)
+    const doc = TextDocument.create('file:///test.lna', 'liana', 1, multiline)
+    assert.equal(doc.offsetAt(links[0].targetSelectionRange.start), multiline.lastIndexOf('"a\\nb"'))
+    assert.equal(doc.getText(links[0].targetSelectionRange), '"a\\nb"')
+})
+
+test('definition navigation supports forwarded acyclic and cyclic lookups, including forward targets', async () => {
+    for (const mode of ['internal', 'internal acyclic']) {
+        const root = typeReference('Other', mode)
+        const source = specification(root).replace(
+            '`signatures`: {',
+            '`signatures`: { \'Other\': (`type`: ~ `parameters`: | `local` (`types`: {} `lookups`: {}) `resolved parameters`: ~)',
+        ).replace(
+            `\`types\`: { 'Root': (\`root value\`: ${root}) }`,
+            `\`types\`: { 'Root': (\`root value\`: ${root}) 'Other': (\`root value\`: | \`nothing\` ~) }`,
+        )
+        const links = await definitionAt(source, template(), source.indexOf("'Other'") + 2)
+        // The signature dictionary is a separate lookup from the types dictionary.
+        const doc = TextDocument.create('file:///test.lna', 'liana', 1, source)
+        assert.equal(links.length, 1)
+        assert.equal(doc.offsetAt(links[0].targetSelectionRange.start), source.indexOf("'Other':"))
+    }
+    const source = specification(typeReference('Root', 'internal'))
+    const links = await definitionAt(source, template(), source.indexOf("'Root'", source.indexOf('`internal`')) + 2)
+    assert.equal(links.length, 1)
+    const doc = TextDocument.create('file:///test.lna', 'liana', 1, source)
+    assert.equal(doc.offsetAt(links[0].targetSelectionRange.start), source.indexOf("'Root'"))
+})
+
+test('definition navigation does not guess targets for missing, invalid, derived or non-reference values', async () => {
+    const schema = dependentReferenceSchema()
+    for (const source of [
+        "(`member`: # `chosen`: 'Known' `entries`: {})",
+        "(`member`: 'missing' `chosen`: 'Known' `entries`: {'Known': (`members`: {})})",
+        "(`member`: 'alpha' `chosen`: 'missing' `entries`: #)",
+        "(`member`: 'alpha' `chosen`: 'Known' `entries`: {'Known': (`members`: {'alpha': ~ 'alpha': ~})})",
+    ]) {
+        assert.equal(await definitionAt(source, schema, source.indexOf(':') + 3), null)
+    }
+    const source = specification()
+    assert.equal(await definitionAt(source, template(), source.indexOf('`nothing`') + 2), null)
+    assert.equal(await definitionAt(source, template(), source.indexOf('`type`: ~') + 8), null)
+    assert.equal(create_on_definition({ documents: { get: () => undefined } })({
+        textDocument: { uri: 'file:///closed.lna' }, position: { line: 0, character: 0 },
+    }), null)
+})
+
+test('the language server advertises definition navigation', () => {
+    const noop = () => {}
+    const result = create_on_initialize({
+        'set has configuration capability': noop,
+        'set has workspace folder capability': noop,
+        'set has diagnostic related information capability': noop,
+    })({ capabilities: {} })
+    assert.equal(result.capabilities.definitionProvider, true)
+    assert.equal(result.capabilities.referencesProvider, true)
+    assert.equal(result.capabilities.documentHighlightProvider, true)
+    assert.deepEqual(result.capabilities.renameProvider, { prepareProvider: true })
+})
+
+const identitySource = "(`member`: 'alpha' `chosen`: 'Known' `entries`: {'Known': (`members`: {'alpha': ~ 'beta': ~}) 'Other': (`members`: {'alpha': ~})})"
+const applyRename = (source, result) => {
+    assert.equal(result.documentChanges.length, 1)
+    assert.equal(result.documentChanges[0].textDocument.version, 1)
+    const doc = TextDocument.create('file:///test.lna', 'liana', 1, source)
+    return TextDocument.applyEdits(doc, result.documentChanges[0].edits)
+}
+
+test('references and highlights work from declarations and references without matching same-named entries', async () => {
+    const source = identitySource
+    const schema = dependentReferenceSchema()
+    const doc = TextDocument.create('file:///test.lna', 'liana', 1, source)
+    const reference = source.indexOf("'alpha'")
+    const declaration = source.indexOf("'alpha':")
+    const other = source.lastIndexOf("'alpha':")
+    for (const offset of [reference, declaration]) {
+        const refs = await referencesAt(source, schema, offset + 2)
+        assert.deepEqual(refs.map(ref => doc.offsetAt(ref.range.start)), [reference])
+        const all = await referencesAt(source, schema, offset + 2, true)
+        assert.deepEqual(all.map(ref => doc.offsetAt(ref.range.start)), [declaration, reference])
+        const highlights = await requestAt(source, schema, offset + 2, create_on_document_highlight)
+        assert.deepEqual(highlights.map(item => [doc.offsetAt(item.range.start), item.kind]), [
+            [declaration, 3], [reference, 2],
+        ])
+    }
+    assert.deepEqual(await referencesAt(source, schema, other + 2), [])
+    assert.equal((await referencesAt(source, schema, other + 2, true)).length, 1)
+})
+
+test('safe rename edits only the resolved declaration and its references with correct quoting', async () => {
+    for (const newName of ['renamed', '', 'two words', "a'b\"c\\$1}\n\r\t", '\u{1f600}', 'alpha']) {
+        const source = identitySource
+        const schema = dependentReferenceSchema()
+        for (const offset of [source.indexOf("'alpha'") + 2, source.indexOf("'alpha':") + 2]) {
+            const prepared = await requestAt(source, schema, offset, create_on_prepare_rename)
+            assert.equal(prepared.placeholder, 'alpha')
+            const doc = TextDocument.create('file:///test.lna', 'liana', 1, source)
+            assert.equal(doc.getText(prepared.range), "'alpha'")
+            const result = await renameAt(source, schema, offset, newName)
+            if (newName === 'alpha') {
+                assert.deepEqual(result.documentChanges, [])
+                continue
+            }
+            const updated = applyRename(source, result)
+            assert.equal(result.documentChanges[0].edits.length, 2)
+            assert.ok(updated.includes("'Other': (`members`: {'alpha': ~})"))
+            assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, schema)).__get_raw(), [])
+            assert.equal(result.documentChanges[0].edits[0].newText, JSON.stringify(newName))
+        }
+    }
+})
+
+test('renaming a dependent lookup owner preserves downstream reference bindings', async () => {
+    const source = identitySource
+    const schema = dependentReferenceSchema()
+    const result = await renameAt(source, schema, source.indexOf("'Known'") + 2, 'Renamed owner')
+    assert.equal(result.documentChanges[0].edits.length, 2)
+    const updated = applyRename(source, result)
+    assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, schema)).__get_raw(), [])
+    const refs = await referencesAt(updated, schema, updated.indexOf("'alpha'") + 2)
+    assert.equal(refs.length, 1)
+})
+
+test('safe rename rejects dictionary collisions and newly captured references', async () => {
+    const schema = dependentReferenceSchema()
+    await assert.rejects(renameAt(identitySource, schema, identitySource.indexOf("'alpha'") + 2, 'beta'), /already exists/)
+    const source = identitySource.replace("'alpha' `chosen`", "'missing' `chosen`")
+    await assert.rejects(renameAt(source, schema, source.indexOf("'alpha':") + 2, 'missing'), /reference binding/)
+})
+
+test('safe rename rejects implicit dependencies and invalid rename positions explicitly', async () => {
+    const source = specification()
+    await assert.rejects(renameAt(source, template(), source.indexOf("'Root':") + 2, 'Renamed'), /new diagnostic/)
+    await assert.rejects(renameAt(source, template(), source.indexOf('`nothing`') + 2, 'Renamed'), /requires a dictionary entry/)
+    await assert.rejects(requestAt(source, template(), source.indexOf('`nothing`') + 2, create_on_prepare_rename), /requires a dictionary entry/)
+    const invalid = identitySource.replace("'alpha' `chosen`", "'missing' `chosen`")
+    assert.deepEqual(await referencesAt(invalid, dependentReferenceSchema(), invalid.indexOf("'missing'") + 2), [])
+    assert.deepEqual(await requestAt(invalid, dependentReferenceSchema(), invalid.indexOf("'missing'") + 2, create_on_document_highlight), [])
+    await assert.rejects(renameAt(invalid, dependentReferenceSchema(), invalid.indexOf("'missing'") + 2, 'valid'), /requires a dictionary entry/)
+})
+
+test('references and highlights follow cyclic and acyclic targets without traversing reference cycles', async () => {
+    for (const mode of ['internal', 'internal acyclic']) {
+        const root = typeReference(mode === 'internal' ? 'Root' : 'Other', mode)
+        const source = mode === 'internal' ? specification(root) : specification(root).replace(
+            `\`types\`: { 'Root': (\`root value\`: ${root}) }`,
+            `\`types\`: { 'Root': (\`root value\`: ${root}) 'Other': (\`root value\`: | \`nothing\` ~) }`,
+        )
+        const name = mode === 'internal' ? "'Root'" : "'Other'"
+        const offset = source.indexOf(name, source.indexOf(`\`${mode}\``))
+        const refs = await referencesAt(source, template(), offset + 2)
+        assert.equal(refs.length, 1)
+        const doc = TextDocument.create('file:///test.lna', 'liana', 1, source)
+        assert.equal(doc.offsetAt(refs[0].range.start), offset)
+        const highlights = await requestAt(source, template(), offset + 2, create_on_document_highlight)
+        assert.equal(highlights.length, 2)
+    }
+})
+
+test('rename refuses partial edits to mutually cyclic symbols with implicit benchmark dependencies', async () => {
+    const schema = template()
+    const source = specification(typeReference('Other', 'internal')).replace(
+        '`types`: {',
+        `\`types\`: { 'Other': (\`root value\`: ${typeReference('Root', 'internal')})`,
+    )
+    const refs = await referencesAt(source, schema, source.indexOf("'Other':") + 2)
+    assert.equal(refs.length, 1)
+    await assert.rejects(renameAt(source, schema, source.indexOf("'Other':") + 2, 'renamed'), /new diagnostic/)
+})
+
+test('rename permits unrelated existing errors and emits versioned edits without stale cache results', async () => {
+    const schema = dependentReferenceSchema()
+    const source = identitySource.replace("'alpha' `chosen`", "'missing' `chosen`")
+    const offset = source.indexOf("'beta':") + 2
+    const result = await renameAt(source, schema, offset, 'unreferenced')
+    const updated = applyRename(source, result)
+    assert.equal(result.documentChanges[0].edits.length, 1)
+    assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, schema)).__get_raw().map(d => d.message),
+        ["Reference 'missing' does not exist."])
+    let calls = 0
+    await assert.rejects(requestAt(identitySource, schema, identitySource.indexOf("'alpha'") + 2, (context) =>
+        create_on_rename({
+            ...context,
+            documents: { get: uri => {
+                const doc = context.documents.get(uri)
+                return ++calls === 1 ? doc : TextDocument.create(doc.uri, doc.languageId, doc.version + 1, doc.getText())
+            } },
+        }), { newName: 'renamed' }), /document changed/)
+    assert.deepEqual(await referencesAt('(', schema, 0), [])
+    assert.deepEqual(await requestAt('(', schema, 0, create_on_document_highlight), [])
+    await assert.rejects(renameAt('(', schema, 0, 'renamed'), /could not be resolved/)
 })
 
 test('parent skeletons retain reference markers without offering marker-to-marker completion', () => {

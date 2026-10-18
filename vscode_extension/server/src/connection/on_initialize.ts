@@ -56,6 +56,10 @@ export const create_on_initialize: (
 					'workspaceDiagnostics': false
 				},
 				'hoverProvider': true,
+				'definitionProvider': true,
+				'referencesProvider': true,
+				'documentHighlightProvider': true,
+				'renameProvider': { prepareProvider: true },
 				'documentSymbolProvider': true,
 				'codeActionProvider': {
 					'codeActionKinds': [vscode_node.CodeActionKind.Refactor],

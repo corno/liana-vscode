@@ -3,6 +3,11 @@
 ## [Unreleased]
 
 ### Added
+- Same-document Find All References, declaration/reference highlights, and safe
+  rename based on resolved target identity. Rename rejects collisions, new
+  diagnostics, changed reference bindings, and stale document versions.
+- Go to Definition and Peek Definition for resolved dictionary references,
+  selecting the target entry's identifier through dependent and forwarded lookups.
 - State-option completion marks definitely failing entry constraints with
   strikethrough and explains the failed checks while keeping options selectable.
 - Lookup-driven reference completion, including dependent and cyclic sibling
