@@ -14,8 +14,7 @@ export const Document = ($: s_in.Document, parameters: {
     style: ['verbose', null] | ['concise', null]
 }): s_out.Completion_Suggestions => {
     const target = found.Document($.unmarshalled, parameters)
-    if (target[0] !== 'value') return fallback.Found(target, parameters)
-    const unmarshalled = target[1]
+    if (target[0] !== 'value' && target[0] !== 'state') return fallback.Found(target, parameters)
     const first = <T extends p_di.Value>(items: p_di.List<T>, select: (item: T) => s_out.Completion_Suggestions): s_out.Completion_Suggestions =>
         p_.from.list(items).on_has_first_item(
             (item, rest) => p_.from.optional(select(item)).decide(
@@ -25,7 +24,8 @@ export const Document = ($: s_in.Document, parameters: {
             () => p_.literal.not_set(),
         )
     const visit = (value: s_in.Value): s_out.Completion_Suggestions => {
-        if (value.unmarshalled === unmarshalled && value['reference candidates']) {
+        if (target[0] === 'value' && value.unmarshalled === target[1] && value['reference candidates']) {
+            const unmarshalled = target[1]
             return p_.from.optional(value['reference candidates']).map((keys): s_out.Completion_Suggestions_.O => ({
                 type: ['reference', null],
                 'replacement range': full_range.Value(unmarshalled.instance),
@@ -45,6 +45,22 @@ export const Document = ($: s_in.Document, parameters: {
         const result = value['unmarshall result']
         if (result[0] === 'error') return p_.literal.not_set()
         const content = result[1]
+        if (target[0] === 'state' && content[0] === 'state' && content[1].unmarshalled === target[1]) {
+            const constraints = value['state option constraints']
+            return fallback.Found(target, constraints === undefined ? parameters : {
+                ...parameters,
+                'invalid state options': p_.from.dictionary(constraints).map((checks) => p_.from.list(
+                    p_.from.dictionary(checks).convert_to_list((selection, id) => ({ selection, id })),
+                ).map_with_state(
+                    '',
+                    (check) => check,
+                    (check, reason) => check.selection[0] === 'constraint failed'
+                        ? reason + (reason === '' ? '' : '; ') + check.id + ': ' + check.selection[1]
+                        : reason,
+                    (_, reason) => ({ reason }),
+                ).reason),
+            })
+        }
         switch (content[0]) {
             case 'component': return visit(content[1].value)
             case 'dictionary': return first(p_.from.dictionary(content[1].entries).convert_to_list((entry) => entry),

@@ -609,6 +609,58 @@ test('option constraints report resolver mismatches without warnings for valid d
     assert.ok(!suppressed.some(d => d.message.startsWith('Constraint failed:')))
 })
 
+test('state completion marks failed entry constraints without removing selectable options', async () => {
+    for (const [value, valid] of [['| `nothing` ~', 'nothing'], ['| `optional` | `nothing` ~', 'optional']]) {
+        const source = specification(value, '| #')
+        const result = await complete(source, template(), source.indexOf('#'))
+        const allowed = result.items.find(item => item.label === valid)
+        assert.ok(allowed)
+        assert.equal(allowed.tags, undefined)
+        assert.ok(result.items.length > 1)
+        for (const item of result.items.filter(item => item.label !== valid)) {
+            assert.deepEqual(item.tags, [1])
+            assert.match(item.documentation.value, /Unavailable in this context: definition: expected state option/)
+            assert.ok(item.textEdit.newText.length > 0)
+        }
+        const updated = source.replace('#', allowed.textEdit.newText.replace('$0', ''))
+        assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, template())).__get_raw(), [])
+    }
+    const incomplete = specification('#', '| #')
+    const unresolved = await complete(incomplete, template(), incomplete.lastIndexOf('#'))
+    assert.ok(unresolved.items.length > 1)
+    assert.ok(unresolved.items.every(item => item.tags === undefined))
+})
+
+test('state completion reuses presence and state checks but leaves unknown constraints unmarked', () => {
+    const schema = specification(stateValueType, stateResolverText)
+    const unmarshalled = document('| #', schema)
+    const gate = resolveState('| `left` ~', stateDefinition())
+    for (const [input, marked] of [
+        [['not set', null], true],
+        [['resolved', gate], false],
+        [['unavailable', null], false],
+        [['cycle', p.literal.list(['input'])], false],
+    ]) {
+        const definition = stateDefinition(p.literal.not_set(), undefined, id => id === 'left'
+            ? p.literal.dictionary({ present: ['assert is set', ['parameter', { 'l id': 'input' }]] })
+            : p.literal.dictionary({ gate: ['state', {
+                selection: guaranteed(['parameter', { 'l id': 'gate' }]), option: { 'l id': 'right' },
+            }] }))
+        const content = resolver.Value(unmarshalled.content, {}, {
+            definition, 'type parameters': p.literal.dictionary({ input, gate: ['resolved', gate] }),
+        })
+        const result = completion.Document({ unmarshalled, content }, {
+            position: { line: 0, character: 2 }, indent: '    ', style: ['verbose', null],
+        }).__get_raw()[0]
+        const items = result.suggestions.__get_raw()
+        assert.deepEqual(items.map(item => item.label), ['left', 'right'])
+        assert.equal(items[0]['invalid reason'] !== undefined, marked)
+        if (marked) assert.match(items[0]['invalid reason'], /present: expected an optional value to be set/)
+        assert.match(items[1]['invalid reason'], /gate: expected state option 'right'/)
+        assert.deepEqual(resolveDiagnostics.Document({ content }).__get_raw(), [])
+    }
+})
+
 test('optional value constraints require optional nodes, matching the handwritten resolver', async () => {
     const constraint = `\`constraints\`: {
         'present': (\`start\`: | \`value\` ~ \`constraint\`: (

@@ -80,6 +80,7 @@ export const create_on_completion: (
 						items = $.suggestions.__get_raw().map(($): vscode_node.CompletionItem => {
 							const completionItem: vscode_node.CompletionItem = {
 								'label': $.label,
+								...($['invalid reason'] === undefined ? {} : { tags: [vscode_node.CompletionItemTag.Deprecated] }),
 								'insertTextFormat': vscode_node.InsertTextFormat.Snippet,
 								'kind': p_.from.state(type).decide(($): vscode_node.CompletionItemKind => {
 									switch ($[0]) {

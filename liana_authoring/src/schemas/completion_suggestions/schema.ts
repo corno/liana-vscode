@@ -46,6 +46,7 @@ export namespace Completion_Suggestions_ {
             
             export type L = {
                 readonly 'label': L.label
+                readonly 'invalid reason'?: string
                 readonly 'reference identifier'?: string
                 readonly 'insert lines': L.insert_lines
                 readonly 'documentation': L.documentation

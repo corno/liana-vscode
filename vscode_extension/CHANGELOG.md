@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 ### Added
+- State-option completion marks definitely failing entry constraints with
+  strikethrough and explains the failed checks while keeping options selectable.
 - Lookup-driven reference completion, including dependent and cyclic sibling
   lookups, with whole-token replacement and quoted identifier insertion.
 - Schema-driven selected-reference diagnostics at the identifier token, including

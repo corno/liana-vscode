@@ -620,6 +620,12 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
     }
     const checks = constraints()
     return {
+        get 'state option constraints'() {
+            const definition = $p.definition
+            return definition[0] === 'state'
+                ? p_.from.dictionary(definition[1].options).map((option) => Option_Constraints(option.constraints, context))
+                : p_.literal.dictionary<p_di.Dictionary<s_out.Selection>>({})
+        },
         // Enumerate only when requested, after sibling resolution has finished.
         get 'reference candidates'() {
                 const definition = $p.definition

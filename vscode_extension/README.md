@@ -109,6 +109,11 @@ Press **Ctrl+Space** inside a quoted reference or at a `#` marker to request
 suggestions. Filtering respects the token's quotes; selecting a suggestion still
 replaces the whole token.
 
+State-option completion keeps all options selectable. Options whose declared
+entry constraints definitely fail are struck through, with the failed checks in
+their completion documentation. Options with incomplete or unresolved constraints
+remain unmarked; an unmarked option does not guarantee that its payload is valid.
+
 Dictionary benchmarks validate every supplied identifier against the selected
 benchmark dictionary. The schema's explicit `dense` flag additionally requires
 every benchmark identifier to be present. Sparse benchmarks permit omissions,
