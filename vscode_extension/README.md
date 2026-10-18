@@ -100,6 +100,13 @@ cyclic lookups allow forward and mutual references. Dependent dictionary lookups
 can navigate components, properties, and resolved references. Invalid lookup
 sources do not produce cascading missing-reference errors.
 
+Dictionary benchmarks validate every supplied identifier against the selected
+benchmark dictionary. The schema's explicit `dense` flag additionally requires
+every benchmark identifier to be present. Sparse benchmarks permit omissions,
+but not unknown identifiers. Unexpected entries are reported at their identifier;
+missing dense entries are reported on the supplied dictionary. Invalid inputs
+suppress cascading benchmark diagnostics.
+
 List and state results are explicitly declared by their producers. A list result
 declares its `type`, an `initial` selection, and a `next` selection evaluated after
 each item. Empty lists return the initial cursor; each item receives the preceding

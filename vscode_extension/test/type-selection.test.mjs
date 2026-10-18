@@ -342,6 +342,83 @@ test('failed lookup sources do not produce cascading missing-reference errors', 
     }
 })
 
+const benchmarkSchema = dense => specification(`| \`group\` {
+    'supplied': (\`description\`: _ \`value\`: | \`dictionary\` (\`value\`: | \`nothing\` ~))
+    'expected': (\`description\`: _ \`value\`: | \`dictionary\` (\`value\`: | \`nothing\` ~))
+}`, `| \`group\` {
+    'supplied': (\`definition\`: ~ \`resolver\`: | \`dictionary\` (
+        \`definition\`: ~ \`resolver\`: | \`nothing\` ~
+        \`benchmark\`: * (
+            \`selection\`: (\`start\`: | \`sibling\` 'expected' \`tail\`: (\`path\`: [] \`resulting node\`: ~) \`resulting node\`: ~)
+            \`resulting dictionary\`: ~ \`dense\`: ${dense})))
+    'expected': (\`definition\`: ~ \`resolver\`: | \`dictionary\` (\`definition\`: ~ \`resolver\`: | \`nothing\` ~ \`benchmark\`: _))
+}`)
+
+test('sparse benchmarks validate supplied keys without requiring complete coverage', async () => {
+    const schema = benchmarkSchema(false)
+    for (const source of [
+        '< {} { \'a\': ~ \'b\': ~ } >',
+        '< { \'a\': ~ } { \'a\': ~ \'b\': ~ } >',
+        '< { \'\': ~ } { \'\': ~ } >',
+    ]) assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(source, schema)).__get_raw(), [])
+
+    const source = '< { \'typo\': ~ } { \'a\': ~ } >'
+    const diagnostics = resolveDiagnostics.Document(await loadWithSchema(source, schema)).__get_raw()
+    assert.equal(diagnostics.length, 1)
+    assert.equal(diagnostics[0].message, "Entry 'typo' does not exist in the benchmark dictionary.")
+    assert.equal(diagnostics[0].severity[0], 'error')
+    const range = diagnostics[0].range.__get_raw()[0][1]
+    assert.equal(range.start.absolute, source.indexOf("'typo'"))
+    assert.equal(range.end.absolute, source.indexOf("'typo'") + "'typo'".length)
+})
+
+test('dense benchmarks require complete coverage and report both sides of a renamed key', async () => {
+    const schema = benchmarkSchema(true)
+    for (const source of ['< {} {} >', '< { \'a\': ~ } { \'a\': ~ } >']) {
+        assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(source, schema)).__get_raw(), [])
+    }
+    const source = '< { \'typo\': ~ } { \'a\': ~ \'b\': ~ } >'
+    const diagnostics = resolveDiagnostics.Document(await loadWithSchema(source, schema)).__get_raw()
+    assert.deepEqual(diagnostics.map(d => d.message).sort(), [
+        "Entry 'typo' does not exist in the benchmark dictionary.",
+        "Missing required benchmark entry 'a'.",
+        "Missing required benchmark entry 'b'.",
+    ])
+    for (const diagnostic of diagnostics.filter(d => d.message.startsWith('Missing'))) {
+        const range = diagnostic.range.__get_raw()[0][1]
+        assert.equal(source.slice(range.start.absolute, range.end.absolute), "{ 'typo': ~ }")
+    }
+})
+
+test('invalid benchmark inputs suppress coverage cascades and malformed entries retain their own errors', async () => {
+    for (const dense of [false, true]) {
+        const schema = benchmarkSchema(dense)
+        for (const source of [
+            '< { \'typo\': ~ } # >',
+            '< # { \'a\': ~ } >',
+            '< { \'a\': ~ \'a\': ~ } { \'a\': ~ } >',
+            '< {} { \'a\': ~ \'a\': ~ } >',
+            '< { \'a\': # } { \'a\': ~ } >',
+        ]) assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(source, schema)).__get_raw(), [])
+    }
+})
+
+test('renaming a self-schema resolver reports the unexpected implementation and missing dense entry', async () => {
+    const source = template()
+    const at = source.lastIndexOf("'Resolver Types':")
+    assert.ok(at > source.indexOf('`resolvers`:'))
+    const renamed = source.slice(0, at) + source.slice(at).replace("'Resolver Types':", "'Resolver Tydpes':")
+    const diagnostics = resolveDiagnostics.Document(await loadWithSchema(renamed, source)).__get_raw()
+    assert.deepEqual(diagnostics.map(d => d.message).sort(), [
+        "Entry 'Resolver Tydpes' does not exist in the benchmark dictionary.",
+        "Missing required benchmark entry 'Resolver Types'.",
+    ])
+    const unexpected = diagnostics.find(d => d.message.startsWith('Entry'))
+    const range = unexpected.range.__get_raw()[0][1]
+    assert.equal(renamed.slice(range.start.absolute, range.end.absolute), "'Resolver Tydpes'")
+    assert.throws(() => parse(renamed))
+})
+
 test('a missing list cursor is an explicit error rather than an unsupported warning', () => {
     const context = { lookups: {}, types: p.literal.dictionary({}) }
     assert.deepEqual(resolver.Resolver_Guaranteed_Value_Selection({

@@ -13,6 +13,8 @@
   per-option payload/context selections; typed consumers verify producer types.
 
 ### Fixed
+- Dictionary benchmarks now reject unknown keys and enforce complete coverage
+  when their explicit `dense` flag is set, including resolver/signature matching.
 - The authoring template binds local option constraints for state-option and
   present-optional payload resolvers instead of forwarding an absent outer parameter.
 - Constraint and result-selection failures are reported independently of

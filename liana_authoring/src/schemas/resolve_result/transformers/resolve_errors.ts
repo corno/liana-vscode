@@ -52,6 +52,43 @@ export const Value: declarations_.Value = ($) => p_.literal.segmented_list([
     Content($),
 ])
 
+const Benchmark = ($: s_in.Dictionary, range: s_location.Range): s_out.Errors => p_.from.optional($.benchmark).decide(
+    (benchmark) => {
+        const selection = benchmark.selection
+        if (selection[0] !== 'resolved') return Selection(selection, range)
+        const result = selection[1]['unmarshall result']
+        if (result[0] === 'error') return p_.literal.list([])
+        if (result[1][0] !== 'dictionary') return Selection(['constraint failed', 'expected a benchmark dictionary'], range)
+        const required = result[1][1].unmarshalled.derived.entries
+        const supplied = $.unmarshalled.derived.entries
+        return p_.literal.segmented_list([
+            p_.from.dictionary(supplied).flatten_to_list((entry, id) => {
+                if (entry.result[0] === 'error') return p_.literal.list([])
+                const entryRange = entry.result[1].intermediate['id value pair'].id.range
+                return p_.from.dictionary(required).get_possible_entry(
+                    id,
+                    () => p_.literal.list([]),
+                    () => p_.literal.list<s_out.Error>([{
+                        range: entryRange,
+                        severity: ['error', null],
+                        type: ['unexpected benchmark entry', id],
+                    }]),
+                )
+            }),
+            benchmark.dense ? p_.from.dictionary(required).flatten_to_list((entry, id) =>
+                entry.result[0] === 'error' ? p_.literal.list([]) : p_.from.dictionary(supplied).get_possible_entry(
+                    id,
+                    () => p_.literal.list([]),
+                    () => p_.literal.list<s_out.Error>([{
+                        range, severity: ['error', null], type: ['missing benchmark entry', id],
+                    }]),
+                ),
+            ) : p_.literal.list([]),
+        ])
+    },
+    () => p_.literal.list([]),
+)
+
 const Content: declarations_.Value = (value) => p_.from.state(value['unmarshall result']).decide(
     ($) => {
         switch ($[0]) {
@@ -59,7 +96,9 @@ const Content: declarations_.Value = (value) => p_.from.state(value['unmarshall 
             case 'success': return p_.option($, ($) => p_.from.state($).decide(
                 ($) => {
                     switch ($[0]) {
-                        case 'dictionary': return p_.option($, ($) => p_.from.dictionary($.entries).flatten_to_list(
+                        case 'dictionary': return p_.option($, ($) => p_.literal.segmented_list([
+                            Benchmark($, full_range.Value(value.unmarshalled.instance)),
+                            p_.from.dictionary($.entries).flatten_to_list(
                             ($) => p_.from.state($['unmarshall result']).decide(
                                 ($) => {
                                     switch ($[0]) {
@@ -76,7 +115,8 @@ const Content: declarations_.Value = (value) => p_.from.state(value['unmarshall 
                                     }
                                 }
                             )
-                        ))
+                            ),
+                        ]))
                         case 'group': return p_.option($, ($) => p_.from.dictionary($.properties).flatten_to_list(
                             ($) => p_.from.state($['unmarshall result']).decide(
                                 ($) => {

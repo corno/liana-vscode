@@ -9,6 +9,8 @@ export type Error = {
     | ['to be implemented', null]
     | ['missing reference', string]
     | ['reference cycle', p_.List<string>]
+    | ['unexpected benchmark entry', string]
+    | ['missing benchmark entry', string]
     'severity':
     | ['error', null]
     | ['warning', null]

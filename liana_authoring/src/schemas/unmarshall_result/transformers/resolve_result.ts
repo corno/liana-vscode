@@ -536,11 +536,10 @@ const Checks_Passed = ($: p_di.Dictionary<s_out.Selection>): boolean => p_.from.
 ).passed
 
 const Linked_Entry = (
-    $: s_in_definition.Resolver_Value.dictionary.benchmark,
+    $: s_out.Dictionary['benchmark'],
     id: string,
-    context: temp.Context
 ): s_out.Selection => p_.from.optional($).decide(
-    ($) => Select(Guaranteed($.selection, context), ($) => $[0] === 'dictionary'
+    ($) => Select($.selection, ($) => $[0] === 'dictionary'
         ? p_.from.dictionary($[1].entries).get_possible_entry(id, Entry, Unavailable)
         : Unavailable()
     ),
@@ -701,11 +700,16 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                     })
                                     case 'dictionary': return p_.option($, ($) => {
                                         const def = $
+                                        const benchmark = p_.from.optional(def.benchmark).map(($) => ({
+                                            selection: Referenced_Value(Guaranteed($.selection, context), ['dictionary', $['resulting dictionary']]),
+                                            dense: $.dense,
+                                        }))
                                         return ['dictionary', p_.from.state(unmarshalled_value).decide(
                                             ($): s_out.Dictionary => {
                                                 switch ($[0]) {
                                                     case 'dictionary': return p_.option($, ($): s_out.Dictionary => ({
                                                         'unmarshalled': $,
+                                                        'benchmark': benchmark,
                                                         'entries': p_.from.dictionary($.derived.entries).resolve(
                                                             ($, id, $al, $cl): s_out.Entry => ({
                                                                 'unmarshall result': p_.from.state($.result).decide(
@@ -724,7 +728,7 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                                                                                         'acyclic': $al,
                                                                                                         'cyclic': $cl,
                                                                                                     },
-                                                                                                    'linked entry': Linked_Entry(def.benchmark, id, context),
+                                                                                                    'linked entry': Linked_Entry(benchmark, id),
                                                                                                 },
                                                                                                 {
                                                                                                     'definition': def.resolver,

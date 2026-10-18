@@ -41,6 +41,10 @@ export type Component = {
 export type Dictionary = {
     'unmarshalled': s_unmarshall_result.Dictionary
     'entries': p_.Dictionary<Entry>
+    'benchmark': p_.Optional_Value<{
+        'selection': Selection
+        'dense': boolean
+    }>
 }
 
 export type Entry = {

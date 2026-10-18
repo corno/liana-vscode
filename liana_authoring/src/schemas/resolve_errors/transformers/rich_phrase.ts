@@ -20,6 +20,8 @@ export const Error: declarations.Error = ($) => p_.from.state($.type).decide(
             case 'constraint failed': return sh.ph.text(`Constraint failed: ${$[1]}.`)
             case 'missing reference': return sh.ph.text(`Reference '${$[1]}' does not exist.`)
             case 'reference cycle': return sh.ph.text("Cyclic reference dependency.")
+            case 'unexpected benchmark entry': return sh.ph.text(`Entry '${$[1]}' does not exist in the benchmark dictionary.`)
+            case 'missing benchmark entry': return sh.ph.text(`Missing required benchmark entry '${$[1]}'.`)
             case 'to be implemented': return p_.option($, ($) => sh.ph.composed([
                 sh.ph.text("this error type is not yet implemented, please report it to the developers")
             ]))
