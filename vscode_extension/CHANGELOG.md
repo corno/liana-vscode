@@ -30,8 +30,9 @@
   `optional` definition, removing false state-option diagnostics.
 - Normalize forwarded type-parameter values and derived component payloads using
   their declared schema types, restoring signature-dependent argument diagnostics.
-- Argument benchmarks allow partial dictionaries as the handwritten resolver does;
-  supplied keys and forwarded parameter references are independently checked.
+- Explicit argument dictionaries require complete coverage, in both handwritten
+  refinement and self-schema diagnostics. Whole/category `_` passes through the
+  existing environment; missing explicit entries no longer inherit caller values.
 - Reference skeleton completion inserts `#` instead of the placeholder `'...'`.
 - Dictionary benchmarks now reject unknown keys and enforce complete coverage
   when their explicit `dense` flag is set, including resolver/signature matching.
@@ -41,9 +42,8 @@
   selected-reference lookups; invalid upstream values suppress cascading checks.
 - Missing list cursors and invalid state-result types now report errors instead
   of obsolete unsupported-result warnings.
-- Component resolution now initializes omitted optional type parameters from the
-  callee's signature, preventing language-server crashes when they are forwarded
-  by nested components.
+- Component resolution preserves parameter status through whole/category
+  pass-through without inventing defaults for omitted explicit entries.
 
 ## [0.1.57]
 

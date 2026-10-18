@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "astn": "^0.113.0",
-    "astn-runtime": "^0.1.0",
+    "astn-runtime": "^0.1.5",
     "liana-runtime": "^0.1.0",
     "pareto-application-api": "^0.1.0",
     "pareto-common": "^0.1.0",

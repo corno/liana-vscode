@@ -145,11 +145,13 @@ but not unknown identifiers. Unexpected entries are reported at their identifier
 missing dense entries are reported on the supplied dictionary. Invalid inputs
 suppress cascading benchmark diagnostics.
 
-Component arguments follow the handwritten resolver: argument groups and
-categories can be omitted, and explicit dictionaries can be partial. Type
+Component arguments use `_` at the whole-arguments or category boundary to pass
+the existing environment through. Explicit dictionaries must supply every callee
+parameter; optional arguments must explicitly select `not set` when absent. Type
 parameter bindings resolve their source name against the caller's signature and
-their destination name against the callee's signature. Argument benchmarks are
-sparse; resolver/signature coverage remains dense.
+their destination name against the callee's signature. Argument benchmarks and
+resolver/signature coverage are dense. Compatibility validation at pass-through
+boundaries remains future work; `_` retains its current optional representation.
 
 List and state results are explicitly declared by their producers. A list result
 declares its `type`, an `initial` selection, and a `next` selection evaluated after

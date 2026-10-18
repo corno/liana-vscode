@@ -1,7 +1,7 @@
 {
 	"name": "liana",
 	"displayName": "Liana",
-	"version": "0.1.63",
+	"version": "0.1.64",
 	"publisher": "corno",
 	"description": "Complete language support for Liana/ASTN: syntax highlighting, intelligent code completion, schema-based validation, formatting, and JSON conversion.",
 	"author": "Corno",
@@ -289,7 +289,7 @@
 	},
 	"dependencies": {
 		"astn": "^0.113.0",
-		"astn-core": "^0.5.158",
+		"astn-runtime": "^0.1.5",
 		"liana-authoring": "file:../liana_authoring",
 		"pareto-filesystem-unrestricted-api": "^0.1.39",
 		"pareto-json": "^0.3.0",

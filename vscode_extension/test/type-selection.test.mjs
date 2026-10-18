@@ -180,7 +180,7 @@ test('non-text basic types still complete and seal as undelimited values', () =>
     }
 })
 
-test('nested components can forward omitted optional type parameters', async () => {
+test('nested components pass through whole categories or explicitly bind every type argument', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'liana-server-parameters-'))
     try {
         mkdirSync(join(dir, '.liana'))
@@ -190,11 +190,9 @@ test('nested components can forward omitted optional type parameters', async () 
             \`definition\`: ~ \`location\`: | \`internal\` '${name}' \`signature\`: ~ \`arguments\`: ${args} \`constraints\`: {}
         ))`
         for (const [index, args] of [
-            '* (`types`: * { \'child namespaces\': | `optional` | `not set` ~ } `lookups`: * {})',
-            '* (`types`: * {} `lookups`: * {})',
             '* (`types`: _ `lookups`: * {})',
             '_',
-            '* (`types`: * { \'child namespaces\': | `optional` | `not set` ~ \'basic types\': | `optional` | `not set` ~ } `lookups`: * {})',
+            '* (`types`: * { \'child namespaces\': | `optional` | `not set` ~ \'basic types\': | `optional` | `not set` ~ \'inherited\': | `parameter` \'inherited\' } `lookups`: * {})',
         ].entries()) {
             const schema = `(
                 \`schema\`: (
@@ -205,13 +203,13 @@ test('nested components can forward omitted optional type parameters', async () 
                         'Leaf': (\`root value\`: | \`nothing\` ~)
                     }
                     \`signatures\`: {
-                        'Root': ${signature(`{ 'inherited': ${parameter('required')} }`)}
+                        'Root': ${signature(`{ 'child namespaces': ${parameter('optional')} 'basic types': ${parameter('optional')} 'inherited': ${parameter('required')} }`)}
                         'Middle': ${signature(`{ 'child namespaces': ${parameter('optional')} 'basic types': ${parameter('optional')} 'inherited': ${parameter('required')} }`)}
                         'Leaf': ${signature(`{ 'forwarded': ${parameter('optional')} 'inherited': ${parameter('required')} }`)}
                     }
                     \`resolvers\`: {
                         'Root': ${component('Middle', args)}
-                        'Middle': ${component('Leaf', '* (`types`: * { \'forwarded\': | `parameter` \'basic types\' } `lookups`: * {})')}
+                        'Middle': ${component('Leaf', '* (`types`: * { \'forwarded\': | `parameter` \'basic types\' \'inherited\': | `parameter` \'inherited\' } `lookups`: * {})')}
                         'Leaf': (\`signature\`: ~ \`root value resolver\`: | \`nothing\` ~)
                     }
                 )
@@ -699,11 +697,10 @@ const argumentBindingSchema = args => {
     ) \`root type\`: 'Root')`
 }
 
-test('argument diagnostics follow handwritten pass-through and partial-dictionary acceptance', async () => {
+test('argument diagnostics accept pass-through boundaries and complete explicit dictionaries', async () => {
     for (const args of [
         '_',
         '* (`types`: _ `lookups`: _)',
-        '* (`types`: * {} `lookups`: * {})',
         '* (`types`: * { \'child\': | `parameter` \'input\' } `lookups`: * {})',
         '* (`types`: * { \'child\': | `optional` | `not set` ~ } `lookups`: * {})',
     ]) {
@@ -713,16 +710,149 @@ test('argument diagnostics follow handwritten pass-through and partial-dictionar
     }
 })
 
+test('explicit type dictionaries cannot omit even optional callee arguments', async () => {
+    const source = argumentBindingSchema('* (`types`: * {} `lookups`: * {})')
+    assert.throws(() => parse(source), error => {
+        assert.equal(error[0], 'resolving')
+        assert.equal(error[1].type[0], 'missing required entries')
+        return true
+    })
+    const diagnostics = resolveDiagnostics.Document(await loadWithSchema(source, template())).__get_raw()
+    assert.deepEqual(diagnostics.map(d => d.message), ["Missing required benchmark entry 'child'."])
+})
+
+test('runtime type initialization inherits only at whole/category boundaries, never per explicit entry', () => {
+    const schema = argumentBindingSchema('* (`types`: * { \'child\': | `parameter` \'input\' } `lookups`: * {})')
+        .replace("'Leaf': (`root value`: | `nothing` ~)", "'Leaf': (`root value`: | `optional` | `nothing` ~)")
+        .replace("'Leaf': (`signature`: ~ `root value resolver`: | `nothing` ~)",
+            "'Leaf': (`signature`: ~ `root value resolver`: | `optional` (`constraints`: { 'present': | `assert is set` | `parameter` 'child' } `resolver`: | `nothing` ~))")
+    const resolved = parse(schema)[1].resolver
+    const definition = entry(resolved.resolvers, 'Root')['root value resolver']
+    const parsed = document('* ~', schema).content
+    const seed = nothingValue()
+    for (const [args, expected] of [
+        [p.literal.not_set(), 'resolved'],
+        [p.literal.set({ types: p.literal.not_set(), lookups: p.literal.not_set() }), 'resolved'],
+        [p.literal.set({ types: p.literal.set(p.literal.dictionary({})), lookups: p.literal.not_set() }), 'constraint failed'],
+        [p.literal.set({ types: p.literal.set(p.literal.dictionary({
+            child: ['optional', ['not set', null]],
+        })), lookups: p.literal.not_set() }), 'constraint failed'],
+    ]) {
+        const result = resolver.Value(parsed, {}, {
+            definition: ['component', { ...definition[1], arguments: args }],
+            resolver: resolved,
+            'type parameters': p.literal.dictionary({ child: ['resolved', seed], input: ['resolved', seed] }),
+        })
+        const component = result['unmarshall result'][1][1]
+        assert.equal(component.value['unmarshall result'][0], 'success')
+        const status = entry(component.value.constraints, 'present')
+        assert.equal(status[0], expected)
+        if (expected === 'resolved') assert.equal(status[1], seed)
+        else assert.match(status[1], /missing type argument|expected an optional value to be set/)
+    }
+})
+
+const lookupBindingSchema = (mode, args) => {
+    const component = name => `| \`component\` (\`type\`: | \`internal acyclic\` '${name}' \`results\`: _)`
+    const call = (name, args = '_') => `| \`component\` (\`definition\`: ~ \`location\`: | \`internal\` '${name}' \`signature\`: ~ \`arguments\`: ${args} \`constraints\`: {})`
+    const parameter = `(\`referent\`: (\`location\`: | \`internal\` 'Nodes' \`resulting type\`: ~) \`dictionary\`: ~ \`type\`: | \`${mode}\` ~ \`presence\`: | \`optional\` ~)`
+    const signature = (lookups = '{}') => `(\`type\`: ~ \`parameters\`: | \`local\` (\`types\`: {} \`lookups\`: ${lookups}) \`resolved parameters\`: ~)`
+    return `(\`schema\`: (
+        \`basic types\`: {}
+        \`types\`: {
+            'Root': (\`root value\`: | \`group\` {
+                'entries': (\`description\`: _ \`value\`: ${component('Nodes')})
+                'value': (\`description\`: _ \`value\`: ${component('Middle')})
+            })
+            'Middle': (\`root value\`: ${component('Leaf')})
+            'Leaf': (\`root value\`: | \`reference\` (
+                \`referent\`: (\`type\`: (\`location\`: | \`internal\` 'Nodes' \`resulting type\`: ~) \`path\`: (\`tail\`: [] \`resulting node\`: ~))
+                \`type\`: | \`selected\` (\`dictionary\`: ~ \`dependency\`: | \`${mode}\` ~ \`results\`: _)))
+            'Nodes': (\`root value\`: | \`dictionary\` (\`value\`: | \`nothing\` ~))
+        }
+        \`signatures\`: {
+            'Root': ${signature()} 'Nodes': ${signature()}
+            'Middle': ${signature(`{ 'source': ${parameter} 'unused': ${parameter} }`)}
+            'Leaf': ${signature(`{ 'source': ${parameter} 'unused': ${parameter} }`)}
+        }
+        \`resolvers\`: {
+            'Root': (\`signature\`: ~ \`root value resolver\`: | \`group\` {
+                'entries': (\`definition\`: ~ \`resolver\`: ${call('Nodes')})
+                'value': (\`definition\`: ~ \`resolver\`: ${call('Middle', `* (\`types\`: * {} \`lookups\`: * {
+                    'source': | \`selection\` (\`type\`: | \`acyclic\` | \`resolved dictionary\` (
+                        \`selection\`: (\`start\`: | \`sibling\` 'entries' \`tail\`: (\`path\`: [| \`component\` ~] \`resulting node\`: ~) \`resulting node\`: ~)
+                        \`selected dictionary\`: ~) \`resulting dictionary\`: ~)
+                    'unused': | \`${mode}\` | \`not set\` ~
+                })`)})
+            })
+            'Middle': (\`signature\`: ~ \`root value resolver\`: ${call('Leaf', args)})
+            'Leaf': (\`signature\`: ~ \`root value resolver\`: | \`reference\` (\`definition\`: ~
+                \`type\`: | \`selected\` (\`definition\`: ~ \`lookup\`: (\`type\`: | \`parameter\` 'source' \`resulting dictionary\`: ~) \`constraints\`: {})))
+            'Nodes': (\`signature\`: ~ \`root value resolver\`: | \`dictionary\` (\`definition\`: ~ \`benchmark\`: _ \`resolver\`: | \`nothing\` ~))
+        }
+    ) \`root type\`: 'Root')`
+}
+
+test('lookup arguments pass through only at category boundaries and explicit dictionaries are dense', async () => {
+    for (const mode of ['acyclic', 'cyclic']) {
+        for (const args of ['_', '* (`types`: _ `lookups`: _)',
+            '* (`types`: * {} `lookups`: * { \'source\': | `selection` (`type`: | `parameter` \'source\' `resulting dictionary`: ~) \'unused\': | `' + mode + '` | `not set` ~ })']) {
+            const schema = lookupBindingSchema(mode, args)
+            assert.doesNotThrow(() => parse(schema))
+            const source = "(`entries`: {'Known': ~} `value`: 'Known')"
+            assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(source, schema)).__get_raw(), [], `${mode}: ${args}`)
+            assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(
+                source.replace("`value`: 'Known'", "`value`: 'Missing'"), schema,
+            )).__get_raw().map(d => d.message), ["Reference 'Missing' does not exist."], `${mode}: ${args}`)
+        }
+        const notSet = lookupBindingSchema(mode, `* (\`types\`: _ \`lookups\`: * {
+            'source': | \`${mode}\` | \`not set\` ~ 'unused': | \`${mode}\` | \`not set\` ~
+        })`)
+        assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(
+            "(`entries`: {'Known': ~} `value`: 'Missing')", notSet,
+        )).__get_raw(), [])
+        for (const [args, missing] of [
+            ['* (`types`: _ `lookups`: * {})', ['source', 'unused']],
+            [`* (\`types\`: _ \`lookups\`: * { 'source': | \`${mode}\` | \`not set\` ~ })`, ['unused']],
+        ]) {
+            const invalid = lookupBindingSchema(mode, args)
+            assert.throws(() => parse(invalid), error => error[0] === 'resolving' && error[1].type[0] === 'missing required entries')
+            assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(invalid, template())).__get_raw().map(d => d.message).sort(),
+                missing.map(id => `Missing required benchmark entry '${id}'.`))
+        }
+        const schema = lookupBindingSchema(mode, '_')
+        const resolved = parse(schema)[1].resolver
+        const middle = entry(resolved.resolvers, 'Middle')
+        const modified = { ...resolved, resolvers: p.from.dictionary(resolved.resolvers).map((value, id) =>
+            id !== 'Middle' ? value : { ...middle, 'root value resolver': ['component', {
+                ...middle['root value resolver'][1],
+                arguments: p.literal.set({ types: p.literal.not_set(), lookups: p.literal.set(p.literal.dictionary({})) }),
+            }] }),
+        }
+        const source = "(`entries`: {'Known': ~} `value`: 'Known')"
+        const content = resolver.Value(document(source, schema).content, {}, {
+            definition: entry(modified.resolvers, 'Root')['root value resolver'],
+            resolver: modified, 'type parameters': p.literal.dictionary({}),
+        })
+        const outer = entry(content['unmarshall result'][1][1].properties, 'value')['unmarshall result'][1].resolved
+        const middleValue = outer['unmarshall result'][1][1].value
+        const leaf = middleValue['unmarshall result'][1][1].value
+        assert.deepEqual(leaf['unmarshall result'][1][1][1]['resolve status'],
+            ['selected', ['constraint failed', "missing lookup argument 'source' in explicit arguments"]])
+    }
+})
+
 test('argument keys and parameter references are independently checked against callee and caller signatures', async () => {
     for (const [key, reference] of [['child', 'wrong-input'], ['wrong-child', 'input'], ['wrong-child', 'wrong-input']]) {
         const source = argumentBindingSchema(`* (\`types\`: * { '${key}': | \`parameter\` '${reference}' } \`lookups\`: * {})`)
         assert.throws(() => parse(source))
         const diagnostics = resolveDiagnostics.Document(await loadWithSchema(source, template())).__get_raw()
         const expected = []
-        if (key !== 'child') expected.push(`Entry '${key}' does not exist in the benchmark dictionary.`)
+        if (key !== 'child') expected.push(`Entry '${key}' does not exist in the benchmark dictionary.`, "Missing required benchmark entry 'child'.")
         if (reference !== 'input') expected.push(`Reference '${reference}' does not exist.`)
         assert.deepEqual(diagnostics.map(d => d.message).sort(), expected.sort())
         for (const diagnostic of diagnostics) {
+            if (diagnostic.message.startsWith('Missing required')) continue
             const range = diagnostic.range.__get_raw()[0][1]
             const id = diagnostic.message.startsWith('Entry') ? key : reference
             assert.equal(source.slice(range.start.absolute, range.end.absolute), `'${id}'`)

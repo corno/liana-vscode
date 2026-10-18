@@ -484,7 +484,7 @@ const Lookup_Argument = (
                     case 'cyclic': return ['unavailable', null]
                     default: return p_.exhaustive($[0])
                 }
-            }, inherited),
+            }, () => ['constraint failed', `missing lookup argument '${id}' in explicit arguments`]),
             inherited
         ),
         inherited
@@ -586,6 +586,37 @@ export const Resolver_Guaranteed_Value_Selection = (
     return Guaranteed($, context)
 }
 
+const Type_Arguments = (
+    args: s_in_definition.Resolver_Value.component.arguments_,
+    signature: s_in_definition.Resolver_Signature,
+    context: temp.Context,
+): p_di.Dictionary<temp.Type_Parameter_Resolve_Status> => p_i_temp.from_option_decide(args,
+    (args) => p_i_temp.from_option_decide(args.types,
+        (supplied) => p_.from.dictionary(signature['resolved parameters'].types).map(
+            (parameter, id): temp.Type_Parameter_Resolve_Status => {
+                const assigned = p_.from.dictionary(supplied).get_possible_entry<temp.Type_Parameter_Resolve_Status>(id,
+                    (binding): temp.Type_Parameter_Resolve_Status => {
+                        switch (binding[0]) {
+                            case 'optional': return Resolver_Optional_Value_Initialization(binding[1], context)
+                            case 'required': return Guaranteed(binding[1], context)
+                            case 'parameter': return p_.from.dictionary(context.types).get_possible_entry(
+                                binding[1]['l id'], ($) => $,
+                                () => ['constraint failed', `type parameter '${binding[1]['l id']}' is not available`],
+                            )
+                            default: return p_.exhaustive(binding[0])
+                        }
+                    },
+                    () => ['constraint failed', `missing type argument '${id}' in explicit arguments`],
+                )
+                return assigned[0] === 'resolved'
+                    ? Referenced_Value(assigned, parameter.type['resulting type']['root value']) : assigned
+            },
+        ),
+        () => context.types,
+    ),
+    () => context.types,
+)
+
 
 export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
     s_in.Value,
@@ -685,50 +716,7 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                                                 {
                                                                     'definition': def2['root value resolver'],
                                                                     'resolver': $p.resolver,
-                                                                    'type parameters': p_.from.dictionary(def2.signature['resolved parameters'].types).map(
-                                                                        (parameter, id): temp.Type_Parameter_Resolve_Status => {
-                                                                            const omitted = (): temp.Type_Parameter_Resolve_Status => p_.from.dictionary($p['type parameters']).get_possible_entry(
-                                                                                id,
-                                                                                ($) => $,
-                                                                                () => {
-                                                                                    switch (parameter.presence[0]) {
-                                                                                        case 'optional': return ['not set', null]
-                                                                                        case 'required': return p_unreachable_code_path(`required type parameter was not provided: ${id}`)
-                                                                                        default: return p_.exhaustive(parameter.presence[0])
-                                                                                    }
-                                                                                }
-                                                                            )
-                                                                            const assigned = p_i_temp.from_option_decide(
-                                                                                def.arguments,
-                                                                                ($) => p_i_temp.from_option_decide(
-                                                                                    $.types,
-                                                                                    ($) => p_.from.dictionary($).get_possible_entry(
-                                                                                        id,
-                                                                                        ($) => p_.from.state($).decide(
-                                                                                            ($): temp.Type_Parameter_Resolve_Status => {
-                                                                                                switch ($[0]) {
-                                                                                                    case 'optional': return p_.option($, ($) => Resolver_Optional_Value_Initialization($, context))
-                                                                                                    case 'parameter': return p_.option($, ($) => p_.from.dictionary($p['type parameters']).get_possible_entry(
-                                                                                                        $['l id'],
-                                                                                                        ($) => $,
-                                                                                                        () => p_unreachable_code_path("for every parameter, there must be a type parameter provided")
-                                                                                                    ))
-                                                                                                    case 'required': return p_.option($, ($) => Resolver_Guaranteed_Value_Selection($, context))
-                                                                                                    default: return p_.exhaustive($[0])
-                                                                                                }
-                                                                                            }
-                                                                                        ),
-                                                                                        omitted
-                                                                                    ),
-                                                                                    omitted
-                                                                                ),
-                                                                                omitted
-                                                                            )
-                                                                            return assigned[0] === 'resolved'
-                                                                                ? Referenced_Value(assigned, parameter.type['resulting type']['root value'])
-                                                                                : assigned
-                                                                        }
-                                                                    ),
+                                                                    'type parameters': Type_Arguments(def.arguments, def2.signature, context),
                                                                 }
                                                             )
                                                         }, def.constraints)

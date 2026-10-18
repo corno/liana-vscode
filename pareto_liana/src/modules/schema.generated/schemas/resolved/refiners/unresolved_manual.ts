@@ -958,7 +958,23 @@ export const Resolver_Value: declarations.Resolver_Value = ($, abort, $l, $p) =>
                     ),
                     'arguments': p_.change_context(
                         $['arguments'],
-                        ($) => p_.from.optional($).map(($) => ({
+                        ($) => p_.from.optional($).map(($) => {
+                            const arguments_ = $
+                            p_.from.optional(arguments_.types).map((supplied) => p_.from.dictionary(
+                                v_signature['resolved parameters'].types,
+                            ).map((_, id) => p_.from.dictionary(supplied).get_entry(id, {
+                                no_such_entry: () => abort({
+                                    'type': ['missing required entries', p_.literal.dictionary({ [id]: null })],
+                                }),
+                            })))
+                            p_.from.optional(arguments_.lookups).map((supplied) => p_.from.dictionary(
+                                v_signature['resolved parameters'].lookups,
+                            ).map((_, id) => p_.from.dictionary(supplied).get_entry(id, {
+                                no_such_entry: () => abort({
+                                    'type': ['missing required entries', p_.literal.dictionary({ [id]: null })],
+                                }),
+                            })))
+                            return {
                             'types': p_.change_context(
                                 $['types'],
                                 ($) => p_.from.optional($).map(($) => p_.from.dictionary($).map(
@@ -1084,7 +1100,7 @@ export const Resolver_Value: declarations.Resolver_Value = ($, abort, $l, $p) =>
                                     })),
                                 )),
                             ),
-                        })),
+                        }}),
                     ),
                     'constraints': p_.change_context(
                         $['constraints'],
