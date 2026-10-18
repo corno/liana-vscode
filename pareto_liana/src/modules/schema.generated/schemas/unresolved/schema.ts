@@ -509,7 +509,72 @@ type Resolver_Value_Constraints_ = p_.Dictionary<
     Resolver_Value_Constraints_.D
 >
 
-type Resolver_Value_List_Result_ = Type_Reference_
+namespace Resolver_Relative_Value_Selection_ {
+
+    export namespace path {
+
+        export namespace L {
+
+            export type component = null
+
+            export type group = string
+
+            export namespace reference {
+
+                export type definition = null
+            }
+
+            export type reference = {
+                readonly 'definition': reference.definition
+            }
+
+            export type state_result = Type_Reference_
+        }
+
+        export type L =
+            | readonly ['component', L.component]
+            | readonly ['group', L.group]
+            | readonly ['reference', L.reference]
+            | readonly ['state result', L.state_result]
+    }
+
+    export type path = p_.List<
+        path.L
+    >
+
+    export type resulting_node = null
+}
+
+type Resolver_Relative_Value_Selection_ = {
+    readonly 'path': Resolver_Relative_Value_Selection_.path
+    readonly 'resulting node': Resolver_Relative_Value_Selection_.resulting_node
+}
+
+namespace Resolver_Result_Selection_ {
+
+    export type context = Resolver_Guaranteed_Value_Selection_
+
+    export type value = Resolver_Relative_Value_Selection_
+}
+
+type Resolver_Result_Selection_ =
+    | readonly ['context', Resolver_Result_Selection_.context]
+    | readonly ['value', Resolver_Result_Selection_.value]
+
+namespace Resolver_Value_List_Result_ {
+
+    export type type_ = Type_Reference_
+
+    export type initial = Resolver_Guaranteed_Value_Selection_
+
+    export type next = Resolver_Result_Selection_
+}
+
+type Resolver_Value_List_Result_ = {
+    readonly 'type': Resolver_Value_List_Result_.type_
+    readonly 'initial': Resolver_Value_List_Result_.initial
+    readonly 'next': Resolver_Value_List_Result_.next
+}
 
 namespace Resolver_Value_ {
     
@@ -728,6 +793,15 @@ namespace Resolver_Value_ {
         
         export type definition = null
         
+        export namespace result {
+
+            export type O = Type_Reference_
+        }
+
+        export type result = p_.Optional_Value<
+            result.O
+        >
+
         export namespace options {
             
             export namespace D {
@@ -735,11 +809,21 @@ namespace Resolver_Value_ {
                 export type constraints = Resolver_Option_Constraints_
                 
                 export type resolver = Resolver_Value_
+
+                export namespace result {
+
+                    export type O = Resolver_Result_Selection_
+                }
+
+                export type result = p_.Optional_Value<
+                    result.O
+                >
             }
             
             export type D = {
                 readonly 'constraints': D.constraints
                 readonly 'resolver': D.resolver
+                readonly 'result': D.result
             }
         }
         
@@ -750,6 +834,7 @@ namespace Resolver_Value_ {
     
     export type state = {
         readonly 'definition': state.definition
+        readonly 'result': state.result
         readonly 'options': state.options
     }
 }
@@ -841,44 +926,6 @@ namespace Resolver_Option_Constraints_ {
 type Resolver_Option_Constraints_ = p_.Dictionary<
     Resolver_Option_Constraints_.D
 >
-
-namespace Resolver_Relative_Value_Selection_ {
-    
-    export namespace path {
-        
-        export namespace L {
-            
-            export type component = null
-            
-            export type group = string
-            
-            export namespace reference {
-                
-                export type definition = null
-            }
-            
-            export type reference = {
-                readonly 'definition': reference.definition
-            }
-        }
-        
-        export type L = 
-            | readonly ['component', L.component]
-            | readonly ['group', L.group]
-            | readonly ['reference', L.reference]
-    }
-    
-    export type path = p_.List<
-        path.L
-    >
-    
-    export type resulting_node = null
-}
-
-type Resolver_Relative_Value_Selection_ = {
-    readonly 'path': Resolver_Relative_Value_Selection_.path
-    readonly 'resulting node': Resolver_Relative_Value_Selection_.resulting_node
-}
 
 namespace Resolver_Guaranteed_Value_Selection_ {
     
@@ -1254,11 +1301,12 @@ export {
     type Resolver_Signature_Parameters_ as Resolver_Signature_Parameters, 
     type Resolver_Signatures_ as Resolver_Signatures, 
     type Resolver_Value_Constraints_ as Resolver_Value_Constraints, 
+    type Resolver_Relative_Value_Selection_ as Resolver_Relative_Value_Selection,
+    type Resolver_Result_Selection_ as Resolver_Result_Selection,
     type Resolver_Value_List_Result_ as Resolver_Value_List_Result, 
     type Resolver_Value_ as Resolver_Value, 
     type Resolver_Possible_Value_Selection_ as Resolver_Possible_Value_Selection, 
     type Resolver_Option_Constraints_ as Resolver_Option_Constraints, 
-    type Resolver_Relative_Value_Selection_ as Resolver_Relative_Value_Selection, 
     type Resolver_Guaranteed_Value_Selection_ as Resolver_Guaranteed_Value_Selection, 
     type Resolver_Benchmark_ as Resolver_Benchmark, 
     type Resolver_Constraint_ as Resolver_Constraint, 

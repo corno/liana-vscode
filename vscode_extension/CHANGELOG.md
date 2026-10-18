@@ -1,5 +1,28 @@
 # Change Log
 
+## [Unreleased]
+
+### Added
+- Schema-driven selected-reference diagnostics at the identifier token, including
+  missing dictionary entries and forbidden acyclic dependencies.
+- Deferred cyclic lookups and dependent lookup traversal through components,
+  properties, and references, with lookup/type argument propagation.
+- Explicit list-result declarations with an initial cursor and per-item next
+  selection, including empty-list results and inherited cursors.
+- State-result declarations with a result type before the options and explicit
+  per-option payload/context selections; typed consumers verify producer types.
+
+### Fixed
+- The authoring template binds local option constraints for state-option and
+  present-optional payload resolvers instead of forwarding an absent outer parameter.
+- Constraint and result-selection failures are reported independently of
+  selected-reference lookups; invalid upstream values suppress cascading checks.
+- Missing list cursors and invalid state-result types now report errors instead
+  of obsolete unsupported-result warnings.
+- Component resolution now initializes omitted optional type parameters from the
+  callee's signature, preventing language-server crashes when they are forwarded
+  by nested components.
+
 ## [0.1.57]
 
 ### Changed

@@ -32,7 +32,7 @@ export namespace s_parameters {
 
     export type Resolver_Value = {
         readonly 'definition': s_target.Value
-        readonly 'list cursor': p_schema.Optional_Value<s_target.Resolver_Value_List_Result>
+        readonly 'list cursor': p_schema.Optional_Value<s_target.Type_Reference>
         readonly 'linked entry': p_schema.Optional_Value<s_target.Resolver_Benchmark>
         readonly 'current dictionary': p_schema.Optional_Value<s_target.Dictionary>
         readonly 'current ordered dictionary': p_schema.Optional_Value<s_target.Dictionary>
@@ -55,7 +55,7 @@ export namespace s_parameters {
 
     export type Resolver_Benchmark = {
         readonly 'definition': s_target.Value
-        readonly 'list cursor': p_schema.Optional_Value<s_target.Resolver_Value_List_Result>
+        readonly 'list cursor': p_schema.Optional_Value<s_target.Type_Reference>
         readonly 'linked entry': p_schema.Optional_Value<s_target.Resolver_Benchmark>
         readonly 'current dictionary': p_schema.Optional_Value<s_target.Dictionary>
         readonly 'current ordered dictionary': p_schema.Optional_Value<s_target.Dictionary>
@@ -90,11 +90,12 @@ export namespace s_parameters {
 
     export type Resolver_Relative_Value_Selection = {
         readonly 'value': s_target.Value
+        readonly 'types': s_target.Types
     }
 
     export type Resolver_Lookup_Selection = {
         readonly 'definition': s_target.Value
-        readonly 'list cursor': p_schema.Optional_Value<s_target.Resolver_Value_List_Result>
+        readonly 'list cursor': p_schema.Optional_Value<s_target.Type_Reference>
         readonly 'linked entry': p_schema.Optional_Value<s_target.Resolver_Benchmark>
         readonly 'current dictionary': p_schema.Optional_Value<s_target.Dictionary>
         readonly 'current ordered dictionary': p_schema.Optional_Value<s_target.Dictionary>
@@ -106,11 +107,12 @@ export namespace s_parameters {
 
     export type Resolver_Constraint = {
         readonly 'value': s_target.Value
+        readonly 'types': s_target.Types
     }
 
     export type Resolver_Option_Constraints = {
         readonly 'definition': s_target.Value
-        readonly 'list cursor': p_schema.Optional_Value<s_target.Resolver_Value_List_Result>
+        readonly 'list cursor': p_schema.Optional_Value<s_target.Type_Reference>
         readonly 'linked entry': p_schema.Optional_Value<s_target.Resolver_Benchmark>
         readonly 'current dictionary': p_schema.Optional_Value<s_target.Dictionary>
         readonly 'current ordered dictionary': p_schema.Optional_Value<s_target.Dictionary>
@@ -122,19 +124,22 @@ export namespace s_parameters {
 
     export type Resolver_Optional_Value_Constraints = {
         readonly 'value': s_target.Value
+        readonly 'types': s_target.Types
     }
 
     export type Resolver_Value_Constraints = {
         readonly 'value': s_target.Value
+        readonly 'types': s_target.Types
     }
 
     export type Resolver_Value_Constraint = {
         readonly 'value': s_target.Value
+        readonly 'types': s_target.Types
     }
 
     export type Resolver_Optional_Value_Initialization = {
         readonly 'definition': s_target.Value
-        readonly 'list cursor': p_schema.Optional_Value<s_target.Resolver_Value_List_Result>
+        readonly 'list cursor': p_schema.Optional_Value<s_target.Type_Reference>
         readonly 'linked entry': p_schema.Optional_Value<s_target.Resolver_Benchmark>
         readonly 'current dictionary': p_schema.Optional_Value<s_target.Dictionary>
         readonly 'current ordered dictionary': p_schema.Optional_Value<s_target.Dictionary>
@@ -146,7 +151,7 @@ export namespace s_parameters {
 
     export type Resolver_Value_Group = {
         readonly 'definition': s_target.Group
-        readonly 'list cursor': p_schema.Optional_Value<s_target.Resolver_Value_List_Result>
+        readonly 'list cursor': p_schema.Optional_Value<s_target.Type_Reference>
         readonly 'linked entry': p_schema.Optional_Value<s_target.Resolver_Benchmark>
         readonly 'current dictionary': p_schema.Optional_Value<s_target.Dictionary>
         readonly 'current ordered dictionary': p_schema.Optional_Value<s_target.Dictionary>
@@ -170,7 +175,7 @@ export namespace s_parameters {
 
     export type Resolver_Guaranteed_Value_Selection = {
         readonly 'definition': s_target.Value
-        readonly 'list cursor': p_schema.Optional_Value<s_target.Resolver_Value_List_Result>
+        readonly 'list cursor': p_schema.Optional_Value<s_target.Type_Reference>
         readonly 'linked entry': p_schema.Optional_Value<s_target.Resolver_Benchmark>
         readonly 'current dictionary': p_schema.Optional_Value<s_target.Dictionary>
         readonly 'current ordered dictionary': p_schema.Optional_Value<s_target.Dictionary>
@@ -182,7 +187,7 @@ export namespace s_parameters {
 
     export type Resolver_Possible_Value_Selection = {
         readonly 'definition': s_target.Value
-        readonly 'list cursor': p_schema.Optional_Value<s_target.Resolver_Value_List_Result>
+        readonly 'list cursor': p_schema.Optional_Value<s_target.Type_Reference>
         readonly 'linked entry': p_schema.Optional_Value<s_target.Resolver_Benchmark>
         readonly 'current dictionary': p_schema.Optional_Value<s_target.Dictionary>
         readonly 'current ordered dictionary': p_schema.Optional_Value<s_target.Dictionary>

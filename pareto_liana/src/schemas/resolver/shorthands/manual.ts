@@ -429,6 +429,7 @@ export const option = (
     return {
         'constraints': sh.dictionary({}),
         'resolver': resolver,
+        'result': sh.optional.not_set<s_target.Resolver_Result_Selection>(),
     }
 }
 
@@ -439,6 +440,7 @@ export const option_constrained = (
     return {
         'constraints': sh.dictionary(constraints),
         'resolver': resolver,
+        'result': sh.optional.not_set<s_target.Resolver_Result_Selection>(),
     }
 }
 
@@ -617,7 +619,7 @@ export namespace r {
     }
     export const list_with_result = (
         type_resolver: s_target.Resolver_Value,
-        result: s_target.Type_Reference,
+        result: s_target.Resolver_Value_List_Result,
 
     ): s_target.Resolver_Value => {
         return sh.state(['list', {
@@ -684,6 +686,7 @@ export namespace r {
         return sh.state(['state', {
             'definition': null,
             'options': sh.dictionary(states),
+            'result': sh.optional.not_set<s_target.Resolver_Value.state.result.O>(),
         }])
     }
 }

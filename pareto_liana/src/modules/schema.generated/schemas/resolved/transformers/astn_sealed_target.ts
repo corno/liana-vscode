@@ -90,6 +90,16 @@ export namespace declarations {
         s_target.Value
     >
     
+    export type Resolver_Relative_Value_Selection = p_.Transformer<
+        s_source.Resolver_Relative_Value_Selection,
+        s_target.Value
+    >
+
+    export type Resolver_Result_Selection = p_.Transformer<
+        s_source.Resolver_Result_Selection,
+        s_target.Value
+    >
+
     export type Resolver_Value_List_Result = p_.Transformer<
         s_source.Resolver_Value_List_Result,
         s_target.Value
@@ -107,11 +117,6 @@ export namespace declarations {
     
     export type Resolver_Option_Constraints = p_.Transformer<
         s_source.Resolver_Option_Constraints,
-        s_target.Value
-    >
-    
-    export type Resolver_Relative_Value_Selection = p_.Transformer<
-        s_source.Resolver_Relative_Value_Selection,
         s_target.Value
     >
     
@@ -592,9 +597,68 @@ export const Resolver_Value_Constraints: declarations.Resolver_Value_Constraints
     ),
 )]
 
-export const Resolver_Value_List_Result: declarations.Resolver_Value_List_Result = ($) => Type_Reference(
-    $,
-)
+export const Resolver_Relative_Value_Selection: declarations.Resolver_Relative_Value_Selection = ($) => ['group', ['verbose', p_.literal.dictionary({
+    "path": p_.change_context($['path'], ($) => ['list', p_.from.list($).map(
+        ($) => p_.change_context($, ($) => ['state', p_.from.state($).decide(($): s_target.Value.state => {
+            switch ($[0]) {
+                case 'component': return p_.option($, ($): s_target.Value.state => ({
+                    'option': 'component',
+                    'value': ['nothing', null],
+                }))
+                case 'group': return p_.option($, ($): s_target.Value.state => ({
+                    'option': 'group',
+                    'value': ['reference', {
+                        'value': $['l id'],
+                    }],
+                }))
+                case 'reference': return p_.option($, ($): s_target.Value.state => ({
+                    'option': 'reference',
+                    'value': ['group', ['verbose', p_.literal.dictionary({
+                        "definition": p_.change_context($['definition'], ($) => ['nothing', null]),
+                    })]],
+                }))
+                case 'state result': return p_.option($, ($): s_target.Value.state => ({
+                    'option': 'state result',
+                    'value': Type_Reference(
+                        $,
+                    ),
+                }))
+                default: return p_.exhaustive($[0])
+            }
+        })]),
+    )]),
+    "resulting node": p_.change_context($['resulting node'], ($) => ['nothing', null]),
+})]]
+
+export const Resolver_Result_Selection: declarations.Resolver_Result_Selection = ($) => ['state', p_.from.state($).decide(($): s_target.Value.state => {
+    switch ($[0]) {
+        case 'context': return p_.option($, ($): s_target.Value.state => ({
+            'option': 'context',
+            'value': Resolver_Guaranteed_Value_Selection(
+                $,
+            ),
+        }))
+        case 'value': return p_.option($, ($): s_target.Value.state => ({
+            'option': 'value',
+            'value': Resolver_Relative_Value_Selection(
+                $,
+            ),
+        }))
+        default: return p_.exhaustive($[0])
+    }
+})]
+
+export const Resolver_Value_List_Result: declarations.Resolver_Value_List_Result = ($) => ['group', ['verbose', p_.literal.dictionary({
+    "type": p_.change_context($['type'], ($) => Type_Reference(
+        $,
+    )),
+    "initial": p_.change_context($['initial'], ($) => Resolver_Guaranteed_Value_Selection(
+        $,
+    )),
+    "next": p_.change_context($['next'], ($) => Resolver_Result_Selection(
+        $,
+    )),
+})]]
 
 export const Resolver_Value: declarations.Resolver_Value = ($) => ['state', p_.from.state($).decide(($): s_target.Value.state => {
     switch ($[0]) {
@@ -767,6 +831,9 @@ export const Resolver_Value: declarations.Resolver_Value = ($) => ['state', p_.f
             'option': 'state',
             'value': ['group', ['verbose', p_.literal.dictionary({
                 "definition": p_.change_context($['definition'], ($) => ['nothing', null]),
+                "result": p_.change_context($['result'], ($) => ['optional', p_.from.optional($).decide(($): s_target.Value.optional => ['set', Type_Reference(
+                    $,
+                )], (): s_target.Value.optional => ['not set', null])]),
                 "options": p_.change_context($['options'], ($) => ['dictionary', p_.from.dictionary($).map(
                     ($, id) => ['group', ['verbose', p_.literal.dictionary({
                         "constraints": p_.change_context($['constraints'], ($) => Resolver_Option_Constraints(
@@ -775,6 +842,9 @@ export const Resolver_Value: declarations.Resolver_Value = ($) => ['state', p_.f
                         "resolver": p_.change_context($['resolver'], ($) => Resolver_Value(
                             $,
                         )),
+                        "result": p_.change_context($['result'], ($) => ['optional', p_.from.optional($).decide(($): s_target.Value.optional => ['set', Resolver_Result_Selection(
+                            $,
+                        )], (): s_target.Value.optional => ['not set', null])]),
                     })]],
                 )]),
             })]],
@@ -852,33 +922,6 @@ export const Resolver_Option_Constraints: declarations.Resolver_Option_Constrain
         }
     })],
 )]
-
-export const Resolver_Relative_Value_Selection: declarations.Resolver_Relative_Value_Selection = ($) => ['group', ['verbose', p_.literal.dictionary({
-    "path": p_.change_context($['path'], ($) => ['list', p_.from.list($).map(
-        ($) => p_.change_context($, ($) => ['state', p_.from.state($).decide(($): s_target.Value.state => {
-            switch ($[0]) {
-                case 'component': return p_.option($, ($): s_target.Value.state => ({
-                    'option': 'component',
-                    'value': ['nothing', null],
-                }))
-                case 'group': return p_.option($, ($): s_target.Value.state => ({
-                    'option': 'group',
-                    'value': ['reference', {
-                        'value': $['l id'],
-                    }],
-                }))
-                case 'reference': return p_.option($, ($): s_target.Value.state => ({
-                    'option': 'reference',
-                    'value': ['group', ['verbose', p_.literal.dictionary({
-                        "definition": p_.change_context($['definition'], ($) => ['nothing', null]),
-                    })]],
-                }))
-                default: return p_.exhaustive($[0])
-            }
-        })]),
-    )]),
-    "resulting node": p_.change_context($['resulting node'], ($) => ['nothing', null]),
-})]]
 
 export const Resolver_Guaranteed_Value_Selection: declarations.Resolver_Guaranteed_Value_Selection = ($) => ['group', ['verbose', p_.literal.dictionary({
     "start": p_.change_context($['start'], ($) => ['state', p_.from.state($).decide(($): s_target.Value.state => {

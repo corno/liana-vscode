@@ -10,6 +10,7 @@ export type Document = {
 }
 
 export type Value = {
+    'constraints': p_.Dictionary<Selection>
     'definition': s_schema.Resolver_Value
     'unmarshalled': s_unmarshall_result.Value
     'unmarshall result': Value_Unmarshall_Result
@@ -34,6 +35,7 @@ export type Resolved_Value_Type =
 export type Component = {
     'unmarshalled': s_unmarshall_result.Component
     'value': Value
+    'constraints': p_.Dictionary<Selection>
 }
 
 export type Dictionary = {
@@ -43,6 +45,7 @@ export type Dictionary = {
 
 export type Entry = {
     'unmarshall result': Entry.Unmarshall_Result
+    'resolution error'?: ['cycle', p_.List<string>]
 }
 
 export namespace Entry {
@@ -74,6 +77,7 @@ export type Property_Unmarshalled = {
 export type List = {
     'unmarshalled': s_unmarshall_result.List
     'items': p_.List<Value>
+    'result': Selection
 }
 
 export type Optional = {
@@ -85,15 +89,30 @@ export type Optional = {
     | ['not set', null]
 }
 
+export type Selection =
+    | ['constraint failed', string]
+    | ['resolved', Value]
+    | ['not set', null]
+    | ['unavailable', null]
+    | ['cycle', p_.List<string>]
+
+export type Reference_Status =
+    | ['selected', Selection]
+    | ['cyclic', p_.Circular_Dependency<p_.Optional_Value<Entry>>]
+    | ['missing', string]
+
 export type Reference =
-    | ['derived', null]
-    | ['selected', {
-        'unmarshalled': s_unmarshall_result.Reference_Selected
-        'resolve status':
-        | ['to be implemented', null]
-    }]
+    | ['derived', Selection]
+    | ['selected', Selected_Reference]
+
+export type Selected_Reference = {
+    'unmarshalled': s_unmarshall_result.Reference_Selected
+    'resolve status': Reference_Status
+    'constraints': p_.Dictionary<Selection>
+}
 
 export type State = {
     'unmarshalled': s_unmarshall_result.State
     'option': p_.Optional_Value<Value>
+    'result': Selection
 }

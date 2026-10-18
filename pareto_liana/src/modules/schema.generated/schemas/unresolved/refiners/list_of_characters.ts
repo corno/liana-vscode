@@ -124,6 +124,20 @@ export namespace declarations {
         s_parameters.Parameters
     >
     
+    export type Resolver_Relative_Value_Selection = p_.Refiner_With_Parameter<
+        s_target.Resolver_Relative_Value_Selection,
+        s_error.Error,
+        s_source.List_Of_Characters,
+        s_parameters.Parameters
+    >
+
+    export type Resolver_Result_Selection = p_.Refiner_With_Parameter<
+        s_target.Resolver_Result_Selection,
+        s_error.Error,
+        s_source.List_Of_Characters,
+        s_parameters.Parameters
+    >
+
     export type Resolver_Value_List_Result = p_.Refiner_With_Parameter<
         s_target.Resolver_Value_List_Result,
         s_error.Error,
@@ -147,13 +161,6 @@ export namespace declarations {
     
     export type Resolver_Option_Constraints = p_.Refiner_With_Parameter<
         s_target.Resolver_Option_Constraints,
-        s_error.Error,
-        s_source.List_Of_Characters,
-        s_parameters.Parameters
-    >
-    
-    export type Resolver_Relative_Value_Selection = p_.Refiner_With_Parameter<
-        s_target.Resolver_Relative_Value_Selection,
         s_error.Error,
         s_source.List_Of_Characters,
         s_parameters.Parameters
@@ -397,6 +404,24 @@ export const Resolver_Value_Constraints: declarations.Resolver_Value_Constraints
     ($) => abort(['unmarshalling', $]),
 )
 
+export const Resolver_Relative_Value_Selection: declarations.Resolver_Relative_Value_Selection = ($, abort, $p) => r_from_parse_tree.Resolver_Relative_Value_Selection(
+    r_parse_tree_from_list_of_characters.Document(
+        $,
+        ($) => abort(['parse tree deserialization', $]),
+        $p,
+    )['content'],
+    ($) => abort(['unmarshalling', $]),
+)
+
+export const Resolver_Result_Selection: declarations.Resolver_Result_Selection = ($, abort, $p) => r_from_parse_tree.Resolver_Result_Selection(
+    r_parse_tree_from_list_of_characters.Document(
+        $,
+        ($) => abort(['parse tree deserialization', $]),
+        $p,
+    )['content'],
+    ($) => abort(['unmarshalling', $]),
+)
+
 export const Resolver_Value_List_Result: declarations.Resolver_Value_List_Result = ($, abort, $p) => r_from_parse_tree.Resolver_Value_List_Result(
     r_parse_tree_from_list_of_characters.Document(
         $,
@@ -425,15 +450,6 @@ export const Resolver_Possible_Value_Selection: declarations.Resolver_Possible_V
 )
 
 export const Resolver_Option_Constraints: declarations.Resolver_Option_Constraints = ($, abort, $p) => r_from_parse_tree.Resolver_Option_Constraints(
-    r_parse_tree_from_list_of_characters.Document(
-        $,
-        ($) => abort(['parse tree deserialization', $]),
-        $p,
-    )['content'],
-    ($) => abort(['unmarshalling', $]),
-)
-
-export const Resolver_Relative_Value_Selection: declarations.Resolver_Relative_Value_Selection = ($, abort, $p) => r_from_parse_tree.Resolver_Relative_Value_Selection(
     r_parse_tree_from_list_of_characters.Document(
         $,
         ($) => abort(['parse tree deserialization', $]),

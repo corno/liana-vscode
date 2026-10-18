@@ -17,6 +17,9 @@ import * as sh from "pareto-fountain-pen/modules/rich_phrase/schemas/rich_phrase
 export const Error: declarations.Error = ($) => p_.from.state($.type).decide(
     ($) => {
         switch ($[0]) {
+            case 'constraint failed': return sh.ph.text(`Constraint failed: ${$[1]}.`)
+            case 'missing reference': return sh.ph.text(`Reference '${$[1]}' does not exist.`)
+            case 'reference cycle': return sh.ph.text("Cyclic reference dependency.")
             case 'to be implemented': return p_.option($, ($) => sh.ph.composed([
                 sh.ph.text("this error type is not yet implemented, please report it to the developers")
             ]))

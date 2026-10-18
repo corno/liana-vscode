@@ -324,11 +324,10 @@ export namespace declarations {
         s_error.Error,
         s_source.Resolver_Value_List_Result,
         {
-            readonly 'types': p_.lookup.Acyclic<
-                s_target.Types.D
-            >
+            readonly 'sibling property resolvers': p_.lookup.Acyclic<s_target.Resolver_Value_Group.D>
+            readonly 'parent sibling property resolvers': p_.lookup.Acyclic<s_target.Resolver_Value_Group.D>
         },
-        s_parameters.Resolver_Value_List_Result
+        s_parameters.Resolver_Value
     >
     
     export type Value_Results = p_.Refiner_With_Lookups_And_Parameter<
@@ -1094,6 +1093,7 @@ export const Resolver_Value: declarations.Resolver_Value = ($, abort, $l, $p) =>
                             abort,
                             {
                                 'value': v_signature['type']['root value'],
+                                'types': $p.types,
                             },
                         ),
                     ),
@@ -1239,76 +1239,38 @@ export const Resolver_Value: declarations.Resolver_Value = ($, abort, $l, $p) =>
                 },
             )],
         ))
-        case 'list': return p_.option($, ($): s_target.Resolver_Value => p_.change_context(
-            $,
-            ($) => ((v_definition) => ((v_result) => ['list', {
-                'definition': p_.change_context(
-                    $['definition'],
-                    ($) => v_definition,
+        case 'list': return p_.option($, (source): s_target.Resolver_Value => {
+            if ($p.definition[0] !== 'list') return abort({
+                type: ['constraint', ['state', { expected: 'list', found: $p.definition[0] }]],
+            })
+            const definition = $p.definition[1]
+            const declaration = p_.from.optional(source.result).map((result) => {
+                const type = Type_Reference(result.type, abort, {
+                    types: p_.select_lookup.acyclic.from_resolved_dictionary($p.types),
+                }, {})
+                const initial = Resolver_Guaranteed_Value_Selection(result.initial, abort, $l, $p)
+                Result_Type(initial['resulting node'], type, abort)
+                return { type, initial, next: result.next }
+            })
+            const parameters = {
+                ...$p,
+                definition: definition.value,
+                'list cursor': p_.from.optional(declaration).decide(
+                    (result) => p_.literal.set(result.type),
+                    () => $p['list cursor'],
                 ),
-                'resolver': p_.change_context(
-                    $['resolver'],
-                    ($) => Resolver_Value(
-                        $,
-                        abort,
-                        $l,
-                        {
-                            'definition': v_definition['value'],
-                            'list cursor': ((v_context_44) => p_.from.optional(v_result).decide(($) => p_.literal.set($), () => $p['list cursor']))(
-                                $,
-                            ),
-                            'linked entry': $p['linked entry'],
-                            'current dictionary': $p['current dictionary'],
-                            'current ordered dictionary': $p['current ordered dictionary'],
-                            'signature': $p['signature'],
-                            'signatures': $p['signatures'],
-                            'types': $p['types'],
-                            'option constraints': $p['option constraints'],
-                        },
-                    ),
-                ),
-                'result': p_.change_context(
-                    $['result'],
-                    ($) => v_result,
-                ),
-            }])(
-                p_.from.optional($['result']).map(($) => Resolver_Value_List_Result(
-                    $,
-                    abort,
-                    {
-                        'types': p_.select_lookup.acyclic.from_resolved_dictionary(
-                            $p['types'],
-                        ),
-                    },
-                    {
-                        
-                    },
-                )),
-            ))(
-                ((v_constraint_context_42) => p_.from.state(
-                    $p['definition'],
-                ).decide(
-                    ($) => {
-                        switch ($[0]) {
-                            case 'list': return p_.option(
-                                $,
-                                ($) => $,
-                            )
-                            default: return abort(
-                                {
-                                    'type': ['constraint', ['state', {
-                                        'expected': "list",
-                                        'found': $p['definition'][0],
-                                    }]],
-                                },
-                            )
-                        }
-                    },
-                ))(
-                    $,
-                ),
-            ),
-        ))
+            }
+            const resolver = Resolver_Value(source.resolver, abort, $l, parameters)
+            return ['list', {
+                definition,
+                resolver,
+                result: p_.from.optional(declaration).map((result) => ({
+                    type: result.type,
+                    initial: result.initial,
+                    next: Resolver_Result_Selection(result.next, abort, $l, parameters, result.type),
+                })),
+            }]
+        })
         case 'nothing': return p_.option($, ($): s_target.Resolver_Value => p_.change_context(
             $,
             ($) => ['nothing', null],
@@ -1437,6 +1399,7 @@ export const Resolver_Value: declarations.Resolver_Value = ($, abort, $l, $p) =>
                                             abort,
                                             {
                                                 'value': v_lookup['resulting dictionary']['value'],
+                                                'types': $p.types,
                                             },
                                         ),
                                     ),
@@ -1478,13 +1441,20 @@ export const Resolver_Value: declarations.Resolver_Value = ($, abort, $l, $p) =>
                 ),
             ),
         ))
-        case 'state': return p_.option($, ($): s_target.Resolver_Value => p_.change_context(
-            $,
+        case 'state': return p_.option($, (source): s_target.Resolver_Value => p_.change_context(
+            source,
             ($) => ((v_definition) => ['state', {
                 'definition': p_.change_context(
                     $['definition'],
                     ($) => v_definition,
                 ),
+                'result': p_.from.optional($.result).map((type) => {
+                    p_.from.dictionary($.options).map((option) => p_.from.optional(option.result).decide(
+                        () => null,
+                        () => abort({ type: ['constraint', ['optional value is not set', null]] }),
+                    ))
+                    return Type_Reference(type, abort, { types: p_.select_lookup.acyclic.from_resolved_dictionary($p.types) }, {})
+                }),
                 'options': p_.change_context(
                     $['options'],
                     ($) => ((v_required) => p_.from.dictionary($).map(
@@ -1512,6 +1482,17 @@ export const Resolver_Value: declarations.Resolver_Value = ($, abort, $l, $p) =>
                                     },
                                 ),
                             ),
+                            'result': p_.from.optional($.result).map((selection) => {
+                                const expected = p_.from.optional(source.result).decide(
+                                    (type) => Type_Reference(type, abort, {
+                                        types: p_.select_lookup.acyclic.from_resolved_dictionary($p.types),
+                                    }, {}),
+                                    () => abort({ type: ['constraint', ['optional value is not set', null]] }),
+                                )
+                                return Resolver_Result_Selection(selection, abort, $l, {
+                                    ...$p, definition: v_option.value, 'option constraints': p_.literal.set(v_constraints),
+                                }, expected)
+                            }),
                         }))(
                             Resolver_Option_Constraints(
                                 $['constraints'],
@@ -1644,7 +1625,7 @@ export const Basic_Type: declarations.Basic_Type = ($, abort) => ({
                                                             $,
                                                             ($) => ['positive natural', null],
                                                         ))
-                                                        default: return p_.exhaustive($[0])
+                                                                                        default: return p_.exhaustive($[0])
                                                     }
                                                 })),
                                             ),
@@ -2308,6 +2289,15 @@ export const Resolver_Relative_Value_Selection: declarations.Resolver_Relative_V
                                 $,
                             ),
                         ))
+                        case 'state result': return p_.option($, (source) => {
+                            if (current[0] !== 'state') return abort({
+                                type: ['constraint', ['state', { expected: 'state', found: current[0] }]],
+                            })
+                            const type = Type_Reference(source, abort, {
+                                types: p_.select_lookup.acyclic.from_resolved_dictionary($p.types),
+                            }, {})
+                            return { item: ['state result', type], node: type['resulting type']['root value'] }
+                        })
                         default: return p_.exhaustive($[0])
                     }
                 })),
@@ -2701,6 +2691,7 @@ export const Resolver_Value_Constraint: declarations.Resolver_Value_Constraint =
             $,
             abort,
             {
+                'types': $p.types,
                 'value': p_.change_context(v_start, ($) => p_.from.state($).decide(($): s_target.Value => {
                     switch ($[0]) {
                         case 'value': return p_.option($, ($): s_target.Value => $p['value'])
@@ -2824,12 +2815,51 @@ export const Resolver_Value_Group: declarations.Resolver_Value_Group = ($, abort
     ),
 )
 
-export const Resolver_Value_List_Result: declarations.Resolver_Value_List_Result = ($, abort, $l, $p) => Type_Reference(
-    $,
-    abort,
-    $l,
-    $p,
-)
+const Result_Type = (
+    value: s_target.Value,
+    expected: s_target.Type_Reference,
+    abort: ($: s_error.Error) => never,
+): void => {
+    if (value !== expected['resulting type']['root value']) abort({
+        type: ['constraint', ['same node', 'result selection must produce the declared result type']],
+    })
+}
+
+export const Resolver_Result_Selection = (
+    $: s_source.Resolver_Result_Selection,
+    abort: ($: s_error.Error) => never,
+    $l: {
+        readonly 'sibling property resolvers': p_.lookup.Acyclic<s_target.Resolver_Value_Group.D>
+        readonly 'parent sibling property resolvers': p_.lookup.Acyclic<s_target.Resolver_Value_Group.D>
+    },
+    $p: s_parameters.Resolver_Value,
+    expected: s_target.Type_Reference,
+): s_target.Resolver_Result_Selection => {
+    switch ($[0]) {
+        case 'value': {
+            const selection = Resolver_Relative_Value_Selection($[1], abort, { value: $p.definition, types: $p.types })
+            Result_Type(selection['resulting node'], expected, abort)
+            return ['value', selection]
+        }
+        case 'context': {
+            const selection = Resolver_Guaranteed_Value_Selection($[1], abort, $l, $p)
+            Result_Type(selection['resulting node'], expected, abort)
+            return ['context', selection]
+        }
+        default: return p_.exhaustive($[0])
+    }
+}
+
+export const Resolver_Value_List_Result: declarations.Resolver_Value_List_Result = ($, abort, $l, $p) => {
+    const type = Type_Reference($.type, abort, { types: p_.select_lookup.acyclic.from_resolved_dictionary($p.types) }, {})
+    const initial = Resolver_Guaranteed_Value_Selection($.initial, abort, $l, $p)
+    Result_Type(initial['resulting node'], type, abort)
+    return {
+        type,
+        initial,
+        next: Resolver_Result_Selection($.next, abort, $l, { ...$p, 'list cursor': p_.literal.set(type) }, type),
+    }
+}
 
 export const Value_Results: declarations.Value_Results = ($, abort, $l, $p) => p_.from.optional($).map(($) => p_.from.dictionary($).map(
     ($, id) => Value_Reference(
@@ -2858,6 +2888,7 @@ export const Resolver_Guaranteed_Value_Selection: declarations.Resolver_Guarante
         $['tail'],
         abort,
         {
+            'types': $p.types,
             'value': p_.change_context(v_start, ($) => ((v_state_context_29) => p_.from.state($).decide(($) => {
                 switch ($[0]) {
                     case 'sibling': return p_.option($, ($) => $['l entry']['definition']['value'])
@@ -2865,7 +2896,7 @@ export const Resolver_Guaranteed_Value_Selection: declarations.Resolver_Guarante
                     case 'parameter': return p_.option($, ($) => $['l entry']['type']['resulting type']['root value'])
                     case 'result': return p_.option($, ($) => p_.change_context($, ($) => p_.from.state($).decide(($) => {
                         switch ($[0]) {
-                            case 'list': return p_.option($, ($) => $['list result']['resulting type']['root value'])
+                            case 'list': return p_.option($, ($) => $['list result']['type']['resulting type']['root value'])
                             case 'state': return p_.option($, ($) => $['result']['resulting type']['root value'])
                             case 'optional value': return p_.option($, ($) => $['result']['resulting type']['root value'])
                             default: return p_.exhaustive($[0])

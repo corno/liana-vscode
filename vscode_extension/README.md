@@ -88,6 +88,35 @@ Text belongs in `basic types`, alongside boolean, date, and number. A value uses
 complexity wrappers, external references, and stack lookups are removed.
 Unknown root/basic-type references produce schema-loading diagnostics.
 
+State resolver declarations place the optional result type before the options:
+`definition`, `result`, `options`. Each option keeps its own optional result
+selection after `constraints` and `resolver`. In concise notation, a state
+without a result uses `< ~ _ { ... } >`; each option without a result selection
+uses `< { ... } ... _ >`.
+
+Document reference checks are schema-driven: selected dictionary references report
+missing identifiers at the reference token, acyclic lookups report cycles, and
+cyclic lookups allow forward and mutual references. Dependent dictionary lookups
+can navigate components, properties, and resolved references. Invalid lookup
+sources do not produce cascading missing-reference errors.
+
+List and state results are explicitly declared by their producers. A list result
+declares its `type`, an `initial` selection, and a `next` selection evaluated after
+each item. Empty lists return the initial cursor; each item receives the preceding
+cursor. Lists without their own result preserve any enclosing cursor.
+A state declares a result type and a result selection for every option.
+Result selections use either the resolved payload (`value`) or the enclosing
+resolver environment (`context`), without inferring behavior from option names.
+Typed state-result consumers check the producer's declared type. Missing cursors,
+invalid selections, and result-type mismatches are errors rather than unsupported
+warnings; failed upstream checks suppress cascading diagnostics.
+
+Option, optional-presence, component, and reference constraints report failed
+checks as errors, even when no selected
+reference consumes their results. Already-invalid inputs suppress cascading checks.
+The self-schema passes each state option's or present optional value's local
+constraints to its payload resolver; it does not inherit the outer option scope.
+
 The client commands and language server both use the local Next schema loader
 from `pareto-liana`. Existing authoring environments must migrate their schema
 sources and regenerate `.liana/schema.slna`; old formats are rejected rather
