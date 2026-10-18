@@ -1,22 +1,20 @@
-import * as sh from 'liana-runtime/temp/shorthand_helpers/unresolved_data'
+import * as sh from '../../../temp/shorthands.js'
 
 import type * as s_target from "../schema.js"
 
 
 export const signatures = (
-    signatures: sh.Raw_Or_Normal_Dictionary<s_target.Resolver_Signatures.l_dictionary.D.l_entry>,
-): s_target.Resolver.signatures => {
-    return {
-        'signatures': sh.dictionary(signatures)
-    }
+    signatures: sh.Raw_Or_Normal_Dictionary<s_target.Resolver_Signatures.D>,
+): s_target.Resolver_Signatures => {
+    return sh.dictionary(signatures)
 }
 
 export const sig_params = (
-    modules: sh.Raw_Or_Normal_Dictionary<s_target.Resolver_Signature_Parameters.modules.l_dictionary.D.l_entry>,
-    lookups: sh.Raw_Or_Normal_Dictionary<s_target.Resolver_Signature_Parameters.lookups.l_dictionary.D.l_entry>,
+    types: sh.Raw_Or_Normal_Dictionary<s_target.Resolver_Signature_Parameters.types.D>,
+    lookups: sh.Raw_Or_Normal_Dictionary<s_target.Resolver_Signature_Parameters.lookups.D>,
 ): s_target.Resolver_Signature_Parameters => {
     return {
-        'modules': sh.dictionary(modules),
+        'types': sh.dictionary(types),
         'lookups': sh.dictionary(lookups),
     }
 }
@@ -27,13 +25,13 @@ export const sig_params = (
 export namespace sig {
 
     export const local = (
-        modules: sh.Raw_Or_Normal_Dictionary<s_target.Resolver_Signature_Parameters.modules.l_dictionary.D.l_entry>,
-        lookups: sh.Raw_Or_Normal_Dictionary<s_target.Resolver_Signature_Parameters.lookups.l_dictionary.D.l_entry>,
-    ): s_target.Resolver_Signatures.l_dictionary.D.l_entry => {
+        types: sh.Raw_Or_Normal_Dictionary<s_target.Resolver_Signature_Parameters.types.D>,
+        lookups: sh.Raw_Or_Normal_Dictionary<s_target.Resolver_Signature_Parameters.lookups.D>,
+    ): s_target.Resolver_Signatures.D => {
         return {
-            'module': null,
+            'type': null,
             'parameters': sh.state(['local', {
-                'modules': sh.dictionary(modules),
+                'types': sh.dictionary(types),
                 'lookups': sh.dictionary(lookups),
             }]),
             'resolved parameters': null,
@@ -42,9 +40,9 @@ export namespace sig {
 
     export const same_as = (
         name: string
-    ): s_target.Resolver_Signatures.l_dictionary.D.l_entry => {
+    ): s_target.Resolver_Signatures.D => {
         return {
-            'module': null,
+            'type': null,
             'parameters': sh.state(['same as', sh.reference(name)]),
             'resolved parameters': null,
         }
@@ -54,32 +52,14 @@ export namespace sig {
 export namespace parameter {
 
 
-    export const module = (
+    export const type = (
         name: string,
         presence?: 'optional' | 'required',
-    ): s_target.Resolver_Signature_Parameters.modules.l_dictionary.D.l_entry => {
+    ): s_target.Resolver_Signature_Parameters.types.D => {
         return {
-            'module': {
+            'type': {
                 'location': sh.state(['internal', sh.reference(name)]),
-                'resulting module': null,
-            },
-            'presence': presence === 'optional'
-                ? sh.state(['optional', null])
-                : sh.state(['required', null]),
-        }
-    }
-    export const module_external = (
-        imp: string,
-        type: string,
-        presence?: 'optional' | 'required',
-    ): s_target.Resolver_Signature_Parameters.modules.l_dictionary.D.l_entry => {
-        return {
-            'module': {
-                'location': sh.state(['external', {
-                    'import': sh.reference(imp),
-                    'module': sh.reference(type),
-                }]),
-                'resulting module': null,
+                'resulting type': null,
             },
             'presence': presence === 'optional'
                 ? sh.state(['optional', null])
@@ -89,20 +69,18 @@ export namespace parameter {
 
     export const lookup = (
         name: string,
-        type?: 'acyclic' | 'cyclic' | 'stack',
+        type?: 'acyclic' | 'cyclic',
         presence?: 'optional' | 'required',
-    ): s_target.Resolver_Signature_Parameters.lookups.l_dictionary.D.l_entry => {
+    ): s_target.Resolver_Signature_Parameters.lookups.D => {
         return {
             'referent': {
                 'location': sh.state(['internal', sh.reference(name)]),
-                'resulting module': null,
+                'resulting type': null,
             },
             'dictionary': null,
             'type': type === 'cyclic'
                 ? sh.state(['cyclic', null])
-                : type === 'stack'
-                    ? sh.state(['stack', null])
-                    : sh.state(['acyclic', null]),
+                : sh.state(['acyclic', null]),
             'presence': presence === 'optional'
                 ? sh.state(['optional', null])
                 : sh.state(['required', null]),

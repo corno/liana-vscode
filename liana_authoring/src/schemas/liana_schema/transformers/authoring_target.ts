@@ -38,20 +38,15 @@ export const Value_data: declarations_.Value_data = ($, $p) => p_.from.state($).
         switch ($[0]) {
             case 'simple': return p_.option($, ($) => ['concrete', {
                 'type': ['text', {
-                    'delimiter': ['none', null],
-                    'value': p_.from.state($).decide(
+                    'delimiter': $['l entry'].type[0] === 'text' ? ['quote', null] : ['none', null],
+                    'value': p_.from.state($['l entry'].type).decide(
                         ($) => {
                             switch ($[0]) {
-                                case 'global': return p_.option($, ($) => p_.from.state($['l entry'].type).decide(
-                                    ($) => {
-                                        switch ($[0]) {
                                             case 'number': return p_.option($, ($) => "0")
                                             case 'boolean': return p_.option($, ($) => "false")
                                             case 'date': return p_.option($, ($) => "yyyy-mm-dd")
+                                            case 'text': return p_.option($, ($) => "")
                                             default: return p_.exhaustive($[0])
-                                        }
-                                    }))
-                                default: return p_.exhaustive($[0])
                             }
                         }),
                     'trivia': {
@@ -62,15 +57,6 @@ export const Value_data: declarations_.Value_data = ($, $p) => p_.from.state($).
             case 'nothing': return p_.option($, ($) => ['concrete', {
                 'type': ['nothing', {
                     '~': {
-                        'comments': p_.literal.list([])
-                    }
-                }]
-            }])
-            case 'text': return p_.option($, ($) => ['concrete', {
-                'type': ['text', {
-                    'delimiter': ['quote', null],
-                    'value': "",
-                    'trivia': {
                         'comments': p_.literal.list([])
                     }
                 }]
@@ -94,7 +80,6 @@ export const Value_data: declarations_.Value_data = ($, $p) => p_.from.state($).
             case 'component': return p_.option($, ($) => p_.from.state($.type).decide(
                 ($) => {
                     switch ($[0]) {
-                        case 'external': return p_.option($, ($) => Value_data($.module['l entry']['root value'], $p))
                         case 'internal': return p_.option($, ($) => Value_data($['l entry'].get_circular_dependent()['root value'], $p))
                         case 'internal acyclic': return p_.option($, ($) => Value_data($['l entry']['root value'], $p))
                         default: return p_.exhaustive($[0])

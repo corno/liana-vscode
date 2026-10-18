@@ -309,7 +309,7 @@ export type Nothing = {
 }
 
 export type Text = {
-    'definition': s_schema.Value.text
+    'definition': s_schema.Basic_Type.type_.text
     'instance': s_astn_parse_tree.Value.type_.concrete.text
 }
 

@@ -94,23 +94,7 @@ export const Value: declarations_.Value = ($) => p_.from.state($['unmarshall res
                             }
                         ))
                         case 'reference': return p_.option($, ($) => p_.literal.list([]))
-                        case 'simple': return p_.option($, ($) => p_.from.state($.definition).decide(
-                            ($) => {
-                                switch ($[0]) {
-                                    case 'global': return p_.option($, ($) => p_.from.state($['l entry'].type).decide(
-                                        ($) => {
-                                            switch ($[0]) {
-                                                case 'number': return p_.option($, ($) => p_.literal.list([]))
-                                                case 'boolean': return p_.option($, ($) => p_.literal.list([]))
-                                                case 'date': return p_.option($, ($) => p_.literal.list([]))
-                                                default: return p_.exhaustive($[0])
-                                            }
-                                        }
-                                    ))
-                                    default: return p_.exhaustive($[0])
-                                }
-                            }
-                        ))
+                        case 'simple': return p_.option($, ($) => p_.literal.list([]))
                         case 'state': return p_.option($, ($) => p_.from.state($.derived['option status']).decide(
                             ($) => {
                                 switch ($[0]) {
@@ -122,14 +106,7 @@ export const Value: declarations_.Value = ($) => p_.from.state($['unmarshall res
                         ))
                         case 'text': return p_.option($, ($) => {
                             const $v_instance = $.instance
-                            const $p_type: s_schema.Text_Type = p_.from.state($.definition).decide(
-                                ($) => {
-                                    switch ($[0]) {
-                                        case 'global': return p_.option($, ($) => $['l entry'])
-                                        case 'local': return p_.option($, ($) => $)
-                                        default: return p_.exhaustive($[0])
-                                    }
-                                })
+                            const $p_type = $.definition
                             return p_.from.state($p_type.link).decide(
                                 ($) => {
                                     switch ($[0]) {

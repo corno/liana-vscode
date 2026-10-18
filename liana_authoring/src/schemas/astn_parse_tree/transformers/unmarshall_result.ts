@@ -79,7 +79,6 @@ export const Value: declarations.Value = ($, $p) => {
                                                     'definition': p_.from.state($.type).decide(
                                                         ($) => {
                                                             switch ($[0]) {
-                                                                case 'external': return p_.option($, ($) => $.module['l entry']['root value'])
                                                                 case 'internal acyclic': return p_.option($, ($) => $['l entry']['root value'])
                                                                 case 'internal': return p_.option($, ($) => $['l entry'].get_circular_dependent()['root value'])
                                                                 default: return p_.exhaustive($[0])
@@ -415,6 +414,16 @@ export const Value: declarations.Value = ($, $p) => {
                                         })
                                         case 'simple': return p_.option($, ($): s_out.Unmarshalled_Value => {
                                             const def = $
+                                            const basic = def['l entry'].type
+                                            if (basic[0] === 'text') {
+                                                if ($v_concrete_value[0] !== 'text') {
+                                                    return abort(['incorrect', ['wrong type', null]])
+                                                }
+                                                return ['text', {
+                                                    definition: basic[1],
+                                                    instance: $v_concrete_value[1],
+                                                }]
+                                            }
                                             return ['simple', p_.from.state($v_concrete_value).decide(
                                                 ($) => {
                                                     switch ($[0]) {
@@ -714,20 +723,6 @@ export const Value: declarations.Value = ($, $p) => {
                                                         })
                                                 }
                                             }]
-                                        })
-                                        case 'text': return p_.option($, ($) => {
-                                            const def = $
-                                            return ['text', p_.from.state($v_concrete_value).decide(
-                                                ($) => {
-                                                    switch ($[0]) {
-                                                        case 'text': return p_.option($, ($) => ({
-                                                            'definition': def,
-                                                            'value': $.token.value,
-                                                            'instance': $,
-                                                        }))
-                                                        default: return abort(['incorrect', ['wrong type', null]])
-                                                    }
-                                                })]
                                         })
                                         default: return p_.exhaustive($[0])
                                     }

@@ -17,7 +17,6 @@ namespace p_i_temp {
         | p_temp_dictionary.Generic_Dictionary<any>
         | p_i.lookup.Acyclic<any>
         | p_i.lookup.Cyclic<any>
-        | p_i.lookup.Stack<any>
 
     export type Transformer_With_Lookups_And_Parameter<
         Input extends p_di.Value,
@@ -55,15 +54,9 @@ namespace temp {
         | ['resolved', p_i.lookup.Cyclic<s_out.Entry>]
         | ['not found because of root', null]
 
-    export type Stack_Parameter_Resolve_Status =
-        | ['to be implemented', null]
-        | ['resolved', p_i.lookup.Stack<s_out.Entry>]
-        | ['not found because of root', null]
-
     type Lookup_Parameters = {
         'acyclic': p_temp_dictionary.Generic_Dictionary<Acyclic_Parameter_Resolve_Status>
         'cyclic': p_temp_dictionary.Generic_Dictionary<Cyclic_Parameter_Resolve_Status>
-        'stack': p_temp_dictionary.Generic_Dictionary<Stack_Parameter_Resolve_Status>
     }
 
     export type Lookups = {
@@ -74,7 +67,7 @@ namespace temp {
         }
     }
 
-    export type Module_Parameter_Resolve_Status =
+    export type Type_Parameter_Resolve_Status =
         | ['not found because of root', null]
         | ['to be implemented', null]
 
@@ -85,9 +78,9 @@ export const Document: p_i_temp.Transformer_With_Lookups_And_Parameter<
     s_out.Document,
     temp.Lookups,
     {
-        'definition': s_in_definition.Resolver_Modules.D
-        'resolvers': s_in_definition.Resolver
-        'module parameters': p_di.Dictionary<temp.Module_Parameter_Resolve_Status>
+        'definition': s_in_definition.Resolver_Types.D
+        'resolvers': s_in_definition.Schema
+        'type parameters': p_di.Dictionary<temp.Type_Parameter_Resolve_Status>
     }
 > = ($, $l, $p) => ({
     'unmarshalled': $,
@@ -97,7 +90,7 @@ export const Document: p_i_temp.Transformer_With_Lookups_And_Parameter<
         {
             'definition': $p.definition['root value resolver'],
             'resolver': $p.resolvers,
-            'module parameters': $p['module parameters'],
+            'type parameters': $p['type parameters'],
         }
     )
 })
@@ -161,13 +154,13 @@ export const Document: p_i_temp.Transformer_With_Lookups_And_Parameter<
 
 export const Resolver_Optional_Value_Initialization = (
     $: s_in_definition.Resolver_Optional_Value_Initialization
-): temp.Module_Parameter_Resolve_Status => {
+): temp.Type_Parameter_Resolve_Status => {
     return ['to be implemented', null]
 }
 
 export const Resolver_Guaranteed_Value_Selection = (
     $: s_in_definition.Resolver_Guaranteed_Value_Selection
-): temp.Module_Parameter_Resolve_Status => {
+): temp.Type_Parameter_Resolve_Status => {
     return ['to be implemented', null]
 }
 
@@ -178,8 +171,8 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
     temp.Lookups,
     {
         'definition': s_in_definition.Resolver_Value
-        'resolver': s_in_definition.Resolver
-        'module parameters': p_di.Dictionary<temp.Module_Parameter_Resolve_Status>
+        'resolver': s_in_definition.Schema
+        'type parameters': p_di.Dictionary<temp.Type_Parameter_Resolve_Status>
     }
 > = ($, $l, $p) => {
     return {
@@ -201,13 +194,12 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                                 switch ($[0]) {
                                                     case 'component': return p_.option($, ($) => {
                                                         const def2 = p_.from.state(def.location).decide(
-                                                            ($): s_in_definition.Resolver_Modules_.D => {
+                                                            ($): s_in_definition.Resolver_Types.D => {
                                                                 switch ($[0]) {
-                                                                    case 'external': return p_.option($, ($) => p_implement_me("external component"))
-                                                                    case 'internal': return p_.option($, ($) => p_.from.dictionary($p.resolver.modules).get_possible_entry(
+                                                                    case 'internal': return p_.option($, ($) => p_.from.dictionary($p.resolver.resolvers).get_possible_entry(
                                                                         $['l id'],
                                                                         ($) => $,
-                                                                        () => p_unreachable_code_path("the resolver should have been provided with a module parameter for this definition")
+                                                                        () => p_unreachable_code_path("the resolver should have been provided with a type parameter for this definition")
                                                                     ))
                                                                     default: return p_.exhaustive($[0])
                                                                 }
@@ -230,10 +222,6 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                                                                     $,
                                                                                     ($): temp.Cyclic_Parameter_Resolve_Status => ['to be implemented', null]
                                                                                 ),
-                                                                                'stack': p_temp_dictionary.map_value_dictionary_to_generic_dictionary(
-                                                                                    $,
-                                                                                    ($): temp.Stack_Parameter_Resolve_Status => ['to be implemented', null]
-                                                                                )
                                                                             }),
                                                                             () => $l.parameters
                                                                         ),
@@ -245,28 +233,28 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                                                 {
                                                                     'definition': def2['root value resolver'],
                                                                     'resolver': $p.resolver,
-                                                                    'module parameters': p_i_temp.from_option_decide(
+                                                                    'type parameters': p_i_temp.from_option_decide(
                                                                         def.arguments,
                                                                         ($) => p_i_temp.from_option_decide(
-                                                                            $.modules,
+                                                                            $.types,
                                                                             ($) => p_.from.dictionary($).map(
-                                                                                ($): temp.Module_Parameter_Resolve_Status => p_.from.state($).decide(
+                                                                                ($): temp.Type_Parameter_Resolve_Status => p_.from.state($).decide(
                                                                                     ($) => {
                                                                                         switch ($[0]) {
                                                                                             case 'optional': return p_.option($, ($) => Resolver_Optional_Value_Initialization($))
-                                                                                            case 'parameter': return p_.option($, ($) => p_.from.dictionary($p['module parameters']).get_possible_entry(
+                                                                                            case 'parameter': return p_.option($, ($) => p_.from.dictionary($p['type parameters']).get_possible_entry(
                                                                                                 $['l id'],
                                                                                                 ($) => $,
-                                                                                                () => p_unreachable_code_path("for every parameter, there must be a module parameter provided")
+                                                                                                () => p_unreachable_code_path("for every parameter, there must be a type parameter provided")
                                                                                             ))
                                                                                             case 'required': return p_.option($, ($) => Resolver_Guaranteed_Value_Selection($))
                                                                                             default: return p_.exhaustive($[0])
                                                                                         }
                                                                                     })
                                                                             ),
-                                                                            () => $p['module parameters']
+                                                                            () => $p['type parameters']
                                                                         ),
-                                                                        () => $p['module parameters']
+                                                                        () => $p['type parameters']
 
                                                                     ),
                                                                     // 'module parameters': p_.literal.not_set(), //FIXME 
@@ -366,7 +354,7 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                                                                                 {
                                                                                                     'definition': def.resolver,
                                                                                                     'resolver': $p.resolver,
-                                                                                                    'module parameters': $p['module parameters'],
+                                                                                                    'type parameters': $p['type parameters'],
                                                                                                 }
                                                                                             )]
                                                                                         }])
@@ -419,7 +407,7 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                                                                             {
                                                                                                 'definition': resolver,
                                                                                                 'resolver': $p.resolver,
-                                                                                                'module parameters': $p['module parameters'],
+                                                                                                'type parameters': $p['type parameters'],
                                                                                             }
                                                                                         )
                                                                                     }]
@@ -453,7 +441,7 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                                                 {
                                                                     'definition': def.resolver,
                                                                     'resolver': $p.resolver,
-                                                                    'module parameters': $p['module parameters'],
+                                                                    'type parameters': $p['type parameters'],
                                                                 }
                                                             ))
                                                     }))
@@ -468,13 +456,14 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                                 default: return p_unreachable_code_path("unmarshalled value should match the definition")
                                             }
                                         })])
-                                    case 'simple': return p_.option($, ($) => ['simple', p_.from.state(unmarshalled_value).decide(
-                                        ($) => {
+                                    case 'simple': return p_.option($, ($) => p_.from.state(unmarshalled_value).decide(
+                                        ($): s_out.Resolved_Value_Type => {
                                             switch ($[0]) {
-                                                case 'simple': return p_.option($, ($) => $)
+                                                case 'simple': return p_.option($, ($) => ['simple', $])
+                                                case 'text': return p_.option($, ($) => ['text', $])
                                                 default: return p_unreachable_code_path("unmarshalled value should match the definition")
                                             }
-                                        })])
+                                        }))
                                     case 'optional': return p_.option($, ($) => {
                                         const def = $
                                         return ['optional', p_.from.state(unmarshalled_value).decide(
@@ -492,7 +481,7 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                                                             {
                                                                                 'definition': def.resolver,
                                                                                 'resolver': $p.resolver,
-                                                                                'module parameters': $p['module parameters'],
+                                                                                'type parameters': $p['type parameters'],
                                                                             }
                                                                         )
                                                                     }])
@@ -570,7 +559,7 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                                                                 () => p_unreachable_code_path("the definition is resolved")
                                                                             ).resolver,
                                                                             'resolver': $p.resolver,
-                                                                            'module parameters': $p['module parameters'],
+                                                                            'type parameters': $p['type parameters'],
                                                                         }
                                                                     )))
                                                                     case 'missing data': return p_.option($, ($) => p_.literal.not_set())
@@ -582,13 +571,6 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                                 }
                                             })]
                                     })
-                                    case 'text': return p_.option($, ($) => ['text', p_.from.state(unmarshalled_value).decide(
-                                        ($) => {
-                                            switch ($[0]) {
-                                                case 'text': return p_.option($, ($) => $)
-                                                default: return p_unreachable_code_path("unmarshalled value should match the definition")
-                                            }
-                                        })])
                                     default: return p_.exhaustive($[0])
                                 }
                             })]

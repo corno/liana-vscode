@@ -3,7 +3,7 @@ import * as vscode_textdocument from 'vscode-languageserver-textdocument'
 import { Cache } from './core/cache'
 
 
-import * as d_temp_module_specifier from "pareto-liana/schemas/temp_module_specifier/schema"
+import * as d_temp_type_specifier from "pareto-liana/schemas/temp_type_specifier/schema"
 import * as d_get_schema from "liana-authoring/schemas/retrieval_of_schema/schema"
 import * as d_deserialize from "liana-authoring/schemas/deserialization/schema"
 
@@ -12,7 +12,7 @@ export interface Settings {
 }
 
 export type Cache_Context = {
-	'schemas': Cache<d_temp_module_specifier.Temp_Module_Specifier, d_get_schema.Error>
+	'schemas': Cache<d_temp_type_specifier.Temp_Type_Specifier, d_get_schema.Error>
 	'documents': Cache<d_deserialize.Result, d_deserialize.Error>
 }
 

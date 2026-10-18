@@ -44,10 +44,9 @@ export default ((deps) => async () => {
 					($) => abort("Cannot initialize authoring environment because the file is not valid Liana."),
 					{
 						'unmarshall': {
-							'module': p_.from.state($).decide(($) => {
+							'type': p_.from.state($).decide(($) => {
 								switch ($[0]) {
-									case 'constrained': return p_.option($, ($) => $['type resolver'].entry.signature.module)
-									case 'unconstrained': return p_.option($, ($) => $.module.entry)
+									case 'constrained': return p_.option($, ($) => $['root type'].entry.signature.type)
 									default: return p_.exhaustive($[0])
 								}
 							}),

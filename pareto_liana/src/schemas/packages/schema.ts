@@ -5,7 +5,7 @@ import type * as s_schema from "../../modules/schema.generated/schemas/unresolve
 export type Package = {
     // 'id': string,
     'target path': string,
-    'package': s_schema.Package
+    'package': s_schema.Schema
 }
 
 export type Packages = p_.Dictionary<Package>

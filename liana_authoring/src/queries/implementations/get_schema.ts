@@ -7,7 +7,7 @@ import type * as query_interfaces_pareto_filesystem_unrestricted_api from "paret
 import * as d from "../../schemas/retrieval_of_schema/schema.js"
 
 //depencencies
-import * as r_temp_module_specifier_from_loc from "pareto-liana/schemas/temp_module_specifier/refiners/list_of_characters"
+import * as r_temp_type_specifier_from_loc from "pareto-liana/schemas/temp_type_specifier/refiners/list_of_characters"
 
 export const $$: p_.Query_Implementation<
     query_interfaces.get_schema,
@@ -26,7 +26,7 @@ export const $$: p_.Query_Implementation<
                 'type': ['read file', $],
             })
         )).refine(
-            ($, abort) => r_temp_module_specifier_from_loc.Module_Specifier(
+            ($, abort) => r_temp_type_specifier_from_loc.Type_Specifier(
                 $.data,
                 ($) => abort({
                     'schema path': $d.deprecated['schema path'],

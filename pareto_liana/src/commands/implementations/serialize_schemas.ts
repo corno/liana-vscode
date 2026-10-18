@@ -42,11 +42,9 @@ export const $$: p_.Command_Implementation<
                     [
 
                         p_.s.refine(
-                            (abort) => r_schema_resolved_from_unresolved.Package(
+                            (abort) => r_schema_resolved_from_unresolved.Schema(
                                 $.package,
                                 ($) => abort(['resolving', $]),
-                                p_.literal.nothing(),
-                                p_.literal.nothing(),
                             ),
                             ($v) => [
                                 $c['write file'].execute(
@@ -58,14 +56,14 @@ export const $$: p_.Command_Implementation<
                                                     'addition': "liana"
                                                 }
                                             ),
-                                            'node': "module.liana.lna"
+                                            'node': "type.liana.lna"
                                         },
                                         // 'data': p_list_from_text(
                                         //     "IMPLEMENT SERIALIZATION HERE",
                                         //     ($) => $,
                                         // )
                                         'content': {
-                                            'paragraph': t_schema_to_paragraph.Package($v),
+                                            'paragraph': t_schema_to_paragraph.Schema($v),
                                             'parameters': {
                                                 'indentation': $s.indentation,
                                                 'newline': $s.newline,

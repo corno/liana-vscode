@@ -66,31 +66,33 @@ written; the extension does not normalize string contents when opening them.
 
 ## Tutorial: Creating Your First Language
 
-### Module selection compatibility
+### Liana Next schemas
 
-Schema loading accepts reference-based module specifications as well as legacy
-flat schema paths. A new `schema path` contains `tail` and a derived `result`:
+The extension uses Liana Next exclusively. A type specification contains a flat
+schema and a `root type` selecting one of its resolvers:
 
 ```astn
-`schema path`: (
-    `tail`: [ | `set` 'nested' | `set` 'user' ]
-    `result`: ~
-)
-`complexity`: | `unconstrained` (
-    `module`: 'Root'
+(
+    `schema`: (
+        `basic types`: {}
+        `types`: { 'Root': < | `nothing` ~ > }
+        `signatures`: { 'Root': < ~ | `local` < {} {} > ~ > }
+        `resolvers`: { 'Root': < ~ | `nothing` ~ > }
+    )
+    `root type`: 'Root'
 )
 ```
 
-Each step requires a schema set; the final result must be a schema. An empty
-tail selects a directly supplied schema. `module` and `type resolver` are
-references into that schema's type and resolver-module dictionaries.
-Unknown entries and invalid tree/complexity selections produce schema-loading
-diagnostics rather than internal implementation errors. The bundled authoring
-template includes these reference definitions.
+Text belongs in `basic types`, alongside boolean, date, and number. A value uses
+`simple` to reference a basic type directly. Schema sets, imports, schema paths,
+complexity wrappers, external references, and stack lookups are removed.
+Unknown root/basic-type references produce schema-loading diagnostics.
 
-The client commands and language server both use the published shared loader
-from `pareto-liana` (version 0.1.81 or later). The server uses the authoring
-package's schema query directly; no local compatibility bridge is needed.
+The client commands and language server both use the local Next schema loader
+from `pareto-liana`. Existing authoring environments must migrate their schema
+sources and regenerate `.liana/schema.slna`; old formats are rejected rather
+than silently reinterpreted. The bundled template initializes new environments
+with the matching Next self-schema.
 The ASTN Core to ASTN Runtime dependency migration is still a separate follow-up.
 
 Validate with `npm run compile` and `node --test test/*.test.mjs`.
@@ -130,55 +132,44 @@ You can toggle the document's default between verbose and concise notation with 
 
 ## creating your first schema
 - select ctrl-d, which should give you a couple of suggestions. 
-- Choose 'schema (verbose)', and then again select ctrl-d and choose 'unconstrained' twice.
-- set the \``module`\` property to the text value `"root"`
-- add a type in \``types`\` named '`root`' (this is the type that the \``module`\` property will refer to)
+- Choose the verbose group suggestion.
+- Set `root type` to `'root'`.
+- Add a type in `types` named `'root'`, a matching signature in `signatures`,
+  and a matching resolver in `resolvers`.
 - type a colon (:). It should be automatically expanded to ': #'.
 - use ctrl-d, select, use ctrl-d again, select 'group'. You have now configured your first value. You will be doing this a lot.
-- in the {}, add a property named 'my dictionary', and configure this value to be a dictionary.
-- configure the dictionary's value to be a state. A state will force the user to select one of the available options.
-- add 2 options; 'a' and 'b'. Make the values of the options 'nothing' for now.
+- Add a text flavor named `'text'` to `basic types`.
+- In the group, add a property named `'message'` whose value is `simple 'text'`.
+- Give the root resolver a matching group with a `simple` resolver for `message`.
 
 If all went well, you ended up with a file that looks like this
 
 ````
 (
-    `schema`: | `schema` (
-        `schema imports`: {}
-        `resolver imports`: {}
-        `globals`: (
-            `complexity`: | `unconstrained` ~
-            `text types`: {}
-            `simple types`: {}
-        )
+    `schema`: (
+        `basic types`: {
+            'text': < | `text` < | `single line` ~ | `no` ~ > >
+        }
         `types`: {
             'root': (
                 `root value`: | `group` {
-                    'my dictionary': (
+                    'message': (
                         `description`: _
-                        `value`: | `state` (
-                            `options`: {
-                                'a': (
-                                    `constraints`: _
-                                    `description`: _
-                                    `value`: | `nothing` ~
-                                )
-                                'b': (
-                                    `constraints`: _
-                                    `description`: _
-                                    `value`: | `nothing` ~
-                                )
-                            }
-                            `results`: _
-                        )
+                        `value`: | `simple` 'text'
                     )
                 }
             )
         }
-        `complexity`: | `unconstrained` ~
+        `signatures`: {
+            'root': < ~ | `local` < {} {} > ~ >
+        }
+        `resolvers`: {
+            'root': < ~ | `group` {
+                'message': < ~ | `simple` ~ >
+            } >
+        }
     )
-    `schema path`: []
-    `module`: "root"
+    `root type`: 'root'
 )
 ````
 
@@ -186,7 +177,8 @@ If all went well, you ended up with a file that looks like this
 - save the file
 - right click on the content and select `Initialize or update authoring environment with this Liana schema`.
 - Now you can create your first file that conforms to the language you just created; right-click on the folder, select 'New Liana file'. Give a name that ends with .lna. My advise would be to add the language name in the file, according to this format; .my_lang.lna
-- Again, you should see a '#'. ctrl-d should give the 'my dictionary' property, to which you can now add entries.
+- Again, you should see a '#'. ctrl-d should suggest the `message` property and
+  a quoted text value.
 
 Congratulations, you have just finished creating your first language.
 

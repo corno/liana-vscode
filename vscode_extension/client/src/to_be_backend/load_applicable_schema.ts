@@ -3,10 +3,10 @@ import p_list_from_text from 'pareto-core/refiner/specials/list_from_text'
 import p_unreachable from 'pareto-core/transformer/specials/unreachable_code_path'
 
 import * as s_resolved_document_deserialization from "liana-runtime/modules/resolved_document_deserialization/schemas/resolved_document_deserialization/schema"
-import * as s_temp_module_specifier from "pareto-liana/schemas/temp_module_specifier/schema"
+import * as s_temp_type_specifier from "pareto-liana/schemas/temp_type_specifier/schema"
 
 //dependencies
-import * as r_temp_module_specifier_from_loc from "pareto-liana/schemas/temp_module_specifier/refiners/list_of_characters"
+import * as r_temp_type_specifier_from_loc from "pareto-liana/schemas/temp_type_specifier/refiners/list_of_characters"
 import * as deser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/deserializers"
 
 import * as fs from "fs"
@@ -39,7 +39,7 @@ export function load_applicable_schema(
 	text_document: TextDocument,
 	on_error: ($: Load_Schema_Error) => void,
 	on_success: (
-		$: s_temp_module_specifier.Temp_Module_Specifier,
+		$: s_temp_type_specifier.Temp_Type_Specifier,
 	) => void,
 ): undefined {
 
@@ -62,8 +62,8 @@ export function load_applicable_schema(
 					}]
 				})
 			} else {
-				p_create_refinement_context<s_temp_module_specifier.Temp_Module_Specifier, s_resolved_document_deserialization.Error>(
-					(abort) => r_temp_module_specifier_from_loc.Module_Specifier(
+				p_create_refinement_context<s_temp_type_specifier.Temp_Type_Specifier, s_resolved_document_deserialization.Error>(
+					(abort) => r_temp_type_specifier_from_loc.Type_Specifier(
 						p_list_from_text(data, ($) => $),
 						($) => abort($),
 						{

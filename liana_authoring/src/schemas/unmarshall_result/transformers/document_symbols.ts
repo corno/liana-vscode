@@ -155,12 +155,9 @@ export const Value: declarations_.Value = ($) => {
                                 'kind': ['string', null],
                                 'children': p_.literal.list([]),
                             }))
-                            case 'simple': return p_.option($, ($) => p_.from.state($.definition).decide(
+                            case 'simple': return p_.option($, ($) => p_.from.state($.definition['l entry'].type).decide(
                                 ($) => {
                                     switch ($[0]) {
-                                        case 'global': return p_.option($, ($) => p_.from.state($['l entry'].type).decide(
-                                            ($) => {
-                                                switch ($[0]) {
                                                     case 'number': return p_.option($, ($) => ({
                                                         'kind': ['number', null],
                                                         'children': p_.literal.list([]),
@@ -173,10 +170,11 @@ export const Value: declarations_.Value = ($) => {
                                                         'kind': ['string', null],
                                                         'children': p_.literal.list([]),
                                                     }))
+                                                    case 'text': return p_.option($, ($) => ({
+                                                        'kind': ['string', null],
+                                                        'children': p_.literal.list([]),
+                                                    }))
                                                     default: return p_.exhaustive($[0])
-                                                }
-                                            }))
-                                        default: return p_.exhaustive($[0])
                                     }
                                 }))
                             case 'state': return p_.option($, ($) => p_.from.state($.derived['option status']).decide(

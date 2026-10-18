@@ -3,7 +3,7 @@ import type * as s_schema from "pareto-liana/modules/schema.generated/schemas/re
 
 export type Parameters = {
     'tab size': number
-    'module': s_schema.Module
+    'type': s_schema.Type
 }
 
 export type Error = s_parse_tree_deserialization.Error

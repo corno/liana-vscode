@@ -1,9 +1,9 @@
 import type * as s_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/schema"
 import type * as s_read_file from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/read_file/schema"
 import type * as s_deserialize_resolved from "liana-runtime/modules/resolved_document_deserialization/schemas/resolved_document_deserialization/schema"
-import type * as s_module_specfier from "pareto-liana/schemas/temp_module_specifier/schema"
+import type * as s_type_specfier from "pareto-liana/schemas/temp_type_specifier/schema"
 
-export type Result = s_module_specfier.Temp_Module_Specifier
+export type Result = s_type_specfier.Temp_Type_Specifier
 
 export type Parameters = {
 	'tab size': number

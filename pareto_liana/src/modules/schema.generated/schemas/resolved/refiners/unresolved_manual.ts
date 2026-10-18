@@ -1,2300 +1,3572 @@
-import * as p_ from 'pareto-core/refiner'
-import * as p_sl from 'pareto-core/refiner/specials/lookup'
-import p_variables from 'pareto-core/refiner/specials/variables'
-import p_change_context from 'pareto-core/refiner/specials/change_context'
-
-
-import * as p_i from 'pareto-core/__internal/Abort'
-import * as p_di from 'pareto-core/schema'
-import * as p_ri from 'pareto-core/refiner'
-
-import * as i_generic from "liana-runtime/modules/resolved_document_deserialization/schemas/resolving/schema"
-
-import * as i_resolved from "../schema.js"
-
-import * as i_unresolved from "../../unresolved/schema.js"
-
-namespace declarations {
-    export namespace Package_ {
-
-        export type I = i_unresolved.Package
-
-        export type O = i_resolved.Package
-
-        export type E = i_generic.Error
-
-        export namespace P {
-
-        }
-
-    }
-
-    export type Package_ = (
-        context: Package_.I,
-        abort: p_i.Abort<Package_.E>,
-        lookups: symbol,
-        parameters: symbol,
-    ) => Package_.O
-
-    export namespace Presence_ {
-
-        export type I = i_unresolved.Presence
-
-        export type O = i_resolved.Presence
-
-        export type E = i_generic.Error
-
-        export namespace P {
-
-        }
-
-    }
-
-    export type Presence_ = (
-        context: Presence_.I,
-        abort: p_i.Abort<Presence_.E>,
-        lookups: symbol,
-        parameters: symbol,
-    ) => Presence_.O
-
-    export namespace Simple_Type_ {
-
-        export type I = i_unresolved.Simple_Type
-
-        export type O = i_resolved.Simple_Type
-
-        export type E = i_generic.Error
-
-        export namespace P {
-
-        }
-
-    }
-
-    export type Simple_Type_ = (
-        context: Simple_Type_.I,
-        abort: p_i.Abort<Simple_Type_.E>,
-        lookups: symbol,
-        parameters: symbol,
-    ) => Simple_Type_.O
-
-    export namespace Text_Type_ {
-
-        export type I = i_unresolved.Text_Type
-
-        export type O = i_resolved.Text_Type
-
-        export type E = i_generic.Error
-
-        export namespace P {
-
-        }
-
-    }
-
-    export type Text_Type_ = (
-        context: Text_Type_.I,
-        abort: p_i.Abort<Text_Type_.E>,
-        lookups: symbol,
-        parameters: symbol,
-    ) => Text_Type_.O
-
-    export namespace Globals_ {
-
-        export type I = i_unresolved.Globals
-
-        export type O = i_resolved.Globals
-
-        export type E = i_generic.Error
-
-        export namespace P {
-
-        }
-
-    }
-
-    export type Globals_ = (
-        context: Globals_.I,
-        abort: p_i.Abort<Globals_.E>,
-        lookups: symbol,
-        parameters: symbol,
-    ) => Globals_.O
-
-    export namespace Group_ {
-
-        export type I = i_unresolved.Group
-
-        export type O = i_resolved.Group
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type noncircular_sibling_modules = i_resolved.Modules_.D
-
-        }
-
-        export namespace L {
-
-            export type possibly_circular_dependent_sibling_modules = i_resolved.Modules_.D
-
-        }
-
-        export namespace P {
-
-            export namespace globals {
-
-                export type O = i_resolved.Globals_
-
-            }
-
-            export type globals = p_di.Optional_Value<globals.O>
-
-            export namespace imports {
-
-                export type O = i_resolved.Schema_Imports_
-
-            }
-
-            export type imports = p_di.Optional_Value<imports.O>
-
-        }
-
-    }
-
-    export type Group_ = (
-        context: Group_.I,
-        abort: p_i.Abort<Group_.E>,
-        lookups: {
-            readonly 'noncircular sibling modules': p_ri.lookup.Acyclic<Group_.L.noncircular_sibling_modules>
-            readonly 'possibly circular dependent sibling modules': p_ri.lookup.Cyclic<Group_.L.possibly_circular_dependent_sibling_modules>
+import * as p_ from '../../../../../temp/pareto_core_refiner.js'
+import * as p_transformer from 'pareto-core/transformer'
+
+// schemas
+import type * as s_target from "../schema.js"
+import type * as s_source from "../../unresolved/schema.js"
+import type * as s_error from "../../../../../temp/liana_runtime_resolving_schema.js"
+import type { s_parameters } from "./parameters.js"
+
+export namespace declarations {
+    export type Basic_Types = p_.Refiner<s_target.Basic_Types, s_error.Error, s_source.Basic_Types>
+
+    
+    
+    
+    
+    
+    export type Schema = p_.Refiner<s_target.Schema, s_error.Error, s_source.Schema>
+    
+    
+    
+    export type Types = p_.Refiner_With_Parameter<
+        s_target.Types,
+        s_error.Error,
+        s_source.Types,
+        s_parameters.Types
+    >
+    
+    
+    
+    export type Dictionary = p_.Refiner_With_Lookups_And_Parameter<
+        s_target.Dictionary,
+        s_error.Error,
+        s_source.Dictionary,
+        {
+            readonly 'noncircular sibling types': p_.lookup.Acyclic<
+                s_target.Types.D
+            >
+            readonly 'possibly circular dependent sibling types': p_.lookup.Cyclic<
+                s_target.Types.D
+            >
         },
-        parameters: {
-            readonly 'globals': Group_.P.globals
-            readonly 'imports': Group_.P.imports
+        s_parameters.Dictionary
+    >
+    
+    export type Value = p_.Refiner_With_Lookups_And_Parameter<
+        s_target.Value,
+        s_error.Error,
+        s_source.Value,
+        {
+            readonly 'noncircular sibling types': p_.lookup.Acyclic<
+                s_target.Types.D
+            >
+            readonly 'possibly circular dependent sibling types': p_.lookup.Cyclic<
+                s_target.Types.D
+            >
         },
-    ) => Group_.O
-
-    export namespace Dictionary_ {
-
-        export type I = i_unresolved.Dictionary
-
-        export type O = i_resolved.Dictionary
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type noncircular_sibling_modules = i_resolved.Modules_.D
-
-        }
-
-        export namespace L {
-
-            export type possibly_circular_dependent_sibling_modules = i_resolved.Modules_.D
-
-        }
-
-        export namespace P {
-
-            export namespace globals {
-
-                export type O = i_resolved.Globals_
-
-            }
-
-            export type globals = p_di.Optional_Value<globals.O>
-
-            export namespace imports {
-
-                export type O = i_resolved.Schema_Imports_
-
-            }
-
-            export type imports = p_di.Optional_Value<imports.O>
-
-        }
-
-    }
-
-    export type Dictionary_ = (
-        context: Dictionary_.I,
-        abort: p_i.Abort<Dictionary_.E>,
-        lookups: {
-            readonly 'noncircular sibling modules': p_ri.lookup.Acyclic<Dictionary_.L.noncircular_sibling_modules>
-            readonly 'possibly circular dependent sibling modules': p_ri.lookup.Cyclic<Dictionary_.L.possibly_circular_dependent_sibling_modules>
+        s_parameters.Value
+    >
+    
+    
+    
+    
+    
+    export type Resolver_Signatures = p_.Refiner_With_Parameter<
+        s_target.Resolver_Signatures,
+        s_error.Error,
+        s_source.Resolver_Signatures,
+        s_parameters.Resolver_Signatures
+    >
+    
+    export type Resolver_Signature_Parameters = p_.Refiner_With_Parameter<
+        s_target.Resolver_Signature_Parameters,
+        s_error.Error,
+        s_source.Resolver_Signature_Parameters,
+        s_parameters.Resolver_Signature_Parameters
+    >
+    
+    export type Resolver_Value = p_.Refiner_With_Lookups_And_Parameter<
+        s_target.Resolver_Value,
+        s_error.Error,
+        s_source.Resolver_Value,
+        {
+            readonly 'sibling property resolvers': p_.lookup.Acyclic<
+                s_target.Resolver_Value_Group.D
+            >
+            readonly 'parent sibling property resolvers': p_.lookup.Acyclic<
+                s_target.Resolver_Value_Group.D
+            >
         },
-        parameters: {
-            readonly 'globals': Dictionary_.P.globals
-            readonly 'imports': Dictionary_.P.imports
+        s_parameters.Resolver_Value
+    >
+    
+    export type Type_Specification = p_.Refiner<
+        s_target.Type_Specification,
+        s_error.Error,
+        s_source.Type_Specification
+    >
+    
+    
+    
+    
+    
+    export type Basic_Type = p_.Refiner<
+        s_target.Basic_Type,
+        s_error.Error,
+        s_source.Basic_Type
+    >
+    
+    export type Type = p_.Refiner_With_Lookups_And_Parameter<
+        s_target.Type,
+        s_error.Error,
+        s_source.Type,
+        {
+            readonly 'noncircular sibling types': p_.lookup.Acyclic<
+                s_target.Types.D
+            >
+            readonly 'possibly circular dependent sibling types': p_.lookup.Cyclic<
+                s_target.Types.D
+            >
         },
-    ) => Dictionary_.O
-
-    export namespace Value_ {
-
-        export type I = i_unresolved.Value
-
-        export type O = i_resolved.Value
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type noncircular_sibling_modules = i_resolved.Modules_.D
-
-        }
-
-        export namespace L {
-
-            export type possibly_circular_dependent_sibling_modules = i_resolved.Modules_.D
-
-        }
-
-        export namespace P {
-
-            export namespace globals {
-
-                export type O = i_resolved.Globals_
-
-            }
-
-            export type globals = p_di.Optional_Value<globals.O>
-
-            export namespace imports {
-
-                export type O = i_resolved.Schema_Imports_
-
-            }
-
-            export type imports = p_di.Optional_Value<imports.O>
-
-        }
-
-    }
-
-    export type Value_ = (
-        context: Value_.I,
-        abort: p_i.Abort<Value_.E>,
-        lookups: {
-            readonly 'noncircular sibling modules': p_ri.lookup.Acyclic<Value_.L.noncircular_sibling_modules>
-            readonly 'possibly circular dependent sibling modules': p_ri.lookup.Cyclic<Value_.L.possibly_circular_dependent_sibling_modules>
+        s_parameters.Type
+    >
+    
+    export type Presence = p_.Refiner<
+        s_target.Presence,
+        s_error.Error,
+        s_source.Presence
+    >
+    
+    export type Resolver_Types = p_.Refiner_With_Parameter<
+        s_target.Resolver_Types,
+        s_error.Error,
+        s_source.Resolver_Types,
+        s_parameters.Resolver_Types
+    >
+    
+    export type Resolver_Benchmark = p_.Refiner_With_Lookups_And_Parameter<
+        s_target.Resolver_Benchmark,
+        s_error.Error,
+        s_source.Resolver_Benchmark,
+        {
+            readonly 'sibling property resolvers': p_.lookup.Acyclic<
+                s_target.Resolver_Value_Group.D
+            >
+            readonly 'parent sibling property resolvers': p_.lookup.Acyclic<
+                s_target.Resolver_Value_Group.D
+            >
         },
-        parameters: {
-            readonly 'globals': Value_.P.globals
-            readonly 'imports': Value_.P.imports
+        s_parameters.Resolver_Benchmark
+    >
+    
+    export type Group = p_.Refiner_With_Lookups_And_Parameter<
+        s_target.Group,
+        s_error.Error,
+        s_source.Group,
+        {
+            readonly 'noncircular sibling types': p_.lookup.Acyclic<
+                s_target.Types.D
+            >
+            readonly 'possibly circular dependent sibling types': p_.lookup.Cyclic<
+                s_target.Types.D
+            >
         },
-    ) => Value_.O
-
-    export namespace Module_Reference_ {
-
-        export type I = i_unresolved.Module_Reference
-
-        export type O = i_resolved.Module_Reference
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type modules = i_resolved.Modules_.D
-
-        }
-
-        export namespace P {
-
-            export namespace imports {
-
-                export type O = i_resolved.Schema_Imports_
-
-            }
-
-            export type imports = p_di.Optional_Value<imports.O>
-
-        }
-
-    }
-
-    export type Module_Reference_ = (
-        context: Module_Reference_.I,
-        abort: p_i.Abort<Module_Reference_.E>,
-        lookups: {
-            readonly 'modules': p_ri.lookup.Acyclic<Module_Reference_.L.modules>
+        s_parameters.Group
+    >
+    
+    export type Value_Reference = p_.Refiner_With_Lookups_And_Parameter<
+        s_target.Value_Reference,
+        s_error.Error,
+        s_source.Value_Reference,
+        {
+            readonly 'types': p_.lookup.Acyclic<
+                s_target.Types.D
+            >
         },
-        parameters: {
-            readonly 'imports': Module_Reference_.P.imports
+        s_parameters.Value_Reference
+    >
+    
+    export type Value_Path = p_.Refiner_With_Parameter<
+        s_target.Value_Path,
+        s_error.Error,
+        s_source.Value_Path,
+        s_parameters.Value_Path
+    >
+    
+    export type Type_Reference = p_.Refiner_With_Lookups_And_Parameter<
+        s_target.Type_Reference,
+        s_error.Error,
+        s_source.Type_Reference,
+        {
+            readonly 'types': p_.lookup.Acyclic<
+                s_target.Types.D
+            >
         },
-    ) => Module_Reference_.O
-
-    export namespace Value_Reference_ {
-
-        export type I = i_unresolved.Value_Reference
-
-        export type O = i_resolved.Value_Reference
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type modules = i_resolved.Modules_.D
-
-        }
-
-        export namespace P {
-
-            export namespace imports {
-
-                export type O = i_resolved.Schema_Imports_
-
-            }
-
-            export type imports = p_di.Optional_Value<imports.O>
-
-        }
-
-    }
-
-    export type Value_Reference_ = (
-        context: Value_Reference_.I,
-        abort: p_i.Abort<Value_Reference_.E>,
-        lookups: {
-            readonly 'modules': p_ri.lookup.Acyclic<Value_Reference_.L.modules>
+        s_parameters.Type_Reference
+    >
+    
+    export type Resolver_Signature = p_.Refiner_With_Lookups_And_Parameter<
+        s_target.Resolver_Signature,
+        s_error.Error,
+        s_source.Resolver_Signature,
+        {
+            readonly 'sibling signatures': p_.lookup.Acyclic<
+                s_target.Resolver_Signatures.D
+            >
         },
-        parameters: {
-            readonly 'imports': Value_Reference_.P.imports
+        s_parameters.Resolver_Signature
+    >
+    
+    export type Resolver_Relative_Value_Selection = p_.Refiner_With_Parameter<
+        s_target.Resolver_Relative_Value_Selection,
+        s_error.Error,
+        s_source.Resolver_Relative_Value_Selection,
+        s_parameters.Resolver_Relative_Value_Selection
+    >
+    
+    export type Resolver_Lookup_Selection = p_.Refiner_With_Lookups_And_Parameter<
+        s_target.Resolver_Lookup_Selection,
+        s_error.Error,
+        s_source.Resolver_Lookup_Selection,
+        {
+            readonly 'sibling property resolvers': p_.lookup.Acyclic<
+                s_target.Resolver_Value_Group.D
+            >
+            readonly 'parent sibling property resolvers': p_.lookup.Acyclic<
+                s_target.Resolver_Value_Group.D
+            >
         },
-    ) => Value_Reference_.O
-
-    export namespace Value_Results_ {
-
-        export type I = i_unresolved.Value_Results
-
-        export type O = i_resolved.Value_Results
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type modules = i_resolved.Modules_.D
-
-        }
-
-        export namespace P {
-
-            export namespace imports {
-
-                export type O = i_resolved.Schema_Imports_
-
-            }
-
-            export type imports = p_di.Optional_Value<imports.O>
-
-        }
-
-    }
-
-    export type Value_Results_ = (
-        context: Value_Results_.I,
-        abort: p_i.Abort<Value_Results_.E>,
-        lookups: {
-            readonly 'modules': p_ri.lookup.Acyclic<Value_Results_.L.modules>
+        s_parameters.Resolver_Lookup_Selection
+    >
+    
+    export type Resolver_Constraint = p_.Refiner_With_Parameter<
+        s_target.Resolver_Constraint,
+        s_error.Error,
+        s_source.Resolver_Constraint,
+        s_parameters.Resolver_Constraint
+    >
+    
+    export type Resolver_Option_Constraints = p_.Refiner_With_Lookups_And_Parameter<
+        s_target.Resolver_Option_Constraints,
+        s_error.Error,
+        s_source.Resolver_Option_Constraints,
+        {
+            readonly 'sibling property resolvers': p_.lookup.Acyclic<
+                s_target.Resolver_Value_Group.D
+            >
+            readonly 'parent sibling property resolvers': p_.lookup.Acyclic<
+                s_target.Resolver_Value_Group.D
+            >
         },
-        parameters: {
-            readonly 'imports': Value_Results_.P.imports
+        s_parameters.Resolver_Option_Constraints
+    >
+    
+    export type Resolver_Optional_Value_Constraints = p_.Refiner_With_Parameter<
+        s_target.Resolver_Optional_Value_Constraints,
+        s_error.Error,
+        s_source.Resolver_Optional_Value_Constraints,
+        s_parameters.Resolver_Optional_Value_Constraints
+    >
+    
+    export type Resolver_Value_Constraints = p_.Refiner_With_Parameter<
+        s_target.Resolver_Value_Constraints,
+        s_error.Error,
+        s_source.Resolver_Value_Constraints,
+        s_parameters.Resolver_Value_Constraints
+    >
+    
+    export type Resolver_Reference_To_Value_Constraint = p_.Refiner_With_Error_And_Lookups<
+        s_target.Resolver_Reference_To_Value_Constraint,
+        s_error.Error,
+        s_source.Resolver_Reference_To_Value_Constraint,
+        {
+            readonly 'property constraints': p_.lookup.Acyclic<
+                s_target.Resolver_Value_Constraints.D
+            >
+        }
+    >
+    
+    export type Resolver_Value_Constraint = p_.Refiner_With_Lookups_And_Parameter<
+        s_target.Resolver_Value_Constraint,
+        s_error.Error,
+        s_source.Resolver_Value_Constraint,
+        {
+            readonly 'property constraints': p_.lookup.Acyclic<
+                s_target.Resolver_Value_Constraints.D
+            >
         },
-    ) => Value_Results_.O
-
-    export namespace Option_Constraints_ {
-
-        export type I = i_unresolved.Option_Constraints
-
-        export type O = i_resolved.Option_Constraints
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type modules = i_resolved.Modules_.D
-
-        }
-
-        export namespace P {
-
-            export namespace imports {
-
-                export type O = i_resolved.Schema_Imports_
-
-            }
-
-            export type imports = p_di.Optional_Value<imports.O>
-
-        }
-
-    }
-
-    export type Option_Constraints_ = (
-        context: Option_Constraints_.I,
-        abort: p_i.Abort<Option_Constraints_.E>,
-        lookups: {
-            readonly 'modules': p_ri.lookup.Acyclic<Option_Constraints_.L.modules>
+        s_parameters.Resolver_Value_Constraint
+    >
+    
+    export type Resolver_Optional_Value_Initialization = p_.Refiner_With_Lookups_And_Parameter<
+        s_target.Resolver_Optional_Value_Initialization,
+        s_error.Error,
+        s_source.Resolver_Optional_Value_Initialization,
+        {
+            readonly 'sibling property resolvers': p_.lookup.Acyclic<
+                s_target.Resolver_Value_Group.D
+            >
+            readonly 'parent sibling property resolvers': p_.lookup.Acyclic<
+                s_target.Resolver_Value_Group.D
+            >
         },
-        parameters: {
-            readonly 'imports': Option_Constraints_.P.imports
+        s_parameters.Resolver_Optional_Value_Initialization
+    >
+    
+    export type Resolver_Value_Group = p_.Refiner_With_Lookups_And_Parameter<
+        s_target.Resolver_Value_Group,
+        s_error.Error,
+        s_source.Resolver_Value_Group,
+        {
+            readonly 'sibling property resolvers': p_.lookup.Acyclic<
+                s_target.Resolver_Value_Group.D
+            >
+            readonly 'parent sibling property resolvers': p_.lookup.Acyclic<
+                s_target.Resolver_Value_Group.D
+            >
         },
-    ) => Option_Constraints_.O
-
-    export namespace Module_ {
-
-        export type I = i_unresolved.Module
-
-        export type O = i_resolved.Module
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type noncircular_sibling_modules = i_resolved.Modules_.D
-
-        }
-
-        export namespace L {
-
-            export type possibly_circular_dependent_sibling_modules = i_resolved.Modules_.D
-
-        }
-
-        export namespace P {
-
-            export namespace globals {
-
-                export type O = i_resolved.Globals_
-
-            }
-
-            export type globals = p_di.Optional_Value<globals.O>
-
-            export namespace imports {
-
-                export type O = i_resolved.Schema_Imports_
-
-            }
-
-            export type imports = p_di.Optional_Value<imports.O>
-
-        }
-
-    }
-
-    export type Module_ = (
-        context: Module_.I,
-        abort: p_i.Abort<Module_.E>,
-        lookups: {
-            readonly 'noncircular sibling modules': p_ri.lookup.Acyclic<Module_.L.noncircular_sibling_modules>
-            readonly 'possibly circular dependent sibling modules': p_ri.lookup.Cyclic<Module_.L.possibly_circular_dependent_sibling_modules>
+        s_parameters.Resolver_Value_Group
+    >
+    
+    export type Resolver_Value_List_Result = p_.Refiner_With_Lookups_And_Parameter<
+        s_target.Resolver_Value_List_Result,
+        s_error.Error,
+        s_source.Resolver_Value_List_Result,
+        {
+            readonly 'types': p_.lookup.Acyclic<
+                s_target.Types.D
+            >
         },
-        parameters: {
-            readonly 'globals': Module_.P.globals
-            readonly 'imports': Module_.P.imports
+        s_parameters.Resolver_Value_List_Result
+    >
+    
+    export type Value_Results = p_.Refiner_With_Lookups_And_Parameter<
+        s_target.Value_Results,
+        s_error.Error,
+        s_source.Value_Results,
+        {
+            readonly 'types': p_.lookup.Acyclic<
+                s_target.Types.D
+            >
         },
-    ) => Module_.O
-
-    export namespace Value_Path_ {
-
-        export type I = i_unresolved.Value_Path
-
-        export type O = i_resolved.Value_Path
-
-        export type E = i_generic.Error
-
-        export namespace P {
-
-            export type module_ = i_resolved.Module_
-
-        }
-
-    }
-
-    export type Value_Path_ = (
-        context: Value_Path_.I,
-        abort: p_i.Abort<Value_Path_.E>,
-        lookups: symbol,
-        parameters: {
-            readonly 'module': Value_Path_.P.module_
+        s_parameters.Value_Results
+    >
+    
+    export type Option_Constraints = p_.Refiner_With_Lookups_And_Parameter<
+        s_target.Option_Constraints,
+        s_error.Error,
+        s_source.Option_Constraints,
+        {
+            readonly 'types': p_.lookup.Acyclic<
+                s_target.Types.D
+            >
         },
-    ) => Value_Path_.O
-
-    export namespace Schemas_ {
-
-        export type I = i_unresolved.Schemas
-
-        export type O = i_resolved.Schemas
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type sibling_schemas = i_resolved.Schemas_.D
-
-        }
-
-        export namespace P {
-
-        }
-
-    }
-
-    export type Schemas_ = (
-        context: Schemas_.I,
-        abort: p_i.Abort<Schemas_.E>,
-        lookups: {
-            readonly 'sibling schemas': p_ri.lookup.Stack<Schemas_.L.sibling_schemas>
+        s_parameters.Option_Constraints
+    >
+    
+    export type Resolver_Guaranteed_Value_Selection = p_.Refiner_With_Lookups_And_Parameter<
+        s_target.Resolver_Guaranteed_Value_Selection,
+        s_error.Error,
+        s_source.Resolver_Guaranteed_Value_Selection,
+        {
+            readonly 'sibling property resolvers': p_.lookup.Acyclic<
+                s_target.Resolver_Value_Group.D
+            >
+            readonly 'parent sibling property resolvers': p_.lookup.Acyclic<
+                s_target.Resolver_Value_Group.D
+            >
         },
-        parameters: symbol,
-    ) => Schemas_.O
-
-    export namespace Resolver_Value_ {
-
-        export type I = i_unresolved.Resolver_Value
-
-        export type O = i_resolved.Resolver_Value
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type sibling_property_resolvers = i_resolved.Resolver_Value_Group_.D
-
-        }
-
-        export namespace L {
-
-            export type parent_sibling_property_resolvers = i_resolved.Resolver_Value_Group_.D
-
-        }
-
-        export namespace P {
-
-            export type definition = i_resolved.Value_
-
-            export namespace list_cursor {
-
-                export type O = i_resolved.Resolver_Value_List_Result_
-
-            }
-
-            export type list_cursor = p_di.Optional_Value<list_cursor.O>
-
-            export namespace linked_entry {
-
-                export type O = i_resolved.Resolver_Benchmark_
-
-            }
-
-            export type linked_entry = p_di.Optional_Value<linked_entry.O>
-
-            export namespace current_dictionary {
-
-                export type O = i_resolved.Dictionary_
-
-            }
-
-            export type current_dictionary = p_di.Optional_Value<current_dictionary.O>
-
-            export namespace current_ordered_dictionary {
-
-                export type O = i_resolved.Dictionary_
-
-            }
-
-            export type current_ordered_dictionary = p_di.Optional_Value<current_ordered_dictionary.O>
-
-            export type signature = i_resolved.Resolver_Signature_
-
-            export namespace schema_imports {
-
-                export type O = i_resolved.Schema_Imports_
-
-            }
-
-            export type schema_imports = p_di.Optional_Value<schema_imports.O>
-
-            export namespace resolver_imports {
-
-                export type O = i_resolved.Resolver_Imports_
-
-            }
-
-            export type resolver_imports = p_di.Optional_Value<resolver_imports.O>
-
-            export type signatures = i_resolved.Resolver_Signatures_
-
-            export type modules = i_resolved.Modules_
-
-            export namespace option_constraints {
-
-                export type O = i_resolved.Resolver_Option_Constraints_
-
-            }
-
-            export type option_constraints = p_di.Optional_Value<option_constraints.O>
-
-        }
-
-    }
-
-    export type Resolver_Value_ = (
-        context: Resolver_Value_.I,
-        abort: p_i.Abort<Resolver_Value_.E>,
-        lookups: {
-            readonly 'sibling property resolvers': p_ri.lookup.Acyclic<Resolver_Value_.L.sibling_property_resolvers>
-            readonly 'parent sibling property resolvers': p_ri.lookup.Acyclic<Resolver_Value_.L.parent_sibling_property_resolvers>
+        s_parameters.Resolver_Guaranteed_Value_Selection
+    >
+    
+    export type Resolver_Possible_Value_Selection = p_.Refiner_With_Lookups_And_Parameter<
+        s_target.Resolver_Possible_Value_Selection,
+        s_error.Error,
+        s_source.Resolver_Possible_Value_Selection,
+        {
+            readonly 'sibling property resolvers': p_.lookup.Acyclic<
+                s_target.Resolver_Value_Group.D
+            >
+            readonly 'parent sibling property resolvers': p_.lookup.Acyclic<
+                s_target.Resolver_Value_Group.D
+            >
         },
-        parameters: {
-            readonly 'definition': Resolver_Value_.P.definition
-            readonly 'list cursor': Resolver_Value_.P.list_cursor
-            readonly 'linked entry': Resolver_Value_.P.linked_entry
-            readonly 'current dictionary': Resolver_Value_.P.current_dictionary
-            readonly 'current ordered dictionary': Resolver_Value_.P.current_ordered_dictionary
-            readonly 'signature': Resolver_Value_.P.signature
-            readonly 'schema imports': Resolver_Value_.P.schema_imports
-            readonly 'resolver imports': Resolver_Value_.P.resolver_imports
-            readonly 'signatures': Resolver_Value_.P.signatures
-            readonly 'modules': Resolver_Value_.P.modules
-            readonly 'option constraints': Resolver_Value_.P.option_constraints
-        },
-    ) => Resolver_Value_.O
-
-    export namespace Resolver_Possible_Value_Selection_ {
-
-        export type I = i_unresolved.Resolver_Possible_Value_Selection
-
-        export type O = i_resolved.Resolver_Possible_Value_Selection
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type sibling_property_resolvers = i_resolved.Resolver_Value_Group_.D
-
-        }
-
-        export namespace L {
-
-            export type parent_sibling_property_resolvers = i_resolved.Resolver_Value_Group_.D
-
-        }
-
-        export namespace P {
-
-            export type definition = i_resolved.Value_
-
-            export namespace list_cursor {
-
-                export type O = i_resolved.Resolver_Value_List_Result_
-
-            }
-
-            export type list_cursor = p_di.Optional_Value<list_cursor.O>
-
-            export namespace linked_entry {
-
-                export type O = i_resolved.Resolver_Benchmark_
-
-            }
-
-            export type linked_entry = p_di.Optional_Value<linked_entry.O>
-
-            export namespace current_dictionary {
-
-                export type O = i_resolved.Dictionary_
-
-            }
-
-            export type current_dictionary = p_di.Optional_Value<current_dictionary.O>
-
-            export namespace current_ordered_dictionary {
-
-                export type O = i_resolved.Dictionary_
-
-            }
-
-            export type current_ordered_dictionary = p_di.Optional_Value<current_ordered_dictionary.O>
-
-            export type signature = i_resolved.Resolver_Signature_
-
-            export namespace schema_imports {
-
-                export type O = i_resolved.Schema_Imports_
-
-            }
-
-            export type schema_imports = p_di.Optional_Value<schema_imports.O>
-
-            export namespace resolver_imports {
-
-                export type O = i_resolved.Resolver_Imports_
-
-            }
-
-            export type resolver_imports = p_di.Optional_Value<resolver_imports.O>
-
-            export type signatures = i_resolved.Resolver_Signatures_
-
-            export type modules = i_resolved.Modules_
-
-            export namespace option_constraints {
-
-                export type O = i_resolved.Resolver_Option_Constraints_
-
-            }
-
-            export type option_constraints = p_di.Optional_Value<option_constraints.O>
-
-        }
-
-    }
-
-    export type Resolver_Possible_Value_Selection_ = (
-        context: Resolver_Possible_Value_Selection_.I,
-        abort: p_i.Abort<Resolver_Possible_Value_Selection_.E>,
-        lookups: {
-            readonly 'sibling property resolvers': p_ri.lookup.Acyclic<Resolver_Possible_Value_Selection_.L.sibling_property_resolvers>
-            readonly 'parent sibling property resolvers': p_ri.lookup.Acyclic<Resolver_Possible_Value_Selection_.L.parent_sibling_property_resolvers>
-        },
-        parameters: {
-            readonly 'definition': Resolver_Possible_Value_Selection_.P.definition
-            readonly 'list cursor': Resolver_Possible_Value_Selection_.P.list_cursor
-            readonly 'linked entry': Resolver_Possible_Value_Selection_.P.linked_entry
-            readonly 'current dictionary': Resolver_Possible_Value_Selection_.P.current_dictionary
-            readonly 'current ordered dictionary': Resolver_Possible_Value_Selection_.P.current_ordered_dictionary
-            readonly 'signature': Resolver_Possible_Value_Selection_.P.signature
-            readonly 'schema imports': Resolver_Possible_Value_Selection_.P.schema_imports
-            readonly 'resolver imports': Resolver_Possible_Value_Selection_.P.resolver_imports
-            readonly 'signatures': Resolver_Possible_Value_Selection_.P.signatures
-            readonly 'modules': Resolver_Possible_Value_Selection_.P.modules
-            readonly 'option constraints': Resolver_Possible_Value_Selection_.P.option_constraints
-        },
-    ) => Resolver_Possible_Value_Selection_.O
-
-    export namespace Resolver_Guaranteed_Value_Selection_ {
-
-        export type I = i_unresolved.Resolver_Guaranteed_Value_Selection
-
-        export type O = i_resolved.Resolver_Guaranteed_Value_Selection
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type sibling_property_resolvers = i_resolved.Resolver_Value_Group_.D
-
-        }
-
-        export namespace L {
-
-            export type parent_sibling_property_resolvers = i_resolved.Resolver_Value_Group_.D
-
-        }
-
-        export namespace P {
-
-            export type definition = i_resolved.Value_
-
-            export namespace list_cursor {
-
-                export type O = i_resolved.Resolver_Value_List_Result_
-
-            }
-
-            export type list_cursor = p_di.Optional_Value<list_cursor.O>
-
-            export namespace linked_entry {
-
-                export type O = i_resolved.Resolver_Benchmark_
-
-            }
-
-            export type linked_entry = p_di.Optional_Value<linked_entry.O>
-
-            export namespace current_dictionary {
-
-                export type O = i_resolved.Dictionary_
-
-            }
-
-            export type current_dictionary = p_di.Optional_Value<current_dictionary.O>
-
-            export namespace current_ordered_dictionary {
-
-                export type O = i_resolved.Dictionary_
-
-            }
-
-            export type current_ordered_dictionary = p_di.Optional_Value<current_ordered_dictionary.O>
-
-            export type signature = i_resolved.Resolver_Signature_
-
-            export namespace schema_imports {
-
-                export type O = i_resolved.Schema_Imports_
-
-            }
-
-            export type schema_imports = p_di.Optional_Value<schema_imports.O>
-
-            export namespace resolver_imports {
-
-                export type O = i_resolved.Resolver_Imports_
-
-            }
-
-            export type resolver_imports = p_di.Optional_Value<resolver_imports.O>
-
-            export type signatures = i_resolved.Resolver_Signatures_
-
-            export type modules = i_resolved.Modules_
-
-            export namespace option_constraints {
-
-                export type O = i_resolved.Resolver_Option_Constraints_
-
-            }
-
-            export type option_constraints = p_di.Optional_Value<option_constraints.O>
-
-        }
-
-    }
-
-    export type Resolver_Guaranteed_Value_Selection_ = (
-        context: Resolver_Guaranteed_Value_Selection_.I,
-        abort: p_i.Abort<Resolver_Guaranteed_Value_Selection_.E>,
-        lookups: {
-            readonly 'sibling property resolvers': p_ri.lookup.Acyclic<Resolver_Guaranteed_Value_Selection_.L.sibling_property_resolvers>
-            readonly 'parent sibling property resolvers': p_ri.lookup.Acyclic<Resolver_Guaranteed_Value_Selection_.L.parent_sibling_property_resolvers>
-        },
-        parameters: {
-            readonly 'definition': Resolver_Guaranteed_Value_Selection_.P.definition
-            readonly 'list cursor': Resolver_Guaranteed_Value_Selection_.P.list_cursor
-            readonly 'linked entry': Resolver_Guaranteed_Value_Selection_.P.linked_entry
-            readonly 'current dictionary': Resolver_Guaranteed_Value_Selection_.P.current_dictionary
-            readonly 'current ordered dictionary': Resolver_Guaranteed_Value_Selection_.P.current_ordered_dictionary
-            readonly 'signature': Resolver_Guaranteed_Value_Selection_.P.signature
-            readonly 'schema imports': Resolver_Guaranteed_Value_Selection_.P.schema_imports
-            readonly 'resolver imports': Resolver_Guaranteed_Value_Selection_.P.resolver_imports
-            readonly 'signatures': Resolver_Guaranteed_Value_Selection_.P.signatures
-            readonly 'modules': Resolver_Guaranteed_Value_Selection_.P.modules
-            readonly 'option constraints': Resolver_Guaranteed_Value_Selection_.P.option_constraints
-        },
-    ) => Resolver_Guaranteed_Value_Selection_.O
-
-    export namespace Resolver_Benchmark_ {
-
-        export type I = i_unresolved.Resolver_Benchmark
-
-        export type O = i_resolved.Resolver_Benchmark
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type sibling_property_resolvers = i_resolved.Resolver_Value_Group_.D
-
-        }
-
-        export namespace L {
-
-            export type parent_sibling_property_resolvers = i_resolved.Resolver_Value_Group_.D
-
-        }
-
-        export namespace P {
-
-            export type definition = i_resolved.Value_
-
-            export namespace list_cursor {
-
-                export type O = i_resolved.Resolver_Value_List_Result_
-
-            }
-
-            export type list_cursor = p_di.Optional_Value<list_cursor.O>
-
-            export namespace linked_entry {
-
-                export type O = i_resolved.Resolver_Benchmark_
-
-            }
-
-            export type linked_entry = p_di.Optional_Value<linked_entry.O>
-
-            export namespace current_dictionary {
-
-                export type O = i_resolved.Dictionary_
-
-            }
-
-            export type current_dictionary = p_di.Optional_Value<current_dictionary.O>
-
-            export namespace current_ordered_dictionary {
-
-                export type O = i_resolved.Dictionary_
-
-            }
-
-            export type current_ordered_dictionary = p_di.Optional_Value<current_ordered_dictionary.O>
-
-            export type signature = i_resolved.Resolver_Signature_
-
-            export namespace schema_imports {
-
-                export type O = i_resolved.Schema_Imports_
-
-            }
-
-            export type schema_imports = p_di.Optional_Value<schema_imports.O>
-
-            export namespace resolver_imports {
-
-                export type O = i_resolved.Resolver_Imports_
-
-            }
-
-            export type resolver_imports = p_di.Optional_Value<resolver_imports.O>
-
-            export type signatures = i_resolved.Resolver_Signatures_
-
-            export type modules = i_resolved.Modules_
-
-            export namespace option_constraints {
-
-                export type O = i_resolved.Resolver_Option_Constraints_
-
-            }
-
-            export type option_constraints = p_di.Optional_Value<option_constraints.O>
-
-        }
-
-    }
-
-    export type Resolver_Benchmark_ = (
-        context: Resolver_Benchmark_.I,
-        abort: p_i.Abort<Resolver_Benchmark_.E>,
-        lookups: {
-            readonly 'sibling property resolvers': p_ri.lookup.Acyclic<Resolver_Benchmark_.L.sibling_property_resolvers>
-            readonly 'parent sibling property resolvers': p_ri.lookup.Acyclic<Resolver_Benchmark_.L.parent_sibling_property_resolvers>
-        },
-        parameters: {
-            readonly 'definition': Resolver_Benchmark_.P.definition
-            readonly 'list cursor': Resolver_Benchmark_.P.list_cursor
-            readonly 'linked entry': Resolver_Benchmark_.P.linked_entry
-            readonly 'current dictionary': Resolver_Benchmark_.P.current_dictionary
-            readonly 'current ordered dictionary': Resolver_Benchmark_.P.current_ordered_dictionary
-            readonly 'signature': Resolver_Benchmark_.P.signature
-            readonly 'schema imports': Resolver_Benchmark_.P.schema_imports
-            readonly 'resolver imports': Resolver_Benchmark_.P.resolver_imports
-            readonly 'signatures': Resolver_Benchmark_.P.signatures
-            readonly 'modules': Resolver_Benchmark_.P.modules
-            readonly 'option constraints': Resolver_Benchmark_.P.option_constraints
-        },
-    ) => Resolver_Benchmark_.O
-
-    export namespace Resolver_Optional_Value_Initialization_ {
-
-        export type I = i_unresolved.Resolver_Optional_Value_Initialization
-
-        export type O = i_resolved.Resolver_Optional_Value_Initialization
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type sibling_property_resolvers = i_resolved.Resolver_Value_Group_.D
-
-        }
-
-        export namespace L {
-
-            export type parent_sibling_property_resolvers = i_resolved.Resolver_Value_Group_.D
-
-        }
-
-        export namespace P {
-
-            export type definition = i_resolved.Value_
-
-            export namespace list_cursor {
-
-                export type O = i_resolved.Resolver_Value_List_Result_
-
-            }
-
-            export type list_cursor = p_di.Optional_Value<list_cursor.O>
-
-            export namespace linked_entry {
-
-                export type O = i_resolved.Resolver_Benchmark_
-
-            }
-
-            export type linked_entry = p_di.Optional_Value<linked_entry.O>
-
-            export namespace current_dictionary {
-
-                export type O = i_resolved.Dictionary_
-
-            }
-
-            export type current_dictionary = p_di.Optional_Value<current_dictionary.O>
-
-            export namespace current_ordered_dictionary {
-
-                export type O = i_resolved.Dictionary_
-
-            }
-
-            export type current_ordered_dictionary = p_di.Optional_Value<current_ordered_dictionary.O>
-
-            export type signature = i_resolved.Resolver_Signature_
-
-            export namespace schema_imports {
-
-                export type O = i_resolved.Schema_Imports_
-
-            }
-
-            export type schema_imports = p_di.Optional_Value<schema_imports.O>
-
-            export namespace resolver_imports {
-
-                export type O = i_resolved.Resolver_Imports_
-
-            }
-
-            export type resolver_imports = p_di.Optional_Value<resolver_imports.O>
-
-            export type signatures = i_resolved.Resolver_Signatures_
-
-            export type modules = i_resolved.Modules_
-
-            export namespace option_constraints {
-
-                export type O = i_resolved.Resolver_Option_Constraints_
-
-            }
-
-            export type option_constraints = p_di.Optional_Value<option_constraints.O>
-
-        }
-
-    }
-
-    export type Resolver_Optional_Value_Initialization_ = (
-        context: Resolver_Optional_Value_Initialization_.I,
-        abort: p_i.Abort<Resolver_Optional_Value_Initialization_.E>,
-        lookups: {
-            readonly 'sibling property resolvers': p_ri.lookup.Acyclic<Resolver_Optional_Value_Initialization_.L.sibling_property_resolvers>
-            readonly 'parent sibling property resolvers': p_ri.lookup.Acyclic<Resolver_Optional_Value_Initialization_.L.parent_sibling_property_resolvers>
-        },
-        parameters: {
-            readonly 'definition': Resolver_Optional_Value_Initialization_.P.definition
-            readonly 'list cursor': Resolver_Optional_Value_Initialization_.P.list_cursor
-            readonly 'linked entry': Resolver_Optional_Value_Initialization_.P.linked_entry
-            readonly 'current dictionary': Resolver_Optional_Value_Initialization_.P.current_dictionary
-            readonly 'current ordered dictionary': Resolver_Optional_Value_Initialization_.P.current_ordered_dictionary
-            readonly 'signature': Resolver_Optional_Value_Initialization_.P.signature
-            readonly 'schema imports': Resolver_Optional_Value_Initialization_.P.schema_imports
-            readonly 'resolver imports': Resolver_Optional_Value_Initialization_.P.resolver_imports
-            readonly 'signatures': Resolver_Optional_Value_Initialization_.P.signatures
-            readonly 'modules': Resolver_Optional_Value_Initialization_.P.modules
-            readonly 'option constraints': Resolver_Optional_Value_Initialization_.P.option_constraints
-        },
-    ) => Resolver_Optional_Value_Initialization_.O
-
-    export namespace Resolver_Lookup_Selection_ {
-
-        export type I = i_unresolved.Resolver_Lookup_Selection
-
-        export type O = i_resolved.Resolver_Lookup_Selection
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type sibling_property_resolvers = i_resolved.Resolver_Value_Group_.D
-
-        }
-
-        export namespace L {
-
-            export type parent_sibling_property_resolvers = i_resolved.Resolver_Value_Group_.D
-
-        }
-
-        export namespace P {
-
-            export type definition = i_resolved.Value_
-
-            export namespace list_cursor {
-
-                export type O = i_resolved.Resolver_Value_List_Result_
-
-            }
-
-            export type list_cursor = p_di.Optional_Value<list_cursor.O>
-
-            export namespace linked_entry {
-
-                export type O = i_resolved.Resolver_Benchmark_
-
-            }
-
-            export type linked_entry = p_di.Optional_Value<linked_entry.O>
-
-            export namespace current_dictionary {
-
-                export type O = i_resolved.Dictionary_
-
-            }
-
-            export type current_dictionary = p_di.Optional_Value<current_dictionary.O>
-
-            export namespace current_ordered_dictionary {
-
-                export type O = i_resolved.Dictionary_
-
-            }
-
-            export type current_ordered_dictionary = p_di.Optional_Value<current_ordered_dictionary.O>
-
-            export type signature = i_resolved.Resolver_Signature_
-
-            export namespace schema_imports {
-
-                export type O = i_resolved.Schema_Imports_
-
-            }
-
-            export type schema_imports = p_di.Optional_Value<schema_imports.O>
-
-            export namespace resolver_imports {
-
-                export type O = i_resolved.Resolver_Imports_
-
-            }
-
-            export type resolver_imports = p_di.Optional_Value<resolver_imports.O>
-
-            export type signatures = i_resolved.Resolver_Signatures_
-
-            export type modules = i_resolved.Modules_
-
-            export namespace option_constraints {
-
-                export type O = i_resolved.Resolver_Option_Constraints_
-
-            }
-
-            export type option_constraints = p_di.Optional_Value<option_constraints.O>
-
-        }
-
-    }
-
-    export type Resolver_Lookup_Selection_ = (
-        context: Resolver_Lookup_Selection_.I,
-        abort: p_i.Abort<Resolver_Lookup_Selection_.E>,
-        lookups: {
-            readonly 'sibling property resolvers': p_ri.lookup.Acyclic<Resolver_Lookup_Selection_.L.sibling_property_resolvers>
-            readonly 'parent sibling property resolvers': p_ri.lookup.Acyclic<Resolver_Lookup_Selection_.L.parent_sibling_property_resolvers>
-        },
-        parameters: {
-            readonly 'definition': Resolver_Lookup_Selection_.P.definition
-            readonly 'list cursor': Resolver_Lookup_Selection_.P.list_cursor
-            readonly 'linked entry': Resolver_Lookup_Selection_.P.linked_entry
-            readonly 'current dictionary': Resolver_Lookup_Selection_.P.current_dictionary
-            readonly 'current ordered dictionary': Resolver_Lookup_Selection_.P.current_ordered_dictionary
-            readonly 'signature': Resolver_Lookup_Selection_.P.signature
-            readonly 'schema imports': Resolver_Lookup_Selection_.P.schema_imports
-            readonly 'resolver imports': Resolver_Lookup_Selection_.P.resolver_imports
-            readonly 'signatures': Resolver_Lookup_Selection_.P.signatures
-            readonly 'modules': Resolver_Lookup_Selection_.P.modules
-            readonly 'option constraints': Resolver_Lookup_Selection_.P.option_constraints
-        },
-    ) => Resolver_Lookup_Selection_.O
-
-    export namespace Resolver_Option_Constraints_ {
-
-        export type I = i_unresolved.Resolver_Option_Constraints
-
-        export type O = i_resolved.Resolver_Option_Constraints
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type sibling_property_resolvers = i_resolved.Resolver_Value_Group_.D
-
-        }
-
-        export namespace L {
-
-            export type parent_sibling_property_resolvers = i_resolved.Resolver_Value_Group_.D
-
-        }
-
-        export namespace P {
-
-            export type definition = i_resolved.Value_
-
-            export namespace list_cursor {
-
-                export type O = i_resolved.Resolver_Value_List_Result_
-
-            }
-
-            export type list_cursor = p_di.Optional_Value<list_cursor.O>
-
-            export namespace linked_entry {
-
-                export type O = i_resolved.Resolver_Benchmark_
-
-            }
-
-            export type linked_entry = p_di.Optional_Value<linked_entry.O>
-
-            export namespace current_dictionary {
-
-                export type O = i_resolved.Dictionary_
-
-            }
-
-            export type current_dictionary = p_di.Optional_Value<current_dictionary.O>
-
-            export namespace current_ordered_dictionary {
-
-                export type O = i_resolved.Dictionary_
-
-            }
-
-            export type current_ordered_dictionary = p_di.Optional_Value<current_ordered_dictionary.O>
-
-            export type signature = i_resolved.Resolver_Signature_
-
-            export namespace schema_imports {
-
-                export type O = i_resolved.Schema_Imports_
-
-            }
-
-            export type schema_imports = p_di.Optional_Value<schema_imports.O>
-
-            export namespace resolver_imports {
-
-                export type O = i_resolved.Resolver_Imports_
-
-            }
-
-            export type resolver_imports = p_di.Optional_Value<resolver_imports.O>
-
-            export type signatures = i_resolved.Resolver_Signatures_
-
-            export type modules = i_resolved.Modules_
-
-            export namespace option_constraints {
-
-                export type O = i_resolved.Resolver_Option_Constraints_
-
-            }
-
-            export type option_constraints = p_di.Optional_Value<option_constraints.O>
-
-        }
-
-    }
-
-    export type Resolver_Option_Constraints_ = (
-        context: Resolver_Option_Constraints_.I,
-        abort: p_i.Abort<Resolver_Option_Constraints_.E>,
-        lookups: {
-            readonly 'sibling property resolvers': p_ri.lookup.Acyclic<Resolver_Option_Constraints_.L.sibling_property_resolvers>
-            readonly 'parent sibling property resolvers': p_ri.lookup.Acyclic<Resolver_Option_Constraints_.L.parent_sibling_property_resolvers>
-        },
-        parameters: {
-            readonly 'definition': Resolver_Option_Constraints_.P.definition
-            readonly 'list cursor': Resolver_Option_Constraints_.P.list_cursor
-            readonly 'linked entry': Resolver_Option_Constraints_.P.linked_entry
-            readonly 'current dictionary': Resolver_Option_Constraints_.P.current_dictionary
-            readonly 'current ordered dictionary': Resolver_Option_Constraints_.P.current_ordered_dictionary
-            readonly 'signature': Resolver_Option_Constraints_.P.signature
-            readonly 'schema imports': Resolver_Option_Constraints_.P.schema_imports
-            readonly 'resolver imports': Resolver_Option_Constraints_.P.resolver_imports
-            readonly 'signatures': Resolver_Option_Constraints_.P.signatures
-            readonly 'modules': Resolver_Option_Constraints_.P.modules
-            readonly 'option constraints': Resolver_Option_Constraints_.P.option_constraints
-        },
-    ) => Resolver_Option_Constraints_.O
-
-    export namespace Resolver_Value_List_Result_ {
-
-        export type I = i_unresolved.Resolver_Value_List_Result
-
-        export type O = i_resolved.Resolver_Value_List_Result
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type modules = i_resolved.Modules_.D
-
-        }
-
-        export namespace P {
-
-            export namespace imports {
-
-                export type O = i_resolved.Schema_Imports_
-
-            }
-
-            export type imports = p_di.Optional_Value<imports.O>
-
-        }
-
-    }
-
-    export type Resolver_Value_List_Result_ = (
-        context: Resolver_Value_List_Result_.I,
-        abort: p_i.Abort<Resolver_Value_List_Result_.E>,
-        lookups: {
-            readonly 'modules': p_ri.lookup.Acyclic<Resolver_Value_List_Result_.L.modules>
-        },
-        parameters: {
-            readonly 'imports': Resolver_Value_List_Result_.P.imports
-        },
-    ) => Resolver_Value_List_Result_.O
-
-    export namespace Resolver_Value_Group_ {
-
-        export type I = i_unresolved.Resolver_Value_Group
-
-        export type O = i_resolved.Resolver_Value_Group
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type sibling_property_resolvers = i_resolved.Resolver_Value_Group_.D
-
-        }
-
-        export namespace L {
-
-            export type parent_sibling_property_resolvers = i_resolved.Resolver_Value_Group_.D
-
-        }
-
-        export namespace P {
-
-            export type definition = i_resolved.Group_
-
-            export namespace list_cursor {
-
-                export type O = i_resolved.Resolver_Value_List_Result_
-
-            }
-
-            export type list_cursor = p_di.Optional_Value<list_cursor.O>
-
-            export namespace linked_entry {
-
-                export type O = i_resolved.Resolver_Benchmark_
-
-            }
-
-            export type linked_entry = p_di.Optional_Value<linked_entry.O>
-
-            export namespace current_dictionary {
-
-                export type O = i_resolved.Dictionary_
-
-            }
-
-            export type current_dictionary = p_di.Optional_Value<current_dictionary.O>
-
-            export namespace current_ordered_dictionary {
-
-                export type O = i_resolved.Dictionary_
-
-            }
-
-            export type current_ordered_dictionary = p_di.Optional_Value<current_ordered_dictionary.O>
-
-            export type signature = i_resolved.Resolver_Signature_
-
-            export namespace schema_imports {
-
-                export type O = i_resolved.Schema_Imports_
-
-            }
-
-            export type schema_imports = p_di.Optional_Value<schema_imports.O>
-
-            export namespace resolver_imports {
-
-                export type O = i_resolved.Resolver_Imports_
-
-            }
-
-            export type resolver_imports = p_di.Optional_Value<resolver_imports.O>
-
-            export type signatures = i_resolved.Resolver_Signatures_
-
-            export type modules = i_resolved.Modules_
-
-            export namespace option_constraints {
-
-                export type O = i_resolved.Resolver_Option_Constraints_
-
-            }
-
-            export type option_constraints = p_di.Optional_Value<option_constraints.O>
-
-        }
-
-    }
-
-    export type Resolver_Value_Group_ = (
-        context: Resolver_Value_Group_.I,
-        abort: p_i.Abort<Resolver_Value_Group_.E>,
-        lookups: {
-            readonly 'sibling property resolvers': p_ri.lookup.Acyclic<Resolver_Value_Group_.L.sibling_property_resolvers>
-            readonly 'parent sibling property resolvers': p_ri.lookup.Acyclic<Resolver_Value_Group_.L.parent_sibling_property_resolvers>
-        },
-        parameters: {
-            readonly 'definition': Resolver_Value_Group_.P.definition
-            readonly 'list cursor': Resolver_Value_Group_.P.list_cursor
-            readonly 'linked entry': Resolver_Value_Group_.P.linked_entry
-            readonly 'current dictionary': Resolver_Value_Group_.P.current_dictionary
-            readonly 'current ordered dictionary': Resolver_Value_Group_.P.current_ordered_dictionary
-            readonly 'signature': Resolver_Value_Group_.P.signature
-            readonly 'schema imports': Resolver_Value_Group_.P.schema_imports
-            readonly 'resolver imports': Resolver_Value_Group_.P.resolver_imports
-            readonly 'signatures': Resolver_Value_Group_.P.signatures
-            readonly 'modules': Resolver_Value_Group_.P.modules
-            readonly 'option constraints': Resolver_Value_Group_.P.option_constraints
-        },
-    ) => Resolver_Value_Group_.O
-
-    export namespace Resolver_Relative_Value_Selection_ {
-
-        export type I = i_unresolved.Resolver_Relative_Value_Selection
-
-        export type O = i_resolved.Resolver_Relative_Value_Selection
-
-        export type E = i_generic.Error
-
-        export namespace P {
-
-            export type value = i_resolved.Value_
-
-        }
-
-    }
-
-    export type Resolver_Relative_Value_Selection_ = (
-        context: Resolver_Relative_Value_Selection_.I,
-        abort: p_i.Abort<Resolver_Relative_Value_Selection_.E>,
-        lookups: symbol,
-        parameters: {
-            readonly 'value': Resolver_Relative_Value_Selection_.P.value
-        },
-    ) => Resolver_Relative_Value_Selection_.O
-
-    export namespace Resolver_Constraint_ {
-
-        export type I = i_unresolved.Resolver_Constraint
-
-        export type O = i_resolved.Resolver_Constraint
-
-        export type E = i_generic.Error
-
-        export namespace P {
-
-            export type value = i_resolved.Value_
-
-        }
-
-    }
-
-    export type Resolver_Constraint_ = (
-        context: Resolver_Constraint_.I,
-        abort: p_i.Abort<Resolver_Constraint_.E>,
-        lookups: symbol,
-        parameters: {
-            readonly 'value': Resolver_Constraint_.P.value
-        },
-    ) => Resolver_Constraint_.O
-
-    export namespace Resolver_Optional_Value_Constraints_ {
-
-        export type I = i_unresolved.Resolver_Optional_Value_Constraints
-
-        export type O = i_resolved.Resolver_Optional_Value_Constraints
-
-        export type E = i_generic.Error
-
-        export namespace P {
-
-            export type value = i_resolved.Value_
-
-        }
-
-    }
-
-    export type Resolver_Optional_Value_Constraints_ = (
-        context: Resolver_Optional_Value_Constraints_.I,
-        abort: p_i.Abort<Resolver_Optional_Value_Constraints_.E>,
-        lookups: symbol,
-        parameters: {
-            readonly 'value': Resolver_Optional_Value_Constraints_.P.value
-        },
-    ) => Resolver_Optional_Value_Constraints_.O
-
-    export namespace Resolver_Value_Constraints_ {
-
-        export type I = i_unresolved.Resolver_Value_Constraints
-
-        export type O = i_resolved.Resolver_Value_Constraints
-
-        export type E = i_generic.Error
-
-        export namespace P {
-
-            export type value = i_resolved.Value_
-
-        }
-
-    }
-
-    export type Resolver_Value_Constraints_ = (
-        context: Resolver_Value_Constraints_.I,
-        abort: p_i.Abort<Resolver_Value_Constraints_.E>,
-        lookups: symbol,
-        parameters: {
-            readonly 'value': Resolver_Value_Constraints_.P.value
-        },
-    ) => Resolver_Value_Constraints_.O
-
-    export namespace Resolver_Value_Constraint_ {
-
-        export type I = i_unresolved.Resolver_Value_Constraint
-
-        export type O = i_resolved.Resolver_Value_Constraint
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type property_constraints = i_resolved.Resolver_Value_Constraints_.D
-
-        }
-
-        export namespace P {
-
-        }
-
-    }
-
-    export type Resolver_Value_Constraint_ = (
-        context: Resolver_Value_Constraint_.I,
-        abort: p_i.Abort<Resolver_Value_Constraint_.E>,
-        lookups: {
-            readonly 'property constraints': p_ri.lookup.Acyclic<Resolver_Value_Constraint_.L.property_constraints>
-        },
-        parameters: symbol,
-    ) => Resolver_Value_Constraint_.O
-
-    export namespace Resolver_ {
-
-        export type I = i_unresolved.Resolver
-
-        export type O = i_resolved.Resolver
-
-        export type E = i_generic.Error
-
-        export namespace P {
-
-            export type modules = i_resolved.Modules_
-
-            export type resolver_imports = i_resolved.Resolver_Imports_
-
-            export type schema_imports = i_resolved.Schema_Imports_
-
-        }
-
-    }
-
-    export type Resolver_ = (
-        context: Resolver_.I,
-        abort: p_i.Abort<Resolver_.E>,
-        lookups: symbol,
-        parameters: {
-            readonly 'modules': Resolver_.P.modules
-            readonly 'resolver imports': Resolver_.P.resolver_imports
-            readonly 'schema imports': Resolver_.P.schema_imports
-        },
-    ) => Resolver_.O
-
-    export namespace Resolver_Signature_Parameters_ {
-
-        export type I = i_unresolved.Resolver_Signature_Parameters
-
-        export type O = i_resolved.Resolver_Signature_Parameters
-
-        export type E = i_generic.Error
-
-        export namespace P {
-
-            export type modules = i_resolved.Modules_
-
-            export type imports = i_resolved.Schema_Imports_
-
-        }
-
-    }
-
-    export type Resolver_Signature_Parameters_ = (
-        context: Resolver_Signature_Parameters_.I,
-        abort: p_i.Abort<Resolver_Signature_Parameters_.E>,
-        lookups: symbol,
-        parameters: {
-            readonly 'modules': Resolver_Signature_Parameters_.P.modules
-            readonly 'imports': Resolver_Signature_Parameters_.P.imports
-        },
-    ) => Resolver_Signature_Parameters_.O
-
-    export namespace Resolver_Signature_ {
-
-        export type I = i_unresolved.Resolver_Signature
-
-        export type O = i_resolved.Resolver_Signature
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type sibling_signatures = i_resolved.Resolver_Signatures_.D
-
-        }
-
-        export namespace P {
-
-            export type modules = i_resolved.Modules_
-
-            export type module_ = i_resolved.Module_
-
-            export type imports = i_resolved.Schema_Imports_
-
-        }
-
-    }
-
-    export type Resolver_Signature_ = (
-        context: Resolver_Signature_.I,
-        abort: p_i.Abort<Resolver_Signature_.E>,
-        lookups: {
-            readonly 'sibling signatures': p_ri.lookup.Acyclic<Resolver_Signature_.L.sibling_signatures>
-        },
-        parameters: {
-            readonly 'modules': Resolver_Signature_.P.modules
-            readonly 'module': Resolver_Signature_.P.module_
-            readonly 'imports': Resolver_Signature_.P.imports
-        },
-    ) => Resolver_Signature_.O
-
-    export namespace Resolver_Signatures_ {
-
-        export type I = i_unresolved.Resolver_Signatures
-
-        export type O = i_resolved.Resolver_Signatures
-
-        export type E = i_generic.Error
-
-        export namespace P {
-
-            export type modules = i_resolved.Modules_
-
-            export type imports = i_resolved.Schema_Imports_
-
-        }
-
-    }
-
-    export type Resolver_Signatures_ = (
-        context: Resolver_Signatures_.I,
-        abort: p_i.Abort<Resolver_Signatures_.E>,
-        lookups: symbol,
-        parameters: {
-            readonly 'modules': Resolver_Signatures_.P.modules
-            readonly 'imports': Resolver_Signatures_.P.imports
-        },
-    ) => Resolver_Signatures_.O
-
-    export namespace Resolver_Modules_ {
-
-        export type I = i_unresolved.Resolver_Modules
-
-        export type O = i_resolved.Resolver_Modules
-
-        export type E = i_generic.Error
-
-        export namespace P {
-
-            export type signatures = i_resolved.Resolver_Signatures_
-
-            export type modules = i_resolved.Modules_
-
-            export type schema_imports = i_resolved.Schema_Imports_
-
-            export type resolver_imports = i_resolved.Resolver_Imports_
-
-        }
-
-    }
-
-    export type Resolver_Modules_ = (
-        context: Resolver_Modules_.I,
-        abort: p_i.Abort<Resolver_Modules_.E>,
-        lookups: symbol,
-        parameters: {
-            readonly 'signatures': Resolver_Modules_.P.signatures
-            readonly 'modules': Resolver_Modules_.P.modules
-            readonly 'schema imports': Resolver_Modules_.P.schema_imports
-            readonly 'resolver imports': Resolver_Modules_.P.resolver_imports
-        },
-    ) => Resolver_Modules_.O
-
-    export namespace Resolver_Reference_To_Value_Constraint_ {
-
-        export type I = i_unresolved.Resolver_Reference_To_Value_Constraint
-
-        export type O = i_resolved.Resolver_Reference_To_Value_Constraint
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type property_constraints = i_resolved.Resolver_Value_Constraints_.D
-
-        }
-
-        export namespace P {
-
-        }
-
-    }
-
-    export type Resolver_Reference_To_Value_Constraint_ = (
-        context: Resolver_Reference_To_Value_Constraint_.I,
-        abort: p_i.Abort<Resolver_Reference_To_Value_Constraint_.E>,
-        lookups: {
-            readonly 'property constraints': p_ri.lookup.Acyclic<Resolver_Reference_To_Value_Constraint_.L.property_constraints>
-        },
-        parameters: symbol,
-    ) => Resolver_Reference_To_Value_Constraint_.O
-
-    export namespace Resolver_Imports_ {
-
-        export type I = i_unresolved.Resolver_Imports
-
-        export type O = i_resolved.Resolver_Imports
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type sibling_schemas = i_resolved.Schemas_.D
-
-        }
-
-        export namespace P {
-
-        }
-
-    }
-
-    export type Resolver_Imports_ = (
-        context: Resolver_Imports_.I,
-        abort: p_i.Abort<Resolver_Imports_.E>,
-        lookups: {
-            readonly 'sibling schemas': p_ri.lookup.Stack<Resolver_Imports_.L.sibling_schemas>
-        },
-        parameters: symbol,
-    ) => Resolver_Imports_.O
-
-    export namespace Module_Specification_ {
-
-        export type I = i_unresolved.Module_Specification
-
-        export type O = i_resolved.Module_Specification
-
-        export type E = i_generic.Error
-
-        export namespace P {
-
-        }
-
-    }
-
-    export type Module_Specification_ = (
-        context: Module_Specification_.I,
-        abort: p_i.Abort<Module_Specification_.E>,
-        lookups: symbol,
-        parameters: symbol,
-    ) => Module_Specification_.O
-
-    export namespace Schema_Tree_ {
-
-        export type I = i_unresolved.Schema_Tree
-
-        export type O = i_resolved.Schema_Tree
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type sibling_schemas = i_resolved.Schemas_.D
-
-        }
-
-        export namespace P {
-
-        }
-
-    }
-
-    export type Schema_Tree_ = (
-        context: Schema_Tree_.I,
-        abort: p_i.Abort<Schema_Tree_.E>,
-        lookups: {
-            readonly 'sibling schemas': p_ri.lookup.Stack<Schema_Tree_.L.sibling_schemas>
-        },
-        parameters: symbol,
-    ) => Schema_Tree_.O
-
-    export namespace Schema_ {
-
-        export type I = i_unresolved.Schema
-
-        export type O = i_resolved.Schema
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type sibling_schemas = i_resolved.Schemas_.D
-
-        }
-
-        export namespace P {
-
-        }
-
-    }
-
-    export type Schema_ = (
-        context: Schema_.I,
-        abort: p_i.Abort<Schema_.E>,
-        lookups: {
-            readonly 'sibling schemas': p_ri.lookup.Stack<Schema_.L.sibling_schemas>
-        },
-        parameters: symbol,
-    ) => Schema_.O
-
-    export namespace Schema_Imports_ {
-
-        export type I = i_unresolved.Schema_Imports
-
-        export type O = i_resolved.Schema_Imports
-
-        export type E = i_generic.Error
-
-        export namespace L {
-
-            export type sibling_schemas = i_resolved.Schemas_.D
-
-        }
-
-        export namespace P {
-
-        }
-
-    }
-
-    export type Schema_Imports_ = (
-        context: Schema_Imports_.I,
-        abort: p_i.Abort<Schema_Imports_.E>,
-        lookups: {
-            readonly 'sibling schemas': p_ri.lookup.Stack<Schema_Imports_.L.sibling_schemas>
-        },
-        parameters: symbol,
-    ) => Schema_Imports_.O
-
-    export namespace Modules_ {
-
-        export type I = i_unresolved.Modules
-
-        export type O = i_resolved.Modules
-
-        export type E = i_generic.Error
-
-        export namespace P {
-
-            export namespace globals {
-
-                export type O = i_resolved.Globals_
-
-            }
-
-            export type globals = p_di.Optional_Value<globals.O>
-
-            export namespace imports {
-
-                export type O = i_resolved.Schema_Imports_
-
-            }
-
-            export type imports = p_di.Optional_Value<imports.O>
-
-        }
-
-    }
-
-    export type Modules_ = (
-        context: Modules_.I,
-        abort: p_i.Abort<Modules_.E>,
-        lookups: symbol,
-        parameters: {
-            readonly 'globals': Modules_.P.globals
-            readonly 'imports': Modules_.P.imports
-        },
-    ) => Modules_.O
+        s_parameters.Resolver_Possible_Value_Selection
+    >
 }
 
-import * as s_out from "../schema.js"
-
-import * as i_generic2 from "../../../../../temp/resolve_generic.js"
-
-import { Value as Resolver_Value } from "../../../../resolver.generated/schemas/resolved/refiners/unresolved_manual.js"
-import { Signatures } from "../../../../signatures.generated/schemas/resolved/refiners/unresolved_manual.js"
-import { Value, Globals } from "../../../../modules.generated/schemas/resolved/refiners/unresolved_manual.js"
+// implementations
 
 
-export const Package: declarations.Package_ = ($, abort, $l, $p) => p_.literal.group_resolve(
-    () => {
 
-        const prop_omit_$po_de$pc_serializer = p_change_context(
-            $['omit (de)serializer'],
-            ($) => $,
-        )
 
-        const prop_schema_tree = p_change_context(
-            $['schema tree'],
-            ($) => Schema_Tree(
-                $,
-                ($) => abort(
-                    $,
-                ),
-                {
-                    'sibling schemas': p_sl.stack.empty(
-                    ),
-                },
-                p_.literal.nothing(),
-            ),
-        )
-        return {
-            'omit (de)serializer': prop_omit_$po_de$pc_serializer,
-            'schema tree': prop_schema_tree,
-        }
-    },
+
+export const Schema: declarations.Schema = ($, abort) => {
+    const basic_types = Basic_Types($['basic types'], abort);
+    const types = Types($['types'], abort, { 'basic types': p_.literal.set(basic_types) });
+    const signatures = Resolver_Signatures($['signatures'], abort, { types });
+    return {
+        'basic types': basic_types,
+        types,
+        signatures,
+        resolvers: Resolver_Types($.resolvers, abort, { types, signatures }),
+    };
+}
+
+
+
+export const Types: declarations.Types = ($, abort, $p) => p_.from.dictionary(
+    $,
+).resolve(
+    ($, id, $acyclic, $cyclic) => Type(
+        $,
+        abort,
+        {
+            'noncircular sibling types': $acyclic,
+            'possibly circular dependent sibling types': $cyclic,
+        },
+        $p,
+    ),
 )
 
 
-export const Schema_Imports: declarations.Schema_Imports_ = ($, abort, $l, $p) => p_variables(
-    () => p_change_context($, ($) => i_generic2.temp_resolve(
-        $['l dictionary'],
-        ($, id) => p_change_context($, ($) => p_change_context($, ($): s_out.Schema_Imports.D => {
-            const foo = p_change_context($['l entry']['schema set child'], ($) => i_generic2.get_entry_stack(
-                $l['sibling schemas'],
-                $,
-                abort,
-            ))
-            const p_schema_set_child: s_out.Schema_Imports.D.schema_set_child = {
-                'l value': foo,
-                'l results': {
-                    'schema': p_.from.state(foo['l entry']).decide(
-                        ($) => {
-                            switch ($[0]) {
-                                case 'schema': return p_.option($, ($) => $)
-                                case 'set': return p_.option($, ($) => abort({
-                                    'type': ['constraint', ['state', {
-                                        'expected': "schema",
-                                        'found': "set",
-                                    }]],
-                                    'location': loc
-                                }))
-                                default: return p_.exhaustive($[0])
-                            }
-                        })
-                }
-            }
-            const loc = $['l entry']['schema set child']['l location']
-            const p_schema: s_out.Schema_Imports.D.schema = p_change_context($['l entry']['schema'], ($) => p_schema_set_child['l results'].schema)
-            return {
-                'schema set child': p_schema_set_child,
-                'schema': p_schema,
-            }
-        })),
-    )))
-export const Resolver_Imports: declarations.Resolver_Imports_ = ($, abort, $l, $p) => p_variables(
-    () => p_change_context($, ($) => i_generic2.temp_resolve(
-        $['l dictionary'],
-        ($, id) => p_change_context($, ($) => p_change_context($, ($): s_out.Resolver_Imports.D => {
-            const loc = $['l entry']['schema set child']['l location']
-            const foo = p_change_context($['l entry']['schema set child'], ($) => i_generic2.get_entry_stack(
-                $l['sibling schemas'],
-                $,
-                abort,
-            ))
-            const p_schema_set_child: s_out.Resolver_Imports.D.schema_set_child = {
-                'l value': foo,
-                'l results': {
-                    'resolver': p_.from.state(foo['l entry']).decide(
-                        ($) => {
-                            switch ($[0]) {
-                                case 'schema': return p_.option($, ($) => p_.from.state($.complexity).decide(
-                                    ($) => {
-                                        switch ($[0]) {
-                                            case 'constrained': return p_.option($, ($) => $)
-                                            case 'unconstrained': return p_.option($, ($) => abort({
-                                                'type': ['constraint', ['state', {
-                                                    'expected': "constrained",
-                                                    'found': "unconstrained",
-                                                }]],
-                                                'location': loc
-                                            }))
-                                            default: return p_.exhaustive($[0])
-                                        }
-                                    }))
-                                case 'set': return p_.option($, ($) => abort({
-                                    'type': ['constraint', ['state', {
-                                        'expected': "schema",
-                                        'found': "set",
-                                    }]],
-                                    'location': loc
-                                }))
-                                default: return p_.exhaustive($[0])
-                            }
-                        })
-                }
-            }
-            const p_schema: s_out.Resolver_Imports.D.resolver = p_change_context($['l entry']['resolver'], ($) => p_schema_set_child['l results'].resolver)
-            return {
-                'schema set child': p_schema_set_child,
-                'resolver': p_schema,
-            }
-        })),
-    )))
 
-export const Schema_Tree: declarations.Schema_Tree_ = ($, abort, $l, $p) => p_variables(
-    () => p_change_context($['l state'], ($): s_out.Schemas.D => {
-        switch ($[0]) {
-            case 'schema': return p_.option($, ($) => ['schema', p_variables(
-                () => {
-                    const p_schema_imports = Schema_Imports(
-                        $['schema imports'],
-                        abort,
-                        {
-                            'sibling schemas': $l['sibling schemas'],
+export const Dictionary: declarations.Dictionary = ($, abort, $l, $p) => ({
+    'value': p_.change_context(
+        $['value'],
+        ($) => Value(
+            $,
+            abort,
+            $l,
+            $p,
+        ),
+    ),
+})
 
-                        },
-                        p_.literal.nothing(),
-
-                    )
-                    const p_resolver_imports = Resolver_Imports(
-                        $['resolver imports'],
-                        abort,
-                        {
-                            'sibling schemas': $l['sibling schemas'],
-
-                        },
-                        p_.literal.nothing(),
-
-                    )
-                    const p_globals: s_out.Schema.globals = p_change_context($['globals'], ($) => Globals(
-                        $,
-                        abort,
-                        p_.literal.nothing(),
-                        p_.literal.nothing(),
-                    ))
-                    const p_types: s_out.Modules = i_generic2.temp_resolve(
-                        $.types['l dictionary'],
-                        ($, id, $acyclic, $cyclic) => {
-                            const p_type = Value(
-                                $['l entry']['root value'],
-                                abort,
-                                {
-                                    'noncircular sibling modules': $acyclic,
-                                    'possibly circular dependent sibling modules': $cyclic,
-                                },
-                                {
-                                    'imports': p_.literal.set(p_schema_imports),
-                                    'globals': p_.literal.set(p_globals),
-                                },
-
-                            )
-                            return {
-                                'root value': p_type,
-
-                            }
-                        },
-                    )
-                    const p_complexity: s_out.Schema.complexity = p_change_context($.complexity['l state'], ($) => {
+export const Value: declarations.Value = ($, abort, $l, $p) => p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Value => {
+    switch ($[0]) {
+        case 'component': return p_.option($, ($): s_target.Value => p_.change_context(
+            $,
+            ($) => ['component', {
+                'type': p_.change_context(
+                    $['type'],
+                    ($) => p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Value.component.type_ => {
                         switch ($[0]) {
-                            case 'constrained': return p_.option($, ($) => {
-
-                                const p_signatures: s_out.Resolver.signatures = p_change_context($.signatures, ($) => {
-                                    const p_types_2: s_out.Resolver.signatures.signatures = p_change_context($, ($) => Signatures(
-                                        $.signatures,
-                                        abort,
-                                        p_.literal.nothing(),
+                            
+                            case 'internal': return p_.option($, ($): s_target.Value.component.type_ => p_.change_context(
+                                $,
+                                ($) => ['internal', {
+                                    'l id': $,
+                                    'l entry': ((v_lookup_context_6) => $l['possibly circular dependent sibling types'].get_entry(
+                                        $,
                                         {
-                                            'imports': p_schema_imports,
-                                            'modules': p_types,
+                                            no_such_entry: ($) => abort(
+                                                {
+                                                    'type': ['lookup', ['no such entry', v_lookup_context_6]],
+                                                },
+                                            ),
+                                            no_context_lookup: ($) => abort(
+                                                {
+                                                    'type': ['lookup', ['no context lookup', null]],
+                                                },
+                                            ),
+                                            accessing_cyclic_sibling_before_it_is_resolved: ($) => abort(
+                                                {
+                                                    'type': ['lookup', ['cycle detected', null]],
+                                                },
+                                            ),
                                         },
-                                    ))
-                                    return {
-                                        'signatures': p_types_2,
-                                    }
-                                })
-                                const p_modules: s_out.Resolver.modules = i_generic2.resolve_dense_dictionary(
-                                    $.modules['l dictionary'],
-                                    $.modules['l location'],
-                                    abort,
-                                    p_signatures.signatures,
-                                    ($, id, $acyclic, $cyclic) => {
-
-                                        const p_linked_entry = i_generic2.get_entry_acyclic(
-                                            p_sl.acyclic.from_resolved_dictionary(p_types),
-                                            {
-                                                'l reference': id,
-                                                'l location': $['l location'],
-                                            },
-                                            abort,
-                                        )
-                                        const p_signature = i_generic2.get_entry_acyclic(
-                                            p_sl.acyclic.from_resolved_dictionary(p_signatures.signatures),
-                                            {
-                                                'l reference': id,
-                                                'l location': $['l location'],
-                                            },
-                                            abort,
-                                        )
-
-                                        const p_type_resolver = Resolver_Value(
-                                            $['l entry']['root value resolver'],
-                                            abort,
-                                            {
-                                                'sibling property resolvers': p_sl.acyclic.not_set(),
-                                                'parent sibling property resolvers': p_sl.acyclic.not_set(),
-
-                                            },
-                                            {
-                                                'list cursor': p_.literal.not_set(),
-                                                'linked entry': p_.literal.not_set(),
-                                                'current dictionary': p_.literal.not_set(),
-                                                'current ordered dictionary': p_.literal.not_set(),
-                                                'option constraints': p_.literal.not_set(),
-
-                                                'definition': p_linked_entry['l entry']['root value'],
-                                                'signature': p_signature['l entry'],
-
-                                                'modules': p_types,
-                                                'schema imports': p_.literal.set(p_schema_imports),
-                                                'resolver imports': p_.literal.set(p_resolver_imports),
-                                                'signatures': p_signatures.signatures
-                                            },
-                                        )
-                                        return {
-                                            'signature': p_signature['l entry'],
-                                            'root value resolver': p_type_resolver,
-                                        }
-                                    },
-                                )
-                                return ['constrained', {
-                                    'signatures': p_signatures,
-                                    'modules': p_modules,
-                                }]
-                            })
-                            case 'unconstrained': return p_.option($, ($) => ['unconstrained', null])
+                                    ))(
+                                        $,
+                                    ),
+                                }],
+                            ))
+                            case 'internal acyclic': return p_.option($, ($): s_target.Value.component.type_ => p_.change_context(
+                                $,
+                                ($) => ['internal acyclic', {
+                                    'l id': $,
+                                    'l entry': ((v_lookup_context_7) => $l['noncircular sibling types'].get_entry(
+                                        $,
+                                        {
+                                            no_such_entry: ($) => abort(
+                                                {
+                                                    'type': ['lookup', ['no such entry', v_lookup_context_7]],
+                                                },
+                                            ),
+                                            no_context_lookup: ($) => abort(
+                                                {
+                                                    'type': ['lookup', ['no context lookup', null]],
+                                                },
+                                            ),
+                                            cycle_detected: ($) => abort(
+                                                {
+                                                    'type': ['lookup', ['cycle detected', null]],
+                                                },
+                                            ),
+                                        },
+                                    ))(
+                                        $,
+                                    ),
+                                }],
+                            ))
                             default: return p_.exhaustive($[0])
                         }
-                    })
-                    return ({
-                        'schema imports': p_schema_imports,
-                        'resolver imports': p_resolver_imports,
-                        'globals': p_globals,
-                        'types': p_types,
-                        'complexity': p_complexity,
-                    })
-                })])
-            case 'set': return p_.option($, ($) => ['set', Schemas(
+                    })),
+                ),
+                'results': p_.change_context(
+                    $['results'],
+                    ($) => Value_Results(
+                        $,
+                        abort,
+                        {
+                            'types': $l['noncircular sibling types'],
+                        },
+                        {
+                            
+                        },
+                    ),
+                ),
+            }],
+        ))
+        case 'dictionary': return p_.option($, ($): s_target.Value => p_.change_context(
+            $,
+            ($) => ['dictionary', Dictionary(
                 $,
                 abort,
                 $l,
                 $p,
-            )])
-            default: return p_.exhaustive($[0])
-        }
-    }))
+            )],
+        ))
+        case 'group': return p_.option($, ($): s_target.Value => p_.change_context(
+            $,
+            ($) => ['group', Group(
+                $,
+                abort,
+                $l,
+                $p,
+            )],
+        ))
+        case 'list': return p_.option($, ($): s_target.Value => p_.change_context(
+            $,
+            ($) => ['list', {
+                'value': p_.change_context(
+                    $['value'],
+                    ($) => Value(
+                        $,
+                        abort,
+                        $l,
+                        $p,
+                    ),
+                ),
+                'results': p_.change_context(
+                    $['results'],
+                    ($) => Value_Results(
+                        $,
+                        abort,
+                        {
+                            'types': $l['noncircular sibling types'],
+                        },
+                        {
+                            
+                        },
+                    ),
+                ),
+            }],
+        ))
+        case 'nothing': return p_.option($, ($): s_target.Value => p_.change_context(
+            $,
+            ($) => ['nothing', null],
+        ))
+        case 'simple': return p_.option($, ($): s_target.Value => ['simple', {
+                'l id': $,
+                'l entry': p_.from.optional($p['basic types']).decide(
+                    (basic_types) => p_.from.dictionary(basic_types).get_entry($, {
+                        no_such_entry: () => abort({ type: ['lookup', ['no such entry', $]] }),
+                    }),
+                    () => abort({ type: ['constraint', ['optional value is not set', null]] }),
+                ),
+            }])
+        case 'optional': return p_.option($, ($): s_target.Value => p_.change_context(
+            $,
+            ($) => ['optional', Value(
+                $,
+                abort,
+                $l,
+                $p,
+            )],
+        ))
+        case 'reference': return p_.option($, ($): s_target.Value => p_.change_context(
+            $,
+            ($) => ((v_referent) => ['reference', {
+                'referent': p_.change_context(
+                    $['referent'],
+                    ($) => v_referent,
+                ),
+                'type': p_.change_context(
+                    $['type'],
+                    ($) => p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Value.reference.type_ => {
+                        switch ($[0]) {
+                            case 'derived': return p_.option($, ($): s_target.Value.reference.type_ => p_.change_context(
+                                $,
+                                ($) => ['derived', null],
+                            ))
+                            case 'selected': return p_.option($, ($): s_target.Value.reference.type_ => p_.change_context(
+                                $,
+                                ($) => ['selected', {
+                                    'dictionary': p_.change_context(
+                                        $['dictionary'],
+                                        ($) => p_.change_context(v_referent['path']['resulting node'], ($) => p_.from.state(
+                                            $,
+                                        ).decide(
+                                            ($) => {
+                                                switch ($[0]) {
+                                                    case 'dictionary': return p_.option(
+                                                        $,
+                                                        ($) => $,
+                                                    )
+                                                    default: return abort(
+                                                        {
+                                                            'type': ['constraint', ['state', {
+                                                                'expected': "dictionary",
+                                                                'found': $[0],
+                                                            }]],
+                                                        },
+                                                    )
+                                                }
+                                            },
+                                        )),
+                                    ),
+                                    'dependency': p_.change_context(
+                                        $['dependency'],
+                                        ($) => p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Value.reference.type_.selected.dependency => {
+                                            switch ($[0]) {
+                                                case 'acyclic': return p_.option($, ($): s_target.Value.reference.type_.selected.dependency => p_.change_context(
+                                                    $,
+                                                    ($) => ['acyclic', null],
+                                                ))
+                                                case 'cyclic': return p_.option($, ($): s_target.Value.reference.type_.selected.dependency => p_.change_context(
+                                                    $,
+                                                    ($) => ['cyclic', null],
+                                                ))
+                                                
+                                                default: return p_.exhaustive($[0])
+                                            }
+                                        })),
+                                    ),
+                                    'results': p_.change_context(
+                                        $['results'],
+                                        ($) => Value_Results(
+                                            $,
+                                            abort,
+                                            {
+                                                'types': $l['noncircular sibling types'],
+                                            },
+                                            {
+                                                
+                                            },
+                                        ),
+                                    ),
+                                }],
+                            ))
+                            default: return p_.exhaustive($[0])
+                        }
+                    })),
+                ),
+            }])(
+                Value_Reference(
+                    $['referent'],
+                    abort,
+                    {
+                        'types': $l['noncircular sibling types'],
+                    },
+                    {
+                        
+                    },
+                ),
+            ),
+        ))
+        case 'state': return p_.option($, ($): s_target.Value => p_.change_context(
+            $,
+            ($) => ['state', {
+                'options': p_.change_context(
+                    $['options'],
+                    ($) => p_.from.dictionary($).map(
+                        ($, id) => ({
+                            'constraints': p_.change_context(
+                                $['constraints'],
+                                ($) => Option_Constraints(
+                                    $,
+                                    abort,
+                                    {
+                                        'types': $l['noncircular sibling types'],
+                                    },
+                                    {
+                                        
+                                    },
+                                ),
+                            ),
+                            'description': p_.change_context(
+                                $['description'],
+                                ($) => p_.from.optional($).map(($) => $),
+                            ),
+                            'value': p_.change_context(
+                                $['value'],
+                                ($) => Value(
+                                    $,
+                                    abort,
+                                    $l,
+                                    $p,
+                                ),
+                            ),
+                        }),
+                    ),
+                ),
+                'results': p_.change_context(
+                    $['results'],
+                    ($) => Value_Results(
+                        $,
+                        abort,
+                        {
+                            'types': $l['noncircular sibling types'],
+                        },
+                        {
+                            
+                        },
+                    ),
+                ),
+            }],
+        ))
+        
+        default: return p_.exhaustive($[0])
+    }
+}))
 
-export const Schemas: declarations.Schemas_ = ($, abort, $l, $p) => p_variables(
-    () => i_generic2.temp_resolve(
-        $['l dictionary'],
-        ($, id, $acyclic, $cyclic) => p_change_context($, ($) => Schema_Tree(
-            $['l entry'],
-            abort,
-            {
-                'sibling schemas': p_sl.stack.push($l['sibling schemas'], $acyclic)
-            },
-            p_.literal.nothing(),
-        )),
-    ))
 
 
 
-export const Module_Specification: declarations.Module_Specification_ = ($, abort, $l, $p) => p_variables(
-    () => ({
-        'schema': Schema_Tree(
-            $.schema,
-            abort,
-            {
-                'sibling schemas': p_sl.stack.empty(),
-            },
-            $p,
+
+export const Resolver_Signatures: declarations.Resolver_Signatures = ($, abort, $p) => ((v_required) => p_.from.dictionary(
+    $,
+).resolve(
+    ($, id, $acyclic, $cyclic) => Resolver_Signature(
+        $,
+        abort,
+        {
+            'sibling signatures': $acyclic,
+        },
+        {
+            'types': $p['types'],
+            'type': ((v_lookup_context_4) => p_.from.dictionary(
+                $p['types'],
+            ).get_entry(
+                id,
+                {
+                    no_such_entry: ($) => abort(
+                        {
+                            'type': ['lookup', ['no such entry', id]],
+                        },
+                    ),
+                },
+            ))(
+                $,
+            ),
+        },
+    ),
+))(
+    p_.from.dictionary($p['types']).map(
+        (entry, id) => p_.from.dictionary($).get_entry(id, {
+            no_such_entry: () => abort({
+                'type': ['missing required entries', p_.literal.dictionary({ [id]: null })],
+            }),
+        }),
+    ),
+)
+
+export const Resolver_Signature_Parameters: declarations.Resolver_Signature_Parameters = ($, abort, $p) => ({
+    'types': p_.change_context(
+        $['types'],
+        ($) => p_.from.dictionary($).map(
+            ($, id) => ({
+                'type': p_.change_context(
+                    $['type'],
+                    ($) => Type_Reference(
+                        $,
+                        abort,
+                        {
+                            'types': p_.select_lookup.acyclic.from_resolved_dictionary(
+                                $p['types'],
+                            ),
+                        },
+                        {
+                            
+                        },
+                    ),
+                ),
+                'presence': p_.change_context(
+                    $['presence'],
+                    ($) => Presence(
+                        $,
+                        abort,
+                    ),
+                ),
+            }),
         ),
-        'schema path': p_.from.list($['schema path']['l list']).map(
-            ($) => $['l item']),
-        'complexity': p_.from.state($.complexity['l state']).decide(
-            ($) => {
+    ),
+    'lookups': p_.change_context(
+        $['lookups'],
+        ($) => p_.from.dictionary($).map(
+            ($, id) => ((v_referent) => ({
+                'referent': p_.change_context(
+                    $['referent'],
+                    ($) => v_referent,
+                ),
+                'dictionary': p_.change_context(
+                    $['dictionary'],
+                    ($) => p_.change_context(v_referent['resulting type']['root value'], ($) => p_.from.state(
+                        $,
+                    ).decide(
+                        ($) => {
+                            switch ($[0]) {
+                                case 'dictionary': return p_.option(
+                                    $,
+                                    ($) => $,
+                                )
+                                default: return abort(
+                                    {
+                                        'type': ['constraint', ['state', {
+                                            'expected': "dictionary",
+                                            'found': $[0],
+                                        }]],
+                                    },
+                                )
+                            }
+                        },
+                    )),
+                ),
+                'type': p_.change_context(
+                    $['type'],
+                    ($) => p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Resolver_Signature_Parameters.lookups.D.type_ => {
+                        switch ($[0]) {
+                            case 'cyclic': return p_.option($, ($): s_target.Resolver_Signature_Parameters.lookups.D.type_ => p_.change_context(
+                                $,
+                                ($) => ['cyclic', null],
+                            ))
+                            case 'acyclic': return p_.option($, ($): s_target.Resolver_Signature_Parameters.lookups.D.type_ => p_.change_context(
+                                $,
+                                ($) => ['acyclic', null],
+                            ))
+                            
+                            default: return p_.exhaustive($[0])
+                        }
+                    })),
+                ),
+                'presence': p_.change_context(
+                    $['presence'],
+                    ($) => Presence(
+                        $,
+                        abort,
+                    ),
+                ),
+            }))(
+                Type_Reference(
+                    $['referent'],
+                    abort,
+                    {
+                        'types': p_.select_lookup.acyclic.from_resolved_dictionary(
+                            $p['types'],
+                        ),
+                    },
+                    {
+                        
+                    },
+                ),
+            ),
+        ),
+    ),
+})
+
+export const Resolver_Value: declarations.Resolver_Value = ($, abort, $l, $p) => p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Resolver_Value => {
+    switch ($[0]) {
+        case 'component': return p_.option($, ($): s_target.Resolver_Value => ((v_location) => ((v_signature) => p_.from.boolean(
+            (($p['definition'][0]) !== ("component")),
+        ).decide(
+            () => abort(
+                {
+                    'type': ['constraint', ['state', {
+                        'expected': "component",
+                        'found': $p['definition'][0],
+                    }]],
+                },
+            ),
+            () => p_.from.boolean(
+                ((v_signature['type']) !== (p_.change_context(p_.from.state(
+                    $p['definition'],
+                ).decide(
+                    ($) => {
+                        switch ($[0]) {
+                            case 'component': return p_.option(
+                                $,
+                                ($) => $['type'],
+                            )
+                            default: return abort(
+                                {
+                                    'type': ['constraint', ['state', {
+                                        'expected': "component",
+                                        'found': $p['definition'][0],
+                                    }]],
+                                },
+                            )
+                        }
+                    },
+                ), ($) => p_.from.state($).decide(($): s_target.Type => {
+                    switch ($[0]) {
+                        
+                        case 'internal acyclic': return p_.option($, ($): s_target.Type => $['l entry'])
+                        case 'internal': return p_.option($, ($): s_target.Type => $['l entry'].get_circular_dependent())
+                        default: return p_.exhaustive($[0])
+                    }
+                })))),
+            ).decide(
+                () => abort(
+                    {
+                        'type': ['constraint', ['same node', "type.value"]],
+                    },
+                ),
+                () => ['component', {
+                    'definition': p_.change_context(
+                        $['definition'],
+                        ($) => ((v_constraint_context_19) => p_.from.state(
+                            $p['definition'],
+                        ).decide(
+                            ($) => {
+                                switch ($[0]) {
+                                    case 'component': return p_.option(
+                                        $,
+                                        ($) => $,
+                                    )
+                                    default: return abort(
+                                        {
+                                            'type': ['constraint', ['state', {
+                                                'expected': "component",
+                                                'found': $p['definition'][0],
+                                            }]],
+                                        },
+                                    )
+                                }
+                            },
+                        ))(
+                            $,
+                        ),
+                    ),
+                    'location': p_.change_context(
+                        $['location'],
+                        ($) => v_location,
+                    ),
+                    'signature': p_.change_context(
+                        $['signature'],
+                        ($) => v_signature,
+                    ),
+                    'arguments': p_.change_context(
+                        $['arguments'],
+                        ($) => p_.from.optional($).map(($) => ({
+                            'types': p_.change_context(
+                                $['types'],
+                                ($) => p_.from.optional($).map(($) => p_.from.dictionary($).map(
+                                    ($, id) => p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Resolver_Value.component.arguments_.O.types.O.D => {
+                                        switch ($[0]) {
+                                            case 'optional': return p_.option($, ($): s_target.Resolver_Value.component.arguments_.O.types.O.D => p_.change_context(
+                                                $,
+                                                ($) => ['optional', Resolver_Optional_Value_Initialization(
+                                                    $,
+                                                    abort,
+                                                    $l,
+                                                    $p,
+                                                )],
+                                            ))
+                                            case 'required': return p_.option($, ($): s_target.Resolver_Value.component.arguments_.O.types.O.D => p_.change_context(
+                                                $,
+                                                ($) => ['required', Resolver_Guaranteed_Value_Selection(
+                                                    $,
+                                                    abort,
+                                                    $l,
+                                                    $p,
+                                                )],
+                                            ))
+                                            case 'parameter': return p_.option($, ($): s_target.Resolver_Value.component.arguments_.O.types.O.D => p_.change_context(
+                                                {
+                                                    'l id': $,
+                                                    'l entry': ((v_lookup_context_25) => p_.from.dictionary(
+                                                        $p['signature']['resolved parameters']['types'],
+                                                    ).get_entry(
+                                                        $,
+                                                        {
+                                                            no_such_entry: ($) => abort(
+                                                                {
+                                                                    'type': ['lookup', ['no such entry', v_lookup_context_25]],
+                                                                },
+                                                            ),
+                                                        },
+                                                    ))(
+                                                        $,
+                                                    ),
+                                                },
+                                                ($) => ((v_benchmark) => p_.from.boolean(
+                                                    (($['l entry']['presence'][0]) !== (v_benchmark['presence'][0])),
+                                                ).decide(
+                                                    () => abort(
+                                                        {
+                                                            'type': ['constraint', ['same node', "parameter presence"]],
+                                                        },
+                                                    ),
+                                                    () => p_.from.boolean(
+                                                        (($['l entry']['type']['resulting type']) !== (v_benchmark['type']['resulting type'])),
+                                                    ).decide(
+                                                        () => abort(
+                                                            {
+                                                                'type': ['constraint', ['same node', "parameter data type"]],
+                                                            },
+                                                        ),
+                                                        () => ['parameter', $],
+                                                    ),
+                                                ))(
+                                                    ((v_lookup_context_26) => p_.from.dictionary(
+                                                        v_signature['resolved parameters']['types'],
+                                                    ).get_entry(
+                                                        id,
+                                                        {
+                                                            no_such_entry: ($) => abort(
+                                                                {
+                                                                    'type': ['lookup', ['no such entry', id]],
+                                                                },
+                                                            ),
+                                                        },
+                                                    ))(
+                                                        $,
+                                                    ),
+                                                ),
+                                            ))
+                                            default: return p_.exhaustive($[0])
+                                        }
+                                    })),
+                                )),
+                            ),
+                            'lookups': p_.change_context(
+                                $['lookups'],
+                                ($) => p_.from.optional($).map(($) => p_.from.dictionary($).map(
+                                    ($, id) => p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Resolver_Value.component.arguments_.O.lookups.O.D => {
+                                        switch ($[0]) {
+                                            
+                                            case 'acyclic': return p_.option($, ($): s_target.Resolver_Value.component.arguments_.O.lookups.O.D => p_.change_context(
+                                                $,
+                                                ($) => ['acyclic', p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Resolver_Value.component.arguments_.O.lookups.O.D.acyclic => {
+                                                    switch ($[0]) {
+                                                        case 'not set': return p_.option($, ($): s_target.Resolver_Value.component.arguments_.O.lookups.O.D.acyclic => p_.change_context(
+                                                            $,
+                                                            ($) => ['not set', null],
+                                                        ))
+                                                        default: return p_.exhaustive($[0])
+                                                    }
+                                                }))],
+                                            ))
+                                            case 'cyclic': return p_.option($, ($): s_target.Resolver_Value.component.arguments_.O.lookups.O.D => p_.change_context(
+                                                $,
+                                                ($) => ['cyclic', p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Resolver_Value.component.arguments_.O.lookups.O.D.cyclic => {
+                                                    switch ($[0]) {
+                                                        case 'not set': return p_.option($, ($): s_target.Resolver_Value.component.arguments_.O.lookups.O.D.cyclic => p_.change_context(
+                                                            $,
+                                                            ($) => ['not set', null],
+                                                        ))
+                                                        default: return p_.exhaustive($[0])
+                                                    }
+                                                }))],
+                                            ))
+                                            case 'selection': return p_.option($, ($): s_target.Resolver_Value.component.arguments_.O.lookups.O.D => p_.change_context(
+                                                $,
+                                                ($) => ['selection', Resolver_Lookup_Selection(
+                                                    $,
+                                                    abort,
+                                                    $l,
+                                                    $p,
+                                                )],
+                                            ))
+                                            default: return p_.exhaustive($[0])
+                                        }
+                                    })),
+                                )),
+                            ),
+                        })),
+                    ),
+                    'constraints': p_.change_context(
+                        $['constraints'],
+                        ($) => Resolver_Value_Constraints(
+                            $,
+                            abort,
+                            {
+                                'value': v_signature['type']['root value'],
+                            },
+                        ),
+                    ),
+                }],
+            ),
+        ))(
+            p_.change_context(v_location, ($) => p_.from.state($).decide(($): s_target.Resolver_Signature => {
                 switch ($[0]) {
-                    case 'constrained': return p_.option($, ($) => ['constrained', {
-                        'type resolver': $['type resolver']
-                    }])
-                    case 'unconstrained': return p_.option($, ($) => ['unconstrained', {
-                        'module': $.module
-                    }])
+                    case 'internal': return p_.option($, ($): s_target.Resolver_Signature => $['l entry'])
+                    
                     default: return p_.exhaustive($[0])
                 }
-            })
-    }))
+            })),
+        ))(
+            p_.change_context($['location'], ($) => p_.from.state($).decide(($): s_target.Resolver_Value.component.location => {
+                switch ($[0]) {
+                    case 'internal': return p_.option($, ($): s_target.Resolver_Value.component.location => ['internal', {
+                        'l id': $,
+                        'l entry': ((v_lookup_context_5) => p_.from.dictionary(
+                            $p['signatures'],
+                        ).get_entry(
+                            $,
+                            {
+                                no_such_entry: ($) => abort(
+                                    {
+                                        'type': ['lookup', ['no such entry', v_lookup_context_5]],
+                                    },
+                                ),
+                            },
+                        ))(
+                            $,
+                        ),
+                    }])
+                    
+                    default: return p_.exhaustive($[0])
+                }
+            })),
+        ))
+        case 'dictionary': return p_.option($, ($): s_target.Resolver_Value => p_.change_context(
+            $,
+            ($) => ((v_definition) => ((v_benchmark) => ['dictionary', {
+                'definition': p_.change_context(
+                    $['definition'],
+                    ($) => v_definition,
+                ),
+                'resolver': p_.change_context(
+                    $['resolver'],
+                    ($) => Resolver_Value(
+                        $,
+                        abort,
+                        $l,
+                        {
+                            'definition': v_definition['value'],
+                            'list cursor': $p['list cursor'],
+                            'linked entry': ((v_context_39) => p_.from.optional(v_benchmark).decide(($) => p_.literal.set($), () => $p['linked entry']))(
+                                $,
+                            ),
+                            'current dictionary': p_.literal.set(v_definition),
+                            'current ordered dictionary': p_.literal.set(v_definition),
+                            'signature': $p['signature'],
+                            'signatures': $p['signatures'],
+                            'types': $p['types'],
+                            'option constraints': $p['option constraints'],
+                        },
+                    ),
+                ),
+                'benchmark': p_.change_context(
+                    $['benchmark'],
+                    ($) => v_benchmark,
+                ),
+            }])(
+                p_.from.optional($['benchmark']).map(($) => Resolver_Benchmark(
+                    $,
+                    abort,
+                    $l,
+                    $p,
+                )),
+            ))(
+                ((v_constraint_context_37) => p_.from.state(
+                    $p['definition'],
+                ).decide(
+                    ($) => {
+                        switch ($[0]) {
+                            case 'dictionary': return p_.option(
+                                $,
+                                ($) => $,
+                            )
+                            default: return abort(
+                                {
+                                    'type': ['constraint', ['state', {
+                                        'expected': "dictionary",
+                                        'found': $p['definition'][0],
+                                    }]],
+                                },
+                            )
+                        }
+                    },
+                ))(
+                    $,
+                ),
+            ),
+        ))
+        case 'group': return p_.option($, ($): s_target.Resolver_Value => p_.change_context(
+            $,
+            ($) => ['group', Resolver_Value_Group(
+                $,
+                abort,
+                {
+                    'sibling property resolvers': $l['sibling property resolvers'],
+                    'parent sibling property resolvers': $l['sibling property resolvers'],
+                },
+                {
+                    'definition': ((v_constraint_context_41) => p_.from.state(
+                        $p['definition'],
+                    ).decide(
+                        ($) => {
+                            switch ($[0]) {
+                                case 'group': return p_.option(
+                                    $,
+                                    ($) => $,
+                                )
+                                default: return abort(
+                                    {
+                                        'type': ['constraint', ['state', {
+                                            'expected': "group",
+                                            'found': $p['definition'][0],
+                                        }]],
+                                    },
+                                )
+                            }
+                        },
+                    ))(
+                        $,
+                    ),
+                    'list cursor': $p['list cursor'],
+                    'linked entry': $p['linked entry'],
+                    'current dictionary': $p['current dictionary'],
+                    'current ordered dictionary': $p['current ordered dictionary'],
+                    'signature': $p['signature'],
+                    'signatures': $p['signatures'],
+                    'types': $p['types'],
+                    'option constraints': $p['option constraints'],
+                },
+            )],
+        ))
+        case 'list': return p_.option($, ($): s_target.Resolver_Value => p_.change_context(
+            $,
+            ($) => ((v_definition) => ((v_result) => ['list', {
+                'definition': p_.change_context(
+                    $['definition'],
+                    ($) => v_definition,
+                ),
+                'resolver': p_.change_context(
+                    $['resolver'],
+                    ($) => Resolver_Value(
+                        $,
+                        abort,
+                        $l,
+                        {
+                            'definition': v_definition['value'],
+                            'list cursor': ((v_context_44) => p_.from.optional(v_result).decide(($) => p_.literal.set($), () => $p['list cursor']))(
+                                $,
+                            ),
+                            'linked entry': $p['linked entry'],
+                            'current dictionary': $p['current dictionary'],
+                            'current ordered dictionary': $p['current ordered dictionary'],
+                            'signature': $p['signature'],
+                            'signatures': $p['signatures'],
+                            'types': $p['types'],
+                            'option constraints': $p['option constraints'],
+                        },
+                    ),
+                ),
+                'result': p_.change_context(
+                    $['result'],
+                    ($) => v_result,
+                ),
+            }])(
+                p_.from.optional($['result']).map(($) => Resolver_Value_List_Result(
+                    $,
+                    abort,
+                    {
+                        'types': p_.select_lookup.acyclic.from_resolved_dictionary(
+                            $p['types'],
+                        ),
+                    },
+                    {
+                        
+                    },
+                )),
+            ))(
+                ((v_constraint_context_42) => p_.from.state(
+                    $p['definition'],
+                ).decide(
+                    ($) => {
+                        switch ($[0]) {
+                            case 'list': return p_.option(
+                                $,
+                                ($) => $,
+                            )
+                            default: return abort(
+                                {
+                                    'type': ['constraint', ['state', {
+                                        'expected': "list",
+                                        'found': $p['definition'][0],
+                                    }]],
+                                },
+                            )
+                        }
+                    },
+                ))(
+                    $,
+                ),
+            ),
+        ))
+        case 'nothing': return p_.option($, ($): s_target.Resolver_Value => p_.change_context(
+            $,
+            ($) => ['nothing', null],
+        ))
+        case 'simple': return p_.option($, ($): s_target.Resolver_Value => p_.change_context(
+            $,
+            ($) => ['simple', null],
+        ))
+        case 'optional': return p_.option($, ($): s_target.Resolver_Value => p_.change_context(
+            $,
+            ($) => ((v_constraints) => ['optional', {
+                'constraints': p_.change_context(
+                    $['constraints'],
+                    ($) => v_constraints,
+                ),
+                'resolver': p_.change_context(
+                    $['resolver'],
+                    ($) => Resolver_Value(
+                        $,
+                        abort,
+                        $l,
+                        {
+                            'definition': ((v_constraint_context_46) => p_.from.state(
+                                $p['definition'],
+                            ).decide(
+                                ($) => {
+                                    switch ($[0]) {
+                                        case 'optional': return p_.option(
+                                            $,
+                                            ($) => $,
+                                        )
+                                        default: return abort(
+                                            {
+                                                'type': ['constraint', ['state', {
+                                                    'expected': "optional",
+                                                    'found': $p['definition'][0],
+                                                }]],
+                                            },
+                                        )
+                                    }
+                                },
+                            ))(
+                                $,
+                            ),
+                            'list cursor': $p['list cursor'],
+                            'linked entry': $p['linked entry'],
+                            'current dictionary': $p['current dictionary'],
+                            'current ordered dictionary': $p['current ordered dictionary'],
+                            'signature': $p['signature'],
+                            'signatures': $p['signatures'],
+                            'types': $p['types'],
+                            'option constraints': p_.literal.set(v_constraints),
+                        },
+                    ),
+                ),
+            }])(
+                Resolver_Option_Constraints(
+                    $['constraints'],
+                    abort,
+                    $l,
+                    $p,
+                ),
+            ),
+        ))
+        case 'reference': return p_.option($, ($): s_target.Resolver_Value => p_.change_context(
+            $,
+            ($) => ((v_definition) => ['reference', {
+                'definition': p_.change_context(
+                    $['definition'],
+                    ($) => v_definition,
+                ),
+                'type': p_.change_context(
+                    $['type'],
+                    ($) => p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Resolver_Value.reference.type_ => {
+                        switch ($[0]) {
+                            case 'derived': return p_.option($, ($): s_target.Resolver_Value.reference.type_ => p_.change_context(
+                                $,
+                                ($) => ['derived', {
+                                    'value': p_.change_context(
+                                        $['value'],
+                                        ($) => Resolver_Guaranteed_Value_Selection(
+                                            $,
+                                            abort,
+                                            $l,
+                                            $p,
+                                        ),
+                                    ),
+                                }],
+                            ))
+                            case 'selected': return p_.option($, ($): s_target.Resolver_Value.reference.type_ => p_.change_context(
+                                $,
+                                ($) => ((v_lookup) => ['selected', {
+                                    'definition': p_.change_context(
+                                        $['definition'],
+                                        ($) => ((v_constraint_context_50) => p_.from.state(
+                                            v_definition['type'],
+                                        ).decide(
+                                            ($) => {
+                                                switch ($[0]) {
+                                                    case 'selected': return p_.option(
+                                                        $,
+                                                        ($) => $,
+                                                    )
+                                                    default: return abort(
+                                                        {
+                                                            'type': ['constraint', ['state', {
+                                                                'expected': "selected",
+                                                                'found': v_definition['type'][0],
+                                                            }]],
+                                                        },
+                                                    )
+                                                }
+                                            },
+                                        ))(
+                                            $,
+                                        ),
+                                    ),
+                                    'lookup': p_.change_context(
+                                        $['lookup'],
+                                        ($) => v_lookup,
+                                    ),
+                                    'constraints': p_.change_context(
+                                        $['constraints'],
+                                        ($) => Resolver_Value_Constraints(
+                                            $,
+                                            abort,
+                                            {
+                                                'value': v_lookup['resulting dictionary']['value'],
+                                            },
+                                        ),
+                                    ),
+                                }])(
+                                    Resolver_Lookup_Selection(
+                                        $['lookup'],
+                                        abort,
+                                        $l,
+                                        $p,
+                                    ),
+                                ),
+                            ))
+                            default: return p_.exhaustive($[0])
+                        }
+                    })),
+                ),
+            }])(
+                ((v_constraint_context_47) => p_.from.state(
+                    $p['definition'],
+                ).decide(
+                    ($) => {
+                        switch ($[0]) {
+                            case 'reference': return p_.option(
+                                $,
+                                ($) => $,
+                            )
+                            default: return abort(
+                                {
+                                    'type': ['constraint', ['state', {
+                                        'expected': "reference",
+                                        'found': $p['definition'][0],
+                                    }]],
+                                },
+                            )
+                        }
+                    },
+                ))(
+                    $,
+                ),
+            ),
+        ))
+        case 'state': return p_.option($, ($): s_target.Resolver_Value => p_.change_context(
+            $,
+            ($) => ((v_definition) => ['state', {
+                'definition': p_.change_context(
+                    $['definition'],
+                    ($) => v_definition,
+                ),
+                'options': p_.change_context(
+                    $['options'],
+                    ($) => ((v_required) => p_.from.dictionary($).map(
+                        ($, id) => ((v_option) => ((v_constraints) => ({
+                            'constraints': p_.change_context(
+                                $['constraints'],
+                                ($) => v_constraints,
+                            ),
+                            'resolver': p_.change_context(
+                                $['resolver'],
+                                ($) => Resolver_Value(
+                                    $,
+                                    abort,
+                                    $l,
+                                    {
+                                        'definition': v_option['value'],
+                                        'list cursor': $p['list cursor'],
+                                        'linked entry': $p['linked entry'],
+                                        'current dictionary': $p['current dictionary'],
+                                        'current ordered dictionary': $p['current ordered dictionary'],
+                                        'signature': $p['signature'],
+                                        'signatures': $p['signatures'],
+                                        'types': $p['types'],
+                                        'option constraints': p_.literal.set(v_constraints),
+                                    },
+                                ),
+                            ),
+                        }))(
+                            Resolver_Option_Constraints(
+                                $['constraints'],
+                                abort,
+                                $l,
+                                $p,
+                            ),
+                        ))(
+                            ((v_lookup_context_55) => p_.from.dictionary(
+                                v_definition['options'],
+                            ).get_entry(
+                                id,
+                                {
+                                    no_such_entry: ($) => abort(
+                                        {
+                                            'type': ['lookup', ['no such entry', id]],
+                                        },
+                                    ),
+                                },
+                            ))(
+                                $,
+                            ),
+                        ),
+                    ))(
+                        p_.from.dictionary(v_definition['options']).map(
+                            (entry, id) => p_.from.dictionary($).get_entry(id, {
+                                no_such_entry: () => abort({
+                                    'type': ['missing required entries', p_.literal.dictionary({ [id]: null })],
+                                }),
+                            }),
+                        ),
+                    ),
+                ),
+            }])(
+                ((v_constraint_context_51) => p_.from.state(
+                    $p['definition'],
+                ).decide(
+                    ($) => {
+                        switch ($[0]) {
+                            case 'state': return p_.option(
+                                $,
+                                ($) => $,
+                            )
+                            default: return abort(
+                                {
+                                    'type': ['constraint', ['state', {
+                                        'expected': "state",
+                                        'found': $p['definition'][0],
+                                    }]],
+                                },
+                            )
+                        }
+                    },
+                ))(
+                    $,
+                ),
+            ),
+        ))
+        
+        default: return p_.exhaustive($[0])
+    }
+}))
+
+export const Type_Specification: declarations.Type_Specification = ($, abort) => {
+    const schema = Schema($.schema, abort);
+    return {
+        schema,
+        'root type': {
+            'l id': $['root type'],
+            'l entry': p_.from.dictionary(schema.resolvers).get_entry($['root type'], {
+                no_such_entry: () => abort({ type: ['lookup', ['no such entry', $['root type']]] }),
+            }),
+        },
+    };
+}
+
+
+
+
+
+export const Basic_Type: declarations.Basic_Type = ($, abort) => ({
+    'type': p_.change_context(
+        $['type'],
+        ($) => p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Basic_Type.type_ => {
+            switch ($[0]) {
+                case 'boolean': return p_.option($, ($): s_target.Basic_Type.type_ => p_.change_context(
+                    $,
+                    ($) => ['boolean', null],
+                ))
+                case 'date': return p_.option($, ($): s_target.Basic_Type.type_ => p_.change_context(
+                    $,
+                    ($) => ['date', null],
+                ))
+                case 'number': return p_.option($, ($): s_target.Basic_Type.type_ => p_.change_context(
+                    $,
+                    ($) => ['number', {
+                        'precision': p_.change_context(
+                            $['precision'],
+                            ($) => p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Basic_Type.type_.number_.precision => {
+                                switch ($[0]) {
+                                    case 'approximation': return p_.option($, ($): s_target.Basic_Type.type_.number_.precision => p_.change_context(
+                                        $,
+                                        ($) => ['approximation', {
+                                            'significant digits': p_.change_context(
+                                                $['significant digits'],
+                                                ($) => $,
+                                            ),
+                                        }],
+                                    ))
+                                    case 'exact': return p_.option($, ($): s_target.Basic_Type.type_.number_.precision => p_.change_context(
+                                        $,
+                                        ($) => ['exact', {
+                                            'number of fractional digits': p_.change_context(
+                                                $['number of fractional digits'],
+                                                ($) => p_.from.optional($).map(($) => $),
+                                            ),
+                                            'type': p_.change_context(
+                                                $['type'],
+                                                ($) => p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Basic_Type.type_.number_.precision.exact.type_ => {
+                                                    switch ($[0]) {
+                                                        case 'integer': return p_.option($, ($): s_target.Basic_Type.type_.number_.precision.exact.type_ => p_.change_context(
+                                                            $,
+                                                            ($) => ['integer', null],
+                                                        ))
+                                                        case 'natural': return p_.option($, ($): s_target.Basic_Type.type_.number_.precision.exact.type_ => p_.change_context(
+                                                            $,
+                                                            ($) => ['natural', null],
+                                                        ))
+                                                        case 'positive natural': return p_.option($, ($): s_target.Basic_Type.type_.number_.precision.exact.type_ => p_.change_context(
+                                                            $,
+                                                            ($) => ['positive natural', null],
+                                                        ))
+                                                        default: return p_.exhaustive($[0])
+                                                    }
+                                                })),
+                                            ),
+                                        }],
+                                    ))
+                                    default: return p_.exhaustive($[0])
+                                }
+                            })),
+                        ),
+                    }],
+                ))
+                case 'text': return p_.option($, ($): s_target.Basic_Type.type_ => ['text', $])
+            default: return p_.exhaustive($[0])
+            }
+        })),
+    ),
+})
+
+export const Type: declarations.Type = ($, abort, $l, $p) => ({
+    'root value': p_.change_context(
+        $['root value'],
+        ($) => Value(
+            $,
+            abort,
+            $l,
+            $p,
+        ),
+    ),
+})
+
+export const Presence: declarations.Presence = ($, abort) => p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Presence => {
+    switch ($[0]) {
+        case 'optional': return p_.option($, ($): s_target.Presence => p_.change_context(
+            $,
+            ($) => ['optional', null],
+        ))
+        case 'required': return p_.option($, ($): s_target.Presence => p_.change_context(
+            $,
+            ($) => ['required', null],
+        ))
+        default: return p_.exhaustive($[0])
+    }
+}))
+
+export const Resolver_Types: declarations.Resolver_Types = ($, abort, $p) => ((v_required) => p_.from.dictionary($).map(
+    ($, id) => ((v_signature) => ({
+        'signature': p_.change_context(
+            $['signature'],
+            ($) => v_signature,
+        ),
+        'root value resolver': p_.change_context(
+            $['root value resolver'],
+            ($) => Resolver_Value(
+                $,
+                abort,
+                {
+                    'sibling property resolvers': ((): p_.lookup.Acyclic<
+                        s_target.Resolver_Value_Group.D
+                    > => p_.select_lookup.acyclic.not_set())(),
+                    'parent sibling property resolvers': ((): p_.lookup.Acyclic<
+                        s_target.Resolver_Value_Group.D
+                    > => p_.select_lookup.acyclic.not_set())(),
+                },
+                {
+                    'definition': v_signature['type']['root value'],
+                    'signature': v_signature,
+                    'types': $p['types'],
+                    'signatures': $p['signatures'],
+                    'list cursor': p_.literal.not_set(),
+                    'linked entry': p_.literal.not_set(),
+                    'current dictionary': p_.literal.not_set(),
+                    'current ordered dictionary': p_.literal.not_set(),
+                    'option constraints': p_.literal.not_set(),
+                },
+            ),
+        ),
+    }))(
+        ((v_lookup_context_4) => p_.from.dictionary(
+            $p['signatures'],
+        ).get_entry(
+            id,
+            {
+                no_such_entry: ($) => abort(
+                    {
+                        'type': ['lookup', ['no such entry', id]],
+                    },
+                ),
+            },
+        ))(
+            $,
+        ),
+    ),
+))(
+    p_.from.dictionary($p['signatures']).map(
+        (entry, id) => p_.from.dictionary($).get_entry(id, {
+            no_such_entry: () => abort({
+                'type': ['missing required entries', p_.literal.dictionary({ [id]: null })],
+            }),
+        }),
+    ),
+)
+
+export const Resolver_Benchmark: declarations.Resolver_Benchmark = ($, abort, $l, $p) => ((v_selection) => ({
+    'selection': p_.change_context(
+        $['selection'],
+        ($) => v_selection,
+    ),
+    'resulting dictionary': p_.change_context(
+        $['resulting dictionary'],
+        ($) => p_.change_context(v_selection['resulting node'], ($) => p_.from.state(
+            $,
+        ).decide(
+            ($) => {
+                switch ($[0]) {
+                    case 'dictionary': return p_.option(
+                        $,
+                        ($) => $,
+                    )
+                    default: return abort(
+                        {
+                            'type': ['constraint', ['state', {
+                                'expected': "dictionary",
+                                'found': $[0],
+                            }]],
+                        },
+                    )
+                }
+            },
+        )),
+    ),
+    'dense': p_.change_context(
+        $['dense'],
+        ($) => $,
+    ),
+}))(
+    Resolver_Guaranteed_Value_Selection(
+        $['selection'],
+        abort,
+        $l,
+        $p,
+    ),
+)
+
+export const Group: declarations.Group = ($, abort, $l, $p) => p_.from.dictionary($).map(
+    ($, id) => ({
+        'description': p_.change_context(
+            $['description'],
+            ($) => p_.from.optional($).map(($) => $),
+        ),
+        'value': p_.change_context(
+            $['value'],
+            ($) => Value(
+                $,
+                abort,
+                $l,
+                $p,
+            ),
+        ),
+    }),
+)
+
+export const Value_Reference: declarations.Value_Reference = ($, abort, $l, $p) => ((v_type$_) => ({
+    'type': p_.change_context(
+        $['type'],
+        ($) => v_type$_,
+    ),
+    'path': p_.change_context(
+        $['path'],
+        ($) => Value_Path(
+            $,
+            abort,
+            {
+                'type': v_type$_['resulting type'],
+            },
+        ),
+    ),
+}))(
+    Type_Reference(
+        $['type'],
+        abort,
+        $l,
+        $p,
+    ),
+)
+
+export const Value_Path: declarations.Value_Path = ($, abort, $p) => p_.change_context(
+    $['tail'],
+    ($) => p_.change_context(
+        p_.from.list($).resolve(
+            ($, preceding): { readonly 'item': s_target.Value_Path.tail.L; readonly 'node': s_target.Value } => p_.change_context(
+                p_.from.optional(preceding).decide(
+                    (previous) => previous['node'],
+                    () => $p['type']['root value'],
+                ),
+                (current) => p_.change_context($, ($) => p_.from.state($).decide(($) => {
+                    switch ($[0]) {
+                        case 'dictionary': return p_.option($, ($) => p_.change_context(
+                            $,
+                            ($) => ((v_constraint_context_4) => p_.from.state(
+                                current,
+                            ).decide(
+                                ($) => {
+                                    switch ($[0]) {
+                                        case 'dictionary': return p_.option(
+                                            $,
+                                            ($) => ({
+                                                'item': ['dictionary', null],
+                                                'node': $['value'],
+                                            }),
+                                        )
+                                        default: return abort(
+                                            {
+                                                'type': ['constraint', ['state', {
+                                                    'expected': "dictionary",
+                                                    'found': current[0],
+                                                }]],
+                                            },
+                                        )
+                                    }
+                                },
+                            ))(
+                                $,
+                            ),
+                        ))
+                        case 'group': return p_.option($, ($) => p_.change_context(
+                            $,
+                            ($) => ((v_constraint_context_5) => p_.from.state(
+                                current,
+                            ).decide(
+                                ($) => {
+                                    switch ($[0]) {
+                                        case 'group': return p_.option(
+                                            $,
+                                            ($) => p_.change_context(
+                                                {
+                                                    'l id': v_constraint_context_5,
+                                                    'l entry': ((v_lookup_context_6) => p_.from.dictionary(
+                                                        $,
+                                                    ).get_entry(
+                                                        v_constraint_context_5,
+                                                        {
+                                                            no_such_entry: ($) => abort(
+                                                                {
+                                                                    'type': ['lookup', ['no such entry', v_lookup_context_6]],
+                                                                },
+                                                            ),
+                                                        },
+                                                    ))(
+                                                        v_constraint_context_5,
+                                                    ),
+                                                },
+                                                ($) => ({
+                                                    'item': ['group', $],
+                                                    'node': $['l entry']['value'],
+                                                }),
+                                            ),
+                                        )
+                                        default: return abort(
+                                            {
+                                                'type': ['constraint', ['state', {
+                                                    'expected': "group",
+                                                    'found': current[0],
+                                                }]],
+                                            },
+                                        )
+                                    }
+                                },
+                            ))(
+                                $,
+                            ),
+                        ))
+                        case 'list': return p_.option($, ($) => p_.change_context(
+                            $,
+                            ($) => ((v_constraint_context_7) => p_.from.state(
+                                current,
+                            ).decide(
+                                ($) => {
+                                    switch ($[0]) {
+                                        case 'list': return p_.option(
+                                            $,
+                                            ($) => ({
+                                                'item': ['list', null],
+                                                'node': $['value'],
+                                            }),
+                                        )
+                                        default: return abort(
+                                            {
+                                                'type': ['constraint', ['state', {
+                                                    'expected': "list",
+                                                    'found': current[0],
+                                                }]],
+                                            },
+                                        )
+                                    }
+                                },
+                            ))(
+                                $,
+                            ),
+                        ))
+                        case 'optional': return p_.option($, ($) => p_.change_context(
+                            $,
+                            ($) => ((v_constraint_context_8) => p_.from.state(
+                                current,
+                            ).decide(
+                                ($) => {
+                                    switch ($[0]) {
+                                        case 'optional': return p_.option(
+                                            $,
+                                            ($) => ({
+                                                'item': ['optional', null],
+                                                'node': $,
+                                            }),
+                                        )
+                                        default: return abort(
+                                            {
+                                                'type': ['constraint', ['state', {
+                                                    'expected': "optional",
+                                                    'found': current[0],
+                                                }]],
+                                            },
+                                        )
+                                    }
+                                },
+                            ))(
+                                $,
+                            ),
+                        ))
+                        case 'state': return p_.option($, ($) => p_.change_context(
+                            $,
+                            ($) => ((v_constraint_context_9) => p_.from.state(
+                                current,
+                            ).decide(
+                                ($) => {
+                                    switch ($[0]) {
+                                        case 'state': return p_.option(
+                                            $,
+                                            ($) => p_.change_context(
+                                                {
+                                                    'l id': v_constraint_context_9,
+                                                    'l entry': ((v_lookup_context_10) => p_.from.dictionary(
+                                                        $['options'],
+                                                    ).get_entry(
+                                                        v_constraint_context_9,
+                                                        {
+                                                            no_such_entry: ($) => abort(
+                                                                {
+                                                                    'type': ['lookup', ['no such entry', v_lookup_context_10]],
+                                                                },
+                                                            ),
+                                                        },
+                                                    ))(
+                                                        v_constraint_context_9,
+                                                    ),
+                                                },
+                                                ($) => ({
+                                                    'item': ['state', $],
+                                                    'node': $['l entry']['value'],
+                                                }),
+                                            ),
+                                        )
+                                        default: return abort(
+                                            {
+                                                'type': ['constraint', ['state', {
+                                                    'expected': "state",
+                                                    'found': current[0],
+                                                }]],
+                                            },
+                                        )
+                                    }
+                                },
+                            ))(
+                                $,
+                            ),
+                        ))
+                        default: return p_.exhaustive($[0])
+                    }
+                })),
+            ),
+        ),
+        (v_tail) => p_.change_context(
+            p_transformer.from.list(v_tail).on_has_last_item(
+                (previous) => previous['node'],
+                () => $p['type']['root value'],
+            ),
+            (v_node) => ({
+                'tail': p_.from.list(v_tail).map(
+                    ($) => $['item'],
+                ),
+                'resulting node': v_node,
+            }),
+        ),
+    ),
+)
+
+export const Type_Reference: declarations.Type_Reference = ($, abort, $l, $p) => ((v_location) => ({
+    'location': v_location,
+    'resulting type': p_.change_context(
+        v_location,
+        ($) => p_.change_context($, ($) => p_.from.state($).decide(($) => {
+            switch ($[0]) {
+                case 'internal': return p_.option($, ($) => $['l entry'])
+                
+                default: return p_.exhaustive($[0])
+            }
+        })),
+    ),
+}))(
+    p_.change_context(
+        $['location'],
+        ($) => p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Type_Reference.location => {
+            switch ($[0]) {
+                case 'internal': return p_.option($, ($): s_target.Type_Reference.location => p_.change_context(
+                    $,
+                    ($) => ['internal', {
+                        'l id': $,
+                        'l entry': ((v_lookup_context_3) => $l['types'].get_entry(
+                            $,
+                            {
+                                no_such_entry: ($) => abort(
+                                    {
+                                        'type': ['lookup', ['no such entry', v_lookup_context_3]],
+                                    },
+                                ),
+                                no_context_lookup: ($) => abort(
+                                    {
+                                        'type': ['lookup', ['no context lookup', null]],
+                                    },
+                                ),
+                                cycle_detected: ($) => abort(
+                                    {
+                                        'type': ['lookup', ['cycle detected', null]],
+                                    },
+                                ),
+                            },
+                        ))(
+                            $,
+                        ),
+                    }],
+                ))
+                
+                default: return p_.exhaustive($[0])
+            }
+        })),
+    ),
+)
+
+export const Resolver_Signature: declarations.Resolver_Signature = ($, abort, $l, $p) => ((v_parameters) => ({
+    'type': p_.change_context(
+        $['type'],
+        ($) => $p['type'],
+    ),
+    'parameters': p_.change_context(
+        $['parameters'],
+        ($) => v_parameters,
+    ),
+    'resolved parameters': p_.change_context(
+        $['resolved parameters'],
+        ($) => p_.change_context(v_parameters, ($) => p_.from.state($).decide(($) => {
+            switch ($[0]) {
+                case 'local': return p_.option($, ($) => $)
+                case 'same as': return p_.option($, ($) => $['l entry']['resolved parameters'])
+                default: return p_.exhaustive($[0])
+            }
+        })),
+    ),
+}))(
+    p_.change_context($['parameters'], ($) => p_.from.state($).decide(($): s_target.Resolver_Signature.parameters => {
+        switch ($[0]) {
+            case 'local': return p_.option($, ($): s_target.Resolver_Signature.parameters => ['local', Resolver_Signature_Parameters(
+                $,
+                abort,
+                {
+                    'types': $p['types'],
+                    
+                },
+            )])
+            case 'same as': return p_.option($, ($): s_target.Resolver_Signature.parameters => ['same as', {
+                'l id': $,
+                'l entry': ((v_lookup_context_3) => $l['sibling signatures'].get_entry(
+                    $,
+                    {
+                        no_such_entry: ($) => abort(
+                            {
+                                'type': ['lookup', ['no such entry', v_lookup_context_3]],
+                            },
+                        ),
+                        no_context_lookup: ($) => abort(
+                            {
+                                'type': ['lookup', ['no context lookup', null]],
+                            },
+                        ),
+                        cycle_detected: ($) => abort(
+                            {
+                                'type': ['lookup', ['cycle detected', null]],
+                            },
+                        ),
+                    },
+                ))(
+                    $,
+                ),
+            }])
+            default: return p_.exhaustive($[0])
+        }
+    })),
+)
+
+export const Resolver_Relative_Value_Selection: declarations.Resolver_Relative_Value_Selection = ($, abort, $p) => p_.change_context(
+    $['path'],
+    ($) => p_.change_context(
+        p_.from.list($).resolve(
+            ($, preceding): { readonly 'item': s_target.Resolver_Relative_Value_Selection.path.L; readonly 'node': s_target.Value } => p_.change_context(
+                p_.from.optional(preceding).decide(
+                    (previous) => previous['node'],
+                    () => $p['value'],
+                ),
+                (current) => p_.change_context($, ($) => p_.from.state($).decide(($) => {
+                    switch ($[0]) {
+                        case 'component': return p_.option($, ($) => p_.change_context(
+                            $,
+                            ($) => ((v_constraint_context_4) => p_.from.state(
+                                current,
+                            ).decide(
+                                ($) => {
+                                    switch ($[0]) {
+                                        case 'component': return p_.option(
+                                            $,
+                                            ($) => ({
+                                                'item': ['component', null],
+                                                'node': p_.change_context($['type'], ($) => p_.from.state($).decide(($) => {
+                                                    switch ($[0]) {
+                                                        
+                                                        case 'internal acyclic': return p_.option($, ($) => $['l entry']['root value'])
+                                                        case 'internal': return p_.option($, ($) => $['l entry'].get_circular_dependent()['root value'])
+                                                        default: return p_.exhaustive($[0])
+                                                    }
+                                                })),
+                                            }),
+                                        )
+                                        default: return abort(
+                                            {
+                                                'type': ['constraint', ['state', {
+                                                    'expected': "component",
+                                                    'found': current[0],
+                                                }]],
+                                            },
+                                        )
+                                    }
+                                },
+                            ))(
+                                $,
+                            ),
+                        ))
+                        case 'group': return p_.option($, ($) => p_.change_context(
+                            $,
+                            ($) => ((v_constraint_context_7) => p_.from.state(
+                                current,
+                            ).decide(
+                                ($) => {
+                                    switch ($[0]) {
+                                        case 'group': return p_.option(
+                                            $,
+                                            ($) => p_.change_context(
+                                                {
+                                                    'l id': v_constraint_context_7,
+                                                    'l entry': ((v_lookup_context_8) => p_.from.dictionary(
+                                                        $,
+                                                    ).get_entry(
+                                                        v_constraint_context_7,
+                                                        {
+                                                            no_such_entry: ($) => abort(
+                                                                {
+                                                                    'type': ['lookup', ['no such entry', v_lookup_context_8]],
+                                                                },
+                                                            ),
+                                                        },
+                                                    ))(
+                                                        v_constraint_context_7,
+                                                    ),
+                                                },
+                                                ($) => ({
+                                                    'item': ['group', $],
+                                                    'node': $['l entry']['value'],
+                                                }),
+                                            ),
+                                        )
+                                        default: return abort(
+                                            {
+                                                'type': ['constraint', ['state', {
+                                                    'expected': "group",
+                                                    'found': current[0],
+                                                }]],
+                                            },
+                                        )
+                                    }
+                                },
+                            ))(
+                                $,
+                            ),
+                        ))
+                        case 'reference': return p_.option($, ($) => p_.change_context(
+                            $,
+                            ($) => ((v_constraint_context_9) => p_.from.state(
+                                current,
+                            ).decide(
+                                ($) => {
+                                    switch ($[0]) {
+                                        case 'reference': return p_.option(
+                                            $,
+                                            ($) => ({
+                                                'item': ['reference', {
+                                                    'definition': $,
+                                                }],
+                                                'node': ((v_reference_definition) => p_.change_context(v_reference_definition['type'], ($) => ((v_state_context_11) => p_.from.state($).decide(($) => {
+                                                    switch ($[0]) {
+                                                        case 'derived': return p_.option($, ($) => v_reference_definition['referent']['path']['resulting node'])
+                                                        case 'selected': return p_.option($, ($) => p_.change_context(
+                                                            v_reference_definition['referent']['path']['resulting node'],
+                                                            ($) => ((v_constraint_context_12) => p_.from.state(
+                                                                $,
+                                                            ).decide(
+                                                                ($) => {
+                                                                    switch ($[0]) {
+                                                                        case 'dictionary': return p_.option(
+                                                                            $,
+                                                                            ($) => $['value'],
+                                                                        )
+                                                                        default: return abort(
+                                                                            {
+                                                                                'type': ['constraint', ['state', {
+                                                                                    'expected': "dictionary",
+                                                                                    'found': v_constraint_context_12[0],
+                                                                                }]],
+                                                                            },
+                                                                        )
+                                                                    }
+                                                                },
+                                                            ))(
+                                                                $,
+                                                            ),
+                                                        ))
+                                                        default: return p_.exhaustive($[0])
+                                                    }
+                                                }))(
+                                                    $,
+                                                )))(
+                                                    $,
+                                                ),
+                                            }),
+                                        )
+                                        default: return abort(
+                                            {
+                                                'type': ['constraint', ['state', {
+                                                    'expected': "reference",
+                                                    'found': current[0],
+                                                }]],
+                                            },
+                                        )
+                                    }
+                                },
+                            ))(
+                                $,
+                            ),
+                        ))
+                        default: return p_.exhaustive($[0])
+                    }
+                })),
+            ),
+        ),
+        (v_path) => p_.change_context(
+            p_transformer.from.list(v_path).on_has_last_item(
+                (previous) => previous['node'],
+                () => $p['value'],
+            ),
+            (v_node) => ({
+                'path': p_.from.list(v_path).map(
+                    ($) => $['item'],
+                ),
+                'resulting node': v_node,
+            }),
+        ),
+    ),
+)
+
+export const Resolver_Lookup_Selection: declarations.Resolver_Lookup_Selection = ($, abort, $l, $p) => ((v_type) => ({
+    'type': v_type,
+    'resulting dictionary': p_.change_context(v_type, ($) => p_.from.state($).decide(($) => {
+        switch ($[0]) {
+            case 'acyclic': return p_.option($, ($) => p_.change_context($, ($) => p_.from.state($).decide(($) => {
+                switch ($[0]) {
+                    case 'siblings': return p_.option($, ($) => $)
+                    case 'resolved dictionary': return p_.option($, ($) => $['selected dictionary'])
+                    default: return p_.exhaustive($[0])
+                }
+            })))
+            case 'cyclic': return p_.option($, ($) => p_.from.state($).decide(($) => {
+                switch ($[0]) {
+                    case 'siblings': return p_.option($, ($) => $)
+                    default: return p_.exhaustive($[0])
+                }
+            }))
+            case 'parameter': return p_.option($, ($) => $['l entry']['dictionary'])
+            default: return p_.exhaustive($[0])
+        }
+    })),
+}))(
+    p_.change_context(
+        $['type'],
+        ($) => p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Resolver_Lookup_Selection.type_ => {
+            switch ($[0]) {
+                case 'acyclic': return p_.option($, ($): s_target.Resolver_Lookup_Selection.type_ => p_.change_context(
+                    $,
+                    ($) => ['acyclic', p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Resolver_Lookup_Selection.type_.acyclic => {
+                        switch ($[0]) {
+                            case 'siblings': return p_.option($, ($): s_target.Resolver_Lookup_Selection.type_.acyclic => p_.change_context(
+                                $,
+                                ($) => ['siblings', ((v_context_5) => p_.from.optional($p['current dictionary']).decide(($) => $, () => abort(
+                                    {
+                                        'type': ['constraint', ['optional value is not set', null]],
+                                    },
+                                )))(
+                                    $,
+                                )],
+                            ))
+                            case 'resolved dictionary': return p_.option($, ($): s_target.Resolver_Lookup_Selection.type_.acyclic => p_.change_context(
+                                $,
+                                ($) => ((v_selection) => ['resolved dictionary', {
+                                    'selection': p_.change_context(
+                                        $['selection'],
+                                        ($) => v_selection,
+                                    ),
+                                    'selected dictionary': p_.change_context(
+                                        $['selected dictionary'],
+                                        ($) => p_.change_context(v_selection['resulting node'], ($) => p_.from.state(
+                                            $,
+                                        ).decide(
+                                            ($) => {
+                                                switch ($[0]) {
+                                                    case 'dictionary': return p_.option(
+                                                        $,
+                                                        ($) => $,
+                                                    )
+                                                    default: return abort(
+                                                        {
+                                                            'type': ['constraint', ['state', {
+                                                                'expected': "dictionary",
+                                                                'found': $[0],
+                                                            }]],
+                                                        },
+                                                    )
+                                                }
+                                            },
+                                        )),
+                                    ),
+                                }])(
+                                    Resolver_Guaranteed_Value_Selection(
+                                        $['selection'],
+                                        abort,
+                                        $l,
+                                        $p,
+                                    ),
+                                ),
+                            ))
+                            default: return p_.exhaustive($[0])
+                        }
+                    }))],
+                ))
+                case 'cyclic': return p_.option($, ($): s_target.Resolver_Lookup_Selection.type_ => p_.change_context(
+                    $,
+                    ($) => ['cyclic', p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Resolver_Lookup_Selection.type_.cyclic => {
+                        switch ($[0]) {
+                            case 'siblings': return p_.option($, ($): s_target.Resolver_Lookup_Selection.type_.cyclic => p_.change_context(
+                                $,
+                                ($) => ['siblings', ((v_context_11) => p_.from.optional($p['current dictionary']).decide(($) => $, () => abort(
+                                    {
+                                        'type': ['constraint', ['optional value is not set', null]],
+                                    },
+                                )))(
+                                    $,
+                                )],
+                            ))
+                            default: return p_.exhaustive($[0])
+                        }
+                    }))],
+                ))
+                case 'parameter': return p_.option($, ($): s_target.Resolver_Lookup_Selection.type_ => p_.change_context(
+                    $,
+                    ($) => ['parameter', {
+                        'l id': $,
+                        'l entry': ((v_lookup_context_13) => p_.from.dictionary(
+                            $p['signature']['resolved parameters']['lookups'],
+                        ).get_entry(
+                            $,
+                            {
+                                no_such_entry: ($) => abort(
+                                    {
+                                        'type': ['lookup', ['no such entry', v_lookup_context_13]],
+                                    },
+                                ),
+                            },
+                        ))(
+                            $,
+                        ),
+                    }],
+                ))
+                default: return p_.exhaustive($[0])
+            }
+        })),
+    ),
+)
+
+export const Resolver_Constraint: declarations.Resolver_Constraint = ($, abort, $p) => ((v_selection) => ({
+    'selection': p_.change_context(
+        $['selection'],
+        ($) => v_selection,
+    ),
+    'type': p_.change_context(
+        $['type'],
+        ($) => p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Resolver_Constraint.type_ => {
+            switch ($[0]) {
+                case 'state': return p_.option($, ($): s_target.Resolver_Constraint.type_ => p_.change_context(
+                    $,
+                    ($) => ((v_selected) => ((v_constraint_context_3) => p_.from.state(
+                        v_selected,
+                    ).decide(
+                        ($) => {
+                            switch ($[0]) {
+                                case 'state': return p_.option(
+                                    $,
+                                    ($) => ((v_selected_state) => ['state', {
+                                        'selected state': p_.change_context(
+                                            v_constraint_context_3['selected state'],
+                                            ($) => v_selected_state,
+                                        ),
+                                        'option': p_.change_context(
+                                            v_constraint_context_3['option'],
+                                            ($) => ({
+                                                'l id': $,
+                                                'l entry': ((v_lookup_context_4) => p_.from.dictionary(
+                                                    v_selected_state['options'],
+                                                ).get_entry(
+                                                    $,
+                                                    {
+                                                        no_such_entry: ($) => abort(
+                                                            {
+                                                                'type': ['lookup', ['no such entry', v_lookup_context_4]],
+                                                            },
+                                                        ),
+                                                    },
+                                                ))(
+                                                    $,
+                                                ),
+                                            }),
+                                        ),
+                                    }])(
+                                        $,
+                                    ),
+                                )
+                                default: return abort(
+                                    {
+                                        'type': ['constraint', ['state', {
+                                            'expected': "state",
+                                            'found': v_selected[0],
+                                        }]],
+                                    },
+                                )
+                            }
+                        },
+                    ))(
+                        $,
+                    ))(
+                        v_selection['resulting node'],
+                    ),
+                ))
+                case 'optional value': return p_.option($, ($): s_target.Resolver_Constraint.type_ => p_.change_context(
+                    $,
+                    ($) => ['optional value', {
+                        'selected optional value': p_.change_context(
+                            $['selected optional value'],
+                            ($) => p_.change_context(
+                                v_selection['resulting node'],
+                                ($) => ((v_constraint_context_5) => p_.from.state(
+                                    $,
+                                ).decide(
+                                    ($) => {
+                                        switch ($[0]) {
+                                            case 'optional': return p_.option(
+                                                $,
+                                                ($) => $,
+                                            )
+                                            default: return abort(
+                                                {
+                                                    'type': ['constraint', ['state', {
+                                                        'expected': "optional",
+                                                        'found': v_constraint_context_5[0],
+                                                    }]],
+                                                },
+                                            )
+                                        }
+                                    },
+                                ))(
+                                    $,
+                                ),
+                            ),
+                        ),
+                    }],
+                ))
+                default: return p_.exhaustive($[0])
+            }
+        })),
+    ),
+}))(
+    Resolver_Relative_Value_Selection(
+        $['selection'],
+        abort,
+        $p,
+    ),
+)
+
+export const Resolver_Option_Constraints: declarations.Resolver_Option_Constraints = ($, abort, $l, $p) => p_.from.dictionary($).map(
+    ($, id) => p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Resolver_Option_Constraints.D => {
+        switch ($[0]) {
+            case 'state': return p_.option($, ($): s_target.Resolver_Option_Constraints.D => p_.change_context(
+                $,
+                ($) => ((v_selection) => ((v_selected) => ((v_constraint_context_4) => p_.from.state(
+                    v_selected,
+                ).decide(
+                    ($) => {
+                        switch ($[0]) {
+                            case 'state': return p_.option(
+                                $,
+                                ($) => ((v_selected_state) => ['state', {
+                                    'selection': p_.change_context(
+                                        v_constraint_context_4['selection'],
+                                        ($) => v_selection,
+                                    ),
+                                    'selected state': p_.change_context(
+                                        v_constraint_context_4['selected state'],
+                                        ($) => v_selected_state,
+                                    ),
+                                    'option': p_.change_context(
+                                        v_constraint_context_4['option'],
+                                        ($) => ({
+                                            'l id': $,
+                                            'l entry': ((v_lookup_context_5) => p_.from.dictionary(
+                                                v_selected_state['options'],
+                                            ).get_entry(
+                                                $,
+                                                {
+                                                    no_such_entry: ($) => abort(
+                                                        {
+                                                            'type': ['lookup', ['no such entry', v_lookup_context_5]],
+                                                        },
+                                                    ),
+                                                },
+                                            ))(
+                                                $,
+                                            ),
+                                        }),
+                                    ),
+                                }])(
+                                    $,
+                                ),
+                            )
+                            default: return abort(
+                                {
+                                    'type': ['constraint', ['state', {
+                                        'expected': "state",
+                                        'found': v_selected[0],
+                                    }]],
+                                },
+                            )
+                        }
+                    },
+                ))(
+                    $,
+                ))(
+                    v_selection['resulting node'],
+                ))(
+                    Resolver_Guaranteed_Value_Selection(
+                        $['selection'],
+                        abort,
+                        $l,
+                        $p,
+                    ),
+                ),
+            ))
+            case 'assert is set': return p_.option($, ($): s_target.Resolver_Option_Constraints.D => p_.change_context(
+                $,
+                ($) => ['assert is set', Resolver_Possible_Value_Selection(
+                    $,
+                    abort,
+                    $l,
+                    $p,
+                )],
+            ))
+            default: return p_.exhaustive($[0])
+        }
+    })),
+)
+
+export const Resolver_Optional_Value_Constraints: declarations.Resolver_Optional_Value_Constraints = ($, abort, $p) => p_.from.optional($).map(($) => Resolver_Value_Constraints(
+    $,
+    abort,
+    $p,
+))
+
+export const Resolver_Value_Constraints: declarations.Resolver_Value_Constraints = ($, abort, $p) => p_.from.dictionary(
+    $,
+).resolve(
+    ($, id, $acyclic, $cyclic) => Resolver_Value_Constraint(
+        $,
+        abort,
+        {
+            'property constraints': $acyclic,
+        },
+        $p,
+    ),
+)
+
+export const Resolver_Reference_To_Value_Constraint: declarations.Resolver_Reference_To_Value_Constraint = ($, abort, $l) => ({
+    'l id': $,
+    'l entry': ((v_lookup_context_1) => $l['property constraints'].get_entry(
+        $,
+        {
+            no_such_entry: ($) => abort(
+                {
+                    'type': ['lookup', ['no such entry', v_lookup_context_1]],
+                },
+            ),
+            no_context_lookup: ($) => abort(
+                {
+                    'type': ['lookup', ['no context lookup', null]],
+                },
+            ),
+            cycle_detected: ($) => abort(
+                {
+                    'type': ['lookup', ['cycle detected', null]],
+                },
+            ),
+        },
+    ))(
+        $,
+    ),
+})
+
+export const Resolver_Value_Constraint: declarations.Resolver_Value_Constraint = ($, abort, $l, $p) => ((v_start) => ({
+    'start': p_.change_context(
+        $['start'],
+        ($) => v_start,
+    ),
+    'constraint': p_.change_context(
+        $['constraint'],
+        ($) => Resolver_Constraint(
+            $,
+            abort,
+            {
+                'value': p_.change_context(v_start, ($) => p_.from.state($).decide(($): s_target.Value => {
+                    switch ($[0]) {
+                        case 'value': return p_.option($, ($): s_target.Value => $p['value'])
+                        case 'sibling': return p_.option($, ($): s_target.Value => p_.change_context($['l entry']['constraint']['type'], ($) => p_.from.state($).decide(($): s_target.Value => {
+                            switch ($[0]) {
+                                case 'state': return p_.option($, ($): s_target.Value => $['option']['l entry']['value'])
+                                case 'optional value': return p_.option($, ($): s_target.Value => $['selected optional value'])
+                                default: return p_.exhaustive($[0])
+                            }
+                        })))
+                        default: return p_.exhaustive($[0])
+                    }
+                })),
+            },
+        ),
+    ),
+}))(
+    p_.change_context(
+        $['start'],
+        ($) => p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Resolver_Value_Constraint.start => {
+            switch ($[0]) {
+                case 'value': return p_.option($, ($): s_target.Resolver_Value_Constraint.start => p_.change_context(
+                    $,
+                    ($) => ['value', null],
+                ))
+                case 'sibling': return p_.option($, ($): s_target.Resolver_Value_Constraint.start => p_.change_context(
+                    $,
+                    ($) => ['sibling', Resolver_Reference_To_Value_Constraint(
+                        $,
+                        abort,
+                        $l,
+                    )],
+                ))
+                default: return p_.exhaustive($[0])
+            }
+        })),
+    ),
+)
+
+export const Resolver_Optional_Value_Initialization: declarations.Resolver_Optional_Value_Initialization = ($, abort, $l, $p) => p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Resolver_Optional_Value_Initialization => {
+    switch ($[0]) {
+        case 'not set': return p_.option($, ($): s_target.Resolver_Optional_Value_Initialization => p_.change_context(
+            $,
+            ($) => ['not set', null],
+        ))
+        case 'set': return p_.option($, ($): s_target.Resolver_Optional_Value_Initialization => p_.change_context(
+            $,
+            ($) => ['set', Resolver_Guaranteed_Value_Selection(
+                $,
+                abort,
+                $l,
+                $p,
+            )],
+        ))
+        case 'selection': return p_.option($, ($): s_target.Resolver_Optional_Value_Initialization => p_.change_context(
+            $,
+            ($) => ['selection', Resolver_Possible_Value_Selection(
+                $,
+                abort,
+                $l,
+                $p,
+            )],
+        ))
+        default: return p_.exhaustive($[0])
+    }
+}))
+
+export const Resolver_Value_Group: declarations.Resolver_Value_Group = ($, abort, $l, $p) => ((v_required) => p_.from.dictionary(
+    $,
+).resolve(
+    ($, id, $acyclic, $cyclic) => ((v_definition) => ({
+        'definition': p_.change_context(
+            $['definition'],
+            ($) => v_definition,
+        ),
+        'resolver': p_.change_context(
+            $['resolver'],
+            ($) => Resolver_Value(
+                $,
+                abort,
+                {
+                    'sibling property resolvers': $acyclic,
+                    'parent sibling property resolvers': $l['parent sibling property resolvers'],
+                },
+                {
+                    'definition': v_definition['value'],
+                    'list cursor': $p['list cursor'],
+                    'linked entry': $p['linked entry'],
+                    'current dictionary': $p['current dictionary'],
+                    'current ordered dictionary': $p['current ordered dictionary'],
+                    'signature': $p['signature'],
+                    'signatures': $p['signatures'],
+                    'types': $p['types'],
+                    'option constraints': $p['option constraints'],
+                },
+            ),
+        ),
+    }))(
+        ((v_lookup_context_4) => p_.from.dictionary(
+            $p['definition'],
+        ).get_entry(
+            id,
+            {
+                no_such_entry: ($) => abort(
+                    {
+                        'type': ['lookup', ['no such entry', id]],
+                    },
+                ),
+            },
+        ))(
+            $,
+        ),
+    ),
+))(
+    p_.from.dictionary($p['definition']).map(
+        (entry, id) => p_.from.dictionary($).get_entry(id, {
+            no_such_entry: () => abort({
+                'type': ['missing required entries', p_.literal.dictionary({ [id]: null })],
+            }),
+        }),
+    ),
+)
+
+export const Resolver_Value_List_Result: declarations.Resolver_Value_List_Result = ($, abort, $l, $p) => Type_Reference(
+    $,
+    abort,
+    $l,
+    $p,
+)
+
+export const Value_Results: declarations.Value_Results = ($, abort, $l, $p) => p_.from.optional($).map(($) => p_.from.dictionary($).map(
+    ($, id) => Value_Reference(
+        $,
+        abort,
+        $l,
+        $p,
+    ),
+))
+
+export const Option_Constraints: declarations.Option_Constraints = ($, abort, $l, $p) => p_.from.optional($).map(($) => p_.from.dictionary($).map(
+    ($, id) => Value_Reference(
+        $,
+        abort,
+        $l,
+        $p,
+    ),
+))
+
+export const Resolver_Guaranteed_Value_Selection: declarations.Resolver_Guaranteed_Value_Selection = ($, abort, $l, $p) => ((v_start) => ((v_tail) => ({
+    'start': v_start,
+    'tail': v_tail,
+    'resulting node': v_tail['resulting node'],
+}))(
+    Resolver_Relative_Value_Selection(
+        $['tail'],
+        abort,
+        {
+            'value': p_.change_context(v_start, ($) => ((v_state_context_29) => p_.from.state($).decide(($) => {
+                switch ($[0]) {
+                    case 'sibling': return p_.option($, ($) => $['l entry']['definition']['value'])
+                    case 'parent sibling': return p_.option($, ($) => $['l entry']['definition']['value'])
+                    case 'parameter': return p_.option($, ($) => $['l entry']['type']['resulting type']['root value'])
+                    case 'result': return p_.option($, ($) => p_.change_context($, ($) => p_.from.state($).decide(($) => {
+                        switch ($[0]) {
+                            case 'list': return p_.option($, ($) => $['list result']['resulting type']['root value'])
+                            case 'state': return p_.option($, ($) => $['result']['resulting type']['root value'])
+                            case 'optional value': return p_.option($, ($) => $['result']['resulting type']['root value'])
+                            default: return p_.exhaustive($[0])
+                        }
+                    })))
+                    case 'list cursor': return p_.option($, ($) => ((v_context_32) => p_.from.optional($p['list cursor']).decide(($) => $['resulting type']['root value'], () => abort(
+                        {
+                            'type': ['constraint', ['optional value is not set', null]],
+                        },
+                    )))(
+                        v_state_context_29,
+                    ))
+                    case 'linked entry': return p_.option($, ($) => ((v_context_34) => p_.from.optional($p['linked entry']).decide(($) => $['resulting dictionary']['value'], () => abort(
+                        {
+                            'type': ['constraint', ['optional value is not set', null]],
+                        },
+                    )))(
+                        v_state_context_29,
+                    ))
+                    case 'constraint': return p_.option($, ($) => p_.change_context($, ($) => p_.from.state($).decide(($) => {
+                        switch ($[0]) {
+                            case 'component': return p_.option($, ($) => p_.change_context($['constraint']['l entry']['constraint']['type'], ($) => p_.from.state($).decide(($) => {
+                                switch ($[0]) {
+                                    case 'state': return p_.option($, ($) => $['option']['l entry']['value'])
+                                    case 'optional value': return p_.option($, ($) => $['selected optional value'])
+                                    default: return p_.exhaustive($[0])
+                                }
+                            })))
+                            case 'reference': return p_.option($, ($) => p_.change_context($['constraint']['l entry']['constraint']['type'], ($) => p_.from.state($).decide(($) => {
+                                switch ($[0]) {
+                                    case 'state': return p_.option($, ($) => $['option']['l entry']['value'])
+                                    case 'optional value': return p_.option($, ($) => $['selected optional value'])
+                                    default: return p_.exhaustive($[0])
+                                }
+                            })))
+                            default: return p_.exhaustive($[0])
+                        }
+                    })))
+                    case 'option constraint': return p_.option($, ($) => p_.change_context($['l entry'], ($) => p_.from.state($).decide(($) => {
+                        switch ($[0]) {
+                            case 'state': return p_.option($, ($) => $['option']['l entry']['value'])
+                            case 'assert is set': return p_.option($, ($) => p_.change_context($, ($) => p_.from.state($).decide(($) => {
+                                switch ($[0]) {
+                                    case 'parameter': return p_.option($, ($) => $['l entry']['type']['resulting type']['root value'])
+                                    case 'result': return p_.option($, ($) => p_.change_context($, ($) => p_.from.state($).decide(($) => {
+                                        switch ($[0]) {
+                                            case 'state': return p_.option($, ($) => $['result']['resulting type']['root value'])
+                                            case 'optional value': return p_.option($, ($) => $['result']['resulting type']['root value'])
+                                            default: return p_.exhaustive($[0])
+                                        }
+                                    })))
+                                    default: return p_.exhaustive($[0])
+                                }
+                            })))
+                            default: return p_.exhaustive($[0])
+                        }
+                    })))
+                    default: return p_.exhaustive($[0])
+                }
+            }))(
+                $,
+            )),
+        },
+    ),
+))(
+    p_.change_context(
+        $['start'],
+        ($) => p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Resolver_Guaranteed_Value_Selection.start => {
+            switch ($[0]) {
+                case 'sibling': return p_.option($, ($): s_target.Resolver_Guaranteed_Value_Selection.start => p_.change_context(
+                    $,
+                    ($) => ['sibling', {
+                        'l id': $,
+                        'l entry': ((v_lookup_context_3) => $l['sibling property resolvers'].get_entry(
+                            $,
+                            {
+                                no_such_entry: ($) => abort(
+                                    {
+                                        'type': ['lookup', ['no such entry', v_lookup_context_3]],
+                                    },
+                                ),
+                                no_context_lookup: ($) => abort(
+                                    {
+                                        'type': ['lookup', ['no context lookup', null]],
+                                    },
+                                ),
+                                cycle_detected: ($) => abort(
+                                    {
+                                        'type': ['lookup', ['cycle detected', null]],
+                                    },
+                                ),
+                            },
+                        ))(
+                            $,
+                        ),
+                    }],
+                ))
+                case 'parent sibling': return p_.option($, ($): s_target.Resolver_Guaranteed_Value_Selection.start => p_.change_context(
+                    $,
+                    ($) => ['parent sibling', {
+                        'l id': $,
+                        'l entry': ((v_lookup_context_4) => $l['parent sibling property resolvers'].get_entry(
+                            $,
+                            {
+                                no_such_entry: ($) => abort(
+                                    {
+                                        'type': ['lookup', ['no such entry', v_lookup_context_4]],
+                                    },
+                                ),
+                                no_context_lookup: ($) => abort(
+                                    {
+                                        'type': ['lookup', ['no context lookup', null]],
+                                    },
+                                ),
+                                cycle_detected: ($) => abort(
+                                    {
+                                        'type': ['lookup', ['cycle detected', null]],
+                                    },
+                                ),
+                            },
+                        ))(
+                            $,
+                        ),
+                    }],
+                ))
+                case 'option constraint': return p_.option($, ($): s_target.Resolver_Guaranteed_Value_Selection.start => p_.change_context(
+                    $,
+                    ($) => ['option constraint', {
+                        'l id': $,
+                        'l entry': ((v_lookup_context_7) => p_.from.dictionary(
+                            ((v_context_5) => p_.from.optional($p['option constraints']).decide(($) => $, () => abort(
+                                {
+                                    'type': ['constraint', ['optional value is not set', null]],
+                                },
+                            )))(
+                                $,
+                            ),
+                        ).get_entry(
+                            $,
+                            {
+                                no_such_entry: ($) => abort(
+                                    {
+                                        'type': ['lookup', ['no such entry', v_lookup_context_7]],
+                                    },
+                                ),
+                            },
+                        ))(
+                            $,
+                        ),
+                    }],
+                ))
+                case 'list cursor': return p_.option($, ($): s_target.Resolver_Guaranteed_Value_Selection.start => p_.change_context(
+                    $,
+                    ($) => ['list cursor', null],
+                ))
+                case 'linked entry': return p_.option($, ($): s_target.Resolver_Guaranteed_Value_Selection.start => p_.change_context(
+                    $,
+                    ($) => ['linked entry', null],
+                ))
+                case 'constraint': return p_.option($, ($): s_target.Resolver_Guaranteed_Value_Selection.start => p_.change_context(
+                    $,
+                    ($) => ['constraint', p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Resolver_Guaranteed_Value_Selection.start.constraint => {
+                        switch ($[0]) {
+                            case 'component': return p_.option($, ($): s_target.Resolver_Guaranteed_Value_Selection.start.constraint => p_.change_context(
+                                $,
+                                ($) => ((v_property) => ['component', {
+                                    'property': p_.change_context(
+                                        $['property'],
+                                        ($) => v_property,
+                                    ),
+                                    'constraint': p_.change_context(
+                                        $['constraint'],
+                                        ($) => ({
+                                            'l id': $,
+                                            'l entry': ((v_lookup_context_12) => p_.from.dictionary(
+                                                p_.change_context(
+                                                    v_property['l entry']['resolver'],
+                                                    ($) => ((v_constraint_context_11) => p_.from.state(
+                                                        $,
+                                                    ).decide(
+                                                        ($) => {
+                                                            switch ($[0]) {
+                                                                case 'component': return p_.option(
+                                                                    $,
+                                                                    ($) => $['constraints'],
+                                                                )
+                                                                default: return abort(
+                                                                    {
+                                                                        'type': ['constraint', ['state', {
+                                                                            'expected': "component",
+                                                                            'found': v_constraint_context_11[0],
+                                                                        }]],
+                                                                    },
+                                                                )
+                                                            }
+                                                        },
+                                                    ))(
+                                                        $,
+                                                    ),
+                                                ),
+                                            ).get_entry(
+                                                $,
+                                                {
+                                                    no_such_entry: ($) => abort(
+                                                        {
+                                                            'type': ['lookup', ['no such entry', v_lookup_context_12]],
+                                                        },
+                                                    ),
+                                                },
+                                            ))(
+                                                $,
+                                            ),
+                                        }),
+                                    ),
+                                }])(
+                                    {
+                                        'l id': $['property'],
+                                        'l entry': ((v_lookup_context_10) => $l['sibling property resolvers'].get_entry(
+                                            $['property'],
+                                            {
+                                                no_such_entry: ($) => abort(
+                                                    {
+                                                        'type': ['lookup', ['no such entry', v_lookup_context_10['property']]],
+                                                    },
+                                                ),
+                                                no_context_lookup: ($) => abort(
+                                                    {
+                                                        'type': ['lookup', ['no context lookup', null]],
+                                                    },
+                                                ),
+                                                cycle_detected: ($) => abort(
+                                                    {
+                                                        'type': ['lookup', ['cycle detected', null]],
+                                                    },
+                                                ),
+                                            },
+                                        ))(
+                                            $,
+                                        ),
+                                    },
+                                ),
+                            ))
+                            case 'reference': return p_.option($, ($): s_target.Resolver_Guaranteed_Value_Selection.start.constraint => p_.change_context(
+                                $,
+                                ($) => ((v_property) => ['reference', {
+                                    'property': p_.change_context(
+                                        $['property'],
+                                        ($) => v_property,
+                                    ),
+                                    'constraint': p_.change_context(
+                                        $['constraint'],
+                                        ($) => ({
+                                            'l id': $,
+                                            'l entry': ((v_lookup_context_16) => p_.from.dictionary(
+                                                p_.change_context(
+                                                    v_property['l entry']['resolver'],
+                                                    ($) => ((v_constraint_context_14) => p_.from.state(
+                                                        $,
+                                                    ).decide(
+                                                        ($) => {
+                                                            switch ($[0]) {
+                                                                case 'reference': return p_.option(
+                                                                    $,
+                                                                    ($) => p_.change_context(
+                                                                        $['type'],
+                                                                        ($) => ((v_constraint_context_15) => p_.from.state(
+                                                                            $,
+                                                                        ).decide(
+                                                                            ($) => {
+                                                                                switch ($[0]) {
+                                                                                    case 'selected': return p_.option(
+                                                                                        $,
+                                                                                        ($) => $['constraints'],
+                                                                                    )
+                                                                                    default: return abort(
+                                                                                        {
+                                                                                            'type': ['constraint', ['state', {
+                                                                                                'expected': "selected",
+                                                                                                'found': v_constraint_context_15[0],
+                                                                                            }]],
+                                                                                        },
+                                                                                    )
+                                                                                }
+                                                                            },
+                                                                        ))(
+                                                                            $,
+                                                                        ),
+                                                                    ),
+                                                                )
+                                                                default: return abort(
+                                                                    {
+                                                                        'type': ['constraint', ['state', {
+                                                                            'expected': "reference",
+                                                                            'found': v_constraint_context_14[0],
+                                                                        }]],
+                                                                    },
+                                                                )
+                                                            }
+                                                        },
+                                                    ))(
+                                                        $,
+                                                    ),
+                                                ),
+                                            ).get_entry(
+                                                $,
+                                                {
+                                                    no_such_entry: ($) => abort(
+                                                        {
+                                                            'type': ['lookup', ['no such entry', v_lookup_context_16]],
+                                                        },
+                                                    ),
+                                                },
+                                            ))(
+                                                $,
+                                            ),
+                                        }),
+                                    ),
+                                }])(
+                                    {
+                                        'l id': $['property'],
+                                        'l entry': ((v_lookup_context_13) => $l['sibling property resolvers'].get_entry(
+                                            $['property'],
+                                            {
+                                                no_such_entry: ($) => abort(
+                                                    {
+                                                        'type': ['lookup', ['no such entry', v_lookup_context_13['property']]],
+                                                    },
+                                                ),
+                                                no_context_lookup: ($) => abort(
+                                                    {
+                                                        'type': ['lookup', ['no context lookup', null]],
+                                                    },
+                                                ),
+                                                cycle_detected: ($) => abort(
+                                                    {
+                                                        'type': ['lookup', ['cycle detected', null]],
+                                                    },
+                                                ),
+                                            },
+                                        ))(
+                                            $,
+                                        ),
+                                    },
+                                ),
+                            ))
+                            default: return p_.exhaustive($[0])
+                        }
+                    }))],
+                ))
+                case 'parameter': return p_.option($, ($): s_target.Resolver_Guaranteed_Value_Selection.start => p_.change_context(
+                    $,
+                    ($) => ['parameter', {
+                        'l id': $,
+                        'l entry': ((v_lookup_context_17) => p_.from.dictionary(
+                            $p['signature']['resolved parameters']['types'],
+                        ).get_entry(
+                            $,
+                            {
+                                no_such_entry: ($) => abort(
+                                    {
+                                        'type': ['lookup', ['no such entry', v_lookup_context_17]],
+                                    },
+                                ),
+                            },
+                        ))(
+                            $,
+                        ),
+                    }],
+                ))
+                case 'result': return p_.option($, ($): s_target.Resolver_Guaranteed_Value_Selection.start => p_.change_context(
+                    $,
+                    ($) => ['result', p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Resolver_Guaranteed_Value_Selection.start.result => {
+                        switch ($[0]) {
+                            case 'list': return p_.option($, ($): s_target.Resolver_Guaranteed_Value_Selection.start.result => p_.change_context(
+                                $,
+                                ($) => ((v_property) => ['list', {
+                                    'property': p_.change_context(
+                                        $['property'],
+                                        ($) => v_property,
+                                    ),
+                                    'list result': p_.change_context(
+                                        $['list result'],
+                                        ($) => p_.change_context(
+                                            v_property['l entry']['resolver'],
+                                            ($) => ((v_constraint_context_21) => p_.from.state(
+                                                $,
+                                            ).decide(
+                                                ($) => {
+                                                    switch ($[0]) {
+                                                        case 'list': return p_.option(
+                                                            $,
+                                                            ($) => ((v_context_22) => p_.from.optional($['result']).decide(($) => $, () => abort(
+                                                                {
+                                                                    'type': ['constraint', ['optional value is not set', null]],
+                                                                },
+                                                            )))(
+                                                                v_constraint_context_21,
+                                                            ),
+                                                        )
+                                                        default: return abort(
+                                                            {
+                                                                'type': ['constraint', ['state', {
+                                                                    'expected': "list",
+                                                                    'found': v_constraint_context_21[0],
+                                                                }]],
+                                                            },
+                                                        )
+                                                    }
+                                                },
+                                            ))(
+                                                $,
+                                            ),
+                                        ),
+                                    ),
+                                }])(
+                                    {
+                                        'l id': $['property'],
+                                        'l entry': ((v_lookup_context_20) => $l['sibling property resolvers'].get_entry(
+                                            $['property'],
+                                            {
+                                                no_such_entry: ($) => abort(
+                                                    {
+                                                        'type': ['lookup', ['no such entry', v_lookup_context_20['property']]],
+                                                    },
+                                                ),
+                                                no_context_lookup: ($) => abort(
+                                                    {
+                                                        'type': ['lookup', ['no context lookup', null]],
+                                                    },
+                                                ),
+                                                cycle_detected: ($) => abort(
+                                                    {
+                                                        'type': ['lookup', ['cycle detected', null]],
+                                                    },
+                                                ),
+                                            },
+                                        ))(
+                                            $,
+                                        ),
+                                    },
+                                ),
+                            ))
+                            case 'state': return p_.option($, ($): s_target.Resolver_Guaranteed_Value_Selection.start.result => p_.change_context(
+                                $,
+                                ($) => p_.change_context(Resolver_Possible_Value_Selection(
+                                    ['result', ['state', $]],
+                                    abort,
+                                    $l,
+                                    $p,
+                                ), ($) => ((v_constraint_context_25) => p_.from.state(
+                                    $,
+                                ).decide(
+                                    ($) => {
+                                        switch ($[0]) {
+                                            case 'result': return p_.option(
+                                                $,
+                                                ($) => $,
+                                            )
+                                            default: return abort(
+                                                {
+                                                    'type': ['constraint', ['state', {
+                                                        'expected': "result",
+                                                        'found': v_constraint_context_25[0],
+                                                    }]],
+                                                },
+                                            )
+                                        }
+                                    },
+                                ))(
+                                    $,
+                                )),
+                            ))
+                            case 'optional value': return p_.option($, ($): s_target.Resolver_Guaranteed_Value_Selection.start.result => p_.change_context(
+                                $,
+                                ($) => p_.change_context(Resolver_Possible_Value_Selection(
+                                    ['result', ['optional value', $]],
+                                    abort,
+                                    $l,
+                                    $p,
+                                ), ($) => ((v_constraint_context_27) => p_.from.state(
+                                    $,
+                                ).decide(
+                                    ($) => {
+                                        switch ($[0]) {
+                                            case 'result': return p_.option(
+                                                $,
+                                                ($) => $,
+                                            )
+                                            default: return abort(
+                                                {
+                                                    'type': ['constraint', ['state', {
+                                                        'expected': "result",
+                                                        'found': v_constraint_context_27[0],
+                                                    }]],
+                                                },
+                                            )
+                                        }
+                                    },
+                                ))(
+                                    $,
+                                )),
+                            ))
+                            default: return p_.exhaustive($[0])
+                        }
+                    }))],
+                ))
+                default: return p_.exhaustive($[0])
+            }
+        })),
+    ),
+)
+
+export const Resolver_Possible_Value_Selection: declarations.Resolver_Possible_Value_Selection = ($, abort, $l, $p) => p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Resolver_Possible_Value_Selection => {
+    switch ($[0]) {
+        case 'parameter': return p_.option($, ($): s_target.Resolver_Possible_Value_Selection => p_.change_context(
+            $,
+            ($) => ['parameter', {
+                'l id': $,
+                'l entry': ((v_lookup_context_3) => p_.from.dictionary(
+                    $p['signature']['resolved parameters']['types'],
+                ).get_entry(
+                    $,
+                    {
+                        no_such_entry: ($) => abort(
+                            {
+                                'type': ['lookup', ['no such entry', v_lookup_context_3]],
+                            },
+                        ),
+                    },
+                ))(
+                    $,
+                ),
+            }],
+        ))
+        case 'result': return p_.option($, ($): s_target.Resolver_Possible_Value_Selection => p_.change_context(
+            $,
+            ($) => ['result', p_.change_context($, ($) => p_.from.state($).decide(($): s_target.Resolver_Possible_Value_Selection.result => {
+                switch ($[0]) {
+                    case 'state': return p_.option($, ($): s_target.Resolver_Possible_Value_Selection.result => p_.change_context(
+                        $,
+                        ($) => ((v_property) => ['state', {
+                            'property': p_.change_context(
+                                $['property'],
+                                ($) => v_property,
+                            ),
+                            'state': p_.change_context(
+                                $['state'],
+                                ($) => p_.change_context(
+                                    v_property['l entry']['resolver'],
+                                    ($) => ((v_constraint_context_7) => p_.from.state(
+                                        $,
+                                    ).decide(
+                                        ($) => {
+                                            switch ($[0]) {
+                                                case 'state': return p_.option(
+                                                    $,
+                                                    ($) => $,
+                                                )
+                                                default: return abort(
+                                                    {
+                                                        'type': ['constraint', ['state', {
+                                                            'expected': "state",
+                                                            'found': v_constraint_context_7[0],
+                                                        }]],
+                                                    },
+                                                )
+                                            }
+                                        },
+                                    ))(
+                                        $,
+                                    ),
+                                ),
+                            ),
+                            'result': p_.change_context(
+                                $['result'],
+                                ($) => Type_Reference(
+                                    $,
+                                    abort,
+                                    {
+                                        'types': p_.select_lookup.acyclic.from_resolved_dictionary(
+                                            $p['types'],
+                                        ),
+                                    },
+                                    {
+                                        
+                                    },
+                                ),
+                            ),
+                        }])(
+                            {
+                                'l id': $['property'],
+                                'l entry': ((v_lookup_context_6) => $l['sibling property resolvers'].get_entry(
+                                    $['property'],
+                                    {
+                                        no_such_entry: ($) => abort(
+                                            {
+                                                'type': ['lookup', ['no such entry', v_lookup_context_6['property']]],
+                                            },
+                                        ),
+                                        no_context_lookup: ($) => abort(
+                                            {
+                                                'type': ['lookup', ['no context lookup', null]],
+                                            },
+                                        ),
+                                        cycle_detected: ($) => abort(
+                                            {
+                                                'type': ['lookup', ['cycle detected', null]],
+                                            },
+                                        ),
+                                    },
+                                ))(
+                                    $,
+                                ),
+                            },
+                        ),
+                    ))
+                    case 'optional value': return p_.option($, ($): s_target.Resolver_Possible_Value_Selection.result => p_.change_context(
+                        $,
+                        ($) => ((v_property) => ['optional value', {
+                            'property': p_.change_context(
+                                $['property'],
+                                ($) => v_property,
+                            ),
+                            'optional value': p_.change_context(
+                                $['optional value'],
+                                ($) => p_.change_context(
+                                    v_property['l entry']['resolver'],
+                                    ($) => ((v_constraint_context_9) => p_.from.state(
+                                        $,
+                                    ).decide(
+                                        ($) => {
+                                            switch ($[0]) {
+                                                case 'optional': return p_.option(
+                                                    $,
+                                                    ($) => $,
+                                                )
+                                                default: return abort(
+                                                    {
+                                                        'type': ['constraint', ['state', {
+                                                            'expected': "optional",
+                                                            'found': v_constraint_context_9[0],
+                                                        }]],
+                                                    },
+                                                )
+                                            }
+                                        },
+                                    ))(
+                                        $,
+                                    ),
+                                ),
+                            ),
+                            'result': p_.change_context(
+                                $['result'],
+                                ($) => Type_Reference(
+                                    $,
+                                    abort,
+                                    {
+                                        'types': p_.select_lookup.acyclic.from_resolved_dictionary(
+                                            $p['types'],
+                                        ),
+                                    },
+                                    {
+                                        
+                                    },
+                                ),
+                            ),
+                        }])(
+                            {
+                                'l id': $['property'],
+                                'l entry': ((v_lookup_context_8) => $l['sibling property resolvers'].get_entry(
+                                    $['property'],
+                                    {
+                                        no_such_entry: ($) => abort(
+                                            {
+                                                'type': ['lookup', ['no such entry', v_lookup_context_8['property']]],
+                                            },
+                                        ),
+                                        no_context_lookup: ($) => abort(
+                                            {
+                                                'type': ['lookup', ['no context lookup', null]],
+                                            },
+                                        ),
+                                        cycle_detected: ($) => abort(
+                                            {
+                                                'type': ['lookup', ['cycle detected', null]],
+                                            },
+                                        ),
+                                    },
+                                ))(
+                                    $,
+                                ),
+                            },
+                        ),
+                    ))
+                    default: return p_.exhaustive($[0])
+                }
+            }))],
+        ))
+        default: return p_.exhaustive($[0])
+    }
+}))
+
+export const Basic_Types: declarations.Basic_Types = ($, abort) =>
+    p_.from.dictionary($).map(($) => Basic_Type($, abort));

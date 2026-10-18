@@ -73,7 +73,6 @@ export const Found: declarations_.Found = ($, $p) => {
                         p_.from.state($.type).decide(
                             ($): s_schema.Value => {
                                 switch ($[0]) {
-                                    case 'external': return p_.option($, ($) => $.module['l entry']['root value'])
                                     case 'internal': return p_.option($, ($) => $['l entry'].get_circular_dependent()['root value'])
                                     case 'internal acyclic': return p_.option($, ($) => $['l entry']['root value'])
                                     default: return p_.exhaustive($[0])

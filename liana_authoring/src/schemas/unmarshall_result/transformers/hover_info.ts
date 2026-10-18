@@ -55,7 +55,6 @@ export const Document: declarations_.Document = ($, $p) => {
                                                             case 'optional': return p_.option($, ($) => "optional")
                                                             case 'reference': return p_.option($, ($) => "reference")
                                                             case 'state': return p_.option($, ($) => "state")
-                                                            case 'text': return p_.option($, ($) => "text")
                                                             default: return p_.exhaustive($[0])
                                                         }
                                                     }))

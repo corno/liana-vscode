@@ -2,6 +2,6 @@ import type * as s_in_definition from "pareto-liana/modules/schema.generated/sch
 import type * as s_out from "../unmarshall_result/schema.js"
 
 export type Parameters = {
-    'definition': s_in_definition.Module,
+    'definition': s_in_definition.Type,
     'property path': s_out.Property_Path
 }

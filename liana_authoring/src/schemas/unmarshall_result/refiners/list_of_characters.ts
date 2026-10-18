@@ -37,7 +37,7 @@ export const Document: declarations_.Document = ($, abort, $p) => t_parse_tree_t
         },
     ),
     {
-        'definition': $p.module,
+        'definition': $p.type,
         'property path': p_.literal.list([]),
     }
 )

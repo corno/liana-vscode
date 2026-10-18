@@ -66,7 +66,6 @@ export const Value: declarations_.Value = ($) => {
                                                                             default: return p_.exhaustive($[0])
                                                                         }
                                                                     }))
-                                                                case 'text': return p_.option($, ($) => p_.literal.list([['text', null]]))
                                                                 default: return p_.exhaustive($[0])
                                                             }
                                                         })
