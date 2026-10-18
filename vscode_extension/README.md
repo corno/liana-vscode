@@ -105,6 +105,9 @@ including sibling, forwarded-parameter, and dependent dictionary lookups.
 Selecting a candidate replaces the whole reference token or `#` marker and
 inserts safely quoted text. Reference skeletons use `#`, not a fictitious
 `'...'` identifier. Derived references do not offer editable identifiers.
+Press **Ctrl+Space** inside a quoted reference or at a `#` marker to request
+suggestions. Filtering respects the token's quotes; selecting a suggestion still
+replaces the whole token.
 
 Dictionary benchmarks validate every supplied identifier against the selected
 benchmark dictionary. The schema's explicit `dense` flag additionally requires

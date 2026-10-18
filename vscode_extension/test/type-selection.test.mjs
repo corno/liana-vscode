@@ -383,6 +383,31 @@ test('reference completion replaces missing markers and whole quoted tokens usin
         assert.deepEqual(edit.range.end, doc.positionAt(source.indexOf(reference) + reference.length))
         assert.equal(edit.newText, '"alpha"')
         assert.equal(result.items[0].insertTextFormat, 1)
+        const delimiter = reference[0]
+        const expectedFilter = delimiter === '#' ? '#alpha'
+            : ['"', "'", '`'].includes(delimiter) ? `${delimiter}alpha${delimiter}` : 'alpha'
+        assert.equal(result.items[0].filterText, expectedFilter)
+    }
+})
+
+test('reference filtering matches quoted prefixes including spaces and escaped identifiers', async () => {
+    const schema = dependentReferenceSchema()
+    for (const [token, id, filter] of [
+        ["'def'", 'definition', "'definition'"],
+        ['"source def"', 'source definitions', '"source definitions"'],
+        ["'a\\\\b'", 'a\\b', "'a\\\\b'"],
+        ["'a\\'b'", "a'b", "'a\\'b'"],
+        ['`a\\`b`', 'a`b', '`a\\`b`'],
+        ['"a\\nb"', 'a\nb', '"a\\nb"'],
+        ["''", '', "''"],
+    ]) {
+        const source = `(\`member\`: ${token} \`chosen\`: 'Known' \`entries\`: {'Known': (\`members\`: {${JSON.stringify(id)}: ~})})`
+        const result = await complete(source, schema, source.indexOf(token) + token.length - 1)
+        assert.equal(result.items.length, 1)
+        assert.equal(result.items[0].filterText, filter)
+        const start = source.indexOf(token)
+        const updated = source.slice(0, start) + result.items[0].textEdit.newText + source.slice(start + token.length)
+        assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, schema)).__get_raw(), [])
     }
 })
 
@@ -582,6 +607,25 @@ test('option constraints report resolver mismatches without warnings for valid d
     const invalidDefinition = specification('#')
     const suppressed = resolveDiagnostics.Document(await loadWithSchema(invalidDefinition, template())).__get_raw()
     assert.ok(!suppressed.some(d => d.message.startsWith('Constraint failed:')))
+})
+
+test('optional value constraints require optional nodes, matching the handwritten resolver', async () => {
+    const constraint = `\`constraints\`: {
+        'present': (\`start\`: | \`value\` ~ \`constraint\`: (
+            \`selection\`: (\`path\`: [] \`resulting node\`: ~)
+            \`type\`: | \`optional value\` (\`selected optional value\`: ~)))
+    }`
+    const invalid = argumentBindingSchema('_').replace('`constraints`: {}', constraint)
+    const valid = invalid
+        .replace("'Leaf': (`root value`: | `nothing` ~)", "'Leaf': (`root value`: | `optional` | `nothing` ~)")
+        .replace("'Leaf': (`signature`: ~ `root value resolver`: | `nothing` ~)",
+            "'Leaf': (`signature`: ~ `root value resolver`: | `optional` (`constraints`: {} `resolver`: | `nothing` ~))")
+    assert.doesNotThrow(() => parse(valid))
+    assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(valid, template())).__get_raw(), [])
+    assert.throws(() => parse(invalid))
+    const diagnostics = resolveDiagnostics.Document(await loadWithSchema(invalid, template())).__get_raw()
+    assert.ok(diagnostics.length > 0)
+    assert.ok(diagnostics.every(d => d.message === "Constraint failed: expected state option 'optional'."), JSON.stringify(diagnostics.map(d => d.message)))
 })
 
 const resultType = root => ({ location: ['internal', { 'l id': 'Result' }], 'resulting type': root })

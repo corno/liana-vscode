@@ -31,6 +31,7 @@ export const Document = ($: s_in.Document, parameters: {
                 'replacement range': full_range.Value(unmarshalled.instance),
                 suggestions: p_.from.list(keys).map((id) => ({
                     label: id === '' ? "''" : id,
+                    'reference identifier': id,
                     documentation: 'Reference to ' + id,
                     'insert lines': serialize.Value({
                         data: ['concrete', { type: ['text', {

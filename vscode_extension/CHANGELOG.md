@@ -15,6 +15,10 @@
   per-option payload/context selections; typed consumers verify producer types.
 
 ### Fixed
+- Keep reference suggestions visible inside existing quoted identifiers by
+  matching completion filter text to the original token's delimiters.
+- Correct the bundled self-schema's `optional value` constraint to require an
+  `optional` definition, removing false state-option diagnostics.
 - Normalize forwarded type-parameter values and derived component payloads using
   their declared schema types, restoring signature-dependent argument diagnostics.
 - Argument benchmarks allow partial dictionaries as the handwritten resolver does;

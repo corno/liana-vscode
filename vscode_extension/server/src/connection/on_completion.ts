@@ -103,10 +103,23 @@ export const create_on_completion: (
 							// Frontend handles hash + filter text removal based on backend's semantic signal
 							if (type[0] === 'reference' && replacementRange) {
 								const range = replacementRange
+								const editRange = vscode_node.Range.create(range.start.relative.line, range.start.relative.column,
+									range.end.relative.line, range.end.relative.column)
+								const id = $['reference identifier']
+								if (id !== undefined) {
+									// VS Code filters from the edit start, including the opening delimiter.
+									const delimiter = doc.getText(editRange).charAt(0)
+									completionItem.filterText = delimiter === '#' ? '#' + id
+										: delimiter === '"' ? JSON.stringify(id)
+										: delimiter === "'" || delimiter === '`'
+											? delimiter + id.replace(/\\/g, '\\\\').replace(/\r/g, '\\r')
+												.replace(/\n/g, '\\n').replace(/\t/g, '\\t')
+												.split(delimiter).join('\\' + delimiter) + delimiter
+											: id
+								}
 								completionItem.insertTextFormat = vscode_node.InsertTextFormat.PlainText
 								completionItem.textEdit = vscode_node.TextEdit.replace(
-									vscode_node.Range.create(range.start.relative.line, range.start.relative.column,
-										range.end.relative.line, range.end.relative.column),
+									editRange,
 									$['insert lines'].__get_raw().join("\n"),
 								)
 							} else if (shouldRemoveHash) {
