@@ -35,6 +35,7 @@ const p = require('pareto-core/transformer')
 
 const chars = source => p.literal.list(Array.from(source, c => c.codePointAt(0)))
 const snippetText = text => text.replace(/^\$0/, '').replace(/\\([\\$}])/g, '$1')
+const { quote_identifier } = require('../server/out/helpers/quote_identifier.js')
 const fail = error => { throw error }
 const parse = source => Type_Specifier(chars(source), fail, { 'tab size': 4 })
 const basic = (type, resolver = '| `simple` ~') => specification(`| \`simple\` 'Basic'`, resolver, `{ 'Basic': (\`type\`: ${type}) }`)
@@ -502,7 +503,7 @@ test('safe rename edits only the resolved declaration and its references with co
             assert.equal(result.documentChanges[0].edits.length, 2)
             assert.ok(updated.includes("'Other': (`members`: {'alpha': ~})"))
             assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, schema)).__get_raw(), [])
-            assert.equal(result.documentChanges[0].edits[0].newText, JSON.stringify(newName))
+            assert.equal(result.documentChanges[0].edits[0].newText, quote_identifier(newName))
         }
     }
 })
@@ -1264,8 +1265,8 @@ test('one quick fix inserts every missing dense entry without rewriting supplied
     const doc = TextDocument.create(change.textDocument.uri, 'liana', 1, source)
     const updated = TextDocument.applyEdits(doc, change.edits)
     assert.ok(updated.includes("'kept': ~ /* keep this */"))
-    assert.ok(updated.includes('"new": ~'))
-    assert.ok(updated.includes('"a\\\"b": ~'))
+    assert.ok(updated.includes("'new': ~"))
+    assert.ok(updated.includes("'a\"b': ~"))
     assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, benchmarkSchema(true))).__get_raw(), [])
     assert.deepEqual(await create_on_code_action_resolve({})(actions[0]), actions[0])
     assert.deepEqual(await actionsAt(updated, benchmarkSchema(true), updated.indexOf('{'), ['quickfix']), [])
@@ -1312,7 +1313,7 @@ test('bulk fixes preserve multiline closing indentation and empty identifiers', 
     const actions = await actionsAt(source, benchmarkSchema(true), source.indexOf('{'), ['quickfix'])
     const change = actions[0].edit.documentChanges[0]
     const updated = TextDocument.applyEdits(TextDocument.create(change.textDocument.uri, 'liana', 1, source), change.edits)
-    assert.ok(updated.includes('        // keep this\n        "": ~\n        "a": ~\n    }'))
+    assert.ok(updated.includes("        // keep this\n        '': ~\n        'a': ~\n    }"))
     assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, benchmarkSchema(true))).__get_raw(), [])
 })
 
@@ -1349,8 +1350,8 @@ test('completion recursively fills dense resolver dictionaries and chooses their
     const edit = result.items[0].textEdit
     const updated = TextDocument.applyEdits(TextDocument.create('file:///nested.lna', 'liana', 1, source),
         [{ ...edit, newText: snippetText(edit.newText) }])
-    assert.match(updated, /"left":/)
-    assert.match(updated, /"right":/)
+    assert.match(updated, /'left':/)
+    assert.match(updated, /'right':/)
     assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, template())).__get_raw(), [])
 })
 
@@ -1375,7 +1376,7 @@ test('dense completion honors concise notation for generated entry payloads', as
     const edit = result.items[0].textEdit
     const updated = TextDocument.applyEdits(TextDocument.create('file:///concise.lna', 'liana', 1, source),
         [{ ...edit, newText: snippetText(edit.newText) }])
-    assert.match(edit.newText, /"left": </)
+    assert.match(edit.newText, /'left': </)
     assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, template())).__get_raw(), [])
 })
 
@@ -1387,6 +1388,92 @@ test('generated dense dictionary identifiers remain literal snippet text', async
     assert.ok(edit.newText.includes('\\$1\\}'))
     const updated = TextDocument.applyEdits(TextDocument.create('file:///escaped.lna', 'liana', 1, source),
         [{ ...edit, newText: snippetText(edit.newText) }])
-    assert.ok(updated.includes(JSON.stringify(id)))
+    assert.ok(updated.includes(quote_identifier(id) + ': ~'))
     assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, benchmarkSchema(true))).__get_raw(), [])
+})
+
+test('missing reference quick fix creates the entry in the selected dependent dictionary', async () => {
+    const schema = dependentReferenceSchema()
+    for (const id of ['foo', '', 'a$1}\\b', 'a"b', "a'b", 'a\nb\r\tc']) {
+        const source = `(\`member\`: ${JSON.stringify(id)} \`chosen\`: 'Known' \`entries\`: {'Known': (\`members\`: {/* keep */}) 'Other': (\`members\`: {})})`
+        const offset = source.indexOf(JSON.stringify(id)) + 1
+        const actions = await actionsAt(source, schema, offset, ['quickfix'])
+        assert.equal(actions.length, 1)
+        assert.equal(actions[0].title, `Create entry '${id}' in referenced dictionary`)
+        assert.equal(actions[0].diagnostics[0].message, `Reference '${id}' does not exist.`)
+        const change = actions[0].edit.documentChanges[0]
+        assert.equal(change.textDocument.version, 1)
+        const updated = TextDocument.applyEdits(TextDocument.create(change.textDocument.uri, 'liana', 1, source), change.edits)
+        assert.ok(updated.includes('/* keep */'))
+        assert.ok(updated.includes(`${quote_identifier(id)}: ~`))
+        assert.ok(updated.includes("'Other': (`members`: {})"))
+        assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, schema)).__get_raw(), [])
+        assert.deepEqual(await actionsAt(updated, schema, offset, ['quickfix']), [])
+    }
+})
+
+test('missing reference fixes follow acyclic and cyclic sibling lookups forwarded through components', async () => {
+    for (const mode of ['internal', 'internal acyclic']) {
+        const source = specification(typeReference('Missing', mode))
+        const actions = await actionsAt(source, template(), source.indexOf("'Missing'") + 2, ['quickfix'])
+        assert.equal(actions.length, 1)
+        const change = actions[0].edit.documentChanges[0]
+        const updated = TextDocument.applyEdits(TextDocument.create(change.textDocument.uri, 'liana', 1, source), change.edits)
+        assert.match(updated, /'Missing':/)
+        assert.ok(!resolveDiagnostics.Document(await loadWithSchema(updated, template())).__get_raw()
+            .some(diagnostic => diagnostic.message === "Reference 'Missing' does not exist."))
+    }
+})
+
+test('missing reference fixes do not guess unavailable targets or overwrite duplicate/existing entries', async () => {
+    for (const source of [
+        "(`member`: 'foo' `chosen`: # `entries`: {})",
+        "(`member`: 'foo' `chosen`: 'Known' `entries`: {'Known': (`members`: #)})",
+        "(`member`: 'foo' `chosen`: 'Known' `entries`: {'Known': (`members`: {'foo': ~ 'foo': ~})})",
+        "(`member`: 'foo' `chosen`: 'Known' `entries`: {'Known': (`members`: {'foo': ~})})",
+    ]) assert.deepEqual(await actionsAt(source, dependentReferenceSchema(), source.indexOf("'foo'") + 2, ['quickfix']), [])
+})
+
+test('unexpected constrained dictionary entries can be added to their sparse or dense benchmark', async () => {
+    for (const dense of [false, true]) {
+        for (const id of ['foo', '', "a'b\\c$1}", 'a\nb\r\tc']) {
+            const source = `< { ${JSON.stringify(id)}: ~ 'kept': ~ } { 'kept': ~ /* benchmark comment */ } >`
+            const offset = source.indexOf(JSON.stringify(id)) + 1
+            const actions = await actionsAt(source, benchmarkSchema(dense), offset, ['quickfix'])
+            assert.equal(actions.length, 1)
+            assert.equal(actions[0].title, `Add entry '${id}' to benchmark dictionary`)
+            assert.equal(actions[0].diagnostics[0].message, `Entry '${id}' does not exist in the benchmark dictionary.`)
+            const change = actions[0].edit.documentChanges[0]
+            assert.equal(change.textDocument.version, 1)
+            const doc = TextDocument.create(change.textDocument.uri, 'liana', 1, source)
+            const updated = TextDocument.applyEdits(doc, change.edits)
+            assert.equal(updated.slice(0, source.indexOf('}')), source.slice(0, source.indexOf('}')))
+            assert.ok(updated.includes("'kept': ~ /* benchmark comment */"))
+            assert.ok(change.edits[0].newText.includes(quote_identifier(id) + ': ~'))
+            assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, benchmarkSchema(dense))).__get_raw(), [])
+            assert.deepEqual(await actionsAt(updated, benchmarkSchema(dense), offset, ['quickfix']), [])
+        }
+    }
+})
+
+test('benchmark creation fixes require an unexpected nonduplicate key and an available target', async () => {
+    for (const source of [
+        "< { 'foo': ~ } # >",
+        "< { 'foo': ~ } { 'foo': ~ } >",
+        "< { 'foo': ~ 'foo': ~ } {} >",
+        "< { 'foo': ~ } { 'foo': ~ 'foo': ~ } >",
+    ]) {
+        const actions = await actionsAt(source, benchmarkSchema(false), source.indexOf("'foo'") + 2, ['quickfix'])
+        assert.deepEqual(actions, [])
+    }
+    const source = "< { 'foo': ~ } {} >"
+    assert.deepEqual(await actionsAt(source, benchmarkSchema(false), source.lastIndexOf('}'), ['quickfix']), [])
+    assert.equal((await actionsAt(source, benchmarkSchema(false), source.indexOf("'foo'") + 2, ['refactor'])).length, 4)
+})
+
+test('generated dictionary identifiers always use escaped single quotes', () => {
+    for (const [id, expected] of [
+        ['foo', "'foo'"], ['', "''"], ["a'b", "'a\\'b'"], ['a"b', "'a\"b'"],
+        ['a\\b', "'a\\\\b'"], ['a\nb\r\tc', "'a\\nb\\r\\tc'"],
+    ]) assert.equal(quote_identifier(id), expected)
 })

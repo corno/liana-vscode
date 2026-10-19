@@ -69,6 +69,17 @@ For missing required entries in a dense dictionary, use **Quick Fix → Add all
 missing required entries**. This adds all currently missing entries in the
 document with schema-generated values, preserving existing entries and comments.
 
+For **Reference 'foo' does not exist**, use **Quick Fix → Create entry 'foo' in
+referenced dictionary**. The entry is added to the dictionary selected by the
+reference lookup, with a schema-generated value. No creation fix is offered when
+the target dictionary is unavailable or already contains that identifier.
+
+For an entry that does not exist in its benchmark, use **Quick Fix → Add entry
+'foo' to benchmark dictionary**. This creates a schema-generated value in the
+actual benchmark dictionary, for both sparse and dense constraints.
+
+Generated dictionary entry names and renamed identifiers use escaped single quotes.
+
 All three string delimiters (double quotes, single quotes and backticks) support
 literal newlines as well as escaped `\n` and `\r`. Empty identifiers are valid
 ASTN too. Highlighting does not mark these as syntax errors. Files open as

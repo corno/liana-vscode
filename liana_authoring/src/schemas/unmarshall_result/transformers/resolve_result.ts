@@ -61,6 +61,7 @@ namespace temp {
             'acyclic': p_i.lookup.Acyclic<s_out.Entry>
             'cyclic': p_i.lookup.Cyclic<s_out.Entry>
             'keys'?: p_di.List<string>
+            'dictionary'?: s_in.Dictionary | undefined
         }
         'properties'?: p_i.lookup.Acyclic<s_out.Property> | undefined
         'parent properties'?: p_i.lookup.Acyclic<s_out.Property> | undefined
@@ -80,8 +81,8 @@ namespace temp {
 
     export type Lookup =
         | ['constraint failed', string]
-        | ['acyclic', p_i.lookup.Acyclic<s_out.Entry>, p_di.List<string>?]
-        | ['cyclic', p_i.lookup.Cyclic<s_out.Entry>, p_di.List<string>?]
+        | ['acyclic', p_i.lookup.Acyclic<s_out.Entry>, p_di.List<string>?, (s_in.Dictionary | undefined)?]
+        | ['cyclic', p_i.lookup.Cyclic<s_out.Entry>, p_di.List<string>?, (s_in.Dictionary | undefined)?]
         | ['unavailable', null]
         | ['cycle', p_di.List<string>]
 
@@ -394,7 +395,7 @@ const Lookup = ($: s_in_definition.Resolver_Lookup_Selection, context: temp.Cont
         case 'acyclic': {
             const lookup = $.type[1]
             switch (lookup[0]) {
-                case 'siblings': return ['acyclic', context.lookups.siblings.acyclic, context.lookups.siblings.keys ?? p_.literal.list([])]
+                case 'siblings': return ['acyclic', context.lookups.siblings.acyclic, context.lookups.siblings.keys ?? p_.literal.list([]), context.lookups.siblings.dictionary]
                 case 'resolved dictionary': {
                     const selection = Guaranteed(lookup[1].selection, context)
                     switch (selection[0]) {
@@ -402,7 +403,7 @@ const Lookup = ($: s_in_definition.Resolver_Lookup_Selection, context: temp.Cont
                             const value = selection[1]['unmarshall result']
                             return value[0] === 'success' && value[1][0] === 'dictionary'
                                 ? ['acyclic', p_lookup.acyclic.from_resolved_dictionary(value[1][1].entries),
-                                    p_.from.dictionary(value[1][1].entries).convert_to_list((_, id) => id)]
+                                    p_.from.dictionary(value[1][1].entries).convert_to_list((_, id) => id), value[1][1].unmarshalled]
                                 : ['unavailable', null]
                         }
                         case 'not set': return ['unavailable', null]
@@ -412,7 +413,7 @@ const Lookup = ($: s_in_definition.Resolver_Lookup_Selection, context: temp.Cont
                 default: return p_.exhaustive(lookup[0])
             }
         }
-        case 'cyclic': return ['cyclic', context.lookups.siblings.cyclic, context.lookups.siblings.keys ?? p_.literal.list([])]
+        case 'cyclic': return ['cyclic', context.lookups.siblings.cyclic, context.lookups.siblings.keys ?? p_.literal.list([]), context.lookups.siblings.dictionary]
         case 'parameter': {
             const parameter = $.type[1]
             switch (parameter['l entry'].type[0]) {
@@ -657,6 +658,13 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                 ? p_.from.dictionary(definition[1].options).map((option) => Option_Constraints(option.constraints, context))
                 : p_.literal.dictionary<p_di.Dictionary<s_out.Selection>>({})
         },
+        get 'reference dictionary'() {
+            const definition = $p.definition
+            if (definition[0] !== 'reference' || definition[1].type[0] !== 'selected') return p_.literal.not_set<s_in.Dictionary>()
+            const lookup = Lookup(definition[1].type[1].lookup, context)
+            return (lookup[0] === 'acyclic' || lookup[0] === 'cyclic') && lookup[3] !== undefined
+                ? p_.literal.set(lookup[3]) : p_.literal.not_set<s_in.Dictionary>()
+        },
         // Enumerate only when requested, after sibling resolution has finished.
         get 'reference candidates'() {
                 const definition = $p.definition
@@ -758,6 +766,7 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                                                                                         'acyclic': $al,
                                                                                                         'cyclic': $cl,
                                                                                                         'keys': siblingKeys,
+                                                                                                        'dictionary': unmarshalled_value[0] === 'dictionary' ? unmarshalled_value[1] : undefined,
                                                                                                     },
                                                                                                     'linked entry': Linked_Entry(benchmark, id),
                                                                                                 },

@@ -12,6 +12,7 @@ import type { Connection_Context } from '../connection_context'
 import { create_cache } from '../core/cache'
 import { load_document } from '../to_be_backend/load_document'
 import { create_range_from_range } from './range'
+import { quote_identifier } from './quote_identifier'
 
 export const dictionary_entry_edit = (
     document: TextDocument,
@@ -27,7 +28,7 @@ export const dictionary_entry_edit = (
     const entries = missing.map((id) => {
         const lines = serialize.Value(skeleton.Value(dictionary.unmarshalled.definition.value, { style: [style, null] }),
             { paragraph: { indentation: '    ' }, value: { 'write delimiters': true } }).__get_raw()
-        return indent + JSON.stringify(id) + ': ' + lines.map((line, index) => index === 0 ? line : indent + line).join('\n')
+        return indent + quote_identifier(id) + ': ' + lines.map((line, index) => index === 0 ? line : indent + line).join('\n')
     }).join('\n')
     const ownLine = /^[\t ]*$/.test(linePrefix)
     const range = ownLine ? vscode.Range.create(close.line, 0, close.line, 0) : vscode.Range.create(close, close)

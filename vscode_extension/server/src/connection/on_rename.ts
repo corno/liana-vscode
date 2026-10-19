@@ -9,6 +9,7 @@ import { reference_index, symbol_at } from '../helpers/reference_index'
 import { create_range_from_range, create_range_from_possible_range } from '../helpers/range'
 import { create_cache } from '../core/cache'
 import { load_document } from '../to_be_backend/load_document'
+import { quote_identifier } from '../helpers/quote_identifier'
 
 const refuse = (message: string): never => {
     throw new vscode.ResponseError(vscode.LSPErrorCodes.RequestFailed, message)
@@ -36,7 +37,7 @@ export const create_on_rename = (
         return refuse(`Cannot rename: entry '${params.newName}' already exists in this dictionary.`)
     }
     const ranges = [symbol.declaration.range, ...symbol.references.map((reference) => reference.range)]
-    const newText = JSON.stringify(params.newName)
+    const newText = quote_identifier(params.newName)
     const edits = ranges.map((range) => vscode.TextEdit.replace(create_range_from_range(range), newText))
     const offsets = edits.map((edit) => ({
         start: loaded.document.offsetAt(edit.range.start),
