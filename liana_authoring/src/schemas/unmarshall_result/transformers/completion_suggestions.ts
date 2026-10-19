@@ -41,6 +41,7 @@ import type * as p_di from 'pareto-core/schema'
 
 import type * as s_schema from "pareto-liana/modules/schema.generated/schemas/resolved/schema"
 import type * as s_ast_target from "astn/modules/authoring_target/schemas/authoring_target/schema"
+import * as full_range from 'astn-runtime/modules/deserialization/schemas/parse_tree/transformers/full_value_range'
 
 //dependencies
 import * as t_to_unmarshall_result_value_at_position from "./found.js"
@@ -158,7 +159,18 @@ export const Found: declarations_.Found = ($, $p) => {
     switch ($[0]) {
         case 'value': return p_.option($, ($): s_out.Completion_Suggestions => {
             const definition = $.definition
-            if (definition[0] === 'reference') return p_.literal.not_set()
+            if (definition[0] === 'reference') return $.instance.type[0] === 'missing'
+                ? p_.literal.set({
+                    'type': ['reference', null],
+                    'replacement range': full_range.Value($.instance),
+                    'suggestions': p_.literal.list([{
+                        'label': "''",
+                        'reference identifier': '',
+                        'documentation': 'Reference identifier (no reference candidates available).',
+                        'insert lines': p_.literal.list(["''"]),
+                    }]),
+                })
+                : p_.literal.not_set()
 
             return p_.from.state($.instance.type).decide(
                 ($) => {

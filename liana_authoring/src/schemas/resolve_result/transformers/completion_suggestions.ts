@@ -22,7 +22,7 @@ export const Document = ($: s_in.Document, parameters: {
     })).decide((value): s_out.Completion_Suggestions => {
         if (target[0] === 'value' && target[1].definition[0] === 'reference' && value.unmarshalled === target[1] && value['reference candidates']) {
             const unmarshalled = target[1]
-            return p_.from.optional(value['reference candidates']).map((keys): s_out.Completion_Suggestions_.O => ({
+            const candidates = p_.from.optional(value['reference candidates']).map((keys): s_out.Completion_Suggestions_.O => ({
                 type: ['reference', null],
                 'replacement range': full_range.Value(unmarshalled.instance),
                 suggestions: p_.from.list(keys).map((id) => ({
@@ -37,6 +37,12 @@ export const Document = ($: s_in.Document, parameters: {
                     }, { paragraph: { indentation: parameters.indent }, value: { 'write delimiters': true } }),
                 })),
             }))
+            return p_.from.optional(candidates).decide(
+                (suggestions) => p_.from.list(suggestions.suggestions).on_has_first_item(
+                    () => p_.literal.set(suggestions), () => fallback.Found(target, parameters),
+                ),
+                () => fallback.Found(target, parameters),
+            )
         }
         const result = value['unmarshall result']
         if (result[0] === 'error') return fallback.Found(target, parameters)

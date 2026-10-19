@@ -59,6 +59,16 @@ Liana uses ASTN as its notation language. ASTN supports two notation styles:
 
 Toggle the document's default style with `Ctrl+Alt+N`; all values that will be code-completed will use the selected verbose or concise notation. Use code actions (right-click → Refactor) for selective conversion of existing values.
 
+Generated snippets select a state option automatically only when exactly one
+option satisfies all its constraints. Ambiguous, unavailable, or recursive
+choices remain `| #` for you to fill in.
+Dense benchmark dictionaries are populated with their required entries, including
+nested generated dictionaries. Sparse or unresolved benchmarks are not filled.
+
+For missing required entries in a dense dictionary, use **Quick Fix → Add all
+missing required entries**. This adds all currently missing entries in the
+document with schema-generated values, preserving existing entries and comments.
+
 All three string delimiters (double quotes, single quotes and backticks) support
 literal newlines as well as escaped `\n` and `\r`. Empty identifiers are valid
 ASTN too. Highlighting does not mark these as syntax errors. Files open as
@@ -99,6 +109,10 @@ missing identifiers at the reference token, acyclic lookups report cycles, and
 cyclic lookups allow forward and mutual references. Dependent dictionary lookups
 can navigate components, properties, and resolved references. Invalid lookup
 sources do not produce cascading missing-reference errors.
+
+Reference placeholders (`#`) offer dictionary identifiers when available. If no
+candidates are available, completion offers `''` to show that a reference
+identifier is expected; this placeholder is not a validated reference target.
 
 Use **F12** (Go to Definition), **Alt+F12** (Peek Definition), or **Ctrl+Click**
 on a reference to navigate to its target dictionary entry in the same document.

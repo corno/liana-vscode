@@ -1,5 +1,6 @@
 
 import * as p_ from 'pareto-core/transformer'
+import type * as p_di from 'pareto-core/schema'
 
 //schemas
 import type * as s_out from "astn/modules/authoring_target/schemas/authoring_target/schema"
@@ -7,6 +8,7 @@ import type * as s_in from "../schema.js"
 
 export namespace s_function {
     export type Parameters = {
+        'state ancestors'?: p_di.List<s_in.Value.state>
         'style':
         | ['concise', null]
         | ['verbose', null]
@@ -146,18 +148,27 @@ export const Value_data: declarations_.Value_data = ($, $p) => p_.from.state($).
                     }
                 }]]
             }])
-            case 'state': return p_.option($, ($) => ['concrete', {
-                'type': ['state', {
-                    '|': {
-                        'comments': p_.literal.list([])
-                    },
-                    'status': ['missing', {
-                        '#': {
-                            'comments': p_.literal.list([])
-                        }
-                    }]
+            case 'state': return p_.option($, ($) => {
+                const options = $.options.__get_raw()
+                const only = options.length === 1 ? options[0] : undefined
+                const ancestors = $p['state ancestors'] ?? p_.literal.list<s_in.Value.state>([])
+                const recursive = p_.from.list(ancestors).on_has_match(
+                    (state) => state === $ ? p_.literal.set(true) : p_.literal.not_set<boolean>(), () => false,
+                )
+                const canSelect = only !== undefined && !recursive
+                    && p_.from.optional(only[1].constraints).decide((checks) => checks.__get_raw().length === 0, () => true)
+                return ['concrete', {
+                    'type': ['state', {
+                        '|': { 'comments': p_.literal.list([]) },
+                        'status': canSelect && only !== undefined
+                            ? ['set', {
+                                'option': only[0],
+                                'value': Value(only[1].value, { ...$p, 'state ancestors': p_.literal.segmented_list([ancestors, p_.literal.list([$])]) }),
+                            }]
+                            : ['missing', { '#': { 'comments': p_.literal.list([]) } }],
+                    }],
                 }]
-            }])
+            })
             default: return p_.exhaustive($[0])
         }
     })

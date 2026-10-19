@@ -52,6 +52,20 @@ export const Value: declarations_.Value = ($) => p_.literal.segmented_list([
     Content($),
 ])
 
+export const Missing_Benchmark_Entries = ($: s_in.Dictionary): import('pareto-core/schema').List<string> =>
+    p_.from.optional($.benchmark).decide((benchmark) => {
+        if (!benchmark.dense || benchmark.selection[0] !== 'resolved') return p_.literal.list([])
+        const result = benchmark.selection[1]['unmarshall result']
+        if (result[0] !== 'success' || result[1][0] !== 'dictionary') return p_.literal.list([])
+        return p_.from.dictionary(result[1][1].unmarshalled.derived.entries).flatten_to_list((entry, id) =>
+            entry.result[0] === 'error' ? p_.literal.list([]) : p_.from.dictionary($.unmarshalled.derived.entries).get_possible_entry(
+                id,
+                () => p_.literal.list([]),
+                () => p_.literal.list([id]),
+            ),
+        )
+    }, () => p_.literal.list([]))
+
 const Benchmark = ($: s_in.Dictionary, range: s_location.Range): s_out.Errors => p_.from.optional($.benchmark).decide(
     (benchmark) => {
         const selection = benchmark.selection
@@ -75,15 +89,9 @@ const Benchmark = ($: s_in.Dictionary, range: s_location.Range): s_out.Errors =>
                     }]),
                 )
             }),
-            benchmark.dense ? p_.from.dictionary(required).flatten_to_list((entry, id) =>
-                entry.result[0] === 'error' ? p_.literal.list([]) : p_.from.dictionary(supplied).get_possible_entry(
-                    id,
-                    () => p_.literal.list([]),
-                    () => p_.literal.list<s_out.Error>([{
-                        range, severity: ['error', null], type: ['missing benchmark entry', id],
-                    }]),
-                ),
-            ) : p_.literal.list([]),
+            p_.from.list(Missing_Benchmark_Entries($)).map((id): s_out.Error => ({
+                range, severity: ['error', null], type: ['missing benchmark entry', id],
+            })),
         ])
     },
     () => p_.literal.list([]),

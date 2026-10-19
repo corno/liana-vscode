@@ -5,6 +5,7 @@ import * as t_unmarshall_result_to_completion_suggestions from "liana-authoring/
 import * as t_resolved_completion from "liana-authoring/schemas/resolve_result/transformers/completion_suggestions"
 
 import { load_document } from '../to_be_backend/load_document'
+import { generated_snippet } from '../helpers/generated_snippet'
 
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
@@ -23,7 +24,7 @@ export const create_on_completion: (
 			return null
 		}
 
-		return new Promise<vscode_node.CompletionList>((resolve) => {
+		return new Promise<vscode_node.CompletionList>((resolve, reject) => {
 			// Check if user typed filter letters before the cursor
 			// These should be removed when a completion is selected (for certain types)
 			const textBeforeCursor = doc.getText({
@@ -174,7 +175,23 @@ export const create_on_completion: (
 						'items': items
 					}
 				},
-				resolve,
+				async (result) => {
+					try {
+						for (const item of result.items) {
+							const edit = item.textEdit
+							if (edit !== undefined && 'range' in edit && edit.newText.startsWith('$0')) {
+								const refined = await generated_snippet(connection_context, doc,
+									{ ...edit, newText: edit.newText.slice(2) },
+									connection_context['document notation styles'].get(doc.uri)
+										?? connection_context['document notation styles'].get('__default__') ?? 'verbose')
+								item.textEdit = { ...refined, newText: '$0' + refined.newText.replace(/([\\$}])/g, '\\$1') }
+							}
+						}
+						resolve(result)
+					} catch (error) {
+						reject(error)
+					}
+				},
 			)
 		})
 	}

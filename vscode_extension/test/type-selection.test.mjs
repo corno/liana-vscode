@@ -34,6 +34,7 @@ const unmarshalCompletion = require('liana-authoring/schemas/unmarshall_result/t
 const p = require('pareto-core/transformer')
 
 const chars = source => p.literal.list(Array.from(source, c => c.codePointAt(0)))
+const snippetText = text => text.replace(/^\$0/, '').replace(/\\([\\$}])/g, '$1')
 const fail = error => { throw error }
 const parse = source => Type_Specifier(chars(source), fail, { 'tab size': 4 })
 const basic = (type, resolver = '| `simple` ~') => specification(`| \`simple\` 'Basic'`, resolver, `{ 'Basic': (\`type\`: ${type}) }`)
@@ -592,7 +593,7 @@ test('parent skeletons retain reference markers without offering marker-to-marke
     const source = '(`member`: # `chosen`: # `entries`: {})'
     assert.equal(unmarshalCompletion.Document(document(source, schema), {
         position: { line: 0, character: source.indexOf('#') }, indent: '    ', style: ['verbose', null],
-    }).__get_raw(), null)
+    }).__get_raw()[0].suggestions.__get_raw()[0]['insert lines'].__get_raw().join(''), "''")
     const result = unmarshalCompletion.Document(document('#', schema), {
         position: { line: 0, character: 0 }, indent: '    ', style: ['verbose', null],
     }).__get_raw()[0]
@@ -656,7 +657,7 @@ test('reference completion quotes empty and special identifiers without snippet 
     assert.deepEqual(diagnostics, [])
 })
 
-test('reference completion supports cyclic sibling lookups forwarded through components and suppresses invalid sources', async () => {
+test('reference completion supports forwarded lookups and offers an empty identifier without candidates', async () => {
     for (const mode of ['internal', 'internal acyclic']) {
         const source = specification(`| \`component\` (\`type\`: | \`${mode}\` # \`results\`: _)`)
         const result = await complete(source, template(), source.indexOf('#'))
@@ -668,7 +669,19 @@ test('reference completion supports cyclic sibling lookups forwarded through com
         "(`member`: # `chosen`: 'Known' `entries`: {'Known': (`members`: #)})",
     ]) {
         const result = await complete(invalid, dependentReferenceSchema(), invalid.indexOf('#'))
-        assert.deepEqual(result.items, [])
+        assert.deepEqual(result.items.map(item => item.label), ["''"])
+        const item = result.items[0]
+        assert.equal(item.textEdit.newText, "''")
+        assert.equal(item.insertTextFormat, 1)
+        assert.equal(item.filterText, '#')
+        assert.deepEqual(item.textEdit.range, {
+            start: { line: 0, character: invalid.indexOf('#') },
+            end: { line: 0, character: invalid.indexOf('#') + 1 },
+        })
+        const concrete = invalid.replace('#', "'unknown'")
+        assert.deepEqual((await complete(concrete, dependentReferenceSchema(), concrete.indexOf("'unknown'") + 2)).items, [])
+        assert.match(item.documentation.value, /Reference identifier/)
+        assert.match(item.documentation.value, /no reference candidates/)
     }
 })
 
@@ -989,7 +1002,7 @@ test('state completion marks failed entry constraints without removing selectabl
             assert.match(item.documentation.value, /Unavailable in this context: definition: expected state option/)
             assert.ok(item.textEdit.newText.length > 0)
         }
-        const updated = source.replace('#', allowed.textEdit.newText.replace('$0', ''))
+        const updated = source.replace('#', snippetText(allowed.textEdit.newText))
         assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, template())).__get_raw(), [])
     }
     const incomplete = specification('#', '| #')
@@ -1228,4 +1241,152 @@ test('document loading uses Next root selection, preserves caching and reports s
     } finally {
         rmSync(dir, { recursive: true, force: true })
     }
+})
+
+const { create_on_code_action } = require('../server/out/connection/on_code_action.js')
+const { create_on_code_action_resolve } = require('../server/out/connection/on_code_action_resolve.js')
+const actionsAt = (source, schema, offset, only) => {
+    const position = TextDocument.create('file:///action.lna', 'liana', 1, source).positionAt(offset)
+    return requestAt(source, schema, offset, create_on_code_action, {
+        range: { start: position, end: position },
+        context: { diagnostics: [], ...(only === undefined ? {} : { only }) },
+    })
+}
+
+test('one quick fix inserts every missing dense entry without rewriting supplied entries or comments', async () => {
+    const source = '< { \'kept\': ~ /* keep this */ } { \'kept\': ~ \'new\': ~ "a\\\"b": ~ } >'
+    const actions = await actionsAt(source, benchmarkSchema(true), source.indexOf('{'), ['quickfix'])
+    assert.equal(actions.length, 1)
+    assert.equal(actions[0].title, 'Add all missing required entries (2)')
+    assert.equal(actions[0].isPreferred, true)
+    const change = actions[0].edit.documentChanges[0]
+    assert.equal(change.textDocument.version, 1)
+    const doc = TextDocument.create(change.textDocument.uri, 'liana', 1, source)
+    const updated = TextDocument.applyEdits(doc, change.edits)
+    assert.ok(updated.includes("'kept': ~ /* keep this */"))
+    assert.ok(updated.includes('"new": ~'))
+    assert.ok(updated.includes('"a\\\"b": ~'))
+    assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, benchmarkSchema(true))).__get_raw(), [])
+    assert.deepEqual(await create_on_code_action_resolve({})(actions[0]), actions[0])
+    assert.deepEqual(await actionsAt(updated, benchmarkSchema(true), updated.indexOf('{'), ['quickfix']), [])
+    assert.equal((await actionsAt(source, benchmarkSchema(true), source.indexOf('{'), ['refactor'])).length, 4)
+})
+
+test('missing-entry fixes ignore sparse, unavailable, and duplicate benchmark keys', async () => {
+    for (const [source, schema] of [
+        ['< {} { \'a\': ~ } >', benchmarkSchema(false)],
+        ['< {} # >', benchmarkSchema(true)],
+        ['< {} { \'a\': ~ \'a\': ~ } >', benchmarkSchema(true)],
+    ]) assert.deepEqual(await actionsAt(source, schema, source.indexOf('{'), ['quickfix']), [])
+})
+
+test('generated completion snippets select the only constraint-eligible state option', async () => {
+    const source = specification('| `nothing` ~', '#')
+    const result = await complete(source, template(), source.indexOf('#'))
+    assert.equal(result.items.length, 1)
+    assert.equal(result.items[0].textEdit.newText, '$0| `nothing` ~')
+    const unknown = specification('#', '#')
+    const unresolved = await complete(unknown, template(), unknown.lastIndexOf('#'))
+    assert.equal(unresolved.items[0].textEdit.newText, '$0| #')
+    const ambiguous = await complete('#', specification(stateValueType, stateResolverText), 0)
+    assert.equal(ambiguous.items[0].textEdit.newText, '$0| #')
+    const singleton = specification(
+        '| `state` (`options`: { \'only\': (`description`: _ `constraints`: _ `value`: | `nothing` ~) } `results`: _)',
+        '| `state` (`definition`: ~ `result`: _ `options`: { \'only\': (`constraints`: {} `resolver`: | `nothing` ~ `result`: _) })')
+    assert.equal((await complete('#', singleton, 0)).items[0].textEdit.newText, '$0| `only` ~')
+})
+
+test('bulk resolver-entry fixes generate constraint-aware state choices', async () => {
+    const source = specification().replace("'Root': (`signature`: ~ `root value resolver`: | `nothing` ~)", '')
+    const offset = source.indexOf('`resolvers`: {') + '`resolvers`: '.length
+    const actions = await actionsAt(source, template(), offset, ['quickfix'])
+    assert.equal(actions.length, 1)
+    const change = actions[0].edit.documentChanges[0]
+    const updated = TextDocument.applyEdits(TextDocument.create(change.textDocument.uri, 'liana', 1, source), change.edits)
+    assert.match(updated, /`root value resolver`: \| `nothing` ~/)
+    assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, template())).__get_raw(), [])
+})
+
+test('bulk fixes preserve multiline closing indentation and empty identifiers', async () => {
+    const source = '(\n    `supplied`: {\n        // keep this\n    }\n    `expected`: { \'\': ~ \'a\': ~ }\n)'
+    const actions = await actionsAt(source, benchmarkSchema(true), source.indexOf('{'), ['quickfix'])
+    const change = actions[0].edit.documentChanges[0]
+    const updated = TextDocument.applyEdits(TextDocument.create(change.textDocument.uri, 'liana', 1, source), change.edits)
+    assert.ok(updated.includes('        // keep this\n        "": ~\n        "a": ~\n    }'))
+    assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, benchmarkSchema(true))).__get_raw(), [])
+})
+
+test('recursive singleton states stop at a placeholder instead of expanding forever', async () => {
+    const schema = specification(
+        '| `state` (`options`: { \'next\': (`description`: _ `constraints`: _ `value`: | `component` (`type`: | `internal` \'Root\' `results`: _)) } `results`: _)',
+        '| `state` (`definition`: ~ `result`: _ `options`: { \'next\': (`constraints`: {} `resolver`: | `component` (`definition`: ~ `location`: | `internal` \'Root\' `signature`: ~ `arguments`: _ `constraints`: {}) `result`: _) })')
+    const result = await complete('#', schema, 0)
+    assert.equal(result.items[0].textEdit.newText, '$0| `next` | #')
+})
+
+test('completion fills dense benchmark dictionaries and leaves sparse or unavailable ones empty', async () => {
+    for (const [dense, expected, names] of [
+        [true, "{ 'a': ~ 'b': ~ }", ['a', 'b']],
+        [false, "{ 'a': ~ 'b': ~ }", []],
+        [true, '#', []],
+    ]) {
+        const source = `< # ${expected} >`
+        const result = await complete(source, benchmarkSchema(dense), source.indexOf('#'))
+        assert.equal(result.items.length, 1)
+        const edit = result.items[0].textEdit
+        const updated = TextDocument.applyEdits(TextDocument.create('file:///dense.lna', 'liana', 1, source),
+            [{ ...edit, newText: snippetText(edit.newText) }])
+        const loaded = await loadWithSchema(updated, benchmarkSchema(dense))
+        const supplied = loaded.content['unmarshall result'][1][1].properties.__get_raw().find(([id]) => id === 'supplied')[1]['unmarshall result'][1].resolved
+        assert.deepEqual(supplied['unmarshall result'][1][1].entries.__get_raw().map(([id]) => id), names)
+        assert.ok(!resolveDiagnostics.Document(loaded).__get_raw().some(d => d.message.startsWith('Missing required benchmark entry')))
+    }
+})
+
+test('completion recursively fills dense resolver dictionaries and chooses their constrained states', async () => {
+    const source = specification('| `group` { \'left\': (`description`: _ `value`: | `nothing` ~) \'right\': (`description`: _ `value`: | `nothing` ~) }', '#')
+    const result = await complete(source, template(), source.indexOf('#'))
+    const edit = result.items[0].textEdit
+    const updated = TextDocument.applyEdits(TextDocument.create('file:///nested.lna', 'liana', 1, source),
+        [{ ...edit, newText: snippetText(edit.newText) }])
+    assert.match(updated, /"left":/)
+    assert.match(updated, /"right":/)
+    assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, template())).__get_raw(), [])
+})
+
+test('one quick fix handles missing signatures and resolvers together', async () => {
+    const source = specification()
+        .replace("'Root': (`type`: ~ `parameters`: | `local` (`types`: {} `lookups`: {}) `resolved parameters`: ~)", '')
+        .replace("'Root': (`signature`: ~ `root value resolver`: | `nothing` ~)", '')
+    const offset = source.indexOf('`signatures`: {') + '`signatures`: '.length
+    const actions = await actionsAt(source, template(), offset, ['quickfix'])
+    assert.equal(actions.length, 1)
+    assert.equal(actions[0].edit.documentChanges[0].edits.length, 2)
+    const change = actions[0].edit.documentChanges[0]
+    const updated = TextDocument.applyEdits(TextDocument.create(change.textDocument.uri, 'liana', 1, source), change.edits)
+    assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, template())).__get_raw(), [])
+})
+
+test('dense completion honors concise notation for generated entry payloads', async () => {
+    const source = specification('| `group` { \'left\': (`description`: _ `value`: | `nothing` ~) }', '#')
+    const result = await requestAt(source, template(), source.indexOf('#'), context => create_on_completion({
+        ...context, 'document notation styles': new Map([['__default__', 'concise']]),
+    }))
+    const edit = result.items[0].textEdit
+    const updated = TextDocument.applyEdits(TextDocument.create('file:///concise.lna', 'liana', 1, source),
+        [{ ...edit, newText: snippetText(edit.newText) }])
+    assert.match(edit.newText, /"left": </)
+    assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, template())).__get_raw(), [])
+})
+
+test('generated dense dictionary identifiers remain literal snippet text', async () => {
+    const id = 'a$1}\\b'
+    const source = `< # { ${JSON.stringify(id)}: ~ } >`
+    const result = await complete(source, benchmarkSchema(true), source.indexOf('#'))
+    const edit = result.items[0].textEdit
+    assert.ok(edit.newText.includes('\\$1\\}'))
+    const updated = TextDocument.applyEdits(TextDocument.create('file:///escaped.lna', 'liana', 1, source),
+        [{ ...edit, newText: snippetText(edit.newText) }])
+    assert.ok(updated.includes(JSON.stringify(id)))
+    assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, benchmarkSchema(true))).__get_raw(), [])
 })

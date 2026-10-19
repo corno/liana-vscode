@@ -62,7 +62,7 @@ export const create_on_initialize: (
 				'renameProvider': { prepareProvider: true },
 				'documentSymbolProvider': true,
 				'codeActionProvider': {
-					'codeActionKinds': [vscode_node.CodeActionKind.Refactor],
+					'codeActionKinds': [vscode_node.CodeActionKind.Refactor, vscode_node.CodeActionKind.QuickFix],
 					'resolveProvider': true
 				},
 				'documentFormattingProvider': true,
