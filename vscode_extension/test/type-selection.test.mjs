@@ -95,6 +95,15 @@ const referencesAt = (source, schema, offset, includeDeclaration = false) =>
 const renameAt = (source, schema, offset, newName) =>
     requestAt(source, schema, offset, create_on_rename, { newName })
 
+test('a missing constrained root value offers its schema skeleton', async () => {
+    const schema = readFileSync(new URL('../liana_authoring_environment_template/.liana/schema.slna', import.meta.url), 'utf8')
+    const result = await complete('#', schema, 0)
+    assert.equal(result.items.length, 1)
+    assert.match(result.items[0].textEdit.newText, /`schema`:/)
+    assert.match(result.items[0].textEdit.newText, /`root type`: #/)
+    assert.equal(result.items[0].textEdit.range.end.character, 1)
+})
+
 test('the shared loader selects root type directly from the flat schema resolvers', () => {
     const loaded = parse(specification())
     assert.equal(loaded[0], 'constrained')

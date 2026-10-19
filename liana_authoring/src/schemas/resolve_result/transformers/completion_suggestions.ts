@@ -20,7 +20,7 @@ export const Document = ($: s_in.Document, parameters: {
         const result = value['unmarshall result']
         return result[0] === 'success' && result[1][0] === 'state' && result[1][1].unmarshalled === target[1]
     })).decide((value): s_out.Completion_Suggestions => {
-        if (target[0] === 'value' && value.unmarshalled === target[1] && value['reference candidates']) {
+        if (target[0] === 'value' && target[1].definition[0] === 'reference' && value.unmarshalled === target[1] && value['reference candidates']) {
             const unmarshalled = target[1]
             return p_.from.optional(value['reference candidates']).map((keys): s_out.Completion_Suggestions_.O => ({
                 type: ['reference', null],
@@ -39,7 +39,7 @@ export const Document = ($: s_in.Document, parameters: {
             }))
         }
         const result = value['unmarshall result']
-        if (result[0] === 'error') return p_.literal.not_set()
+        if (result[0] === 'error') return fallback.Found(target, parameters)
         const content = result[1]
         if (target[0] === 'state' && content[0] === 'state' && content[1].unmarshalled === target[1]) {
             const constraints = value['state option constraints']
