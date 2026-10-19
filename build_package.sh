@@ -25,4 +25,7 @@ VERSION=$(node -p "require('./package.json').version")
 mkdir -p "$OUTPUT_DIR"
 
 # Package with full output path
-npx @vscode/vsce package --no-dependencies -o "$OUTPUT_DIR/${NAME}-${VERSION}.vsix"
+npx @vscode/vsce package --no-dependencies -o "$OUTPUT_DIR/${NAME}-${VERSION}.vsix" || exit 1
+
+git add -A || exit 1
+git commit -m "created version ${VERSION}"
