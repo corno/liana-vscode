@@ -78,3 +78,4 @@ export type State =
 
 export type Text =
 | ['wrong type', null]
+| ['invalid token', string]

@@ -293,7 +293,7 @@ export const Any_Value: declarations_.Any_Value = ($, $p) => {
                             case 'simple': return p_.option($, ($) => temp_value(['concrete', {
                                 'type': ['text', {
                                     'value': $.instance.token.value,
-                                    'delimiter': ['none', null],
+                                    'delimiter': $.definition['l entry'].type[0] === 'double quoted' ? ['quote', null] : ['none', null],
                                     'trivia': {
                                         'comments': $.instance['trailing trivia'].comments
                                     }
@@ -340,11 +340,6 @@ export const Any_Value: declarations_.Any_Value = ($, $p) => {
                                 'type': p_.from.state($.type).decide(
                                     ($) => {
                                         switch ($[0]) {
-                                            case 'derived': return p_.option($, ($) => ['nothing', {
-                                                '~': {
-                                                    'comments': p_.literal.list([])
-                                                }
-                                            }])
                                             case 'selected': return p_.option($, ($) => ['text', {
                                                 'value': $.intermediate.instance.token.value,
                                                 'delimiter': ['apostrophe', null],

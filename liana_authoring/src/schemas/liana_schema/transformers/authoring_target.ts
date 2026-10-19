@@ -5,6 +5,7 @@ import type * as p_di from 'pareto-core/schema'
 //schemas
 import type * as s_out from "astn/modules/authoring_target/schemas/authoring_target/schema"
 import type * as s_in from "../schema.js"
+import { component_type } from '../select_component.js'
 
 export namespace s_function {
     export type Parameters = {
@@ -38,19 +39,13 @@ export const Value: declarations_.Value = ($, $p) => ({
 export const Value_data: declarations_.Value_data = ($, $p) => p_.from.state($).decide(
     ($): s_out.Value.data => {
         switch ($[0]) {
-            case 'simple': return p_.option($, ($) => ['concrete', {
+            case 'simple': return p_.option($, ($) => $['l entry'].type[0] === 'undelimited'
+                || p_.from.optional($['l entry']['regular expression']).decide(() => true, () => false)
+                ? ['missing', { '#': { comments: p_.literal.list([]) } }]
+                : ['concrete', {
                 'type': ['text', {
-                    'delimiter': $['l entry'].type[0] === 'text' ? ['quote', null] : ['none', null],
-                    'value': p_.from.state($['l entry'].type).decide(
-                        ($) => {
-                            switch ($[0]) {
-                                            case 'number': return p_.option($, ($) => "0")
-                                            case 'boolean': return p_.option($, ($) => "false")
-                                            case 'date': return p_.option($, ($) => "yyyy-mm-dd")
-                                            case 'text': return p_.option($, ($) => "")
-                                            default: return p_.exhaustive($[0])
-                            }
-                        }),
+                    'delimiter': $['l entry'].type[0] === 'double quoted' ? ['quote', null] : ['none', null],
+                    'value': "",
                     'trivia': {
                         'comments': p_.literal.list([])
                     }
@@ -79,15 +74,7 @@ export const Value_data: declarations_.Value_data = ($, $p) => p_.from.state($).
                     'comments': p_.literal.list([])
                 }
             }])
-            case 'component': return p_.option($, ($) => p_.from.state($.type).decide(
-                ($) => {
-                    switch ($[0]) {
-                        case 'internal': return p_.option($, ($) => Value_data($['l entry'].get_circular_dependent()['root value'], $p))
-                        case 'internal acyclic': return p_.option($, ($) => Value_data($['l entry']['root value'], $p))
-                        default: return p_.exhaustive($[0])
-                    }
-                })
-            )
+            case 'component': return p_.option($, ($) => Value_data(component_type($.type)['root value'], $p))
             case 'dictionary': return p_.option($, ($) => ['concrete', {
                 'type': ['dictionary', {
                     '{': {

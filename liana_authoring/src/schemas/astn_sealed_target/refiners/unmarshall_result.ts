@@ -65,6 +65,9 @@ export const Value: declarations_.Value = ($, abort) => {
                             case 'incorrect': return p_.option($, ($) => p_.from.state($).decide(
                                 ($) => {
                                     switch ($[0]) {
+                                        case 'invalid token': return abort({
+                                            range: start_token_range, type: ['text', ['invalid token', $[1]]],
+                                        })
                                         case 'wrong type': return p_.option($, ($) => abort({
                                             'type': ['number', ['wrong type', null]], //FIXME!!!
                                             'range': start_token_range
@@ -184,7 +187,7 @@ export const Value: declarations_.Value = ($, abort) => {
                             case 'nothing': return p_.option($, ($): s_out.Value => ['nothing', null])
                             case 'simple': return p_.option($, ($): s_out.Value => ['text', {
                                 'value': $.instance.token.value,
-                                'delimiter': ['none', null],
+                                'delimiter': $.definition['l entry'].type[0] === 'double quoted' ? ['quote', null] : ['none', null],
 
                             }])
                             case 'optional': return p_.option($, ($): s_out.Value => ['optional', p_.from.state($.derived.status).decide(
@@ -198,7 +201,6 @@ export const Value: declarations_.Value = ($, abort) => {
                             case 'reference': return p_.option($, ($): s_out.Value => p_.from.state($.type).decide(
                                 ($) => {
                                     switch ($[0]) {
-                                        case 'derived': return p_.option($, ($) => ['nothing', null])
                                         case 'selected': return p_.option($, ($) => ['reference', {
                                             'value': $.intermediate.instance.token.value,
                                             'delimiter': ['apostrophe', null],

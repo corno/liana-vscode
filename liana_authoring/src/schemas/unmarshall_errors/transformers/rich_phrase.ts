@@ -42,6 +42,7 @@ export const Error: declarations.Error = ($) => sh.ph.composed(
                 case 'value': return p_.option($, ($) => p_.from.state($).decide(
                     ($) => {
                         switch ($[0]) {
+                            case 'invalid token': return p_.literal.list([sh.ph.text('Token does not match basic type ' + $[1] + '.')])
                             case 'invalid type': return p_.option($, ($) => p_.literal.list([
                                 sh.ph.text("invalid value type, expected "),
                                 sh.ph.rich_phrase(

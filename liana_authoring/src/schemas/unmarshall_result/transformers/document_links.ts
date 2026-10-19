@@ -104,29 +104,7 @@ export const Value: declarations_.Value = ($) => p_.from.state($['unmarshall res
                                 }
                             }
                         ))
-                        case 'text': return p_.option($, ($) => {
-                            const $v_instance = $.instance
-                            const $p_type = $.definition
-                            return p_.from.state($p_type.link).decide(
-                                ($) => {
-                                    switch ($[0]) {
-                                        case 'no': return p_.option($, ($) => p_.literal.list([]))
-                                        case 'yes': return p_.option($, ($) => p_.literal.list([
-                                            {
-                                                'range': $v_instance.range,
-                                                'target': p_s.ph.list(p_.literal.list([
-                                                    $['path prefix'],
-                                                    $v_instance.token.value,
-                                                    $['path suffix'],
-                                                ])),
-                                                'tooltip': p_.literal.not_set()
-                                            }
-                                        ]))
-                                        default: return p_.exhaustive($[0])
-                                    }
-                                }
-                            )
-                        })
+                        case 'text': return p_.option($, ($) => p_.literal.list([]))
                         default: return p_.exhaustive($[0])
                     }
                 }

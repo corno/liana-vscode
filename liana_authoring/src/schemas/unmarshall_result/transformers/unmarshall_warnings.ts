@@ -126,8 +126,6 @@ export const Value: declarations_.Value = ($) => {
                             case 'reference': return p_.option($, ($) => p_.from.state($.type).decide(
                                 ($): s_out.Warnings => {
                                     switch ($[0]) {
-                                        case 'derived': return p_.option($, ($) => p_.literal.list([
-                                        ]))
                                         case 'selected': return p_.option($, ($) => $.intermediate.instance.token.type[0] !== 'apostrophed'
                                             ? p_.literal.list([{
                                                 'range': $.intermediate.instance.range,

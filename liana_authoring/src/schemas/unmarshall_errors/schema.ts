@@ -62,6 +62,7 @@ export namespace Errors_ {
             
             export type value = 
                 | readonly ['invalid type', value.invalid_type]
+                | readonly ['invalid token', string]
                 | readonly ['missing', value.missing]
             
             export namespace dictionary {

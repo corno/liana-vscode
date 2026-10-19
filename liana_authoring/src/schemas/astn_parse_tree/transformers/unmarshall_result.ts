@@ -10,6 +10,8 @@ import type * as s_out from "../../../schemas/unmarshall_result/schema.js"
 
 import type * as s_function from "../../../schemas/unmarshall_result_from_astn_parse_tree/schema.js"
 import type * as s_in_definition from "pareto-liana/modules/schema.generated/schemas/resolved/schema"
+import { component_type } from '../../liana_schema/select_component.js'
+import { matches_token } from '../../liana_schema/token_pattern.js'
 
 
 
@@ -76,14 +78,7 @@ export const Value: declarations.Value = ($, $p) => {
                                             'value': Value(
                                                 value,
                                                 {
-                                                    'definition': p_.from.state($.type).decide(
-                                                        ($) => {
-                                                            switch ($[0]) {
-                                                                case 'internal acyclic': return p_.option($, ($) => $['l entry']['root value'])
-                                                                case 'internal': return p_.option($, ($) => $['l entry'].get_circular_dependent()['root value'])
-                                                                default: return p_.exhaustive($[0])
-                                                            }
-                                                        }),
+                                                    'definition': component_type($.type)['root value'],
                                                     'property path': $p['property path'],
                                                     'parent range stack': p_.literal.set(value_range_stack),
                                                 }
@@ -414,15 +409,8 @@ export const Value: declarations.Value = ($, $p) => {
                                         })
                                         case 'simple': return p_.option($, ($): s_out.Unmarshalled_Value => {
                                             const def = $
-                                            const basic = def['l entry'].type
-                                            if (basic[0] === 'text') {
-                                                if ($v_concrete_value[0] !== 'text') {
-                                                    return abort(['incorrect', ['wrong type', null]])
-                                                }
-                                                return ['text', {
-                                                    definition: basic[1],
-                                                    instance: $v_concrete_value[1],
-                                                }]
+                                            if ($v_concrete_value[0] === 'text' && !matches_token(def['l entry'], $v_concrete_value[1].token.value)) {
+                                                return abort(['incorrect', ['invalid token', def['l id']]])
                                             }
                                             return ['simple', p_.from.state($v_concrete_value).decide(
                                                 ($) => {
@@ -457,7 +445,7 @@ export const Value: declarations.Value = ($, $p) => {
                                                                             'child value': Value(
                                                                                 item_value.value,
                                                                                 {
-                                                                                    'definition': def,
+                                                                                    'definition': def.value,
                                                                                     'property path': p_.literal.chain(
                                                                                         $p['property path'],
                                                                                         ['optional', null]
@@ -479,7 +467,7 @@ export const Value: declarations.Value = ($, $p) => {
                                                                         'child value': Value(
                                                                             $.value,
                                                                             {
-                                                                                'definition': def,
+                                                                                'definition': def.value,
                                                                                 'property path': p_.literal.chain(
                                                                                     $p['property path'],
                                                                                     ['optional', null]
@@ -533,24 +521,6 @@ export const Value: declarations.Value = ($, $p) => {
                                                 'type': p_.from.state($.type).decide(
                                                     ($) => {
                                                         switch ($[0]) {
-                                                            case 'derived': return p_.option($, ($) => {
-                                                                return ['derived', {
-                                                                    'definition': $,
-                                                                    'intermediate': {
-                                                                        'instance': p_.from.state($v_concrete_value).decide(
-                                                                            ($) => {
-                                                                                switch ($[0]) {
-                                                                                    case 'nothing': return p_.option($, ($) => ['nothing', $])
-                                                                                    case 'text': return p_.option($, ($) => $.token.value === "null"
-                                                                                        ? ['null literal', $]
-                                                                                        : abort(['incorrect', ['wrong type', null]])
-                                                                                    )
-                                                                                    default: return abort(['incorrect', ['wrong type', null]])
-                                                                                }
-                                                                            }),
-                                                                    }
-                                                                }]
-                                                            })
                                                             case 'selected': return p_.option($, ($) => {
                                                                 const def = $
                                                                 return ['selected', p_.from.state($v_concrete_value).decide(

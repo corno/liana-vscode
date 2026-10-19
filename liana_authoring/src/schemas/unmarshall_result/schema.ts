@@ -41,6 +41,7 @@ export type Value_Unmarshall_Result =
 export type Value_Unmarshall_Error =
     | ['incorrect',
         | ['wrong type', null]
+        | ['invalid token', string]
         | ['list as state format error', {
             'list': s_astn_parse_tree.Value.type_.concrete.list
             'type':
@@ -239,15 +240,6 @@ export namespace Optional {
     }
 }
 
-export type Reference_Derived = {
-    'definition': s_schema.Value.reference.type_.derived
-    'intermediate': {
-        'instance':
-        | ['nothing', s_astn_parse_tree.Value.type_.concrete.nothing]
-        | ['null literal', s_astn_parse_tree.Value.type_.concrete.text]
-    }
-}
-
 export type Reference_Selected = {
     'definition': s_schema.Value.reference.type_.selected
     'intermediate': {
@@ -257,8 +249,7 @@ export type Reference_Selected = {
 
 export type Reference = {
     'type':
-    ['derived', Reference_Derived]
-    | ['selected', Reference_Selected]
+    ['selected', Reference_Selected]
 
 }
 
@@ -309,7 +300,7 @@ export type Nothing = {
 }
 
 export type Text = {
-    'definition': s_schema.Basic_Type.type_.text
+    'definition': s_schema.Basic_Type
     'instance': s_astn_parse_tree.Value.type_.concrete.text
 }
 

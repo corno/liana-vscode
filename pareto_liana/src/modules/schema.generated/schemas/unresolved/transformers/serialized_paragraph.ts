@@ -12,6 +12,12 @@ import * as t_sealed_target_to_serialized_paragraph from "astn-runtime/modules/s
 
 export namespace declarations {
     
+    export type Regular_Expression = p_.Transformer_With_Parameter<
+        s_source.Regular_Expression,
+        s_target.Lines,
+        s_parameters.Parameters
+    >
+
     export type Basic_Type = p_.Transformer_With_Parameter<
         s_source.Basic_Type,
         s_target.Lines,
@@ -36,6 +42,12 @@ export namespace declarations {
         s_parameters.Parameters
     >
     
+    export type Namespaces = p_.Transformer_With_Parameter<
+        s_source.Namespaces,
+        s_target.Lines,
+        s_parameters.Parameters
+    >
+
     export type Types = p_.Transformer_With_Parameter<
         s_source.Types,
         s_target.Lines,
@@ -78,14 +90,44 @@ export namespace declarations {
         s_parameters.Parameters
     >
     
+    export type Option_Constraint_Source = p_.Transformer_With_Parameter<
+        s_source.Option_Constraint_Source,
+        s_target.Lines,
+        s_parameters.Parameters
+    >
+
+    export type Reference_Constraints = p_.Transformer_With_Parameter<
+        s_source.Reference_Constraints,
+        s_target.Lines,
+        s_parameters.Parameters
+    >
+
+    export type Reference_Constraint_Source = p_.Transformer_With_Parameter<
+        s_source.Reference_Constraint_Source,
+        s_target.Lines,
+        s_parameters.Parameters
+    >
+
+    export type Structure = p_.Transformer_With_Parameter<
+        s_source.Structure,
+        s_target.Lines,
+        s_parameters.Parameters
+    >
+
+    export type Value_Result = p_.Transformer_With_Parameter<
+        s_source.Value_Result,
+        s_target.Lines,
+        s_parameters.Parameters
+    >
+
     export type Presence = p_.Transformer_With_Parameter<
         s_source.Presence,
         s_target.Lines,
         s_parameters.Parameters
     >
     
-    export type Resolver_Value_Group = p_.Transformer_With_Parameter<
-        s_source.Resolver_Value_Group,
+    export type Signatures_Type_Reference = p_.Transformer_With_Parameter<
+        s_source.Signatures_Type_Reference,
         s_target.Lines,
         s_parameters.Parameters
     >
@@ -102,12 +144,60 @@ export namespace declarations {
         s_parameters.Parameters
     >
     
+    export type Resolver_Signature = p_.Transformer_With_Parameter<
+        s_source.Resolver_Signature,
+        s_target.Lines,
+        s_parameters.Parameters
+    >
+
+    export type Resolver_Namespaces = p_.Transformer_With_Parameter<
+        s_source.Resolver_Namespaces,
+        s_target.Lines,
+        s_parameters.Parameters
+    >
+
+    export type Resolver = p_.Transformer_With_Parameter<
+        s_source.Resolver,
+        s_target.Lines,
+        s_parameters.Parameters
+    >
+
+    export type Resolver_Absence_Constraints = p_.Transformer_With_Parameter<
+        s_source.Resolver_Absence_Constraints,
+        s_target.Lines,
+        s_parameters.Parameters
+    >
+
+    export type Resolver_Value_Group = p_.Transformer_With_Parameter<
+        s_source.Resolver_Value_Group,
+        s_target.Lines,
+        s_parameters.Parameters
+    >
+
     export type Resolver_Value_Constraints = p_.Transformer_With_Parameter<
         s_source.Resolver_Value_Constraints,
         s_target.Lines,
         s_parameters.Parameters
     >
     
+    export type Resolver_Type_Reference = p_.Transformer_With_Parameter<
+        s_source.Resolver_Type_Reference,
+        s_target.Lines,
+        s_parameters.Parameters
+    >
+
+    export type Resolver_Value_Path = p_.Transformer_With_Parameter<
+        s_source.Resolver_Value_Path,
+        s_target.Lines,
+        s_parameters.Parameters
+    >
+
+    export type Resolver_Value_Reference = p_.Transformer_With_Parameter<
+        s_source.Resolver_Value_Reference,
+        s_target.Lines,
+        s_parameters.Parameters
+    >
+
     export type Resolver_Relative_Value_Selection = p_.Transformer_With_Parameter<
         s_source.Resolver_Relative_Value_Selection,
         s_target.Lines,
@@ -126,6 +216,12 @@ export namespace declarations {
         s_parameters.Parameters
     >
     
+    export type Resolver_Reference_Constraints = p_.Transformer_With_Parameter<
+        s_source.Resolver_Reference_Constraints,
+        s_target.Lines,
+        s_parameters.Parameters
+    >
+
     export type Resolver_Value = p_.Transformer_With_Parameter<
         s_source.Resolver_Value,
         s_target.Lines,
@@ -168,6 +264,12 @@ export namespace declarations {
         s_parameters.Parameters
     >
     
+    export type Resolver_Option_Constraint_Source = p_.Transformer_With_Parameter<
+        s_source.Resolver_Option_Constraint_Source,
+        s_target.Lines,
+        s_parameters.Parameters
+    >
+
     export type Resolver_Optional_Value_Constraints = p_.Transformer_With_Parameter<
         s_source.Resolver_Optional_Value_Constraints,
         s_target.Lines,
@@ -180,14 +282,14 @@ export namespace declarations {
         s_parameters.Parameters
     >
     
-    export type Resolver_Reference_To_Value_Constraint = p_.Transformer_With_Parameter<
-        s_source.Resolver_Reference_To_Value_Constraint,
+    export type Resolver_Reference_Constraint_Source = p_.Transformer_With_Parameter<
+        s_source.Resolver_Reference_Constraint_Source,
         s_target.Lines,
         s_parameters.Parameters
     >
     
-    export type Resolver_Signature = p_.Transformer_With_Parameter<
-        s_source.Resolver_Signature,
+    export type Resolver_Reference_To_Value_Constraint = p_.Transformer_With_Parameter<
+        s_source.Resolver_Reference_To_Value_Constraint,
         s_target.Lines,
         s_parameters.Parameters
     >
@@ -215,15 +317,16 @@ export namespace declarations {
         s_target.Lines,
         s_parameters.Parameters
     >
-    
-    export type Value_Results = p_.Transformer_With_Parameter<
-        s_source.Value_Results,
-        s_target.Lines,
-        s_parameters.Parameters
-    >
 }
 
 // implementations
+
+export const Regular_Expression: declarations.Regular_Expression = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+    t_to_sealed_target.Regular_Expression(
+        $,
+    ),
+    $p,
+)
 
 export const Basic_Type: declarations.Basic_Type = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
     t_to_sealed_target.Basic_Type(
@@ -248,6 +351,13 @@ export const Dictionary: declarations.Dictionary = ($, $p) => t_sealed_target_to
 
 export const Group: declarations.Group = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
     t_to_sealed_target.Group(
+        $,
+    ),
+    $p,
+)
+
+export const Namespaces: declarations.Namespaces = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+    t_to_sealed_target.Namespaces(
         $,
     ),
     $p,
@@ -302,6 +412,41 @@ export const Option_Constraints: declarations.Option_Constraints = ($, $p) => t_
     $p,
 )
 
+export const Option_Constraint_Source: declarations.Option_Constraint_Source = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+    t_to_sealed_target.Option_Constraint_Source(
+        $,
+    ),
+    $p,
+)
+
+export const Reference_Constraints: declarations.Reference_Constraints = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+    t_to_sealed_target.Reference_Constraints(
+        $,
+    ),
+    $p,
+)
+
+export const Reference_Constraint_Source: declarations.Reference_Constraint_Source = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+    t_to_sealed_target.Reference_Constraint_Source(
+        $,
+    ),
+    $p,
+)
+
+export const Structure: declarations.Structure = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+    t_to_sealed_target.Structure(
+        $,
+    ),
+    $p,
+)
+
+export const Value_Result: declarations.Value_Result = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+    t_to_sealed_target.Value_Result(
+        $,
+    ),
+    $p,
+)
+
 export const Presence: declarations.Presence = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
     t_to_sealed_target.Presence(
         $,
@@ -309,8 +454,8 @@ export const Presence: declarations.Presence = ($, $p) => t_sealed_target_to_ser
     $p,
 )
 
-export const Resolver_Value_Group: declarations.Resolver_Value_Group = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
-    t_to_sealed_target.Resolver_Value_Group(
+export const Signatures_Type_Reference: declarations.Signatures_Type_Reference = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+    t_to_sealed_target.Signatures_Type_Reference(
         $,
     ),
     $p,
@@ -330,8 +475,64 @@ export const Resolver_Signatures: declarations.Resolver_Signatures = ($, $p) => 
     $p,
 )
 
+export const Resolver_Signature: declarations.Resolver_Signature = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+    t_to_sealed_target.Resolver_Signature(
+        $,
+    ),
+    $p,
+)
+
+export const Resolver_Namespaces: declarations.Resolver_Namespaces = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+    t_to_sealed_target.Resolver_Namespaces(
+        $,
+    ),
+    $p,
+)
+
+export const Resolver: declarations.Resolver = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+    t_to_sealed_target.Resolver(
+        $,
+    ),
+    $p,
+)
+
+export const Resolver_Absence_Constraints: declarations.Resolver_Absence_Constraints = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+    t_to_sealed_target.Resolver_Absence_Constraints(
+        $,
+    ),
+    $p,
+)
+
+export const Resolver_Value_Group: declarations.Resolver_Value_Group = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+    t_to_sealed_target.Resolver_Value_Group(
+        $,
+    ),
+    $p,
+)
+
 export const Resolver_Value_Constraints: declarations.Resolver_Value_Constraints = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
     t_to_sealed_target.Resolver_Value_Constraints(
+        $,
+    ),
+    $p,
+)
+
+export const Resolver_Type_Reference: declarations.Resolver_Type_Reference = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+    t_to_sealed_target.Resolver_Type_Reference(
+        $,
+    ),
+    $p,
+)
+
+export const Resolver_Value_Path: declarations.Resolver_Value_Path = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+    t_to_sealed_target.Resolver_Value_Path(
+        $,
+    ),
+    $p,
+)
+
+export const Resolver_Value_Reference: declarations.Resolver_Value_Reference = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+    t_to_sealed_target.Resolver_Value_Reference(
         $,
     ),
     $p,
@@ -353,6 +554,13 @@ export const Resolver_Result_Selection: declarations.Resolver_Result_Selection =
 
 export const Resolver_Value_List_Result: declarations.Resolver_Value_List_Result = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
     t_to_sealed_target.Resolver_Value_List_Result(
+        $,
+    ),
+    $p,
+)
+
+export const Resolver_Reference_Constraints: declarations.Resolver_Reference_Constraints = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+    t_to_sealed_target.Resolver_Reference_Constraints(
         $,
     ),
     $p,
@@ -407,6 +615,13 @@ export const Resolver_Lookup_Selection: declarations.Resolver_Lookup_Selection =
     $p,
 )
 
+export const Resolver_Option_Constraint_Source: declarations.Resolver_Option_Constraint_Source = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+    t_to_sealed_target.Resolver_Option_Constraint_Source(
+        $,
+    ),
+    $p,
+)
+
 export const Resolver_Optional_Value_Constraints: declarations.Resolver_Optional_Value_Constraints = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
     t_to_sealed_target.Resolver_Optional_Value_Constraints(
         $,
@@ -421,15 +636,15 @@ export const Resolver_Optional_Value_Initialization: declarations.Resolver_Optio
     $p,
 )
 
-export const Resolver_Reference_To_Value_Constraint: declarations.Resolver_Reference_To_Value_Constraint = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
-    t_to_sealed_target.Resolver_Reference_To_Value_Constraint(
+export const Resolver_Reference_Constraint_Source: declarations.Resolver_Reference_Constraint_Source = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+    t_to_sealed_target.Resolver_Reference_Constraint_Source(
         $,
     ),
     $p,
 )
 
-export const Resolver_Signature: declarations.Resolver_Signature = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
-    t_to_sealed_target.Resolver_Signature(
+export const Resolver_Reference_To_Value_Constraint: declarations.Resolver_Reference_To_Value_Constraint = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+    t_to_sealed_target.Resolver_Reference_To_Value_Constraint(
         $,
     ),
     $p,
@@ -458,13 +673,6 @@ export const Schema: declarations.Schema = ($, $p) => t_sealed_target_to_seriali
 
 export const Type_Specification: declarations.Type_Specification = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
     t_to_sealed_target.Type_Specification(
-        $,
-    ),
-    $p,
-)
-
-export const Value_Results: declarations.Value_Results = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
-    t_to_sealed_target.Value_Results(
         $,
     ),
     $p,

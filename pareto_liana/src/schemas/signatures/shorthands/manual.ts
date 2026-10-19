@@ -29,12 +29,10 @@ export namespace sig {
         lookups: sh.Raw_Or_Normal_Dictionary<s_target.Resolver_Signature_Parameters.lookups.D>,
     ): s_target.Resolver_Signatures.D => {
         return {
-            'type': null,
             'parameters': sh.state(['local', {
                 'types': sh.dictionary(types),
                 'lookups': sh.dictionary(lookups),
             }]),
-            'resolved parameters': null,
         }
     }
 
@@ -42,9 +40,7 @@ export namespace sig {
         name: string
     ): s_target.Resolver_Signatures.D => {
         return {
-            'type': null,
             'parameters': sh.state(['same as', sh.reference(name)]),
-            'resolved parameters': null,
         }
     }
 }
@@ -59,7 +55,6 @@ export namespace parameter {
         return {
             'type': {
                 'location': sh.state(['internal', sh.reference(name)]),
-                'resulting type': null,
             },
             'presence': presence === 'optional'
                 ? sh.state(['optional', null])
@@ -75,9 +70,7 @@ export namespace parameter {
         return {
             'referent': {
                 'location': sh.state(['internal', sh.reference(name)]),
-                'resulting type': null,
             },
-            'dictionary': null,
             'type': type === 'cyclic'
                 ? sh.state(['cyclic', null])
                 : sh.state(['acyclic', null]),

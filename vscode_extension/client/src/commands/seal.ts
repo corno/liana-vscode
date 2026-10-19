@@ -45,7 +45,7 @@ export default ((deps) => () => {
 						'unmarshall': {
 							'type': p_.from.state($).decide(($) => {
 								switch ($[0]) {
-									case 'constrained': return p_.option($, ($) => $['root type'].entry.signature.type)
+									case 'constrained': return p_.option($, ($) => $['root type'].entry)
 									default: return p_.exhaustive($[0])
 								}
 							}),

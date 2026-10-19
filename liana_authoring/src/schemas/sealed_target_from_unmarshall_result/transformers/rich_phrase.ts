@@ -144,6 +144,7 @@ export const Error: declarations.Error = ($) => {
                     case 'text': return p_.option($, ($) => p_.from.state($).decide(
                         ($) => {
                             switch ($[0]) {
+                                case 'invalid token': return sh.ph.text('Token does not match basic type ' + $[1] + '.')
                                 case 'wrong type': return p_.option($, ($) => sh.ph.text("wrong type, expected text"))
                                 default: return p_.exhaustive($[0])
                             }
@@ -153,4 +154,3 @@ export const Error: declarations.Error = ($) => {
             })
     ])
 }
-

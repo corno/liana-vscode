@@ -24,7 +24,7 @@ export const Type_Specifier: p_.Refiner_With_Parameter<
         abort(['unresolved document deserialization', ['unmarshalling', error]])
     const unresolved = r_unresolved.Type_Specification(tree, unmarshalling_error)
     const group = v.Verbose_Group(tree, unmarshalling_error, {
-        'expected properties': p_.literal.dictionary({ schema: null, 'root type': null }),
+        'expected properties': p_.literal.dictionary({ 'file extension': null, schema: null, 'root type': null }),
     })
     const root = v.Property(group, unmarshalling_error, { id: 'root type' })
     const specification = r_schema.Type_Specification(
@@ -33,6 +33,12 @@ export const Type_Specifier: p_.Refiner_With_Parameter<
     )
     return ['constrained', {
         resolver: specification.schema,
+        'root resolver': p_.from.dictionary(specification.schema.resolver.types).get_entry(specification['root type']['l id'], {
+            no_such_entry: () => abort(['resolving', {
+                type: ['lookup', ['no such entry', specification['root type']['l id']]],
+                location: location.Value(root),
+            }]),
+        }),
         'root type': {
             id: specification['root type']['l id'],
             entry: specification['root type']['l entry'],

@@ -12,6 +12,13 @@ import * as r_parse_tree_from_list_of_characters from "astn-runtime/modules/dese
 
 export namespace declarations {
     
+    export type Regular_Expression = p_.Refiner_With_Parameter<
+        s_target.Regular_Expression,
+        s_error.Error,
+        s_source.List_Of_Characters,
+        s_parameters.Parameters
+    >
+
     export type Basic_Type = p_.Refiner_With_Parameter<
         s_target.Basic_Type,
         s_error.Error,
@@ -40,6 +47,13 @@ export namespace declarations {
         s_parameters.Parameters
     >
     
+    export type Namespaces = p_.Refiner_With_Parameter<
+        s_target.Namespaces,
+        s_error.Error,
+        s_source.List_Of_Characters,
+        s_parameters.Parameters
+    >
+
     export type Types = p_.Refiner_With_Parameter<
         s_target.Types,
         s_error.Error,
@@ -89,6 +103,41 @@ export namespace declarations {
         s_parameters.Parameters
     >
     
+    export type Option_Constraint_Source = p_.Refiner_With_Parameter<
+        s_target.Option_Constraint_Source,
+        s_error.Error,
+        s_source.List_Of_Characters,
+        s_parameters.Parameters
+    >
+
+    export type Reference_Constraints = p_.Refiner_With_Parameter<
+        s_target.Reference_Constraints,
+        s_error.Error,
+        s_source.List_Of_Characters,
+        s_parameters.Parameters
+    >
+
+    export type Reference_Constraint_Source = p_.Refiner_With_Parameter<
+        s_target.Reference_Constraint_Source,
+        s_error.Error,
+        s_source.List_Of_Characters,
+        s_parameters.Parameters
+    >
+
+    export type Structure = p_.Refiner_With_Parameter<
+        s_target.Structure,
+        s_error.Error,
+        s_source.List_Of_Characters,
+        s_parameters.Parameters
+    >
+
+    export type Value_Result = p_.Refiner_With_Parameter<
+        s_target.Value_Result,
+        s_error.Error,
+        s_source.List_Of_Characters,
+        s_parameters.Parameters
+    >
+
     export type Presence = p_.Refiner_With_Parameter<
         s_target.Presence,
         s_error.Error,
@@ -96,8 +145,8 @@ export namespace declarations {
         s_parameters.Parameters
     >
     
-    export type Resolver_Value_Group = p_.Refiner_With_Parameter<
-        s_target.Resolver_Value_Group,
+    export type Signatures_Type_Reference = p_.Refiner_With_Parameter<
+        s_target.Signatures_Type_Reference,
         s_error.Error,
         s_source.List_Of_Characters,
         s_parameters.Parameters
@@ -117,6 +166,41 @@ export namespace declarations {
         s_parameters.Parameters
     >
     
+    export type Resolver_Signature = p_.Refiner_With_Parameter<
+        s_target.Resolver_Signature,
+        s_error.Error,
+        s_source.List_Of_Characters,
+        s_parameters.Parameters
+    >
+
+    export type Resolver_Namespaces = p_.Refiner_With_Parameter<
+        s_target.Resolver_Namespaces,
+        s_error.Error,
+        s_source.List_Of_Characters,
+        s_parameters.Parameters
+    >
+
+    export type Resolver = p_.Refiner_With_Parameter<
+        s_target.Resolver,
+        s_error.Error,
+        s_source.List_Of_Characters,
+        s_parameters.Parameters
+    >
+
+    export type Resolver_Absence_Constraints = p_.Refiner_With_Parameter<
+        s_target.Resolver_Absence_Constraints,
+        s_error.Error,
+        s_source.List_Of_Characters,
+        s_parameters.Parameters
+    >
+
+    export type Resolver_Value_Group = p_.Refiner_With_Parameter<
+        s_target.Resolver_Value_Group,
+        s_error.Error,
+        s_source.List_Of_Characters,
+        s_parameters.Parameters
+    >
+
     export type Resolver_Value_Constraints = p_.Refiner_With_Parameter<
         s_target.Resolver_Value_Constraints,
         s_error.Error,
@@ -124,6 +208,27 @@ export namespace declarations {
         s_parameters.Parameters
     >
     
+    export type Resolver_Type_Reference = p_.Refiner_With_Parameter<
+        s_target.Resolver_Type_Reference,
+        s_error.Error,
+        s_source.List_Of_Characters,
+        s_parameters.Parameters
+    >
+
+    export type Resolver_Value_Path = p_.Refiner_With_Parameter<
+        s_target.Resolver_Value_Path,
+        s_error.Error,
+        s_source.List_Of_Characters,
+        s_parameters.Parameters
+    >
+
+    export type Resolver_Value_Reference = p_.Refiner_With_Parameter<
+        s_target.Resolver_Value_Reference,
+        s_error.Error,
+        s_source.List_Of_Characters,
+        s_parameters.Parameters
+    >
+
     export type Resolver_Relative_Value_Selection = p_.Refiner_With_Parameter<
         s_target.Resolver_Relative_Value_Selection,
         s_error.Error,
@@ -145,6 +250,13 @@ export namespace declarations {
         s_parameters.Parameters
     >
     
+    export type Resolver_Reference_Constraints = p_.Refiner_With_Parameter<
+        s_target.Resolver_Reference_Constraints,
+        s_error.Error,
+        s_source.List_Of_Characters,
+        s_parameters.Parameters
+    >
+
     export type Resolver_Value = p_.Refiner_With_Parameter<
         s_target.Resolver_Value,
         s_error.Error,
@@ -194,6 +306,13 @@ export namespace declarations {
         s_parameters.Parameters
     >
     
+    export type Resolver_Option_Constraint_Source = p_.Refiner_With_Parameter<
+        s_target.Resolver_Option_Constraint_Source,
+        s_error.Error,
+        s_source.List_Of_Characters,
+        s_parameters.Parameters
+    >
+
     export type Resolver_Optional_Value_Constraints = p_.Refiner_With_Parameter<
         s_target.Resolver_Optional_Value_Constraints,
         s_error.Error,
@@ -208,15 +327,15 @@ export namespace declarations {
         s_parameters.Parameters
     >
     
-    export type Resolver_Reference_To_Value_Constraint = p_.Refiner_With_Parameter<
-        s_target.Resolver_Reference_To_Value_Constraint,
+    export type Resolver_Reference_Constraint_Source = p_.Refiner_With_Parameter<
+        s_target.Resolver_Reference_Constraint_Source,
         s_error.Error,
         s_source.List_Of_Characters,
         s_parameters.Parameters
     >
     
-    export type Resolver_Signature = p_.Refiner_With_Parameter<
-        s_target.Resolver_Signature,
+    export type Resolver_Reference_To_Value_Constraint = p_.Refiner_With_Parameter<
+        s_target.Resolver_Reference_To_Value_Constraint,
         s_error.Error,
         s_source.List_Of_Characters,
         s_parameters.Parameters
@@ -249,16 +368,18 @@ export namespace declarations {
         s_source.List_Of_Characters,
         s_parameters.Parameters
     >
-    
-    export type Value_Results = p_.Refiner_With_Parameter<
-        s_target.Value_Results,
-        s_error.Error,
-        s_source.List_Of_Characters,
-        s_parameters.Parameters
-    >
 }
 
 // implementations
+
+export const Regular_Expression: declarations.Regular_Expression = ($, abort, $p) => r_from_parse_tree.Regular_Expression(
+    r_parse_tree_from_list_of_characters.Document(
+        $,
+        ($) => abort(['parse tree deserialization', $]),
+        $p,
+    )['content'],
+    ($) => abort(['unmarshalling', $]),
+)
 
 export const Basic_Type: declarations.Basic_Type = ($, abort, $p) => r_from_parse_tree.Basic_Type(
     r_parse_tree_from_list_of_characters.Document(
@@ -288,6 +409,15 @@ export const Dictionary: declarations.Dictionary = ($, abort, $p) => r_from_pars
 )
 
 export const Group: declarations.Group = ($, abort, $p) => r_from_parse_tree.Group(
+    r_parse_tree_from_list_of_characters.Document(
+        $,
+        ($) => abort(['parse tree deserialization', $]),
+        $p,
+    )['content'],
+    ($) => abort(['unmarshalling', $]),
+)
+
+export const Namespaces: declarations.Namespaces = ($, abort, $p) => r_from_parse_tree.Namespaces(
     r_parse_tree_from_list_of_characters.Document(
         $,
         ($) => abort(['parse tree deserialization', $]),
@@ -359,6 +489,51 @@ export const Option_Constraints: declarations.Option_Constraints = ($, abort, $p
     ($) => abort(['unmarshalling', $]),
 )
 
+export const Option_Constraint_Source: declarations.Option_Constraint_Source = ($, abort, $p) => r_from_parse_tree.Option_Constraint_Source(
+    r_parse_tree_from_list_of_characters.Document(
+        $,
+        ($) => abort(['parse tree deserialization', $]),
+        $p,
+    )['content'],
+    ($) => abort(['unmarshalling', $]),
+)
+
+export const Reference_Constraints: declarations.Reference_Constraints = ($, abort, $p) => r_from_parse_tree.Reference_Constraints(
+    r_parse_tree_from_list_of_characters.Document(
+        $,
+        ($) => abort(['parse tree deserialization', $]),
+        $p,
+    )['content'],
+    ($) => abort(['unmarshalling', $]),
+)
+
+export const Reference_Constraint_Source: declarations.Reference_Constraint_Source = ($, abort, $p) => r_from_parse_tree.Reference_Constraint_Source(
+    r_parse_tree_from_list_of_characters.Document(
+        $,
+        ($) => abort(['parse tree deserialization', $]),
+        $p,
+    )['content'],
+    ($) => abort(['unmarshalling', $]),
+)
+
+export const Structure: declarations.Structure = ($, abort, $p) => r_from_parse_tree.Structure(
+    r_parse_tree_from_list_of_characters.Document(
+        $,
+        ($) => abort(['parse tree deserialization', $]),
+        $p,
+    )['content'],
+    ($) => abort(['unmarshalling', $]),
+)
+
+export const Value_Result: declarations.Value_Result = ($, abort, $p) => r_from_parse_tree.Value_Result(
+    r_parse_tree_from_list_of_characters.Document(
+        $,
+        ($) => abort(['parse tree deserialization', $]),
+        $p,
+    )['content'],
+    ($) => abort(['unmarshalling', $]),
+)
+
 export const Presence: declarations.Presence = ($, abort, $p) => r_from_parse_tree.Presence(
     r_parse_tree_from_list_of_characters.Document(
         $,
@@ -368,7 +543,7 @@ export const Presence: declarations.Presence = ($, abort, $p) => r_from_parse_tr
     ($) => abort(['unmarshalling', $]),
 )
 
-export const Resolver_Value_Group: declarations.Resolver_Value_Group = ($, abort, $p) => r_from_parse_tree.Resolver_Value_Group(
+export const Signatures_Type_Reference: declarations.Signatures_Type_Reference = ($, abort, $p) => r_from_parse_tree.Signatures_Type_Reference(
     r_parse_tree_from_list_of_characters.Document(
         $,
         ($) => abort(['parse tree deserialization', $]),
@@ -395,7 +570,79 @@ export const Resolver_Signatures: declarations.Resolver_Signatures = ($, abort, 
     ($) => abort(['unmarshalling', $]),
 )
 
+export const Resolver_Signature: declarations.Resolver_Signature = ($, abort, $p) => r_from_parse_tree.Resolver_Signature(
+    r_parse_tree_from_list_of_characters.Document(
+        $,
+        ($) => abort(['parse tree deserialization', $]),
+        $p,
+    )['content'],
+    ($) => abort(['unmarshalling', $]),
+)
+
+export const Resolver_Namespaces: declarations.Resolver_Namespaces = ($, abort, $p) => r_from_parse_tree.Resolver_Namespaces(
+    r_parse_tree_from_list_of_characters.Document(
+        $,
+        ($) => abort(['parse tree deserialization', $]),
+        $p,
+    )['content'],
+    ($) => abort(['unmarshalling', $]),
+)
+
+export const Resolver: declarations.Resolver = ($, abort, $p) => r_from_parse_tree.Resolver(
+    r_parse_tree_from_list_of_characters.Document(
+        $,
+        ($) => abort(['parse tree deserialization', $]),
+        $p,
+    )['content'],
+    ($) => abort(['unmarshalling', $]),
+)
+
+export const Resolver_Absence_Constraints: declarations.Resolver_Absence_Constraints = ($, abort, $p) => r_from_parse_tree.Resolver_Absence_Constraints(
+    r_parse_tree_from_list_of_characters.Document(
+        $,
+        ($) => abort(['parse tree deserialization', $]),
+        $p,
+    )['content'],
+    ($) => abort(['unmarshalling', $]),
+)
+
+export const Resolver_Value_Group: declarations.Resolver_Value_Group = ($, abort, $p) => r_from_parse_tree.Resolver_Value_Group(
+    r_parse_tree_from_list_of_characters.Document(
+        $,
+        ($) => abort(['parse tree deserialization', $]),
+        $p,
+    )['content'],
+    ($) => abort(['unmarshalling', $]),
+)
+
 export const Resolver_Value_Constraints: declarations.Resolver_Value_Constraints = ($, abort, $p) => r_from_parse_tree.Resolver_Value_Constraints(
+    r_parse_tree_from_list_of_characters.Document(
+        $,
+        ($) => abort(['parse tree deserialization', $]),
+        $p,
+    )['content'],
+    ($) => abort(['unmarshalling', $]),
+)
+
+export const Resolver_Type_Reference: declarations.Resolver_Type_Reference = ($, abort, $p) => r_from_parse_tree.Resolver_Type_Reference(
+    r_parse_tree_from_list_of_characters.Document(
+        $,
+        ($) => abort(['parse tree deserialization', $]),
+        $p,
+    )['content'],
+    ($) => abort(['unmarshalling', $]),
+)
+
+export const Resolver_Value_Path: declarations.Resolver_Value_Path = ($, abort, $p) => r_from_parse_tree.Resolver_Value_Path(
+    r_parse_tree_from_list_of_characters.Document(
+        $,
+        ($) => abort(['parse tree deserialization', $]),
+        $p,
+    )['content'],
+    ($) => abort(['unmarshalling', $]),
+)
+
+export const Resolver_Value_Reference: declarations.Resolver_Value_Reference = ($, abort, $p) => r_from_parse_tree.Resolver_Value_Reference(
     r_parse_tree_from_list_of_characters.Document(
         $,
         ($) => abort(['parse tree deserialization', $]),
@@ -423,6 +670,15 @@ export const Resolver_Result_Selection: declarations.Resolver_Result_Selection =
 )
 
 export const Resolver_Value_List_Result: declarations.Resolver_Value_List_Result = ($, abort, $p) => r_from_parse_tree.Resolver_Value_List_Result(
+    r_parse_tree_from_list_of_characters.Document(
+        $,
+        ($) => abort(['parse tree deserialization', $]),
+        $p,
+    )['content'],
+    ($) => abort(['unmarshalling', $]),
+)
+
+export const Resolver_Reference_Constraints: declarations.Resolver_Reference_Constraints = ($, abort, $p) => r_from_parse_tree.Resolver_Reference_Constraints(
     r_parse_tree_from_list_of_characters.Document(
         $,
         ($) => abort(['parse tree deserialization', $]),
@@ -494,6 +750,15 @@ export const Resolver_Lookup_Selection: declarations.Resolver_Lookup_Selection =
     ($) => abort(['unmarshalling', $]),
 )
 
+export const Resolver_Option_Constraint_Source: declarations.Resolver_Option_Constraint_Source = ($, abort, $p) => r_from_parse_tree.Resolver_Option_Constraint_Source(
+    r_parse_tree_from_list_of_characters.Document(
+        $,
+        ($) => abort(['parse tree deserialization', $]),
+        $p,
+    )['content'],
+    ($) => abort(['unmarshalling', $]),
+)
+
 export const Resolver_Optional_Value_Constraints: declarations.Resolver_Optional_Value_Constraints = ($, abort, $p) => r_from_parse_tree.Resolver_Optional_Value_Constraints(
     r_parse_tree_from_list_of_characters.Document(
         $,
@@ -512,7 +777,7 @@ export const Resolver_Optional_Value_Initialization: declarations.Resolver_Optio
     ($) => abort(['unmarshalling', $]),
 )
 
-export const Resolver_Reference_To_Value_Constraint: declarations.Resolver_Reference_To_Value_Constraint = ($, abort, $p) => r_from_parse_tree.Resolver_Reference_To_Value_Constraint(
+export const Resolver_Reference_Constraint_Source: declarations.Resolver_Reference_Constraint_Source = ($, abort, $p) => r_from_parse_tree.Resolver_Reference_Constraint_Source(
     r_parse_tree_from_list_of_characters.Document(
         $,
         ($) => abort(['parse tree deserialization', $]),
@@ -521,7 +786,7 @@ export const Resolver_Reference_To_Value_Constraint: declarations.Resolver_Refer
     ($) => abort(['unmarshalling', $]),
 )
 
-export const Resolver_Signature: declarations.Resolver_Signature = ($, abort, $p) => r_from_parse_tree.Resolver_Signature(
+export const Resolver_Reference_To_Value_Constraint: declarations.Resolver_Reference_To_Value_Constraint = ($, abort, $p) => r_from_parse_tree.Resolver_Reference_To_Value_Constraint(
     r_parse_tree_from_list_of_characters.Document(
         $,
         ($) => abort(['parse tree deserialization', $]),
@@ -558,15 +823,6 @@ export const Schema: declarations.Schema = ($, abort, $p) => r_from_parse_tree.S
 )
 
 export const Type_Specification: declarations.Type_Specification = ($, abort, $p) => r_from_parse_tree.Type_Specification(
-    r_parse_tree_from_list_of_characters.Document(
-        $,
-        ($) => abort(['parse tree deserialization', $]),
-        $p,
-    )['content'],
-    ($) => abort(['unmarshalling', $]),
-)
-
-export const Value_Results: declarations.Value_Results = ($, abort, $p) => r_from_parse_tree.Value_Results(
     r_parse_tree_from_list_of_characters.Document(
         $,
         ($) => abort(['parse tree deserialization', $]),

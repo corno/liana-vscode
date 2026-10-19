@@ -43,6 +43,9 @@ export const Value: declarations_.Value = ($) => {
                             case 'incorrect': return p_.option($, ($) => p_.from.state($).decide(
                                 ($): s_out.Errors => {
                                     switch ($[0]) {
+                                        case 'invalid token': return p_.literal.list([{
+                                            range: start_token_range, type: ['value', ['invalid token', $[1]]],
+                                        }])
                                         case 'wrong type': return p_.option($, ($) => p_.literal.list([
                                             {
                                                 'range': start_token_range,
@@ -61,7 +64,6 @@ export const Value: declarations_.Value = ($) => {
                                                                 case 'reference': return p_.option($, ($) => p_.from.state($.type).decide(
                                                                     ($) => {
                                                                         switch ($[0]) {
-                                                                            case 'derived': return p_.option($, ($) => p_.literal.list([['nothing', null]]))
                                                                             case 'selected': return p_.option($, ($) => p_.literal.list([['text', null]]))
                                                                             default: return p_.exhaustive($[0])
                                                                         }
@@ -280,8 +282,6 @@ export const Value: declarations_.Value = ($) => {
                             case 'reference': return p_.option($, ($) => p_.from.state($.type).decide(
                                 ($): s_out.Errors => {
                                     switch ($[0]) {
-                                        case 'derived': return p_.option($, ($) => p_.literal.list([
-                                        ]))
                                         case 'selected': return p_.option($, ($) => p_.literal.list([
                                         ]))
                                         default: return p_.exhaustive($[0])

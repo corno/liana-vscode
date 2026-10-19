@@ -1,3 +1,4 @@
+import { component_type } from '../../liana_schema/select_component.js'
 import * as p_ from 'pareto-core/transformer'
 
 //schemas
@@ -72,14 +73,7 @@ export const Found: declarations_.Found = ($, $p) => {
             ($): Minimal_Completion_Suggestions => {
                 switch ($[0]) {
                     case 'component': return p_.option($, ($) => s_schema_Value(
-                        p_.from.state($.type).decide(
-                            ($): s_schema.Value => {
-                                switch ($[0]) {
-                                    case 'internal': return p_.option($, ($) => $['l entry'].get_circular_dependent()['root value'])
-                                    case 'internal acyclic': return p_.option($, ($) => $['l entry']['root value'])
-                                    default: return p_.exhaustive($[0])
-                                }
-                            }),
+                        component_type($.type)['root value'],
                         $p,
                     ))
                     case 'reference': return p_.option($, ($) => p_.literal.list<Minimal_Completion_Suggestion>([

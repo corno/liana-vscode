@@ -20,19 +20,37 @@ node --test test/type-selection.test.mjs test/grammar.test.mjs
 npm run bundle
 ```
 
-The backend and bundled authoring template use Liana Next exclusively.
-`Type Specification` contains `schema` and `root type`; the latter selects an
-entry in `schema.resolvers`. The schema contains `basic types`, `types`,
-`signatures`, and `resolvers` directly. Text is a basic-type flavor, and `simple`
-values reference basic types directly. Schema sets, imports, schema paths,
-complexity wrappers, separate text types, external references, and stack lookups
-are not supported.
+The backend and bundled authoring template use the promoted, namespace-aware
+Liana contract exclusively. `Type Specification` contains `file extension`,
+`schema`, and `root type`. The root selects an entry in `schema.structure.types`.
+The schema has separate `structure` and `resolver` trees:
 
-The template is the sealed Liana Next self-schema from
-`clean_start/instance/liana_next/liana_next.liana.lna`, also deployed as the
-context of `clean_start/instance/liana_next_with_liana_next_schema/`.
-Regenerate it through that bootstrap chain rather than copying a current-Liana
-encoded context. Both client commands and the server load it through the local
+- Structure nodes contain `namespaces`, `basic types`, and `types`.
+- Resolver nodes contain `namespaces`, `signatures`, and `types`.
+- Child namespaces retain their own type, signature, and resolver lookups; they
+  are not flattened. Component locations are `internal`, `internal cyclic`, or
+  `child`. Type references also support sibling namespaces.
+- Basic types describe `double quoted` or `undelimited` tokens with optional
+  structural regular expressions. They no longer imply numeric, boolean, date,
+  text-link, or multiline-text semantics. Patterns match the entire token value.
+  Completion uses a placeholder when no valid token can be inferred.
+- List and state results are optional value references. Optional values wrap
+  their `value` and `constraints`. Derived references are no longer supported.
+
+The server applies the manually authored root resolver with the same name as
+the structural root type. Resolver namespaces, signatures, and implementations
+must cover their structural counterparts, as required by the schema contract;
+the server does not synthesize semantic resolvers. Computed metadata such as `resulting type`,
+`definition`, and `signature` is resolved by the reader, not serialized as `~`
+placeholders in schema input.
+
+The template is the promoted self-schema context from
+`clean_start/instance/liana/.liana/schema.slna`. The bundled schema models,
+ASTN readers, serializers, and maintained semantic reader were migrated from
+`clean_start/meta/shared/src/liana_schemas/liana_next/`. Keep those contracts
+aligned when updating the tools and the extension. The extension's maintained
+reader additionally validates dense explicit argument dictionaries.
+Both client commands and the server load the template through the local
 `pareto-liana` reader. The maintained resolving reader lives in
 `pareto_liana/src/modules/schema.generated/schemas/resolved/refiners/unresolved_manual.ts`;
 the historical split reader paths re-export that implementation.
@@ -41,6 +59,10 @@ This is a breaking schema-format update: existing authoring environments must
 have their schemas migrated and their `.liana/schema.slna` contexts regenerated
 before using this extension. Installing it does not promote the tools or
 authoring environments in `clean_start`.
+
+The regression suite covers namespace-isolated references, navigation, rename
+and completion; required resolver coverage; token patterns and quoting; schema
+round-tripping; and existing benchmark, constraint, and result behavior.
 
 For packaging without committing or bumping the version automatically, run
 `vsce package --no-dependencies -o ../out/liana-<version>.vsix` after the build.

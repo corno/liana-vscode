@@ -44,51 +44,51 @@ export const $$: p_.Query_Implementation<
         ($v, abort) => p_r.from.state($v).decide(
             ($) => {
                 switch ($[0]) {
-                    case 'constrained': return p_r.option($, ($): d.Result => ['constrained', r_resolve_result_from_unmarshall_result.Document(
-                        r_unmarshall_result_from_loc.Document(
+                    case 'constrained': return p_r.option($, ($): d.Result => {
+                        const specification = $
+                        const root_resolver = specification['root resolver']
+                        const unmarshalled = r_unmarshall_result_from_loc.Document(
                             p_list_from_text(
                                 $d.deprecated.content,
                                 ($) => $
                             ),
                             ($) => abort(['deserialize parse tree', $]),
                             {
-                                'type': $['root type'].entry.signature.type,
+                                'type': $['root type'].entry,
                                 'tab size': $d.deprecated['tab size'],
                             }
-                        ),
-                        {
-                            'parameters': {
-                                'acyclic': p_temp_dictionary.map_value_dictionary_to_generic_dictionary(
-                                    p_t.from.dictionary($['root type'].entry.signature['resolved parameters'].lookups
-                                    ).filter(
-                                        ($) => p_t.from.state($.type).decide(
-                                            ($) => $[0] === 'acyclic')
+                        )
+                        return ['constrained', r_resolve_result_from_unmarshall_result.Document(
+                            unmarshalled,
+                            {
+                                'parameters': {
+                                    'acyclic': p_temp_dictionary.map_value_dictionary_to_generic_dictionary(
+                                        p_t.from.dictionary(root_resolver.signature['resolved parameters'].lookups).filter(
+                                            ($) => $.type[0] === 'acyclic'
+                                        ),
+                                        ($) => ['not found because of root', null]
                                     ),
-                                    ($) => ['not found because of root', null]
-                                ),
-                                'cyclic': p_temp_dictionary.map_value_dictionary_to_generic_dictionary(
-                                    p_t.from.dictionary($['root type'].entry.signature['resolved parameters'].lookups
-                                    ).filter(
-                                        ($) => p_t.from.state($.type).decide(
-                                            ($) => $[0] === 'cyclic')
+                                    'cyclic': p_temp_dictionary.map_value_dictionary_to_generic_dictionary(
+                                        p_t.from.dictionary(root_resolver.signature['resolved parameters'].lookups).filter(
+                                            ($) => $.type[0] === 'cyclic'
+                                        ),
+                                        ($) => ['not found because of root', null]
                                     ),
-                                    ($) => ['not found because of root', null]
-                                ),
-
+                                },
+                                'siblings': {
+                                    'acyclic': p_select_lookup.acyclic.not_set(),
+                                    'cyclic': p_select_lookup.cyclic.not_set()
+                                },
                             },
-                            'siblings': {
-                                'acyclic': p_select_lookup.acyclic.not_set(),
-                                'cyclic': p_select_lookup.cyclic.not_set()
+                            {
+                                'definition': root_resolver,
+                                'resolvers': specification.resolver,
+                                'type parameters': p_t.from.dictionary(root_resolver.signature['resolved parameters'].types).map(
+                                    ($) => ['not found because of root', null],
+                                )
                             },
-                        },
-                        {
-                            'definition': $['root type'].entry,
-                            'resolvers': $.resolver,
-                            'type parameters': p_t.from.dictionary($['root type'].entry.signature['resolved parameters'].types).map(
-                                ($) => ['not found because of root', null],
-                            )
-                        }
-                    )])
+                        )]
+                    })
                     default: return p_r.exhaustive($[0])
                 }
             })

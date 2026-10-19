@@ -24,7 +24,6 @@ export namespace ls {
     export const parameter = (parameter: string): s_target.Resolver_Lookup_Selection => {
         return {
             'type': sh.state(['parameter', sh.reference(parameter)]),
-            'resulting dictionary': null
         }
     }
 
@@ -33,7 +32,6 @@ export namespace ls {
         export const siblings = (): s_target.Resolver_Lookup_Selection => {
             return {
                 'type': sh.state(['acyclic', sh.state(['siblings', null])]),
-                'resulting dictionary': null
             }
         }
 
@@ -43,9 +41,7 @@ export namespace ls {
             return {
                 'type': sh.state(['acyclic', sh.state(['resolved dictionary', {
                     'selection': value_selection,
-                    'selected dictionary': null,
                 }])]),
-                'resulting dictionary': null,
             }
         }
     }
@@ -55,7 +51,6 @@ export namespace ls {
         export const siblings = (): s_target.Resolver_Lookup_Selection => {
             return {
                 'type': sh.state(['cyclic', sh.state(['siblings', null])]),
-                'resulting dictionary': null
             }
         }
     }
@@ -80,7 +75,6 @@ export namespace al {
         export const siblings = (): s_target.Resolver_Value.component.arguments_.O.lookups.O.D => {
             return sh.state(['selection', {
                 'type': sh.state(['acyclic', sh.state(['siblings', null])]),
-                'resulting dictionary': null,
             }])
         }
 
@@ -88,10 +82,7 @@ export namespace al {
             return sh.state(['selection', {
                 'type': sh.state(['acyclic', sh.state(['resolved dictionary', {
                     'selection': value_selection,
-                    'selected dictionary': null,
                 }])]),
-
-                'resulting dictionary': null,
             }])
         }
 
@@ -108,7 +99,6 @@ export namespace al {
         ): s_target.Resolver_Value.component.arguments_.O.lookups.O.D => {
             return sh.state(['selection', {
                 'type': sh.state(['cyclic', sh.state(['siblings', null])]),
-                'resulting dictionary': null,
             }])
         }
 
@@ -126,7 +116,6 @@ export namespace al {
     export const parameter = (parameter: string): s_target.Resolver_Value.component.arguments_.O.lookups.O.D => {
         return sh.state(['selection', {
             'type': sh.state(['parameter', sh.reference(parameter)]),
-            'resulting dictionary': null,
         }])
     }
 
@@ -153,7 +142,6 @@ export namespace rvs {
     export const reference = (
     ): s_target.Resolver_Relative_Value_Selection.path.L => {
         return sh.state(['reference', {
-            'definition': null,
         }])
     }
 
@@ -194,7 +182,6 @@ export namespace pvs {
     ): s_target.Resolver_Possible_Value_Selection => {
         return sh.state<s_target.Resolver_Possible_Value_Selection>(['result', sh.state<s_target.Resolver_Possible_Value_Selection.result>(['state', {
             'property': sh.reference(state),
-            'state': null,
             'result': result,
         }])])
     }
@@ -205,7 +192,6 @@ export namespace pvs {
     ): s_target.Resolver_Possible_Value_Selection => {
         return sh.state<s_target.Resolver_Possible_Value_Selection>(['result', sh.state<s_target.Resolver_Possible_Value_Selection.result>(['optional value', {
             'property': sh.reference(optional_value),
-            'optional value': null,
             'result': result,
         }])])
     }
@@ -235,9 +221,7 @@ export namespace gvs {
             }])]),
             'tail': {
                 'path': sh.list(tail),
-                'resulting node': null,
             },
-            'resulting node': null,
         }
     }
 
@@ -253,9 +237,7 @@ export namespace gvs {
             }])]),
             'tail': {
                 'path': sh.list(tail),
-                'resulting node': null,
             },
-            'resulting node': null,
         }
     }
 
@@ -266,13 +248,10 @@ export namespace gvs {
         return {
             'start': sh.state<s_target.Resolver_Guaranteed_Value_Selection.start>(['result', sh.state<s_target.Resolver_Guaranteed_Value_Selection.start.result>(['list', {
                 'property': sh.reference(list),
-                'list result': null,
             }])]),
             'tail': {
                 'path': sh.list(tail),
-                'resulting node': null,
             },
-            'resulting node': null,
         }
     }
 
@@ -282,16 +261,13 @@ export namespace gvs {
         tail: s_target.Resolver_Relative_Value_Selection.path.L[],
     ): s_target.Resolver_Guaranteed_Value_Selection => {
         return {
-            'start': sh.state<s_target.Resolver_Possible_Value_Selection>(['result', sh.state<s_target.Resolver_Possible_Value_Selection.result>(['state', {
+            'start': sh.state<s_target.Resolver_Guaranteed_Value_Selection.start>(['result', sh.state<s_target.Resolver_Possible_Value_Selection.result>(['state', {
                 'property': sh.reference(state),
-                'state': null,
                 'result': result,
             }])]),
             'tail': {
                 'path': sh.list(tail),
-                'resulting node': null,
             },
-            'resulting node': null,
         }
     }
 
@@ -301,16 +277,13 @@ export namespace gvs {
         tail: s_target.Resolver_Relative_Value_Selection.path.L[],
     ): s_target.Resolver_Guaranteed_Value_Selection => {
         return {
-            'start': sh.state<s_target.Resolver_Possible_Value_Selection>(['result', sh.state<s_target.Resolver_Possible_Value_Selection.result>(['optional value', {
+            'start': sh.state<s_target.Resolver_Guaranteed_Value_Selection.start>(['result', sh.state<s_target.Resolver_Possible_Value_Selection.result>(['optional value', {
                 'property': sh.reference(optional_value),
-                'optional value': null,
                 'result': result,
             }])]),
             'tail': {
                 'path': sh.list(tail),
-                'resulting node': null,
             },
-            'resulting node': null,
         }
     }
 
@@ -319,12 +292,10 @@ export namespace gvs {
         tail: s_target.Resolver_Relative_Value_Selection.path.L[],
     ): s_target.Resolver_Guaranteed_Value_Selection => {
         return {
-            'start': sh.state<s_target.Resolver_Possible_Value_Selection>(['parameter', sh.reference(parameter)]),
+            'start': sh.state<s_target.Resolver_Guaranteed_Value_Selection.start>(['parameter', sh.reference(parameter)]),
             'tail': {
                 'path': sh.list(tail),
-                'resulting node': null,
             },
-            'resulting node': null,
         }
     }
 
@@ -335,9 +306,7 @@ export namespace gvs {
             'start': sh.state(['list cursor', null]),
             'tail': {
                 'path': sh.list(tail),
-                'resulting node': null,
             },
-            'resulting node': null,
         }
     }
 
@@ -348,9 +317,7 @@ export namespace gvs {
             'start': sh.state(['linked entry', null]),
             'tail': {
                 'path': sh.list(tail),
-                'resulting node': null,
             },
-            'resulting node': null,
         }
     }
 
@@ -362,9 +329,7 @@ export namespace gvs {
             'start': sh.state(['sibling', sh.reference(sibling)]),
             'tail': {
                 'path': sh.list(tail),
-                'resulting node': null,
             },
-            'resulting node': null,
         }
     }
 
@@ -376,9 +341,7 @@ export namespace gvs {
             'start': sh.state(['parent sibling', sh.reference(parent_sibling)]),
             'tail': {
                 'path': sh.list(tail),
-                'resulting node': null,
             },
-            'resulting node': null,
         }
     }
 
@@ -390,9 +353,7 @@ export namespace gvs {
             'start': sh.state(['option constraint', sh.reference(constraint)]),
             'tail': {
                 'path': sh.list(tail),
-                'resulting node': null,
             },
-            'resulting node': null,
         }
     }
 
@@ -427,7 +388,7 @@ export const option = (
     resolver: s_target.Resolver_Value,
 ): s_target.Resolver_Value.state.options.D => {
     return {
-        'constraints': sh.dictionary({}),
+        'constraints': sh.optional.not_set<s_target.Resolver_Option_Constraints>(),
         'resolver': resolver,
         'result': sh.optional.not_set<s_target.Resolver_Result_Selection>(),
     }
@@ -438,7 +399,7 @@ export const option_constrained = (
     resolver: s_target.Resolver_Value,
 ): s_target.Resolver_Value.state.options.D => {
     return {
-        'constraints': sh.dictionary(constraints),
+        'constraints': sh.optional.set(sh.dictionary(constraints)),
         'resolver': resolver,
         'result': sh.optional.not_set<s_target.Resolver_Result_Selection>(),
     }
@@ -455,7 +416,6 @@ export namespace oc {
     ): s_target.Resolver_Option_Constraints.D => {
         return sh.state(['state', {
             'selection': value_selection,
-            'selected state': null,
             'option': sh.reference(state),
         }])
     }
@@ -485,14 +445,11 @@ export namespace vcr {
             'constraint': {
                 'selection': {
                     'path': sh.list(value_selection_tail),
-                    'resulting node': null,
                 },
                 'type': state === undefined
                     ? sh.state(['optional value', {
-                        'selected optional value': null,
                     }])
                     : sh.state(['state', {
-                        'selected state': null,
                         'option': sh.reference(state),
                     }])
             },
@@ -509,14 +466,11 @@ export namespace vcr {
             'constraint': {
                 'selection': {
                     'path': sh.list(value_selection_tail),
-                    'resulting node': null,
                 },
                 'type': state === undefined
                     ? sh.state(['optional value', {
-                        'selected optional value': null,
                     }])
                     : sh.state(['state', {
-                        'selected state': null,
                         'option': sh.reference(state),
                     }])
             },
@@ -540,9 +494,7 @@ export namespace r {
         lookups: null | sh.Raw_Or_Normal_Dictionary<s_target.Resolver_Value.component.arguments_.O.lookups.O.D>,
     ): s_target.Resolver_Value => {
         return sh.state(['component', {
-            'definition': null,
             'location': sh.state(['internal', sh.reference(type)]),
-            'signature': null,
             'arguments': sh.optional.set({
                 'types': types === null
                     ? sh.optional.not_set()
@@ -552,7 +504,7 @@ export namespace r {
                 'lookups': lookups === null ? sh.optional.not_set() : sh.optional.set(
                     sh.dictionary(lookups)),
             }),
-            'constraints': sh.dictionary<s_target.Resolver_Value_Constraints.D>({}),
+            'constraints': sh.optional.not_set<s_target.Resolver_Value_Constraints>(),
         }])
     }
     export const component_constrained = (
@@ -562,22 +514,19 @@ export namespace r {
         constraints: sh.Raw_Or_Normal_Dictionary<s_target.Resolver_Value_Constraints.D>,
     ): s_target.Resolver_Value => {
         return sh.state(['component', {
-            'definition': null,
             'location': sh.state(['internal', sh.reference(type)]),
-            'signature': null,
             'arguments': sh.optional.set({
                 'types': types === null ? sh.optional.not_set() : sh.optional.set(
                     sh.dictionary(types)),
                 'lookups': lookups === null ? sh.optional.not_set() : sh.optional.set(
                     sh.dictionary(lookups)),
             }),
-            'constraints': sh.dictionary(constraints),
+            'constraints': sh.optional.set(sh.dictionary(constraints)),
         }])
     }
 
     export const dictionary = (resolver: s_target.Resolver_Value): s_target.Resolver_Value => {
         return sh.state(['dictionary', {
-            'definition': null,
             'resolver': resolver,
             'benchmark': sh.optional.not_set(),
         }])
@@ -589,12 +538,10 @@ export namespace r {
         resolver: s_target.Resolver_Value,
     ): s_target.Resolver_Value => {
         return sh.state(['dictionary', {
-            'definition': null,
             'resolver': resolver,
             'benchmark': sh.optional.set({
                 'selection': selection,
-                'resulting dictionary': null,
-                'dense': dense === 'dense',
+                'coverage': dense === 'dense' ? ['dense', null] : ['sparse', null],
             }),
         }])
     }
@@ -604,7 +551,7 @@ export namespace r {
     ): s_target.Resolver_Value => {
         const temp_dict = sh.dictionary(properties)
         return sh.state(['group', p_t.from.dictionary(temp_dict).map(
-            ($) => ({ 'definition': null, 'resolver': $ })
+            ($) => ({ 'resolver': $ })
         )])
     }
 
@@ -612,7 +559,6 @@ export namespace r {
         type_resolver: s_target.Resolver_Value
     ): s_target.Resolver_Value => {
         return sh.state(['list', {
-            'definition': null,
             'resolver': type_resolver,
             'result': sh.optional.not_set<s_target.Resolver_Value.list.result.O>(),
         }])
@@ -623,7 +569,6 @@ export namespace r {
 
     ): s_target.Resolver_Value => {
         return sh.state(['list', {
-            'definition': null,
             'resolver': type_resolver,
             'result': sh.optional.set(result),
         }])
@@ -637,7 +582,8 @@ export namespace r {
         type_resolver: s_target.Resolver_Value
     ): s_target.Resolver_Value => {
         return sh.state(['optional', {
-            'constraints': sh.dictionary<s_target.Resolver_Option_Constraints.D>({}),
+            'constraints': sh.optional.not_set<s_target.Resolver_Option_Constraints>(),
+            'not set constraints': sh.optional.not_set(),
             'resolver': type_resolver,
         }])
     }
@@ -647,19 +593,9 @@ export namespace r {
         type_resolver: s_target.Resolver_Value
     ): s_target.Resolver_Value => {
         return sh.state(['optional', {
-            'constraints': sh.dictionary(constraints),
+            'not set constraints': sh.optional.not_set(),
+            'constraints': sh.optional.set(sh.dictionary(constraints)),
             'resolver': type_resolver,
-        }])
-    }
-
-    export const reference_derived = (
-        value_selection: s_target.Resolver_Guaranteed_Value_Selection
-    ): s_target.Resolver_Value => {
-        return sh.state(['reference', {
-            'definition': null,
-            'type': sh.state(['derived', {
-                'value': value_selection,
-            }])
         }])
     }
 
@@ -668,14 +604,12 @@ export namespace r {
         constraints?: sh.Raw_Or_Normal_Dictionary<s_target.Resolver_Value_Constraints.D>,
     ): s_target.Resolver_Value => {
         return sh.state(['reference', {
-            'definition': null,
             'type': sh.state(['selected', {
-                'definition': null,
                 'lookup': lookup_selection,
-                'constraints': sh.dictionary(constraints === undefined
+                'constraints': sh.optional.set(sh.dictionary(constraints === undefined
                     ? {}
                     : constraints
-                ),
+                )),
             }])
         }])
     }
@@ -684,7 +618,6 @@ export namespace r {
         states: sh.Raw_Or_Normal_Dictionary<s_target.Resolver_Value.state.options.D>
     ): s_target.Resolver_Value => {
         return sh.state(['state', {
-            'definition': null,
             'options': sh.dictionary(states),
             'result': sh.optional.not_set<s_target.Resolver_Value.state.result.O>(),
         }])
@@ -695,7 +628,6 @@ export const resolver = (
     value_resolver: s_target.Resolver_Value
 ): s_target.Resolver_Types.D => {
     return {
-        'signature': null,
         'root value resolver': value_resolver,
     }
 }
