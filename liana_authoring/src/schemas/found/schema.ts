@@ -3,7 +3,9 @@ import * as p_ from 'pareto-core/schema'
 import type * as s_out from "../unmarshall_result/schema.js"
 
 export type Found =
-    | ['value', s_out.Value]
+    | (['value', s_out.Value] & {
+        'property description'?: string
+    })
     | ['entry', s_out.Entry]
     | ['state', s_out.State]
     | ['property', {

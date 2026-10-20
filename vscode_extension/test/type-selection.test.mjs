@@ -25,6 +25,7 @@ const resolver = require('liana-authoring/schemas/unmarshall_result/transformers
 const { $$: seal } = require('../client/out/helpers/seal.js')
 const { create_cache } = require('../server/out/core/cache.js')
 const { create_on_completion } = require('../server/out/connection/on_completion.js')
+const { create_on_hover } = require('../server/out/connection/on_hover.js')
 const { create_on_definition } = require('../server/out/connection/on_definition.js')
 const { create_on_references } = require('../server/out/connection/on_references.js')
 const { create_on_document_highlight } = require('../server/out/connection/on_document_highlight.js')
@@ -33,6 +34,7 @@ const { create_on_initialize } = require('../server/out/connection/on_initialize
 const completion = require('liana-authoring/schemas/resolve_result/transformers/completion_suggestions')
 const unmarshalCompletion = require('liana-authoring/schemas/unmarshall_result/transformers/completion_suggestions')
 const unmarshal_diagnostics = require('liana-authoring/schemas/unmarshall_result/transformers/diagnostics')
+const found = require('liana-authoring/schemas/unmarshall_result/transformers/found')
 const authoring_target = require('liana-authoring/schemas/unmarshall_result/transformers/authoring_target')
 const { matches_token } = require('liana-authoring/schemas/liana_schema/token_pattern')
 const p = require('pareto-core/transformer')
@@ -94,6 +96,7 @@ const requestAt = async (source, schema, offset, createHandler, parameters = {})
 }
 
 const complete = (source, schema, offset) => requestAt(source, schema, offset, create_on_completion)
+const hoverAt = (source, schema, offset) => requestAt(source, schema, offset, create_on_hover)
 const definitionAt = (source, schema, offset) => requestAt(source, schema, offset, create_on_definition)
 const referencesAt = (source, schema, offset, includeDeclaration = false) =>
     requestAt(source, schema, offset, create_on_references, { context: { includeDeclaration } })
@@ -107,6 +110,68 @@ test('a missing constrained root value offers its schema skeleton', async () => 
     assert.match(result.items[0].textEdit.newText, /`schema`:/)
     assert.match(result.items[0].textEdit.newText, /`directory`:/)
     assert.equal(result.items[0].textEdit.range.end.character, 1)
+})
+
+test('hover on not-set optional value shows the property description in verbose notation', async () => {
+    const schema = specification(`| \`group\` {
+        'maybe': (\`description\`: * "set this only when an override is needed" \`value\`: | \`optional\` (\`constraints\`: _ \`value\`: | \`nothing\` ~ \`result\`: _))
+    }`, `| \`group\` {
+        'maybe': (\`resolver\`: | \`optional\` (\`constraints\`: _ \`not set constraints\`: _ \`resolver\`: | \`nothing\` ~ \`result\`: _))
+    }`)
+    const source = "(`maybe`: _)"
+    const hover = await hoverAt(source, schema, source.indexOf('_'))
+    assert.ok(hover)
+    assert.ok(Array.isArray(hover.contents))
+    assert.equal(hover.contents[0], 'maybe')
+    assert.equal(hover.contents[1], 'set this only when an override is needed')
+    assert.equal(hover.contents[2], 'not set optional')
+    const unmarshalled = document(source, schema)
+    const selected = found.Document(unmarshalled, { position: { line: 0, character: source.indexOf('_') } })
+    const original = entry(unmarshalled.content['unmarshall result'][1][1].derived.properties, 'maybe').result[1]
+    assert.equal(selected[0], 'value')
+    assert.equal(selected[1], original, 'hover metadata must preserve the value identity used by completion')
+    const property_hover = await hoverAt(source, schema, source.indexOf('maybe'))
+    assert.deepEqual(property_hover.contents, ['maybe', 'set this only when an override is needed'])
+})
+
+test('hover on not-set optional value shows the property description in concise notation', async () => {
+    const schema = specification(`| \`group\` {
+        'maybe': (\`description\`: * "concise optional description" \`value\`: | \`optional\` (\`constraints\`: _ \`value\`: | \`nothing\` ~ \`result\`: _))
+    }`, `| \`group\` {
+        'maybe': (\`resolver\`: | \`optional\` (\`constraints\`: _ \`not set constraints\`: _ \`resolver\`: | \`nothing\` ~ \`result\`: _))
+    }`)
+    const source = "< _ >"
+    const hover = await hoverAt(source, schema, source.indexOf('_'))
+    assert.ok(hover)
+    assert.ok(Array.isArray(hover.contents))
+    assert.equal(hover.contents[0], 'maybe')
+    assert.equal(hover.contents[1], 'concise optional description')
+    assert.equal(hover.contents[2], 'not set optional')
+})
+
+test('optional markers show their property description without leaking it into nested values', async () => {
+    const schema = specification(`| \`group\` {
+        'maybe': (\`description\`: * "outer optional" \`value\`: | \`optional\` (\`constraints\`: _ \`value\`: | \`group\` {
+            'inner': (\`description\`: * "inner optional" \`value\`: | \`optional\` (\`constraints\`: _ \`value\`: | \`nothing\` ~ \`result\`: _))
+            'plain': (\`description\`: _ \`value\`: | \`optional\` (\`constraints\`: _ \`value\`: | \`nothing\` ~ \`result\`: _))
+        } \`result\`: _))
+    }`, `| \`group\` {
+        'maybe': (\`resolver\`: | \`optional\` (\`constraints\`: _ \`not set constraints\`: _ \`resolver\`: | \`group\` {
+            'inner': (\`resolver\`: | \`optional\` (\`constraints\`: _ \`not set constraints\`: _ \`resolver\`: | \`nothing\` ~ \`result\`: _))
+            'plain': (\`resolver\`: | \`optional\` (\`constraints\`: _ \`not set constraints\`: _ \`resolver\`: | \`nothing\` ~ \`result\`: _))
+        } \`result\`: _))
+    }`)
+    for (const source of ["(`maybe`: * (`inner`: _ `plain`: _))", "< * < _ _ > >"]) {
+        const marker = await hoverAt(source, schema, source.indexOf('*'))
+        assert.ok(marker.contents.includes('outer optional'))
+        assert.ok(marker.contents.includes('optional'))
+        const inner = await hoverAt(source, schema, source.indexOf('_'))
+        assert.ok(inner.contents.includes('inner optional'))
+        assert.ok(!inner.contents.includes('outer optional'))
+        const plain = await hoverAt(source, schema, source.lastIndexOf('_'))
+        assert.equal(plain.contents.length, 2)
+        assert.equal(plain.contents[1], 'not set optional')
+    }
 })
 
 test('the shared loader binds structural root type to its root resolver', () => {
@@ -610,7 +675,7 @@ test('reference completion replaces missing markers and whole quoted tokens usin
         assert.equal(edit.range.start.character, source.indexOf(reference))
         const doc = TextDocument.create('file:///completion.lna', 'liana', 1, source)
         assert.deepEqual(edit.range.end, doc.positionAt(source.indexOf(reference) + reference.length))
-        assert.equal(edit.newText, '"alpha"')
+        assert.equal(edit.newText, "'alpha'")
         assert.equal(result.items[0].insertTextFormat, 1)
         const delimiter = reference[0]
         const expectedFilter = delimiter === '#' ? '#alpha'
@@ -634,6 +699,7 @@ test('reference filtering matches quoted prefixes including spaces and escaped i
         const result = await complete(source, schema, source.indexOf(token) + token.length - 1)
         assert.equal(result.items.length, 1)
         assert.equal(result.items[0].filterText, filter)
+        assert.equal(result.items[0].textEdit.newText, quote_identifier(id))
         const start = source.indexOf(token)
         const updated = source.slice(0, start) + result.items[0].textEdit.newText + source.slice(start + token.length)
         assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, schema)).__get_raw(), [])
@@ -645,8 +711,9 @@ test('reference completion quotes empty and special identifiers without snippet 
     const source = "(`member`: # `chosen`: # `entries`: { '': (`members`: {}) \"a'b\\\\c$1}\": (`members`: {}) })"
     const result = await complete(source, schema, source.indexOf('#', source.indexOf('#') + 1))
     assert.equal(result.items.length, 2)
-    assert.equal(result.items[0].textEdit.newText, '""')
+    assert.equal(result.items[0].textEdit.newText, "''")
     const special = result.items[1]
+    assert.equal(special.textEdit.newText, quote_identifier("a'b\\c$1}"))
     assert.equal(special.insertTextFormat, 1)
     const updated = source.slice(0, special.textEdit.range.start.character) + special.textEdit.newText + source.slice(special.textEdit.range.end.character)
     const diagnostics = resolveDiagnostics.Document(await loadWithSchema(updated, schema)).__get_raw()
@@ -1272,6 +1339,25 @@ const actionsAt = (source, schema, offset, only) => {
         context: { diagnostics: [], ...(only === undefined ? {} : { only }) },
     })
 }
+
+test('missing dense-entry diagnostics highlight only the opening dictionary brace', async () => {
+    for (const source of [
+        "< {} { 'first': ~ 'second': ~ } >",
+        "< {\n    'kept': ~\n    /* a large dictionary can continue here */\n} { 'kept': ~ 'first': ~ 'second': ~ } >",
+    ]) {
+        const diagnostics = resolveDiagnostics.Document(await loadWithSchema(source, benchmarkSchema(true))).__get_raw()
+        assert.equal(diagnostics.length, 2)
+        const opening = source.indexOf('{')
+        for (const diagnostic of diagnostics) {
+            assert.match(diagnostic.message, /Missing required benchmark entry/)
+            const range = diagnostic.range.__get_raw()[0][1]
+            assert.equal(range.start.absolute, opening)
+            assert.equal(range.end.absolute, opening + 1)
+        }
+        const actions = await actionsAt(source, benchmarkSchema(true), opening, ['quickfix'])
+        assert.equal(actions[0].title, 'Add all missing required entries (2)')
+    }
+})
 
 test('one quick fix inserts every missing dense entry without rewriting supplied entries or comments', async () => {
     const source = '< { \'kept\': ~ /* keep this */ } { \'kept\': ~ \'new\': ~ "a\\\"b": ~ } >'

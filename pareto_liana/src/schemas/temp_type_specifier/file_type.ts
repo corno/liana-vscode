@@ -35,9 +35,9 @@ const matches_name = (file_name: string, name: string, extension: string): boole
     return file_name === logical || file_name === `${logical}.lna` || file_name === `${logical}.slna`
 }
 
-export const file_type = (specification: schema.types.Type_Specification, path: File_Path, abort: Abort): schema.types.Node.file.type_ => {
+export const file_directory = (specification: schema.types.Type_Specification, directories: core.List<string>, abort: Abort): schema.types.Directory => {
     let directory = specification.directory
-    p.from.list(path.directories).map((name) => {
+    p.from.list(directories).map((name) => {
         valid_segment(name, abort)
         const node = directory[0] === 'dictionary' ? directory[1].node
             : p.from.dictionary(directory[1].nodes).get_possible_entry(name,
@@ -48,6 +48,11 @@ export const file_type = (specification: schema.types.Type_Specification, path: 
         directory = node[1]
         return null
     })
+    return directory
+}
+
+export const file_type = (specification: schema.types.Type_Specification, path: File_Path, abort: Abort): schema.types.Node.file.type_ => {
+    const directory = file_directory(specification, path.directories, abort)
     valid_segment(path['file name'], abort)
     const file_name = path['file name']
     const file = directory[0] === 'dictionary' ? directory[1].node

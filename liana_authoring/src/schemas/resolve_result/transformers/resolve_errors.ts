@@ -90,7 +90,8 @@ const Benchmark = ($: s_in.Dictionary, range: s_location.Range): s_out.Errors =>
                 )
             }),
             p_.from.list(Missing_Benchmark_Entries($)).map((id): s_out.Error => ({
-                range, severity: ['error', null], type: ['missing benchmark entry', id],
+                range: $.unmarshalled.intermediate.instance['{'].range,
+                severity: ['error', null], type: ['missing benchmark entry', id],
             })),
         ])
     },

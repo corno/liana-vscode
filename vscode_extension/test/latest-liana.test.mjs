@@ -3,7 +3,7 @@ import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from 'nod
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { createRequire } from 'node:module'
+import Module, { createRequire } from 'node:module'
 import test from 'node:test'
 
 const require = createRequire(import.meta.url)
@@ -14,7 +14,8 @@ const { Type_Specifier } = require('pareto-liana/schemas/temp_type_specifier/ref
 const { file_type } = require('pareto-liana/schemas/temp_type_specifier/file_type')
 const { error_message } = require('pareto-liana/schemas/temp_type_specifier/reader_error')
 const { load_document } = require('../server/out/to_be_backend/load_document.js')
-const { load_applicable_schema } = require('../client/out/to_be_backend/load_applicable_schema.js')
+const { load_applicable_schema, load_directory_schema } = require('../client/out/to_be_backend/load_applicable_schema.js')
+const { file_choices, new_file_name, validate_new_file } = require('../client/out/helpers/new_file_name.js')
 const { create_cache } = require('../server/out/core/cache.js')
 const unmarshal_diagnostics = require('liana-authoring/schemas/unmarshall_result/transformers/diagnostics')
 const resolve_diagnostics = require('liana-authoring/schemas/resolve_result/transformers/diagnostics')
@@ -84,6 +85,120 @@ test('latest file-tree selection covers named, nested, dictionary and encoded fi
     }
     const nested_dictionary = parse(specification(`| \`dictionary\` (\`node\`: | \`directory\` ${dictionary('', 'Nothing')})`))
     assert.equal(selected(nested_dictionary, ['arbitrary'], 'file')['l id'], 'Nothing')
+})
+
+test('new-file names use the selected directory extension without duplicating supplied suffixes', () => {
+    const schema = parse(specification())
+    const directories = p.literal.list(['nested', 'items'])
+    assert.deepEqual(file_choices(schema, directories, fail), [{ name: null, extension: 'item' }])
+    for (const name of ['my_file', 'my_file.lna', 'my_file.item', 'my_file.item.lna', 'my_file.item.slna']) {
+        const filename = new_file_name(name, 'item')
+        assert.equal(filename, 'my_file.item.lna')
+        assert.doesNotThrow(() => validate_new_file(schema, directories, filename))
+    }
+    assert.equal(new_file_name('my_file', ''), 'my_file.lna')
+    for (const name of ['', ' ', '.', '..', '.lna', '../escape', 'nested/file', 'nested\\file', 'bad\0name']) {
+        assert.throws(() => new_file_name(name, 'item'), /filename|Filename/)
+    }
+    assert.deepEqual(file_choices(schema, p.literal.list([]), fail), [{ name: 'settings', extension: 'cfg' }])
+    assert.deepEqual(file_choices(schema, p.literal.list(['nested']), fail), [{ name: 'empty', extension: '' }])
+    assert.throws(() => file_choices(parse(specification(`| \`dictionary\` (\`node\`: | \`directory\` ${dictionary('', 'Nothing')})`)), p.literal.list([]), fail), /subdirectories/)
+    assert.throws(() => file_choices(schema, p.literal.list(['unknown']), fail), /No such directory/)
+})
+
+test('new-file command loads ancestor schemas, creates matching filenames and never overwrites files', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'liana-new-file-'))
+    const errors = []
+    const opened = []
+    const prompts = []
+    let input = 'my_file'
+    let selected = 'settings.cfg.lna'
+    const vscode = {
+        Uri: { file: fsPath => ({ fsPath }) },
+        FileType: { Directory: 2 },
+        workspace: {
+            fs: { stat: async () => ({ type: 2 }) },
+            openTextDocument: async uri => { opened.push(uri.fsPath); return uri },
+        },
+        window: {
+            showErrorMessage: message => errors.push(message),
+            showInputBox: async options => {
+                prompts.push(options)
+                if (input !== undefined) assert.equal(options.validateInput(input), null)
+                return input
+            },
+            showQuickPick: async items => items.find(item => item.label === selected),
+            showTextDocument: async () => {},
+        },
+    }
+    const original_load = Module._load
+    let create_file
+    try {
+        Module._load = function (id, ...args) {
+            return id === 'vscode' ? vscode : original_load.call(this, id, ...args)
+        }
+        create_file = require('../client/out/commands/create_liana_file.js').default()
+    } finally {
+        Module._load = original_load
+    }
+    try {
+        mkdirSync(join(dir, '.liana'))
+        mkdirSync(join(dir, 'nested', 'items'), { recursive: true })
+        writeFileSync(join(dir, '.liana', 'schema.slna'), specification())
+        const folder = { fsPath: join(dir, 'nested', 'items') }
+        await create_file(folder)
+        const created = join(folder.fsPath, 'my_file.item.lna')
+        assert.equal(readFileSync(created, 'utf8'), '#')
+        assert.deepEqual(opened, [created])
+        assert.equal(prompts[0].placeHolder, 'my_file.item.lna')
+        assert.deepEqual(errors, [])
+        writeFileSync(created, 'do not overwrite')
+        await create_file(folder)
+        assert.match(errors.pop(), /EEXIST/)
+        assert.equal(readFileSync(created, 'utf8'), 'do not overwrite')
+
+        input = undefined
+        await create_file(folder)
+        assert.equal(opened.length, 1)
+
+        // Fixed-name groups offer only declared file nodes, not arbitrary entry names.
+        const grouped = specification(tree.replace(
+            "'settings': | `file` (`file extension`: \"cfg\" `type`: 'Text')",
+            "'settings': | `file` (`file extension`: \"cfg\" `type`: 'Text') 'other': | `file` (`file extension`: \"txt\" `type`: 'Text')",
+        ))
+        writeFileSync(join(dir, '.liana', 'schema.slna'), grouped)
+        await create_file({ fsPath: dir })
+        assert.equal(readFileSync(join(dir, 'settings.cfg.lna'), 'utf8'), '#')
+        selected = undefined
+        await create_file({ fsPath: dir })
+        assert.equal(opened.length, 2)
+
+        mkdirSync(join(folder.fsPath, '.liana'))
+        await create_file(folder)
+        assert.match(errors.pop(), /schema.slna/)
+        assert.equal(opened.length, 2)
+        assert.deepEqual(errors, [])
+    } finally {
+        rmSync(dir, { recursive: true, force: true })
+    }
+})
+
+test('directory schema loading does not fall back past an invalid nearest context', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'liana-directory-context-'))
+    try {
+        mkdirSync(join(dir, '.liana'))
+        mkdirSync(join(dir, 'nested', '.liana'), { recursive: true })
+        writeFileSync(join(dir, '.liana', 'schema.slna'), specification())
+        writeFileSync(join(dir, 'nested', '.liana', 'schema.slna'), 'invalid')
+        const result = await new Promise(resolve => load_directory_schema(
+            join(dir, 'nested'), error => resolve(['error', error]), () => resolve(['success']),
+        ))
+        assert.equal(result[0], 'error')
+        assert.equal(result[1]['schema path'], join(dir, 'nested', '.liana', 'schema.slna'))
+        assert.equal(result[1].type[0], 'parse schema')
+    } finally {
+        rmSync(dir, { recursive: true, force: true })
+    }
 })
 
 test('invalid, unknown, mismatched and ambiguous paths are rejected without root fallback', () => {

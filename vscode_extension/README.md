@@ -59,6 +59,17 @@ Liana uses ASTN as its notation language. ASTN supports two notation styles:
 
 Toggle the document's default style with `Ctrl+Alt+N`; all values that will be code-completed will use the selected verbose or concise notation. Use code actions (right-click → Refactor) for selective conversion of existing values.
 
+Hovering over a property's value, including an explicit not-set optional (`_`),
+shows its schema description in both verbose and concise notation.
+
+**New Liana File...** uses the nearest ancestor `.liana/schema.slna` and follows
+its file tree to the selected directory. For dictionary file nodes, entering
+`my_file` creates `my_file.<schema extension>.lna` (or `my_file.lna` when the
+extension is empty). Already supplied schema/encoding suffixes are not duplicated.
+For fixed-name directory groups, choose a declared file when more than one is
+available. Invalid schema contexts are reported, and existing files are never
+overwritten.
+
 Generated snippets select a state option automatically only when exactly one
 option satisfies all its constraints. Ambiguous, unavailable, or recursive
 choices remain `| #` for you to fill in.
@@ -68,6 +79,7 @@ nested generated dictionaries. Sparse or unresolved benchmarks are not filled.
 For missing required entries in a dense dictionary, use **Quick Fix → Add all
 missing required entries**. This adds all currently missing entries in the
 document with schema-generated values, preserving existing entries and comments.
+Missing-entry diagnostics underline only the opening `{`, not the entire dictionary.
 
 For **Reference 'foo' does not exist**, use **Quick Fix → Create entry 'foo' in
 referenced dictionary**. The entry is added to the dictionary selected by the
@@ -79,6 +91,8 @@ For an entry that does not exist in its benchmark, use **Quick Fix → Add entry
 actual benchmark dictionary, for both sparse and dense constraints.
 
 Generated dictionary entry names and renamed identifiers use escaped single quotes.
+Reference completions also insert single-quoted identifiers, escaping embedded
+apostrophes, backslashes and control characters.
 
 All three string delimiters (double quotes, single quotes and backticks) support
 literal newlines as well as escaped `\n` and `\r`. Empty identifiers are valid

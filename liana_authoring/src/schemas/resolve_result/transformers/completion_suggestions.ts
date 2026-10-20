@@ -31,7 +31,7 @@ export const Document = ($: s_in.Document, parameters: {
                     documentation: 'Reference to ' + id,
                     'insert lines': serialize.Value({
                         data: ['concrete', { type: ['text', {
-                            delimiter: ['quote', null], value: id,
+                            delimiter: ['apostrophe', null], value: id,
                             trivia: { comments: p_.literal.list([]) },
                         }] }],
                     }, { paragraph: { indentation: parameters.indent }, value: { 'write delimiters': true } }),

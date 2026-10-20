@@ -77,6 +77,20 @@ export const range_overlaps_position = (
 
 export const Document: declarations_.Document = ($, $p) => Value($.content, $p)
 
+const with_property_description = (
+    found: s_out.Found,
+    value: s_in.Value,
+    description: p_di.Optional_Value<string>,
+): s_out.Found => found[0] === 'value' && found[1].instance === value.instance
+    ? p_.from.optional(description).decide(
+        description => {
+            found['property description'] = description
+            return found
+        },
+        () => found,
+    )
+    : found
+
 export const Value_possibly_found: declarations_.Value_possibly_found = ($, $p) => {
     return range_overlaps_position(
         t_parse_tree_to_full_value_location.Value($.instance),
@@ -154,15 +168,18 @@ export const Value: declarations_.Value = ($, $p) => {
                                                         ($): s_out.Possibly_Found => {
 
                                                             switch ($[0]) {
-                                                                case 'yes': return p_.option($, ($) => p_.from.optional($['value']).decide(
-                                                                    ($): s_out.Possibly_Found => p_.literal.set(p_.from.optional(Value_possibly_found($, $p)).decide(
-                                                                        ($) => $,
-                                                                        (): s_out.Found => ['property', { 'style': ['verbose', prop] }]
-                                                                    )),
-                                                                    () => {
-                                                                        return p_.literal.set(['property', { 'style': ['verbose', prop] }])
-                                                                    }
-                                                                ))
+                                                                case 'yes': return p_.option($, ($) => {
+                                                                    const description = $.definition.description
+                                                                    return p_.from.optional($['value']).decide(
+                                                                        (value): s_out.Possibly_Found => p_.literal.set(p_.from.optional(Value_possibly_found(value, $p)).decide(
+                                                                            found => with_property_description(found, value, description),
+                                                                            (): s_out.Found => ['property', { 'style': ['verbose', prop] }]
+                                                                        )),
+                                                                        () => {
+                                                                            return p_.literal.set(['property', { 'style': ['verbose', prop] }])
+                                                                        }
+                                                                    )
+                                                                })
                                                                 case 'no': return p_.option($, ($) => {
 
                                                                     return p_.literal.set(['property', { 'style': ['verbose', prop] }])
@@ -189,7 +206,11 @@ export const Value: declarations_.Value = ($, $p) => {
                                                     () => p_.literal.set(p_.from.state($['definition found']).decide(
                                                         ($): s_out.Found => {
                                                             switch ($[0]) {
-                                                                case 'yes': return p_.option($, ($) => Value($['value'], $p))
+                                                                case 'yes': return p_.option($, ($) => with_property_description(
+                                                                    Value($['value'], $p),
+                                                                    $.value,
+                                                                    $.definition.description,
+                                                                ))
                                                                 case 'no': return p_.option($, ($) => ['property', { 'style': ['unknown concise', prop] }])
                                                                 default: return p_.exhaustive($[0])
                                                             }
