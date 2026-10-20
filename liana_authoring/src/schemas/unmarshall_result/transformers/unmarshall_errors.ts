@@ -61,13 +61,8 @@ export const Value: declarations_.Value = ($) => {
                                                                 case 'nothing': return p_.option($, ($) => p_.literal.list([['nothing', null]]))
                                                                 case 'simple': return p_.option($, ($) => p_.literal.list([['text', null]]))
                                                                 case 'optional': return p_.option($, ($) => p_.literal.list([['optional', null]]))
-                                                                case 'reference': return p_.option($, ($) => p_.from.state($.type).decide(
-                                                                    ($) => {
-                                                                        switch ($[0]) {
-                                                                            case 'selected': return p_.option($, ($) => p_.literal.list([['text', null]]))
-                                                                            default: return p_.exhaustive($[0])
-                                                                        }
-                                                                    }))
+                                                                case 'reference': return p_.literal.list([['text', null]])
+
                                                                 default: return p_.exhaustive($[0])
                                                             }
                                                         })

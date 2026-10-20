@@ -1,2234 +1,3429 @@
 import * as p_ from 'pareto-core/schema'
-
-// types
-
-namespace Regular_Expression_ {
-
-    export type any_character = null
-
-    export type literal = string
-
-    export type character_set = string
-
-    export namespace sequence {
-
-        export type L = Regular_Expression_
-    }
-
-    export type sequence = p_.List<
-        sequence.L
-    >
-
-    export namespace choice {
-
-        export type L = Regular_Expression_
-    }
-
-    export type choice = p_.List<
-        choice.L
-    >
-
-    export namespace repetition {
-
-        export type expression = Regular_Expression_
-
-        export namespace quantity {
-
-            export type optional = null
-
-            export type zero_or_more = null
-
-            export type one_or_more = null
+import type * as __schema from "./schema.js"
+export namespace types {
+    
+    export namespace Directory {
+        
+        export namespace group {
+            
+            export namespace nodes {
+                
+                export type D = __schema.types.Node
+            }
+            
+            export type nodes = p_.Dictionary<
+                nodes.D
+            >
         }
-
-        export type quantity =
-            | readonly ['optional', quantity.optional]
-            | readonly ['zero or more', quantity.zero_or_more]
-            | readonly ['one or more', quantity.one_or_more]
-    }
-
-    export type repetition = {
-        readonly 'expression': repetition.expression
-        readonly 'quantity': repetition.quantity
-    }
-}
-
-type Regular_Expression_ =
-    | readonly ['any character', Regular_Expression_.any_character]
-    | readonly ['literal', Regular_Expression_.literal]
-    | readonly ['character set', Regular_Expression_.character_set]
-    | readonly ['sequence', Regular_Expression_.sequence]
-    | readonly ['choice', Regular_Expression_.choice]
-    | readonly ['repetition', Regular_Expression_.repetition]
-
-namespace Basic_Type_ {
-
-    export namespace type_ {
-
-        export type double_quoted = null
-
-        export type undelimited = null
-    }
-
-    export type type_ =
-        | readonly ['double quoted', type_.double_quoted]
-        | readonly ['undelimited', type_.undelimited]
-
-    export namespace regular_expression {
-
-        export type O = Regular_Expression_
-    }
-
-    export type regular_expression = p_.Optional_Value<
-        regular_expression.O
-    >
-}
-
-type Basic_Type_ = {
-    readonly 'type': Basic_Type_.type_
-    readonly 'regular expression': Basic_Type_.regular_expression
-}
-
-namespace Basic_Types_ {
-
-    export type D = Basic_Type_
-}
-
-type Basic_Types_ = p_.Dictionary<
-    Basic_Types_.D
->
-
-namespace Dictionary_ {
-
-    export type value = Value_
-}
-
-type Dictionary_ = {
-    readonly 'value': Dictionary_.value
-}
-
-namespace Group_ {
-
-    export namespace D {
-
-        export namespace description {
-
-            export type O = string
+        
+        export type group = {
+            readonly 'nodes': group.nodes
         }
-
-        export type description = p_.Optional_Value<
-            description.O
-        >
-
-        export type value = Value_
+        
+        export namespace dictionary {
+            
+            export type node = __schema.types.Node
+        }
+        
+        export type dictionary = {
+            readonly 'node': dictionary.node
+        }
     }
-
-    export type D = {
-        readonly 'description': D.description
-        readonly 'value': D.value
-    }
-}
-
-type Group_ = p_.Dictionary<
-    Group_.D
->
-
-namespace Namespaces_ {
-
-    export type D = Structure_
-}
-
-type Namespaces_ = p_.Dictionary<
-    Namespaces_.D
->
-
-namespace Types_ {
-
-    export type D = Type_
-}
-
-type Types_ = p_.Dictionary<
-    Types_.D
->
-
-namespace Value_ {
-
-    export namespace component {
-
-        export namespace type_ {
-
-            export namespace internal {
-
-                export type l_entry = Types_.D
-
+    
+    export type Directory = 
+        | readonly ['group', Directory.group]
+        | readonly ['dictionary', Directory.dictionary]
+    
+    export namespace Node {
+        
+        export namespace file {
+            
+            export type file_extension = string
+            
+            export namespace type_ {
+                
+                export type l_entry = __schema.namespaces.structure.types.Types.D
+                
                 export type l_id = string
             }
-
-            export type internal = {
-                readonly 'l entry': internal.l_entry
-                readonly 'l id': internal.l_id
+            
+            export type type_ = {
+                readonly 'l entry': type_.l_entry
+                readonly 'l id': type_.l_id
             }
-
-            export namespace internal_cyclic {
-
-                export type l_entry = p_.Circular_Dependency<
-                    Types_.D
+        }
+        
+        export type file = {
+            readonly 'file extension': file.file_extension
+            readonly 'type': file.type_
+        }
+        
+        export type directory = __schema.types.Directory
+    }
+    
+    export type Node = 
+        | readonly ['file', Node.file]
+        | readonly ['directory', Node.directory]
+    
+    export namespace Schema {
+        
+        export type structure = __schema.namespaces.structure.types.Structure
+        
+        export namespace resolver {
+            
+            export type signatures = __schema.namespaces.signatures.types.Signature_Namespace
+            
+            export type implementations = __schema.namespaces.resolver.types.Resolver
+        }
+        
+        export type resolver = {
+            readonly 'signatures': resolver.signatures
+            readonly 'implementations': resolver.implementations
+        }
+    }
+    
+    export type Schema = {
+        readonly 'structure': Schema.structure
+        readonly 'resolver': Schema.resolver
+    }
+    
+    export namespace Type_Specification {
+        
+        export type schema = __schema.types.Schema
+        
+        export type directory = __schema.types.Directory
+    }
+    
+    export type Type_Specification = {
+        readonly 'schema': Type_Specification.schema
+        readonly 'directory': Type_Specification.directory
+    }
+}
+export namespace namespaces {
+    export namespace structure {
+        export namespace types {
+            
+            export namespace Regular_Expression {
+                
+                export type any_character = null
+                
+                export type literal = string
+                
+                export type character_set = string
+                
+                export namespace sequence {
+                    
+                    export type L = __schema.namespaces.structure.types.Regular_Expression
+                }
+                
+                export type sequence = p_.List<
+                    sequence.L
                 >
-
-                export type l_id = string
-            }
-
-            export type internal_cyclic = {
-                readonly 'l entry': internal_cyclic.l_entry
-                readonly 'l id': internal_cyclic.l_id
-            }
-
-            export namespace child {
-
-                export namespace namespace {
-
-                    export type l_entry = Namespaces_.D
-
-                    export type l_id = string
+                
+                export namespace choice {
+                    
+                    export type L = __schema.namespaces.structure.types.Regular_Expression
                 }
-
-                export type namespace = {
-                    readonly 'l entry': namespace.l_entry
-                    readonly 'l id': namespace.l_id
+                
+                export type choice = p_.List<
+                    choice.L
+                >
+                
+                export namespace repetition {
+                    
+                    export type expression = __schema.namespaces.structure.types.Regular_Expression
+                    
+                    export namespace quantity {
+                        
+                        export type optional = null
+                        
+                        export type zero_or_more = null
+                        
+                        export type one_or_more = null
+                    }
+                    
+                    export type quantity = 
+                        | readonly ['optional', quantity.optional]
+                        | readonly ['zero or more', quantity.zero_or_more]
+                        | readonly ['one or more', quantity.one_or_more]
                 }
-
+                
+                export type repetition = {
+                    readonly 'expression': repetition.expression
+                    readonly 'quantity': repetition.quantity
+                }
+            }
+            
+            export type Regular_Expression = 
+                | readonly ['any character', Regular_Expression.any_character]
+                | readonly ['literal', Regular_Expression.literal]
+                | readonly ['character set', Regular_Expression.character_set]
+                | readonly ['sequence', Regular_Expression.sequence]
+                | readonly ['choice', Regular_Expression.choice]
+                | readonly ['repetition', Regular_Expression.repetition]
+            
+            export namespace Basic_Type {
+                
                 export namespace type_ {
-
-                    export type l_entry = Types_.D
-
-                    export type l_id = string
+                    
+                    export type double_quoted = null
+                    
+                    export type undelimited = null
                 }
-
-                export type type_ = {
-                    readonly 'l entry': type_.l_entry
-                    readonly 'l id': type_.l_id
+                
+                export type type_ = 
+                    | readonly ['double quoted', type_.double_quoted]
+                    | readonly ['undelimited', type_.undelimited]
+                
+                export namespace regular_expression {
+                    
+                    export type O = __schema.namespaces.structure.types.Regular_Expression
                 }
-            }
-
-            export type child = {
-                readonly 'namespace': child.namespace
-                readonly 'type': child.type_
-            }
-        }
-
-        export type type_ =
-            | readonly ['internal', type_.internal]
-            | readonly ['internal cyclic', type_.internal_cyclic]
-            | readonly ['child', type_.child]
-    }
-
-    export type component = {
-        readonly 'type': component.type_
-    }
-
-    export type dictionary = Dictionary_
-
-    export type group = Group_
-
-    export namespace list {
-
-        export type value = Value_
-
-        export type result = Value_Result_
-    }
-
-    export type list = {
-        readonly 'value': list.value
-        readonly 'result': list.result
-    }
-
-    export type nothing = null
-
-    export namespace simple {
-
-        export type l_entry = Basic_Types_.D
-
-        export type l_id = string
-    }
-
-    export type simple = {
-        readonly 'l entry': simple.l_entry
-        readonly 'l id': simple.l_id
-    }
-
-    export namespace optional {
-
-        export type constraints = Option_Constraints_
-
-        export type value = Value_
-    }
-
-    export type optional = {
-        readonly 'constraints': optional.constraints
-        readonly 'value': optional.value
-    }
-
-    export namespace reference {
-
-        export type referent = Value_Reference_
-
-        export namespace type_ {
-
-            export namespace selected {
-
-                export type dictionary = Dictionary_
-
-                export namespace dependency {
-
-                    export type acyclic = null
-
-                    export type cyclic = null
-                }
-
-                export type dependency =
-                    | readonly ['acyclic', dependency.acyclic]
-                    | readonly ['cyclic', dependency.cyclic]
-
-                export type constraints = Reference_Constraints_
-            }
-
-            export type selected = {
-                readonly 'dictionary': selected.dictionary
-                readonly 'dependency': selected.dependency
-                readonly 'constraints': selected.constraints
-            }
-        }
-
-        export type type_ =
-            | readonly ['selected', type_.selected]
-    }
-
-    export type reference = {
-        readonly 'referent': reference.referent
-        readonly 'type': reference.type_
-    }
-
-    export namespace state {
-
-        export namespace options {
-
-            export namespace D {
-
-                export namespace description {
-
-                    export type O = string
-                }
-
-                export type description = p_.Optional_Value<
-                    description.O
+                
+                export type regular_expression = p_.Optional_Value<
+                    regular_expression.O
                 >
-
-                export type constraints = Option_Constraints_
-
-                export type value = Value_
-            }
-
-            export type D = {
-                readonly 'description': D.description
-                readonly 'constraints': D.constraints
-                readonly 'value': D.value
-            }
-        }
-
-        export type options = p_.Dictionary<
-            options.D
-        >
-
-        export type result = Value_Result_
-    }
-
-    export type state = {
-        readonly 'options': state.options
-        readonly 'result': state.result
-    }
-}
-
-type Value_ =
-    | readonly ['component', Value_.component]
-    | readonly ['dictionary', Value_.dictionary]
-    | readonly ['group', Value_.group]
-    | readonly ['list', Value_.list]
-    | readonly ['nothing', Value_.nothing]
-    | readonly ['simple', Value_.simple]
-    | readonly ['optional', Value_.optional]
-    | readonly ['reference', Value_.reference]
-    | readonly ['state', Value_.state]
-
-namespace Type_ {
-
-    export type root_value = Value_
-}
-
-type Type_ = {
-    readonly 'root value': Type_.root_value
-}
-
-namespace Type_Reference_ {
-
-    export namespace location {
-
-        export namespace internal {
-
-            export type l_entry = Types_.D
-
-            export type l_id = string
-        }
-
-        export type internal = {
-            readonly 'l entry': internal.l_entry
-            readonly 'l id': internal.l_id
-        }
-
-        export namespace child {
-
-            export namespace namespace {
-
-                export type l_entry = Namespaces_.D
-
-                export type l_id = string
-            }
-
-            export type namespace = {
-                readonly 'l entry': namespace.l_entry
-                readonly 'l id': namespace.l_id
-            }
-
-            export namespace type_ {
-
-                export type l_entry = Types_.D
-
-                export type l_id = string
-            }
-
-            export type type_ = {
-                readonly 'l entry': type_.l_entry
-                readonly 'l id': type_.l_id
-            }
-        }
-
-        export type child = {
-            readonly 'namespace': child.namespace
-            readonly 'type': child.type_
-        }
-
-        export namespace sibling {
-
-            export namespace namespace {
-
-                export type l_entry = Namespaces_.D
-
-                export type l_id = string
-            }
-
-            export type namespace = {
-                readonly 'l entry': namespace.l_entry
-                readonly 'l id': namespace.l_id
-            }
-
-            export namespace type_ {
-
-                export type l_entry = Types_.D
-
-                export type l_id = string
-            }
-
-            export type type_ = {
-                readonly 'l entry': type_.l_entry
-                readonly 'l id': type_.l_id
-            }
-        }
-
-        export type sibling = {
-            readonly 'namespace': sibling.namespace
-            readonly 'type': sibling.type_
-        }
-    }
-
-    export type location =
-        | readonly ['internal', location.internal]
-        | readonly ['child', location.child]
-        | readonly ['sibling', location.sibling]
-
-    export type resulting_type = Type_
-}
-
-type Type_Reference_ = {
-    readonly 'location': Type_Reference_.location
-    readonly 'resulting type': Type_Reference_.resulting_type
-}
-
-namespace Value_Path_ {
-
-    export namespace tail {
-
-        export namespace L {
-
-            export type dictionary = null
-
-            export namespace group {
-
-                export type l_entry = Group_.D
-
-                export type l_id = string
-            }
-
-            export type group = {
-                readonly 'l entry': group.l_entry
-                readonly 'l id': group.l_id
-            }
-
-            export type list = null
-
-            export type optional = null
-
-            export namespace state {
-
-                export type l_entry = Value_.state.options.D
-
-                export type l_id = string
-            }
-
-            export type state = {
-                readonly 'l entry': state.l_entry
-                readonly 'l id': state.l_id
-            }
-        }
-
-        export type L =
-            | readonly ['dictionary', L.dictionary]
-            | readonly ['group', L.group]
-            | readonly ['list', L.list]
-            | readonly ['optional', L.optional]
-            | readonly ['state', L.state]
-    }
-
-    export type tail = p_.List<
-        tail.L
-    >
-
-    export type resulting_node = Value_
-}
-
-type Value_Path_ = {
-    readonly 'tail': Value_Path_.tail
-    readonly 'resulting node': Value_Path_.resulting_node
-}
-
-namespace Value_Reference_ {
-
-    export type type_ = Type_Reference_
-
-    export type path = Value_Path_
-}
-
-type Value_Reference_ = {
-    readonly 'type': Value_Reference_.type_
-    readonly 'path': Value_Reference_.path
-}
-
-namespace Option_Constraints_ {
-
-    export namespace O {
-
-        export type D = Value_Reference_
-    }
-
-    export type O = p_.Dictionary<
-        O.D
-    >
-}
-
-type Option_Constraints_ = p_.Optional_Value<
-    Option_Constraints_.O
->
-
-type Option_Constraint_Source_ = Option_Constraints_
-
-namespace Reference_Constraints_ {
-
-    export namespace O {
-
-        export type D = Value_Reference_
-    }
-
-    export type O = p_.Dictionary<
-        O.D
-    >
-}
-
-type Reference_Constraints_ = p_.Optional_Value<
-    Reference_Constraints_.O
->
-
-type Reference_Constraint_Source_ = Reference_Constraints_
-
-namespace Structure_ {
-
-    export type namespaces = Namespaces_
-
-    export type basic_types = Basic_Types_
-
-    export type types = Types_
-}
-
-type Structure_ = {
-    readonly 'namespaces': Structure_.namespaces
-    readonly 'basic types': Structure_.basic_types
-    readonly 'types': Structure_.types
-}
-
-namespace Value_Result_ {
-
-    export type O = Value_Reference_
-}
-
-type Value_Result_ = p_.Optional_Value<
-    Value_Result_.O
->
-
-namespace Presence_ {
-
-    export type optional = null
-
-    export type required = null
-}
-
-type Presence_ =
-    | readonly ['optional', Presence_.optional]
-    | readonly ['required', Presence_.required]
-
-namespace Signatures_Type_Reference_ {
-
-    export namespace location {
-
-        export namespace internal {
-
-            export type l_entry = Types_.D
-
-            export type l_id = string
-        }
-
-        export type internal = {
-            readonly 'l entry': internal.l_entry
-            readonly 'l id': internal.l_id
-        }
-
-        export namespace child {
-
-            export namespace namespace {
-
-                export type l_entry = Namespaces_.D
-
-                export type l_id = string
-            }
-
-            export type namespace = {
-                readonly 'l entry': namespace.l_entry
-                readonly 'l id': namespace.l_id
-            }
-
-            export namespace type_ {
-
-                export type l_entry = Types_.D
-
-                export type l_id = string
-            }
-
-            export type type_ = {
-                readonly 'l entry': type_.l_entry
-                readonly 'l id': type_.l_id
-            }
-        }
-
-        export type child = {
-            readonly 'namespace': child.namespace
-            readonly 'type': child.type_
-        }
-
-        export namespace sibling {
-
-            export namespace namespace {
-
-                export type l_entry = Namespaces_.D
-
-                export type l_id = string
-            }
-
-            export type namespace = {
-                readonly 'l entry': namespace.l_entry
-                readonly 'l id': namespace.l_id
-            }
-
-            export namespace type_ {
-
-                export type l_entry = Types_.D
-
-                export type l_id = string
-            }
-
-            export type type_ = {
-                readonly 'l entry': type_.l_entry
-                readonly 'l id': type_.l_id
-            }
-        }
-
-        export type sibling = {
-            readonly 'namespace': sibling.namespace
-            readonly 'type': sibling.type_
-        }
-    }
-
-    export type location =
-        | readonly ['internal', location.internal]
-        | readonly ['child', location.child]
-        | readonly ['sibling', location.sibling]
-
-    export type resulting_type = Type_
-}
-
-type Signatures_Type_Reference_ = {
-    readonly 'location': Signatures_Type_Reference_.location
-    readonly 'resulting type': Signatures_Type_Reference_.resulting_type
-}
-
-namespace Resolver_Signature_Parameters_ {
-
-    export namespace types {
-
-        export namespace D {
-
-            export type type_ = Signatures_Type_Reference_
-
-            export type presence = Presence_
-        }
-
-        export type D = {
-            readonly 'type': D.type_
-            readonly 'presence': D.presence
-        }
-    }
-
-    export type types = p_.Dictionary<
-        types.D
-    >
-
-    export namespace lookups {
-
-        export namespace D {
-
-            export type referent = Signatures_Type_Reference_
-
-            export type dictionary = Dictionary_
-
-            export namespace type_ {
-
-                export type cyclic = null
-
-                export type acyclic = null
-            }
-
-            export type type_ =
-                | readonly ['cyclic', type_.cyclic]
-                | readonly ['acyclic', type_.acyclic]
-
-            export type presence = Presence_
-        }
-
-        export type D = {
-            readonly 'referent': D.referent
-            readonly 'dictionary': D.dictionary
-            readonly 'type': D.type_
-            readonly 'presence': D.presence
-        }
-    }
-
-    export type lookups = p_.Dictionary<
-        lookups.D
-    >
-}
-
-type Resolver_Signature_Parameters_ = {
-    readonly 'types': Resolver_Signature_Parameters_.types
-    readonly 'lookups': Resolver_Signature_Parameters_.lookups
-}
-
-namespace Resolver_Signatures_ {
-
-    export type D = Resolver_Signature_
-}
-
-type Resolver_Signatures_ = p_.Dictionary<
-    Resolver_Signatures_.D
->
-
-namespace Resolver_Signature_ {
-
-    export type type_ = Type_
-
-    export namespace parameters {
-
-        export type local = Resolver_Signature_Parameters_
-
-        export namespace same_as {
-
-            export type l_entry = Resolver_Signatures_.D
-
-            export type l_id = string
-        }
-
-        export type same_as = {
-            readonly 'l entry': same_as.l_entry
-            readonly 'l id': same_as.l_id
-        }
-    }
-
-    export type parameters =
-        | readonly ['local', parameters.local]
-        | readonly ['same as', parameters.same_as]
-
-    export type resolved_parameters = Resolver_Signature_Parameters_
-}
-
-type Resolver_Signature_ = {
-    readonly 'type': Resolver_Signature_.type_
-    readonly 'parameters': Resolver_Signature_.parameters
-    readonly 'resolved parameters': Resolver_Signature_.resolved_parameters
-}
-
-namespace Resolver_Namespaces_ {
-
-    export type D = Resolver_
-}
-
-type Resolver_Namespaces_ = p_.Dictionary<
-    Resolver_Namespaces_.D
->
-
-namespace Resolver_ {
-
-    export type namespaces = Resolver_Namespaces_
-
-    export type signatures = Resolver_Signatures_
-
-    export type types = Resolver_Types_
-}
-
-type Resolver_ = {
-    readonly 'namespaces': Resolver_.namespaces
-    readonly 'signatures': Resolver_.signatures
-    readonly 'types': Resolver_.types
-}
-
-namespace Resolver_Absence_Constraints_ {
-
-    export namespace O {
-
-        export type D = Resolver_Possible_Value_Selection_
-    }
-
-    export type O = p_.Dictionary<
-        O.D
-    >
-}
-
-type Resolver_Absence_Constraints_ = p_.Optional_Value<
-    Resolver_Absence_Constraints_.O
->
-
-namespace Resolver_Value_Group_ {
-
-    export namespace D {
-
-        export type definition = Group_.D
-
-        export type resolver = Resolver_Value_
-    }
-
-    export type D = {
-        readonly 'definition': D.definition
-        readonly 'resolver': D.resolver
-    }
-}
-
-type Resolver_Value_Group_ = p_.Dictionary<
-    Resolver_Value_Group_.D
->
-
-namespace Resolver_Value_Constraints_ {
-
-    export type D = Resolver_Value_Constraint_
-}
-
-type Resolver_Value_Constraints_ = p_.Dictionary<
-    Resolver_Value_Constraints_.D
->
-
-namespace Resolver_Type_Reference_ {
-
-    export namespace location {
-
-        export namespace internal {
-
-            export type l_entry = Types_.D
-
-            export type l_id = string
-        }
-
-        export type internal = {
-            readonly 'l entry': internal.l_entry
-            readonly 'l id': internal.l_id
-        }
-
-        export namespace child {
-
-            export namespace namespace {
-
-                export type l_entry = Namespaces_.D
-
-                export type l_id = string
-            }
-
-            export type namespace = {
-                readonly 'l entry': namespace.l_entry
-                readonly 'l id': namespace.l_id
-            }
-
-            export namespace type_ {
-
-                export type l_entry = Types_.D
-
-                export type l_id = string
-            }
-
-            export type type_ = {
-                readonly 'l entry': type_.l_entry
-                readonly 'l id': type_.l_id
-            }
-        }
-
-        export type child = {
-            readonly 'namespace': child.namespace
-            readonly 'type': child.type_
-        }
-
-        export namespace sibling {
-
-            export namespace namespace {
-
-                export type l_entry = Namespaces_.D
-
-                export type l_id = string
-            }
-
-            export type namespace = {
-                readonly 'l entry': namespace.l_entry
-                readonly 'l id': namespace.l_id
-            }
-
-            export namespace type_ {
-
-                export type l_entry = Types_.D
-
-                export type l_id = string
-            }
-
-            export type type_ = {
-                readonly 'l entry': type_.l_entry
-                readonly 'l id': type_.l_id
-            }
-        }
-
-        export type sibling = {
-            readonly 'namespace': sibling.namespace
-            readonly 'type': sibling.type_
-        }
-    }
-
-    export type location =
-        | readonly ['internal', location.internal]
-        | readonly ['child', location.child]
-        | readonly ['sibling', location.sibling]
-
-    export type resulting_type = Type_
-}
-
-type Resolver_Type_Reference_ = {
-    readonly 'location': Resolver_Type_Reference_.location
-    readonly 'resulting type': Resolver_Type_Reference_.resulting_type
-}
-
-namespace Resolver_Value_Path_ {
-
-    export namespace tail {
-
-        export namespace L {
-
-            export type dictionary = null
-
-            export namespace group {
-
-                export type l_entry = Group_.D
-
-                export type l_id = string
-            }
-
-            export type group = {
-                readonly 'l entry': group.l_entry
-                readonly 'l id': group.l_id
-            }
-
-            export type list = null
-
-            export type optional = null
-
-            export namespace state {
-
-                export type l_entry = Value_.state.options.D
-
-                export type l_id = string
-            }
-
-            export type state = {
-                readonly 'l entry': state.l_entry
-                readonly 'l id': state.l_id
-            }
-        }
-
-        export type L =
-            | readonly ['dictionary', L.dictionary]
-            | readonly ['group', L.group]
-            | readonly ['list', L.list]
-            | readonly ['optional', L.optional]
-            | readonly ['state', L.state]
-    }
-
-    export type tail = p_.List<
-        tail.L
-    >
-
-    export type resulting_node = Value_
-}
-
-type Resolver_Value_Path_ = {
-    readonly 'tail': Resolver_Value_Path_.tail
-    readonly 'resulting node': Resolver_Value_Path_.resulting_node
-}
-
-namespace Resolver_Value_Reference_ {
-
-    export type type_ = Resolver_Type_Reference_
-
-    export type path = Resolver_Value_Path_
-}
-
-type Resolver_Value_Reference_ = {
-    readonly 'type': Resolver_Value_Reference_.type_
-    readonly 'path': Resolver_Value_Reference_.path
-}
-
-namespace Resolver_Relative_Value_Selection_ {
-
-    export namespace path {
-
-        export namespace L {
-
-            export type benchmark_link = Resolver_Value_Reference_
-
-            export namespace component_constraint {
-
-                export type name = string
-
-                export type target = Resolver_Value_Reference_
-            }
-
-            export type component_constraint = {
-                readonly 'name': component_constraint.name
-                readonly 'target': component_constraint.target
-            }
-
-            export type component = null
-
-            export namespace group {
-
-                export type l_entry = Group_.D
-
-                export type l_id = string
-            }
-
-            export type group = {
-                readonly 'l entry': group.l_entry
-                readonly 'l id': group.l_id
-            }
-
-            export type list_result = Resolver_Type_Reference_
-
-            export namespace option_constraint {
-
-                export namespace option {
-
-                    export type l_entry = Value_.state.options.D
-
-                    export type l_id = string
-                }
-
-                export type option = {
-                    readonly 'l entry': option.l_entry
-                    readonly 'l id': option.l_id
-                }
-
-                export namespace constraint {
-
-                    export type l_entry = Option_Constraints_.O.D
-
-                    export type l_id = string
-                }
-
-                export type constraint = {
-                    readonly 'l entry': constraint.l_entry
-                    readonly 'l id': constraint.l_id
-                }
-            }
-
-            export type option_constraint = {
-                readonly 'option': option_constraint.option
-                readonly 'constraint': option_constraint.constraint
-            }
-
-            export type optional = null
-
-            export namespace optional_value_constraint {
-
-                export type source = Resolver_Option_Constraint_Source_
-
-                export namespace constraint {
-
-                    export type l_entry = Option_Constraints_.O.D
-
-                    export type l_id = string
-                }
-
-                export type constraint = {
-                    readonly 'l entry': constraint.l_entry
-                    readonly 'l id': constraint.l_id
-                }
-            }
-
-            export type optional_value_constraint = {
-                readonly 'source': optional_value_constraint.source
-                readonly 'constraint': optional_value_constraint.constraint
-            }
-
-            export namespace reference {
-
-                export type definition = Value_.reference
-            }
-
-            export type reference = {
-                readonly 'definition': reference.definition
-            }
-
-            export namespace reference_constraint {
-
-                export namespace selected {
-
-                    export type source = Resolver_Reference_Constraint_Source_
-
-                    export namespace constraint {
-
-                        export type l_entry = Reference_Constraints_.O.D
-
-                        export type l_id = string
-                    }
-
-                    export type constraint = {
-                        readonly 'l entry': constraint.l_entry
-                        readonly 'l id': constraint.l_id
-                    }
-                }
-
-                export type selected = {
-                    readonly 'source': selected.source
-                    readonly 'constraint': selected.constraint
-                }
-            }
-
-            export type reference_constraint =
-                | readonly ['selected', reference_constraint.selected]
-
-            export type state_result = Resolver_Type_Reference_
-        }
-
-        export type L =
-            | readonly ['benchmark link', L.benchmark_link]
-            | readonly ['component constraint', L.component_constraint]
-            | readonly ['component', L.component]
-            | readonly ['group', L.group]
-            | readonly ['list result', L.list_result]
-            | readonly ['option constraint', L.option_constraint]
-            | readonly ['optional', L.optional]
-            | readonly ['optional value constraint', L.optional_value_constraint]
-            | readonly ['reference', L.reference]
-            | readonly ['reference constraint', L.reference_constraint]
-            | readonly ['state result', L.state_result]
-    }
-
-    export type path = p_.List<
-        path.L
-    >
-
-    export type resulting_node = Value_
-}
-
-type Resolver_Relative_Value_Selection_ = {
-    readonly 'path': Resolver_Relative_Value_Selection_.path
-    readonly 'resulting node': Resolver_Relative_Value_Selection_.resulting_node
-}
-
-namespace Resolver_Result_Selection_ {
-
-    export type context = Resolver_Guaranteed_Value_Selection_
-
-    export type value = Resolver_Relative_Value_Selection_
-}
-
-type Resolver_Result_Selection_ =
-    | readonly ['context', Resolver_Result_Selection_.context]
-    | readonly ['value', Resolver_Result_Selection_.value]
-
-namespace Resolver_Value_List_Result_ {
-
-    export type type_ = Resolver_Type_Reference_
-
-    export type initial = Resolver_Guaranteed_Value_Selection_
-
-    export type next = Resolver_Result_Selection_
-}
-
-type Resolver_Value_List_Result_ = {
-    readonly 'type': Resolver_Value_List_Result_.type_
-    readonly 'initial': Resolver_Value_List_Result_.initial
-    readonly 'next': Resolver_Value_List_Result_.next
-}
-
-namespace Resolver_Reference_Constraints_ {
-
-    export type D = Resolver_Value_Constraint_
-}
-
-type Resolver_Reference_Constraints_ = p_.Dictionary<
-    Resolver_Reference_Constraints_.D
->
-
-namespace Resolver_Value_ {
-
-    export namespace component {
-
-        export type definition = Value_.component
-
-        export namespace location {
-
-            export namespace internal {
-
-                export type l_entry = Resolver_Signatures_.D
-
-                export type l_id = string
-            }
-
-            export type internal = {
-                readonly 'l entry': internal.l_entry
-                readonly 'l id': internal.l_id
-            }
-
-            export namespace child {
-
-                export namespace namespace {
-
-                    export type l_entry = Resolver_Namespaces_.D
-
-                    export type l_id = string
-                }
-
-                export type namespace = {
-                    readonly 'l entry': namespace.l_entry
-                    readonly 'l id': namespace.l_id
-                }
-
-                export namespace resolver {
-
-                    export type l_entry = Resolver_Signatures_.D
-
-                    export type l_id = string
-                }
-
-                export type resolver = {
-                    readonly 'l entry': resolver.l_entry
-                    readonly 'l id': resolver.l_id
-                }
-            }
-
-            export type child = {
-                readonly 'namespace': child.namespace
-                readonly 'resolver': child.resolver
-            }
-        }
-
-        export type location =
-            | readonly ['internal', location.internal]
-            | readonly ['child', location.child]
-
-        export type signature = Resolver_Signatures_.D
-
-        export namespace arguments_ {
-
-            export namespace O {
-
-                export namespace types {
-
+                
+                export namespace file_path {
+                    
                     export namespace O {
-
-                        export namespace D {
-
-                            export type optional = Resolver_Optional_Value_Initialization_
-
-                            export type required = Resolver_Guaranteed_Value_Selection_
-
-                            export namespace parameter {
-
-                                export type l_entry = Resolver_Signature_Parameters_.types.D
-
+                        
+                        export type prefix = string
+                        
+                        export type suffix = string
+                    }
+                    
+                    export type O = {
+                        readonly 'prefix': O.prefix
+                        readonly 'suffix': O.suffix
+                    }
+                }
+                
+                export type file_path = p_.Optional_Value<
+                    file_path.O
+                >
+            }
+            
+            export type Basic_Type = {
+                readonly 'type': Basic_Type.type_
+                readonly 'regular expression': Basic_Type.regular_expression
+                readonly 'file path': Basic_Type.file_path
+            }
+            
+            export namespace Basic_Types {
+                
+                export type D = __schema.namespaces.structure.types.Basic_Type
+            }
+            
+            export type Basic_Types = p_.Dictionary<
+                Basic_Types.D
+            >
+            
+            export namespace Dictionary {
+                
+                export type value = __schema.namespaces.structure.types.Value
+            }
+            
+            export type Dictionary = {
+                readonly 'value': Dictionary.value
+            }
+            
+            export namespace Group {
+                
+                export namespace D {
+                    
+                    export namespace description {
+                        
+                        export type O = string
+                    }
+                    
+                    export type description = p_.Optional_Value<
+                        description.O
+                    >
+                    
+                    export type value = __schema.namespaces.structure.types.Value
+                }
+                
+                export type D = {
+                    readonly 'description': D.description
+                    readonly 'value': D.value
+                }
+            }
+            
+            export type Group = p_.Dictionary<
+                Group.D
+            >
+            
+            export namespace Namespaces {
+                
+                export type D = __schema.namespaces.structure.types.Structure
+            }
+            
+            export type Namespaces = p_.Dictionary<
+                Namespaces.D
+            >
+            
+            export namespace Types {
+                
+                export type D = __schema.namespaces.structure.types.Type
+            }
+            
+            export type Types = p_.Dictionary<
+                Types.D
+            >
+            
+            export namespace Type {
+                
+                export type root_value = __schema.namespaces.structure.types.Value
+            }
+            
+            export type Type = {
+                readonly 'root value': Type.root_value
+            }
+            
+            export namespace Type_Reference {
+                
+                export namespace location {
+                    
+                    export namespace value {
+                        
+                        export namespace internal {
+                            
+                            export type l_entry = __schema.namespaces.structure.types.Types.D
+                            
+                            export type l_id = string
+                        }
+                        
+                        export type internal = {
+                            readonly 'l entry': internal.l_entry
+                            readonly 'l id': internal.l_id
+                        }
+                        
+                        export namespace child {
+                            
+                            export namespace namespace {
+                                
+                                export type l_entry = __schema.namespaces.structure.types.Namespaces.D
+                                
                                 export type l_id = string
                             }
-
-                            export type parameter = {
-                                readonly 'l entry': parameter.l_entry
-                                readonly 'l id': parameter.l_id
+                            
+                            export type namespace = {
+                                readonly 'l entry': namespace.l_entry
+                                readonly 'l id': namespace.l_id
+                            }
+                            
+                            export namespace type_ {
+                                
+                                export type l_entry = __schema.namespaces.structure.types.Types.D
+                                
+                                export type l_id = string
+                            }
+                            
+                            export type type_ = {
+                                readonly 'l entry': type_.l_entry
+                                readonly 'l id': type_.l_id
                             }
                         }
-
-                        export type D =
-                            | readonly ['optional', D.optional]
-                            | readonly ['required', D.required]
-                            | readonly ['parameter', D.parameter]
+                        
+                        export type child = {
+                            readonly 'namespace': child.namespace
+                            readonly 'type': child.type_
+                        }
+                        
+                        export namespace sibling {
+                            
+                            export namespace namespace {
+                                
+                                export type l_entry = __schema.namespaces.structure.types.Namespaces.D
+                                
+                                export type l_id = string
+                            }
+                            
+                            export type namespace = {
+                                readonly 'l entry': namespace.l_entry
+                                readonly 'l id': namespace.l_id
+                            }
+                            
+                            export namespace type_ {
+                                
+                                export type l_entry = __schema.namespaces.structure.types.Types.D
+                                
+                                export type l_id = string
+                            }
+                            
+                            export type type_ = {
+                                readonly 'l entry': type_.l_entry
+                                readonly 'l id': type_.l_id
+                            }
+                        }
+                        
+                        export type sibling = {
+                            readonly 'namespace': sibling.namespace
+                            readonly 'type': sibling.type_
+                        }
                     }
-
-                    export type O = p_.Dictionary<
-                        O.D
-                    >
+                    
+                    export type value = 
+                        | readonly ['internal', value.internal]
+                        | readonly ['child', value.child]
+                        | readonly ['sibling', value.sibling]
+                    
+                    export type result = __schema.namespaces.structure.types.Type
                 }
-
-                export type types = p_.Optional_Value<
-                    types.O
-                >
-
-                export namespace lookups {
-
-                    export namespace O {
-
+                
+                export type location = {
+                    readonly 'value': location.value
+                    readonly 'result': location.result
+                }
+            }
+            
+            export type Type_Reference = {
+                readonly 'location': Type_Reference.location
+            }
+            
+            export namespace Value {
+                
+                export namespace component {
+                    
+                    export namespace type_ {
+                        
+                        export namespace value {
+                            
+                            export namespace internal {
+                                
+                                export type l_entry = __schema.namespaces.structure.types.Types.D
+                                
+                                export type l_id = string
+                            }
+                            
+                            export type internal = {
+                                readonly 'l entry': internal.l_entry
+                                readonly 'l id': internal.l_id
+                            }
+                            
+                            export namespace child {
+                                
+                                export namespace namespace {
+                                    
+                                    export type l_entry = __schema.namespaces.structure.types.Namespaces.D
+                                    
+                                    export type l_id = string
+                                }
+                                
+                                export type namespace = {
+                                    readonly 'l entry': namespace.l_entry
+                                    readonly 'l id': namespace.l_id
+                                }
+                                
+                                export namespace type_ {
+                                    
+                                    export type l_entry = __schema.namespaces.structure.types.Types.D
+                                    
+                                    export type l_id = string
+                                }
+                                
+                                export type type_ = {
+                                    readonly 'l entry': type_.l_entry
+                                    readonly 'l id': type_.l_id
+                                }
+                            }
+                            
+                            export type child = {
+                                readonly 'namespace': child.namespace
+                                readonly 'type': child.type_
+                            }
+                            
+                            export namespace internal_cyclic {
+                                
+                                export type l_entry = p_.Circular_Dependency<
+                                    __schema.namespaces.structure.types.Types.D
+                                >
+                                
+                                export type l_id = string
+                            }
+                            
+                            export type internal_cyclic = {
+                                readonly 'l entry': internal_cyclic.l_entry
+                                readonly 'l id': internal_cyclic.l_id
+                            }
+                        }
+                        
+                        export type value = 
+                            | readonly ['internal', value.internal]
+                            | readonly ['child', value.child]
+                            | readonly ['internal cyclic', value.internal_cyclic]
+                        
+                        export type result = __schema.namespaces.structure.types.Type
+                    }
+                    
+                    export type type_ = {
+                        readonly 'value': type_.value
+                        readonly 'result': type_.result
+                    }
+                    
+                    export type constraints = __schema.namespaces.structure.types.Reference_Constraints
+                }
+                
+                export type component = {
+                    readonly 'type': component.type_
+                    readonly 'constraints': component.constraints
+                }
+                
+                export type dictionary = __schema.namespaces.structure.types.Dictionary
+                
+                export type group = __schema.namespaces.structure.types.Group
+                
+                export namespace list {
+                    
+                    export type value = __schema.namespaces.structure.types.Value
+                    
+                    export type result = __schema.namespaces.structure.types.Value_Result
+                }
+                
+                export type list = {
+                    readonly 'value': list.value
+                    readonly 'result': list.result
+                }
+                
+                export type nothing = null
+                
+                export namespace simple {
+                    
+                    export namespace constraints {
+                        
+                        export type basic_types = __schema.namespaces.structure.types.Basic_Types
+                    }
+                    
+                    export type constraints = {
+                        readonly 'basic types': constraints.basic_types
+                    }
+                    
+                    export namespace value {
+                        
+                        export type l_entry = __schema.namespaces.structure.types.Basic_Types.D
+                        
+                        export type l_id = string
+                    }
+                    
+                    export type value = {
+                        readonly 'l entry': value.l_entry
+                        readonly 'l id': value.l_id
+                    }
+                }
+                
+                export type simple = {
+                    readonly 'constraints': simple.constraints
+                    readonly 'value': simple.value
+                }
+                
+                export namespace optional {
+                    
+                    export type constraints = __schema.namespaces.structure.types.Option_Constraints
+                    
+                    export type value = __schema.namespaces.structure.types.Value
+                    
+                    export type result = __schema.namespaces.structure.types.Value_Result
+                }
+                
+                export type optional = {
+                    readonly 'constraints': optional.constraints
+                    readonly 'value': optional.value
+                    readonly 'result': optional.result
+                }
+                
+                export type reference = __schema.namespaces.structure.types.Reference
+                
+                export namespace state {
+                    
+                    export namespace options {
+                        
                         export namespace D {
-
-                            export namespace acyclic {
-
-                                export type not_set = null
+                            
+                            export namespace description {
+                                
+                                export type O = string
                             }
-
-                            export type acyclic =
-                                | readonly ['not set', acyclic.not_set]
-
-                            export namespace cyclic {
-
-                                export type not_set = null
-                            }
-
-                            export type cyclic =
-                                | readonly ['not set', cyclic.not_set]
-
-                            export type selection = Resolver_Lookup_Selection_
+                            
+                            export type description = p_.Optional_Value<
+                                description.O
+                            >
+                            
+                            export type constraints = __schema.namespaces.structure.types.Option_Constraints
+                            
+                            export type value = __schema.namespaces.structure.types.Value
                         }
-
-                        export type D =
-                            | readonly ['acyclic', D.acyclic]
-                            | readonly ['cyclic', D.cyclic]
-                            | readonly ['selection', D.selection]
+                        
+                        export type D = {
+                            readonly 'description': D.description
+                            readonly 'constraints': D.constraints
+                            readonly 'value': D.value
+                        }
                     }
-
-                    export type O = p_.Dictionary<
-                        O.D
+                    
+                    export type options = p_.Dictionary<
+                        options.D
+                    >
+                    
+                    export type result = __schema.namespaces.structure.types.Value_Result
+                }
+                
+                export type state = {
+                    readonly 'options': state.options
+                    readonly 'result': state.result
+                }
+            }
+            
+            export type Value = 
+                | readonly ['component', Value.component]
+                | readonly ['dictionary', Value.dictionary]
+                | readonly ['group', Value.group]
+                | readonly ['list', Value.list]
+                | readonly ['nothing', Value.nothing]
+                | readonly ['simple', Value.simple]
+                | readonly ['optional', Value.optional]
+                | readonly ['reference', Value.reference]
+                | readonly ['state', Value.state]
+            
+            export namespace Value_Path {
+                
+                export namespace tail {
+                    
+                    export namespace value {
+                        
+                        export namespace L {
+                            
+                            export namespace value {
+                                
+                                export namespace value {
+                                    
+                                    export namespace dictionary {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.dictionary
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export type value = null
+                                    }
+                                    
+                                    export type dictionary = {
+                                        readonly 'constraints': dictionary.constraints
+                                        readonly 'value': dictionary.value
+                                    }
+                                    
+                                    export namespace group {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.group
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export namespace value {
+                                            
+                                            export type l_entry = __schema.namespaces.structure.types.Group.D
+                                            
+                                            export type l_id = string
+                                        }
+                                        
+                                        export type value = {
+                                            readonly 'l entry': value.l_entry
+                                            readonly 'l id': value.l_id
+                                        }
+                                    }
+                                    
+                                    export type group = {
+                                        readonly 'constraints': group.constraints
+                                        readonly 'value': group.value
+                                    }
+                                    
+                                    export namespace list {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.list
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export type value = null
+                                    }
+                                    
+                                    export type list = {
+                                        readonly 'constraints': list.constraints
+                                        readonly 'value': list.value
+                                    }
+                                    
+                                    export namespace optional {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.optional
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export type value = null
+                                    }
+                                    
+                                    export type optional = {
+                                        readonly 'constraints': optional.constraints
+                                        readonly 'value': optional.value
+                                    }
+                                    
+                                    export namespace state {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.state
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export namespace value {
+                                            
+                                            export type l_entry = __schema.namespaces.structure.types.Value.state.options.D
+                                            
+                                            export type l_id = string
+                                        }
+                                        
+                                        export type value = {
+                                            readonly 'l entry': value.l_entry
+                                            readonly 'l id': value.l_id
+                                        }
+                                    }
+                                    
+                                    export type state = {
+                                        readonly 'constraints': state.constraints
+                                        readonly 'value': state.value
+                                    }
+                                }
+                                
+                                export type value = 
+                                    | readonly ['dictionary', value.dictionary]
+                                    | readonly ['group', value.group]
+                                    | readonly ['list', value.list]
+                                    | readonly ['optional', value.optional]
+                                    | readonly ['state', value.state]
+                                
+                                export type result = __schema.namespaces.structure.types.Value
+                            }
+                            
+                            export type value = {
+                                readonly 'value': value.value
+                                readonly 'result': value.result
+                            }
+                            
+                            export type result = __schema.namespaces.structure.types.Value
+                        }
+                        
+                        export type L = {
+                            readonly 'value': L.value
+                            readonly 'result': L.result
+                        }
+                    }
+                    
+                    export type value = p_.List<
+                        value.L
+                    >
+                    
+                    export type result = __schema.namespaces.structure.types.Value
+                }
+                
+                export type tail = {
+                    readonly 'value': tail.value
+                    readonly 'result': tail.result
+                }
+            }
+            
+            export type Value_Path = {
+                readonly 'tail': Value_Path.tail
+            }
+            
+            export namespace Value_Reference {
+                
+                export type type_ = __schema.namespaces.structure.types.Type_Reference
+                
+                export type path = __schema.namespaces.structure.types.Value_Path
+            }
+            
+            export type Value_Reference = {
+                readonly 'type': Value_Reference.type_
+                readonly 'path': Value_Reference.path
+            }
+            
+            export namespace Option_Constraints {
+                
+                export namespace O {
+                    
+                    export type D = __schema.namespaces.structure.types.Value_Reference
+                }
+                
+                export type O = p_.Dictionary<
+                    O.D
+                >
+            }
+            
+            export type Option_Constraints = p_.Optional_Value<
+                Option_Constraints.O
+            >
+            
+            export namespace Reference {
+                
+                export namespace referent {
+                    
+                    export namespace constraints {
+                        
+                        export type dictionary = __schema.namespaces.structure.types.Value.dictionary
+                    }
+                    
+                    export type constraints = {
+                        readonly 'dictionary': constraints.dictionary
+                    }
+                    
+                    export type value = __schema.namespaces.structure.types.Value_Reference
+                }
+                
+                export type referent = {
+                    readonly 'constraints': referent.constraints
+                    readonly 'value': referent.value
+                }
+                
+                export namespace type_ {
+                    
+                    export namespace dependency {
+                        
+                        export type acyclic = null
+                        
+                        export type cyclic = null
+                    }
+                    
+                    export type dependency = 
+                        | readonly ['acyclic', dependency.acyclic]
+                        | readonly ['cyclic', dependency.cyclic]
+                    
+                    export type constraints = __schema.namespaces.structure.types.Reference_Constraints
+                }
+                
+                export type type_ = {
+                    readonly 'dependency': type_.dependency
+                    readonly 'constraints': type_.constraints
+                }
+            }
+            
+            export type Reference = {
+                readonly 'referent': Reference.referent
+                readonly 'type': Reference.type_
+            }
+            
+            export namespace Reference_Constraints {
+                
+                export namespace O {
+                    
+                    export type D = __schema.namespaces.structure.types.Value_Reference
+                }
+                
+                export type O = p_.Dictionary<
+                    O.D
+                >
+            }
+            
+            export type Reference_Constraints = p_.Optional_Value<
+                Reference_Constraints.O
+            >
+            
+            export namespace Structure {
+                
+                export type namespaces = __schema.namespaces.structure.types.Namespaces
+                
+                export type basic_types = __schema.namespaces.structure.types.Basic_Types
+                
+                export type types = __schema.namespaces.structure.types.Types
+            }
+            
+            export type Structure = {
+                readonly 'namespaces': Structure.namespaces
+                readonly 'basic types': Structure.basic_types
+                readonly 'types': Structure.types
+            }
+            
+            export namespace Value_Result {
+                
+                export type O = __schema.namespaces.structure.types.Value_Reference
+            }
+            
+            export type Value_Result = p_.Optional_Value<
+                Value_Result.O
+            >
+        }
+        export namespace namespaces {}
+    }
+    export namespace signatures {
+        export namespace types {
+            
+            export namespace Presence {
+                
+                export type optional = null
+                
+                export type required = null
+            }
+            
+            export type Presence = 
+                | readonly ['optional', Presence.optional]
+                | readonly ['required', Presence.required]
+            
+            export namespace Signature_Type_Reference {
+                
+                export namespace location {
+                    
+                    export namespace value {
+                        
+                        export namespace internal {
+                            
+                            export type l_entry = __schema.namespaces.structure.types.Types.D
+                            
+                            export type l_id = string
+                        }
+                        
+                        export type internal = {
+                            readonly 'l entry': internal.l_entry
+                            readonly 'l id': internal.l_id
+                        }
+                        
+                        export namespace child {
+                            
+                            export namespace namespace {
+                                
+                                export type l_entry = __schema.namespaces.structure.types.Namespaces.D
+                                
+                                export type l_id = string
+                            }
+                            
+                            export type namespace = {
+                                readonly 'l entry': namespace.l_entry
+                                readonly 'l id': namespace.l_id
+                            }
+                            
+                            export namespace type_ {
+                                
+                                export type l_entry = __schema.namespaces.structure.types.Types.D
+                                
+                                export type l_id = string
+                            }
+                            
+                            export type type_ = {
+                                readonly 'l entry': type_.l_entry
+                                readonly 'l id': type_.l_id
+                            }
+                        }
+                        
+                        export type child = {
+                            readonly 'namespace': child.namespace
+                            readonly 'type': child.type_
+                        }
+                        
+                        export namespace sibling {
+                            
+                            export namespace namespace {
+                                
+                                export type l_entry = __schema.namespaces.structure.types.Namespaces.D
+                                
+                                export type l_id = string
+                            }
+                            
+                            export type namespace = {
+                                readonly 'l entry': namespace.l_entry
+                                readonly 'l id': namespace.l_id
+                            }
+                            
+                            export namespace type_ {
+                                
+                                export type l_entry = __schema.namespaces.structure.types.Types.D
+                                
+                                export type l_id = string
+                            }
+                            
+                            export type type_ = {
+                                readonly 'l entry': type_.l_entry
+                                readonly 'l id': type_.l_id
+                            }
+                        }
+                        
+                        export type sibling = {
+                            readonly 'namespace': sibling.namespace
+                            readonly 'type': sibling.type_
+                        }
+                    }
+                    
+                    export type value = 
+                        | readonly ['internal', value.internal]
+                        | readonly ['child', value.child]
+                        | readonly ['sibling', value.sibling]
+                    
+                    export type result = __schema.namespaces.structure.types.Type
+                }
+                
+                export type location = {
+                    readonly 'value': location.value
+                    readonly 'result': location.result
+                }
+            }
+            
+            export type Signature_Type_Reference = {
+                readonly 'location': Signature_Type_Reference.location
+            }
+            
+            export namespace Signature_Parameters {
+                
+                export namespace types {
+                    
+                    export namespace D {
+                        
+                        export type type_ = __schema.namespaces.signatures.types.Signature_Type_Reference
+                        
+                        export type presence = __schema.namespaces.signatures.types.Presence
+                    }
+                    
+                    export type D = {
+                        readonly 'type': D.type_
+                        readonly 'presence': D.presence
+                    }
+                }
+                
+                export type types = p_.Dictionary<
+                    types.D
+                >
+                
+                export namespace lookups {
+                    
+                    export namespace D {
+                        
+                        export namespace referent {
+                            
+                            export namespace constraints {
+                                
+                                export type dictionary = __schema.namespaces.structure.types.Value.dictionary
+                            }
+                            
+                            export type constraints = {
+                                readonly 'dictionary': constraints.dictionary
+                            }
+                            
+                            export type value = __schema.namespaces.signatures.types.Signature_Type_Reference
+                        }
+                        
+                        export type referent = {
+                            readonly 'constraints': referent.constraints
+                            readonly 'value': referent.value
+                        }
+                        
+                        export namespace type_ {
+                            
+                            export type cyclic = null
+                            
+                            export type acyclic = null
+                        }
+                        
+                        export type type_ = 
+                            | readonly ['cyclic', type_.cyclic]
+                            | readonly ['acyclic', type_.acyclic]
+                        
+                        export type presence = __schema.namespaces.signatures.types.Presence
+                    }
+                    
+                    export type D = {
+                        readonly 'referent': D.referent
+                        readonly 'type': D.type_
+                        readonly 'presence': D.presence
+                    }
+                }
+                
+                export type lookups = p_.Dictionary<
+                    lookups.D
+                >
+            }
+            
+            export type Signature_Parameters = {
+                readonly 'types': Signature_Parameters.types
+                readonly 'lookups': Signature_Parameters.lookups
+            }
+            
+            export namespace Signatures {
+                
+                export namespace D {
+                    
+                    export type benchmark = __schema.namespaces.structure.types.Types.D
+                    
+                    export type value = __schema.namespaces.signatures.types.Signature
+                }
+                
+                export type D = {
+                    readonly 'benchmark': D.benchmark
+                    readonly 'value': D.value
+                }
+            }
+            
+            export type Signatures = p_.Dictionary<
+                Signatures.D
+            >
+            
+            export namespace Signature {
+                
+                export namespace parameters {
+                    
+                    export namespace value {
+                        
+                        export type local = __schema.namespaces.signatures.types.Signature_Parameters
+                        
+                        export namespace same_as {
+                            
+                            export type l_entry = __schema.namespaces.signatures.types.Signatures.D
+                            
+                            export type l_id = string
+                        }
+                        
+                        export type same_as = {
+                            readonly 'l entry': same_as.l_entry
+                            readonly 'l id': same_as.l_id
+                        }
+                    }
+                    
+                    export type value = 
+                        | readonly ['local', value.local]
+                        | readonly ['same as', value.same_as]
+                    
+                    export type result = __schema.namespaces.signatures.types.Signature_Parameters
+                }
+                
+                export type parameters = {
+                    readonly 'value': parameters.value
+                    readonly 'result': parameters.result
+                }
+            }
+            
+            export type Signature = {
+                readonly 'parameters': Signature.parameters
+            }
+            
+            export namespace Namespaces {
+                
+                export namespace D {
+                    
+                    export type benchmark = __schema.namespaces.structure.types.Namespaces.D
+                    
+                    export type value = __schema.namespaces.signatures.types.Signature_Namespace
+                }
+                
+                export type D = {
+                    readonly 'benchmark': D.benchmark
+                    readonly 'value': D.value
+                }
+            }
+            
+            export type Namespaces = p_.Dictionary<
+                Namespaces.D
+            >
+            
+            export namespace Signature_Namespace {
+                
+                export type namespaces = __schema.namespaces.signatures.types.Namespaces
+                
+                export type types = __schema.namespaces.signatures.types.Signatures
+            }
+            
+            export type Signature_Namespace = {
+                readonly 'namespaces': Signature_Namespace.namespaces
+                readonly 'types': Signature_Namespace.types
+            }
+        }
+        export namespace namespaces {}
+    }
+    export namespace resolver {
+        export namespace types {
+            
+            export namespace Absence_Constraints {
+                
+                export namespace O {
+                    
+                    export type D = __schema.namespaces.resolver.types.Possible_Value_Selection
+                }
+                
+                export type O = p_.Dictionary<
+                    O.D
+                >
+            }
+            
+            export type Absence_Constraints = p_.Optional_Value<
+                Absence_Constraints.O
+            >
+            
+            export namespace Type_Reference {
+                
+                export namespace location {
+                    
+                    export namespace value {
+                        
+                        export namespace internal {
+                            
+                            export type l_entry = __schema.namespaces.structure.types.Types.D
+                            
+                            export type l_id = string
+                        }
+                        
+                        export type internal = {
+                            readonly 'l entry': internal.l_entry
+                            readonly 'l id': internal.l_id
+                        }
+                        
+                        export namespace child {
+                            
+                            export namespace namespace {
+                                
+                                export type l_entry = __schema.namespaces.structure.types.Namespaces.D
+                                
+                                export type l_id = string
+                            }
+                            
+                            export type namespace = {
+                                readonly 'l entry': namespace.l_entry
+                                readonly 'l id': namespace.l_id
+                            }
+                            
+                            export namespace type_ {
+                                
+                                export type l_entry = __schema.namespaces.structure.types.Types.D
+                                
+                                export type l_id = string
+                            }
+                            
+                            export type type_ = {
+                                readonly 'l entry': type_.l_entry
+                                readonly 'l id': type_.l_id
+                            }
+                        }
+                        
+                        export type child = {
+                            readonly 'namespace': child.namespace
+                            readonly 'type': child.type_
+                        }
+                        
+                        export namespace sibling {
+                            
+                            export namespace namespace {
+                                
+                                export type l_entry = __schema.namespaces.structure.types.Namespaces.D
+                                
+                                export type l_id = string
+                            }
+                            
+                            export type namespace = {
+                                readonly 'l entry': namespace.l_entry
+                                readonly 'l id': namespace.l_id
+                            }
+                            
+                            export namespace type_ {
+                                
+                                export type l_entry = __schema.namespaces.structure.types.Types.D
+                                
+                                export type l_id = string
+                            }
+                            
+                            export type type_ = {
+                                readonly 'l entry': type_.l_entry
+                                readonly 'l id': type_.l_id
+                            }
+                        }
+                        
+                        export type sibling = {
+                            readonly 'namespace': sibling.namespace
+                            readonly 'type': sibling.type_
+                        }
+                    }
+                    
+                    export type value = 
+                        | readonly ['internal', value.internal]
+                        | readonly ['child', value.child]
+                        | readonly ['sibling', value.sibling]
+                    
+                    export type result = __schema.namespaces.structure.types.Type
+                }
+                
+                export type location = {
+                    readonly 'value': location.value
+                    readonly 'result': location.result
+                }
+            }
+            
+            export type Type_Reference = {
+                readonly 'location': Type_Reference.location
+            }
+            
+            export namespace Value_Path {
+                
+                export namespace tail {
+                    
+                    export namespace value {
+                        
+                        export namespace L {
+                            
+                            export namespace value {
+                                
+                                export namespace value {
+                                    
+                                    export namespace dictionary {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.dictionary
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export type value = null
+                                    }
+                                    
+                                    export type dictionary = {
+                                        readonly 'constraints': dictionary.constraints
+                                        readonly 'value': dictionary.value
+                                    }
+                                    
+                                    export namespace group {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.group
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export namespace value {
+                                            
+                                            export type l_entry = __schema.namespaces.structure.types.Group.D
+                                            
+                                            export type l_id = string
+                                        }
+                                        
+                                        export type value = {
+                                            readonly 'l entry': value.l_entry
+                                            readonly 'l id': value.l_id
+                                        }
+                                    }
+                                    
+                                    export type group = {
+                                        readonly 'constraints': group.constraints
+                                        readonly 'value': group.value
+                                    }
+                                    
+                                    export namespace list {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.list
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export type value = null
+                                    }
+                                    
+                                    export type list = {
+                                        readonly 'constraints': list.constraints
+                                        readonly 'value': list.value
+                                    }
+                                    
+                                    export namespace optional {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.optional
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export type value = null
+                                    }
+                                    
+                                    export type optional = {
+                                        readonly 'constraints': optional.constraints
+                                        readonly 'value': optional.value
+                                    }
+                                    
+                                    export namespace state {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.state
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export namespace value {
+                                            
+                                            export type l_entry = __schema.namespaces.structure.types.Value.state.options.D
+                                            
+                                            export type l_id = string
+                                        }
+                                        
+                                        export type value = {
+                                            readonly 'l entry': value.l_entry
+                                            readonly 'l id': value.l_id
+                                        }
+                                    }
+                                    
+                                    export type state = {
+                                        readonly 'constraints': state.constraints
+                                        readonly 'value': state.value
+                                    }
+                                }
+                                
+                                export type value = 
+                                    | readonly ['dictionary', value.dictionary]
+                                    | readonly ['group', value.group]
+                                    | readonly ['list', value.list]
+                                    | readonly ['optional', value.optional]
+                                    | readonly ['state', value.state]
+                                
+                                export type result = __schema.namespaces.structure.types.Value
+                            }
+                            
+                            export type value = {
+                                readonly 'value': value.value
+                                readonly 'result': value.result
+                            }
+                            
+                            export type result = __schema.namespaces.structure.types.Value
+                        }
+                        
+                        export type L = {
+                            readonly 'value': L.value
+                            readonly 'result': L.result
+                        }
+                    }
+                    
+                    export type value = p_.List<
+                        value.L
+                    >
+                    
+                    export type result = __schema.namespaces.structure.types.Value
+                }
+                
+                export type tail = {
+                    readonly 'value': tail.value
+                    readonly 'result': tail.result
+                }
+            }
+            
+            export type Value_Path = {
+                readonly 'tail': Value_Path.tail
+            }
+            
+            export namespace Value_Reference {
+                
+                export type type_ = __schema.namespaces.resolver.types.Type_Reference
+                
+                export type path = __schema.namespaces.resolver.types.Value_Path
+            }
+            
+            export type Value_Reference = {
+                readonly 'type': Value_Reference.type_
+                readonly 'path': Value_Reference.path
+            }
+            
+            export namespace Relative_Value_Selection {
+                
+                export namespace path {
+                    
+                    export namespace value {
+                        
+                        export namespace L {
+                            
+                            export namespace value {
+                                
+                                export namespace value {
+                                    
+                                    export type benchmark_link = __schema.namespaces.resolver.types.Value_Reference
+                                    
+                                    export namespace component_constraint {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.component
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export namespace value {
+                                            
+                                            export type name = string
+                                            
+                                            export type target = __schema.namespaces.resolver.types.Value_Reference
+                                        }
+                                        
+                                        export type value = {
+                                            readonly 'name': value.name
+                                            readonly 'target': value.target
+                                        }
+                                    }
+                                    
+                                    export type component_constraint = {
+                                        readonly 'constraints': component_constraint.constraints
+                                        readonly 'value': component_constraint.value
+                                    }
+                                    
+                                    export namespace component {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.component
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export type value = null
+                                    }
+                                    
+                                    export type component = {
+                                        readonly 'constraints': component.constraints
+                                        readonly 'value': component.value
+                                    }
+                                    
+                                    export namespace group {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.group
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export namespace value {
+                                            
+                                            export type l_entry = __schema.namespaces.structure.types.Group.D
+                                            
+                                            export type l_id = string
+                                        }
+                                        
+                                        export type value = {
+                                            readonly 'l entry': value.l_entry
+                                            readonly 'l id': value.l_id
+                                        }
+                                    }
+                                    
+                                    export type group = {
+                                        readonly 'constraints': group.constraints
+                                        readonly 'value': group.value
+                                    }
+                                    
+                                    export namespace list_result {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.list
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export type value = null
+                                    }
+                                    
+                                    export type list_result = {
+                                        readonly 'constraints': list_result.constraints
+                                        readonly 'value': list_result.value
+                                    }
+                                    
+                                    export namespace option_constraint {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.state
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export namespace value {
+                                            
+                                            export namespace option {
+                                                
+                                                export type l_entry = __schema.namespaces.structure.types.Value.state.options.D
+                                                
+                                                export type l_id = string
+                                            }
+                                            
+                                            export type option = {
+                                                readonly 'l entry': option.l_entry
+                                                readonly 'l id': option.l_id
+                                            }
+                                            
+                                            export namespace constraint {
+                                                
+                                                export type l_entry = __schema.namespaces.structure.types.Option_Constraints.O.D
+                                                
+                                                export type l_id = string
+                                            }
+                                            
+                                            export type constraint = {
+                                                readonly 'l entry': constraint.l_entry
+                                                readonly 'l id': constraint.l_id
+                                            }
+                                        }
+                                        
+                                        export type value = {
+                                            readonly 'option': value.option
+                                            readonly 'constraint': value.constraint
+                                        }
+                                    }
+                                    
+                                    export type option_constraint = {
+                                        readonly 'constraints': option_constraint.constraints
+                                        readonly 'value': option_constraint.value
+                                    }
+                                    
+                                    export namespace optional {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.optional
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export type value = null
+                                    }
+                                    
+                                    export type optional = {
+                                        readonly 'constraints': optional.constraints
+                                        readonly 'value': optional.value
+                                    }
+                                    
+                                    export namespace optional_value_constraint {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.optional
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export namespace value {
+                                            
+                                            export type l_entry = __schema.namespaces.structure.types.Option_Constraints.O.D
+                                            
+                                            export type l_id = string
+                                        }
+                                        
+                                        export type value = {
+                                            readonly 'l entry': value.l_entry
+                                            readonly 'l id': value.l_id
+                                        }
+                                    }
+                                    
+                                    export type optional_value_constraint = {
+                                        readonly 'constraints': optional_value_constraint.constraints
+                                        readonly 'value': optional_value_constraint.value
+                                    }
+                                    
+                                    export namespace reference_constraint {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.reference
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export namespace value {
+                                            
+                                            export type l_entry = __schema.namespaces.structure.types.Reference_Constraints.O.D
+                                            
+                                            export type l_id = string
+                                        }
+                                        
+                                        export type value = {
+                                            readonly 'l entry': value.l_entry
+                                            readonly 'l id': value.l_id
+                                        }
+                                    }
+                                    
+                                    export type reference_constraint = {
+                                        readonly 'constraints': reference_constraint.constraints
+                                        readonly 'value': reference_constraint.value
+                                    }
+                                    
+                                    export namespace reference {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.reference
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export namespace value {}
+                                        
+                                        export type value = {}
+                                    }
+                                    
+                                    export type reference = {
+                                        readonly 'constraints': reference.constraints
+                                        readonly 'value': reference.value
+                                    }
+                                    
+                                    export namespace state_result {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.state
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export type value = null
+                                    }
+                                    
+                                    export type state_result = {
+                                        readonly 'constraints': state_result.constraints
+                                        readonly 'value': state_result.value
+                                    }
+                                }
+                                
+                                export type value = 
+                                    | readonly ['benchmark link', value.benchmark_link]
+                                    | readonly ['component constraint', value.component_constraint]
+                                    | readonly ['component', value.component]
+                                    | readonly ['group', value.group]
+                                    | readonly ['list result', value.list_result]
+                                    | readonly ['option constraint', value.option_constraint]
+                                    | readonly ['optional', value.optional]
+                                    | readonly ['optional value constraint', value.optional_value_constraint]
+                                    | readonly ['reference constraint', value.reference_constraint]
+                                    | readonly ['reference', value.reference]
+                                    | readonly ['state result', value.state_result]
+                                
+                                export type result = __schema.namespaces.structure.types.Value
+                            }
+                            
+                            export type value = {
+                                readonly 'value': value.value
+                                readonly 'result': value.result
+                            }
+                            
+                            export type result = __schema.namespaces.structure.types.Value
+                        }
+                        
+                        export type L = {
+                            readonly 'value': L.value
+                            readonly 'result': L.result
+                        }
+                    }
+                    
+                    export type value = p_.List<
+                        value.L
+                    >
+                    
+                    export type result = __schema.namespaces.structure.types.Value
+                }
+                
+                export type path = {
+                    readonly 'value': path.value
+                    readonly 'result': path.result
+                }
+            }
+            
+            export type Relative_Value_Selection = {
+                readonly 'path': Relative_Value_Selection.path
+            }
+            
+            export namespace Guaranteed_Value_Selection {
+                
+                export namespace start {
+                    
+                    export namespace value {
+                        
+                        export namespace optional_fallback {
+                            
+                            export type selection = __schema.namespaces.resolver.types.Possible_Value_Selection
+                            
+                            export type fallback = __schema.namespaces.resolver.types.Guaranteed_Value_Selection
+                        }
+                        
+                        export type optional_fallback = {
+                            readonly 'selection': optional_fallback.selection
+                            readonly 'fallback': optional_fallback.fallback
+                        }
+                        
+                        export namespace sibling {
+                            
+                            export type l_entry = __schema.namespaces.structure.types.Group.D
+                            
+                            export type l_id = string
+                        }
+                        
+                        export type sibling = {
+                            readonly 'l entry': sibling.l_entry
+                            readonly 'l id': sibling.l_id
+                        }
+                        
+                        export namespace parent_sibling {
+                            
+                            export type l_entry = __schema.namespaces.structure.types.Group.D
+                            
+                            export type l_id = string
+                        }
+                        
+                        export type parent_sibling = {
+                            readonly 'l entry': parent_sibling.l_entry
+                            readonly 'l id': parent_sibling.l_id
+                        }
+                        
+                        export namespace option_constraint {
+                            
+                            export namespace constraints {
+                                
+                                export type oc = __schema.namespaces.structure.types.Option_Constraints
+                            }
+                            
+                            export type constraints = {
+                                readonly 'oc': constraints.oc
+                            }
+                            
+                            export namespace value {
+                                
+                                export type l_entry = __schema.namespaces.structure.types.Option_Constraints.O.D
+                                
+                                export type l_id = string
+                            }
+                            
+                            export type value = {
+                                readonly 'l entry': value.l_entry
+                                readonly 'l id': value.l_id
+                            }
+                        }
+                        
+                        export type option_constraint = {
+                            readonly 'constraints': option_constraint.constraints
+                            readonly 'value': option_constraint.value
+                        }
+                        
+                        export namespace list_cursor {
+                            
+                            export namespace constraints {
+                                
+                                export type result = __schema.namespaces.structure.types.Value_Result.O
+                            }
+                            
+                            export type constraints = {
+                                readonly 'result': constraints.result
+                            }
+                            
+                            export type value = null
+                        }
+                        
+                        export type list_cursor = {
+                            readonly 'constraints': list_cursor.constraints
+                            readonly 'value': list_cursor.value
+                        }
+                        
+                        export namespace linked_entry {
+                            
+                            export namespace constraints {
+                                
+                                export type entry = __schema.namespaces.structure.types.Value
+                            }
+                            
+                            export type constraints = {
+                                readonly 'entry': constraints.entry
+                            }
+                            
+                            export type value = null
+                        }
+                        
+                        export type linked_entry = {
+                            readonly 'constraints': linked_entry.constraints
+                            readonly 'value': linked_entry.value
+                        }
+                        
+                        export namespace constraint {
+                            
+                            export namespace value {
+                                
+                                export namespace component {
+                                    
+                                    export namespace property {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type component = __schema.namespaces.structure.types.Value.component
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'component': constraints.component
+                                        }
+                                        
+                                        export namespace value {
+                                            
+                                            export type l_entry = __schema.namespaces.structure.types.Group.D
+                                            
+                                            export type l_id = string
+                                        }
+                                        
+                                        export type value = {
+                                            readonly 'l entry': value.l_entry
+                                            readonly 'l id': value.l_id
+                                        }
+                                    }
+                                    
+                                    export type property = {
+                                        readonly 'constraints': property.constraints
+                                        readonly 'value': property.value
+                                    }
+                                    
+                                    export namespace constraint {
+                                        
+                                        export type l_entry = __schema.namespaces.structure.types.Reference_Constraints.O.D
+                                        
+                                        export type l_id = string
+                                    }
+                                    
+                                    export type constraint = {
+                                        readonly 'l entry': constraint.l_entry
+                                        readonly 'l id': constraint.l_id
+                                    }
+                                }
+                                
+                                export type component = {
+                                    readonly 'property': component.property
+                                    readonly 'constraint': component.constraint
+                                }
+                                
+                                export namespace reference {
+                                    
+                                    export namespace property {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type reference = __schema.namespaces.structure.types.Value.reference
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'reference': constraints.reference
+                                        }
+                                        
+                                        export namespace value {
+                                            
+                                            export type l_entry = __schema.namespaces.structure.types.Group.D
+                                            
+                                            export type l_id = string
+                                        }
+                                        
+                                        export type value = {
+                                            readonly 'l entry': value.l_entry
+                                            readonly 'l id': value.l_id
+                                        }
+                                    }
+                                    
+                                    export type property = {
+                                        readonly 'constraints': property.constraints
+                                        readonly 'value': property.value
+                                    }
+                                    
+                                    export namespace constraint {
+                                        
+                                        export type l_entry = __schema.namespaces.structure.types.Reference_Constraints.O.D
+                                        
+                                        export type l_id = string
+                                    }
+                                    
+                                    export type constraint = {
+                                        readonly 'l entry': constraint.l_entry
+                                        readonly 'l id': constraint.l_id
+                                    }
+                                }
+                                
+                                export type reference = {
+                                    readonly 'property': reference.property
+                                    readonly 'constraint': reference.constraint
+                                }
+                            }
+                            
+                            export type value = 
+                                | readonly ['component', value.component]
+                                | readonly ['reference', value.reference]
+                            
+                            export type result = __schema.namespaces.structure.types.Value
+                        }
+                        
+                        export type constraint = {
+                            readonly 'value': constraint.value
+                            readonly 'result': constraint.result
+                        }
+                        
+                        export namespace parameter {
+                            
+                            export type l_entry = __schema.namespaces.signatures.types.Signature_Parameters.types.D
+                            
+                            export type l_id = string
+                        }
+                        
+                        export type parameter = {
+                            readonly 'l entry': parameter.l_entry
+                            readonly 'l id': parameter.l_id
+                        }
+                        
+                        export namespace result {
+                            
+                            export namespace value {
+                                
+                                export namespace list {
+                                    
+                                    export namespace property {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type list = __schema.namespaces.structure.types.Value.list
+                                            
+                                            export type result = __schema.namespaces.structure.types.Value_Result.O
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'list': constraints.list
+                                            readonly 'result': constraints.result
+                                        }
+                                        
+                                        export namespace value {
+                                            
+                                            export type l_entry = __schema.namespaces.structure.types.Group.D
+                                            
+                                            export type l_id = string
+                                        }
+                                        
+                                        export type value = {
+                                            readonly 'l entry': value.l_entry
+                                            readonly 'l id': value.l_id
+                                        }
+                                    }
+                                    
+                                    export type property = {
+                                        readonly 'constraints': property.constraints
+                                        readonly 'value': property.value
+                                    }
+                                }
+                                
+                                export type list = {
+                                    readonly 'property': list.property
+                                }
+                                
+                                export namespace state {
+                                    
+                                    export namespace property {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type state = __schema.namespaces.structure.types.Value.state
+                                            
+                                            export type result = __schema.namespaces.structure.types.Value_Result.O
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'state': constraints.state
+                                            readonly 'result': constraints.result
+                                        }
+                                        
+                                        export namespace value {
+                                            
+                                            export type l_entry = __schema.namespaces.structure.types.Group.D
+                                            
+                                            export type l_id = string
+                                        }
+                                        
+                                        export type value = {
+                                            readonly 'l entry': value.l_entry
+                                            readonly 'l id': value.l_id
+                                        }
+                                    }
+                                    
+                                    export type property = {
+                                        readonly 'constraints': property.constraints
+                                        readonly 'value': property.value
+                                    }
+                                }
+                                
+                                export type state = {
+                                    readonly 'property': state.property
+                                }
+                                
+                                export namespace optional_value {
+                                    
+                                    export namespace property {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type optional = __schema.namespaces.structure.types.Value.optional
+                                            
+                                            export type result = __schema.namespaces.structure.types.Value_Result.O
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'optional': constraints.optional
+                                            readonly 'result': constraints.result
+                                        }
+                                        
+                                        export namespace value {
+                                            
+                                            export type l_entry = __schema.namespaces.structure.types.Group.D
+                                            
+                                            export type l_id = string
+                                        }
+                                        
+                                        export type value = {
+                                            readonly 'l entry': value.l_entry
+                                            readonly 'l id': value.l_id
+                                        }
+                                    }
+                                    
+                                    export type property = {
+                                        readonly 'constraints': property.constraints
+                                        readonly 'value': property.value
+                                    }
+                                }
+                                
+                                export type optional_value = {
+                                    readonly 'property': optional_value.property
+                                }
+                            }
+                            
+                            export type value = 
+                                | readonly ['list', value.list]
+                                | readonly ['state', value.state]
+                                | readonly ['optional value', value.optional_value]
+                            
+                            export type result = __schema.namespaces.structure.types.Value
+                        }
+                        
+                        export type result = {
+                            readonly 'value': result.value
+                            readonly 'result': result.result
+                        }
+                    }
+                    
+                    export type value = 
+                        | readonly ['optional fallback', value.optional_fallback]
+                        | readonly ['sibling', value.sibling]
+                        | readonly ['parent sibling', value.parent_sibling]
+                        | readonly ['option constraint', value.option_constraint]
+                        | readonly ['list cursor', value.list_cursor]
+                        | readonly ['linked entry', value.linked_entry]
+                        | readonly ['constraint', value.constraint]
+                        | readonly ['parameter', value.parameter]
+                        | readonly ['result', value.result]
+                    
+                    export type result = __schema.namespaces.structure.types.Value
+                }
+                
+                export type start = {
+                    readonly 'value': start.value
+                    readonly 'result': start.result
+                }
+                
+                export type tail = __schema.namespaces.resolver.types.Relative_Value_Selection
+            }
+            
+            export type Guaranteed_Value_Selection = {
+                readonly 'start': Guaranteed_Value_Selection.start
+                readonly 'tail': Guaranteed_Value_Selection.tail
+            }
+            
+            export namespace Benchmark {
+                
+                export namespace selection {
+                    
+                    export namespace constraints {
+                        
+                        export type dictionary = __schema.namespaces.structure.types.Value.dictionary
+                    }
+                    
+                    export type constraints = {
+                        readonly 'dictionary': constraints.dictionary
+                    }
+                    
+                    export type value = __schema.namespaces.resolver.types.Guaranteed_Value_Selection
+                }
+                
+                export type selection = {
+                    readonly 'constraints': selection.constraints
+                    readonly 'value': selection.value
+                }
+                
+                export namespace coverage {
+                    
+                    export type dense = null
+                    
+                    export type sparse = null
+                }
+                
+                export type coverage = 
+                    | readonly ['dense', coverage.dense]
+                    | readonly ['sparse', coverage.sparse]
+            }
+            
+            export type Benchmark = {
+                readonly 'selection': Benchmark.selection
+                readonly 'coverage': Benchmark.coverage
+            }
+            
+            export namespace Constraint {
+                
+                export type selection = __schema.namespaces.resolver.types.Relative_Value_Selection
+                
+                export namespace type_ {
+                    
+                    export namespace value {
+                        
+                        export namespace state {
+                            
+                            export namespace constraints {
+                                
+                                export type state = __schema.namespaces.structure.types.Value.state
+                            }
+                            
+                            export type constraints = {
+                                readonly 'state': constraints.state
+                            }
+                            
+                            export namespace value {
+                                
+                                export namespace option {
+                                    
+                                    export type l_entry = __schema.namespaces.structure.types.Value.state.options.D
+                                    
+                                    export type l_id = string
+                                }
+                                
+                                export type option = {
+                                    readonly 'l entry': option.l_entry
+                                    readonly 'l id': option.l_id
+                                }
+                            }
+                            
+                            export type value = {
+                                readonly 'option': value.option
+                            }
+                        }
+                        
+                        export type state = {
+                            readonly 'constraints': state.constraints
+                            readonly 'value': state.value
+                        }
+                        
+                        export namespace optional_value {
+                            
+                            export namespace constraints {
+                                
+                                export type optional = __schema.namespaces.structure.types.Value.optional
+                            }
+                            
+                            export type constraints = {
+                                readonly 'optional': constraints.optional
+                            }
+                            
+                            export namespace value {}
+                            
+                            export type value = {}
+                        }
+                        
+                        export type optional_value = {
+                            readonly 'constraints': optional_value.constraints
+                            readonly 'value': optional_value.value
+                        }
+                    }
+                    
+                    export type value = 
+                        | readonly ['state', value.state]
+                        | readonly ['optional value', value.optional_value]
+                    
+                    export type result = __schema.namespaces.structure.types.Value
+                }
+                
+                export type type_ = {
+                    readonly 'value': type_.value
+                    readonly 'result': type_.result
+                }
+            }
+            
+            export type Constraint = {
+                readonly 'selection': Constraint.selection
+                readonly 'type': Constraint.type_
+            }
+            
+            export namespace Lookup_Selection {
+                
+                export namespace type_ {
+                    
+                    export namespace value {
+                        
+                        export namespace acyclic {
+                            
+                            export namespace value {
+                                
+                                export namespace siblings {
+                                    
+                                    export namespace constraints {
+                                        
+                                        export type cd = __schema.namespaces.structure.types.Dictionary
+                                    }
+                                    
+                                    export type constraints = {
+                                        readonly 'cd': constraints.cd
+                                    }
+                                    
+                                    export type value = null
+                                }
+                                
+                                export type siblings = {
+                                    readonly 'constraints': siblings.constraints
+                                    readonly 'value': siblings.value
+                                }
+                                
+                                export namespace resolved_dictionary {
+                                    
+                                    export namespace selection {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type dictionary = __schema.namespaces.structure.types.Value.dictionary
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'dictionary': constraints.dictionary
+                                        }
+                                        
+                                        export type value = __schema.namespaces.resolver.types.Guaranteed_Value_Selection
+                                    }
+                                    
+                                    export type selection = {
+                                        readonly 'constraints': selection.constraints
+                                        readonly 'value': selection.value
+                                    }
+                                }
+                                
+                                export type resolved_dictionary = {
+                                    readonly 'selection': resolved_dictionary.selection
+                                }
+                            }
+                            
+                            export type value = 
+                                | readonly ['siblings', value.siblings]
+                                | readonly ['resolved dictionary', value.resolved_dictionary]
+                            
+                            export type result = __schema.namespaces.structure.types.Dictionary
+                        }
+                        
+                        export type acyclic = {
+                            readonly 'value': acyclic.value
+                            readonly 'result': acyclic.result
+                        }
+                        
+                        export namespace cyclic {
+                            
+                            export namespace value {
+                                
+                                export namespace siblings {
+                                    
+                                    export namespace constraints {
+                                        
+                                        export type cd = __schema.namespaces.structure.types.Dictionary
+                                    }
+                                    
+                                    export type constraints = {
+                                        readonly 'cd': constraints.cd
+                                    }
+                                    
+                                    export type value = null
+                                }
+                                
+                                export type siblings = {
+                                    readonly 'constraints': siblings.constraints
+                                    readonly 'value': siblings.value
+                                }
+                            }
+                            
+                            export type value = 
+                                | readonly ['siblings', value.siblings]
+                            
+                            export type result = __schema.namespaces.structure.types.Dictionary
+                        }
+                        
+                        export type cyclic = {
+                            readonly 'value': cyclic.value
+                            readonly 'result': cyclic.result
+                        }
+                        
+                        export namespace parameter {
+                            
+                            export type l_entry = __schema.namespaces.signatures.types.Signature_Parameters.lookups.D
+                            
+                            export type l_id = string
+                        }
+                        
+                        export type parameter = {
+                            readonly 'l entry': parameter.l_entry
+                            readonly 'l id': parameter.l_id
+                        }
+                    }
+                    
+                    export type value = 
+                        | readonly ['acyclic', value.acyclic]
+                        | readonly ['cyclic', value.cyclic]
+                        | readonly ['parameter', value.parameter]
+                    
+                    export type result = __schema.namespaces.structure.types.Dictionary
+                }
+                
+                export type type_ = {
+                    readonly 'value': type_.value
+                    readonly 'result': type_.result
+                }
+            }
+            
+            export type Lookup_Selection = {
+                readonly 'type': Lookup_Selection.type_
+            }
+            
+            export namespace Namespaces {
+                
+                export namespace D {
+                    
+                    export type benchmark = __schema.namespaces.signatures.types.Namespaces.D
+                    
+                    export type value = __schema.namespaces.resolver.types.Resolver
+                }
+                
+                export type D = {
+                    readonly 'benchmark': D.benchmark
+                    readonly 'value': D.value
+                }
+            }
+            
+            export type Namespaces = p_.Dictionary<
+                Namespaces.D
+            >
+            
+            export namespace Possible_Value_Selection {
+                
+                export namespace value {
+                    
+                    export namespace optional_value {
+                        
+                        export namespace selection {
+                            
+                            export namespace constraints {
+                                
+                                export type optional = __schema.namespaces.structure.types.Value.optional
+                            }
+                            
+                            export type constraints = {
+                                readonly 'optional': constraints.optional
+                            }
+                            
+                            export type value = __schema.namespaces.resolver.types.Guaranteed_Value_Selection
+                        }
+                        
+                        export type selection = {
+                            readonly 'constraints': selection.constraints
+                            readonly 'value': selection.value
+                        }
+                        
+                        export type tail = __schema.namespaces.resolver.types.Relative_Value_Selection
+                    }
+                    
+                    export type optional_value = {
+                        readonly 'selection': optional_value.selection
+                        readonly 'tail': optional_value.tail
+                    }
+                    
+                    export namespace parameter {
+                        
+                        export type l_entry = __schema.namespaces.signatures.types.Signature_Parameters.types.D
+                        
+                        export type l_id = string
+                    }
+                    
+                    export type parameter = {
+                        readonly 'l entry': parameter.l_entry
+                        readonly 'l id': parameter.l_id
+                    }
+                    
+                    export namespace result {
+                        
+                        export namespace value {
+                            
+                            export namespace state {
+                                
+                                export namespace property {
+                                    
+                                    export namespace constraints {
+                                        
+                                        export type state = __schema.namespaces.structure.types.Value.state
+                                        
+                                        export type result = __schema.namespaces.structure.types.Value_Result.O
+                                    }
+                                    
+                                    export type constraints = {
+                                        readonly 'state': constraints.state
+                                        readonly 'result': constraints.result
+                                    }
+                                    
+                                    export namespace value {
+                                        
+                                        export type l_entry = __schema.namespaces.structure.types.Group.D
+                                        
+                                        export type l_id = string
+                                    }
+                                    
+                                    export type value = {
+                                        readonly 'l entry': value.l_entry
+                                        readonly 'l id': value.l_id
+                                    }
+                                }
+                                
+                                export type property = {
+                                    readonly 'constraints': property.constraints
+                                    readonly 'value': property.value
+                                }
+                            }
+                            
+                            export type state = {
+                                readonly 'property': state.property
+                            }
+                            
+                            export namespace optional_value {
+                                
+                                export namespace property {
+                                    
+                                    export namespace constraints {
+                                        
+                                        export type optional = __schema.namespaces.structure.types.Value.optional
+                                        
+                                        export type result = __schema.namespaces.structure.types.Value_Result.O
+                                    }
+                                    
+                                    export type constraints = {
+                                        readonly 'optional': constraints.optional
+                                        readonly 'result': constraints.result
+                                    }
+                                    
+                                    export namespace value {
+                                        
+                                        export type l_entry = __schema.namespaces.structure.types.Group.D
+                                        
+                                        export type l_id = string
+                                    }
+                                    
+                                    export type value = {
+                                        readonly 'l entry': value.l_entry
+                                        readonly 'l id': value.l_id
+                                    }
+                                }
+                                
+                                export type property = {
+                                    readonly 'constraints': property.constraints
+                                    readonly 'value': property.value
+                                }
+                            }
+                            
+                            export type optional_value = {
+                                readonly 'property': optional_value.property
+                            }
+                        }
+                        
+                        export type value = 
+                            | readonly ['state', value.state]
+                            | readonly ['optional value', value.optional_value]
+                        
+                        export type result = __schema.namespaces.structure.types.Value
+                    }
+                    
+                    export type result = {
+                        readonly 'value': result.value
+                        readonly 'result': result.result
+                    }
+                }
+                
+                export type value = 
+                    | readonly ['optional value', value.optional_value]
+                    | readonly ['parameter', value.parameter]
+                    | readonly ['result', value.result]
+                
+                export type result = __schema.namespaces.structure.types.Value
+            }
+            
+            export type Possible_Value_Selection = {
+                readonly 'value': Possible_Value_Selection.value
+                readonly 'result': Possible_Value_Selection.result
+            }
+            
+            export namespace Option_Constraints {
+                
+                export namespace O {
+                    
+                    export namespace constraints {
+                        
+                        export type declarations = __schema.namespaces.structure.types.Option_Constraints.O
+                    }
+                    
+                    export type constraints = {
+                        readonly 'declarations': constraints.declarations
+                    }
+                    
+                    export namespace value {
+                        
+                        export namespace D {
+                            
+                            export type benchmark = __schema.namespaces.structure.types.Option_Constraints.O.D
+                            
+                            export namespace value {
+                                
+                                export namespace value {
+                                    
+                                    export namespace state {
+                                        
+                                        export namespace selection {
+                                            
+                                            export namespace constraints {
+                                                
+                                                export type state = __schema.namespaces.structure.types.Value.state
+                                            }
+                                            
+                                            export type constraints = {
+                                                readonly 'state': constraints.state
+                                            }
+                                            
+                                            export type value = __schema.namespaces.resolver.types.Guaranteed_Value_Selection
+                                        }
+                                        
+                                        export type selection = {
+                                            readonly 'constraints': selection.constraints
+                                            readonly 'value': selection.value
+                                        }
+                                        
+                                        export namespace option {
+                                            
+                                            export type l_entry = __schema.namespaces.structure.types.Value.state.options.D
+                                            
+                                            export type l_id = string
+                                        }
+                                        
+                                        export type option = {
+                                            readonly 'l entry': option.l_entry
+                                            readonly 'l id': option.l_id
+                                        }
+                                    }
+                                    
+                                    export type state = {
+                                        readonly 'selection': state.selection
+                                        readonly 'option': state.option
+                                    }
+                                    
+                                    export type assert_is_set = __schema.namespaces.resolver.types.Possible_Value_Selection
+                                }
+                                
+                                export type value = 
+                                    | readonly ['state', value.state]
+                                    | readonly ['assert is set', value.assert_is_set]
+                                
+                                export type result = __schema.namespaces.structure.types.Value
+                            }
+                            
+                            export type value = {
+                                readonly 'value': value.value
+                                readonly 'result': value.result
+                            }
+                        }
+                        
+                        export type D = {
+                            readonly 'benchmark': D.benchmark
+                            readonly 'value': D.value
+                        }
+                    }
+                    
+                    export type value = p_.Dictionary<
+                        value.D
                     >
                 }
-
-                export type lookups = p_.Optional_Value<
-                    lookups.O
-                >
-            }
-
-            export type O = {
-                readonly 'types': O.types
-                readonly 'lookups': O.lookups
-            }
-        }
-
-        export type arguments_ = p_.Optional_Value<
-            arguments_.O
-        >
-
-        export namespace constraints {
-
-            export type O = Resolver_Value_Constraints_
-        }
-
-        export type constraints = p_.Optional_Value<
-            constraints.O
-        >
-    }
-
-    export type component = {
-        readonly 'definition': component.definition
-        readonly 'location': component.location
-        readonly 'signature': component.signature
-        readonly 'arguments': component.arguments_
-        readonly 'constraints': component.constraints
-    }
-
-    export namespace dictionary {
-
-        export type definition = Dictionary_
-
-        export type resolver = Resolver_Value_
-
-        export namespace benchmark {
-
-            export type O = Resolver_Benchmark_
-        }
-
-        export type benchmark = p_.Optional_Value<
-            benchmark.O
-        >
-    }
-
-    export type dictionary = {
-        readonly 'definition': dictionary.definition
-        readonly 'resolver': dictionary.resolver
-        readonly 'benchmark': dictionary.benchmark
-    }
-
-    export type group = Resolver_Value_Group_
-
-    export namespace list {
-
-        export type definition = Value_.list
-
-        export type resolver = Resolver_Value_
-
-        export namespace result {
-
-            export type O = Resolver_Value_List_Result_
-        }
-
-        export type result = p_.Optional_Value<
-            result.O
-        >
-    }
-
-    export type list = {
-        readonly 'definition': list.definition
-        readonly 'resolver': list.resolver
-        readonly 'result': list.result
-    }
-
-    export type nothing = null
-
-    export type simple = null
-
-    export namespace optional {
-
-        export namespace constraints {
-
-            export type O = Resolver_Option_Constraints_
-        }
-
-        export type constraints = p_.Optional_Value<
-            constraints.O
-        >
-
-        export type resolver = Resolver_Value_
-
-        export type not_set_constraints = Resolver_Absence_Constraints_
-    }
-
-    export type optional = {
-        readonly 'constraints': optional.constraints
-        readonly 'resolver': optional.resolver
-        readonly 'not set constraints': optional.not_set_constraints
-    }
-
-    export namespace reference {
-
-        export type definition = Value_.reference
-
-        export namespace type_ {
-
-            export namespace selected {
-
-                export type definition = Value_.reference.type_.selected
-
-                export type lookup = Resolver_Lookup_Selection_
-
-                export namespace constraints {
-
-                    export type O = Resolver_Reference_Constraints_
+                
+                export type O = {
+                    readonly 'constraints': O.constraints
+                    readonly 'value': O.value
                 }
-
-                export type constraints = p_.Optional_Value<
-                    constraints.O
-                >
             }
-
-            export type selected = {
-                readonly 'definition': selected.definition
-                readonly 'lookup': selected.lookup
-                readonly 'constraints': selected.constraints
+            
+            export type Option_Constraints = p_.Optional_Value<
+                Option_Constraints.O
+            >
+            
+            export namespace Optional_Value_Initialization {
+                
+                export type not_set = null
+                
+                export type set_ = __schema.namespaces.resolver.types.Guaranteed_Value_Selection
+                
+                export type selection = __schema.namespaces.resolver.types.Possible_Value_Selection
             }
-        }
-
-        export type type_ =
-            | readonly ['selected', type_.selected]
-    }
-
-    export type reference = {
-        readonly 'definition': reference.definition
-        readonly 'type': reference.type_
-    }
-
-    export namespace state {
-
-        export type definition = Value_.state
-
-        export namespace result {
-
-            export type O = Resolver_Type_Reference_
-        }
-
-        export type result = p_.Optional_Value<
-            result.O
-        >
-
-        export namespace options {
-
-            export namespace D {
-
-                export namespace constraints {
-
-                    export type O = Resolver_Option_Constraints_
+            
+            export type Optional_Value_Initialization = 
+                | readonly ['not set', Optional_Value_Initialization.not_set]
+                | readonly ['set', Optional_Value_Initialization.set_]
+                | readonly ['selection', Optional_Value_Initialization.selection]
+            
+            export namespace Reference_Constraints {
+                
+                export namespace O {
+                    
+                    export namespace constraints {
+                        
+                        export type declarations = __schema.namespaces.structure.types.Reference_Constraints.O
+                    }
+                    
+                    export type constraints = {
+                        readonly 'declarations': constraints.declarations
+                    }
+                    
+                    export namespace value {
+                        
+                        export namespace D {
+                            
+                            export type benchmark = __schema.namespaces.structure.types.Reference_Constraints.O.D
+                            
+                            export type value = __schema.namespaces.resolver.types.Value_Constraint
+                        }
+                        
+                        export type D = {
+                            readonly 'benchmark': D.benchmark
+                            readonly 'value': D.value
+                        }
+                    }
+                    
+                    export type value = p_.Dictionary<
+                        value.D
+                    >
                 }
-
-                export type constraints = p_.Optional_Value<
-                    constraints.O
-                >
-
-                export type resolver = Resolver_Value_
-
-                export namespace result {
-
-                    export type O = Resolver_Result_Selection_
+                
+                export type O = {
+                    readonly 'constraints': O.constraints
+                    readonly 'value': O.value
                 }
-
-                export type result = p_.Optional_Value<
-                    result.O
-                >
             }
-
-            export type D = {
-                readonly 'constraints': D.constraints
-                readonly 'resolver': D.resolver
-                readonly 'result': D.result
-            }
-        }
-
-        export type options = p_.Dictionary<
-            options.D
-        >
-    }
-
-    export type state = {
-        readonly 'definition': state.definition
-        readonly 'result': state.result
-        readonly 'options': state.options
-    }
-}
-
-type Resolver_Value_ =
-    | readonly ['component', Resolver_Value_.component]
-    | readonly ['dictionary', Resolver_Value_.dictionary]
-    | readonly ['group', Resolver_Value_.group]
-    | readonly ['list', Resolver_Value_.list]
-    | readonly ['nothing', Resolver_Value_.nothing]
-    | readonly ['simple', Resolver_Value_.simple]
-    | readonly ['optional', Resolver_Value_.optional]
-    | readonly ['reference', Resolver_Value_.reference]
-    | readonly ['state', Resolver_Value_.state]
-
-namespace Resolver_Possible_Value_Selection_ {
-
-    export namespace optional_value {
-
-        export type selection = Resolver_Guaranteed_Value_Selection_
-
-        export type optional = Value_.optional
-    }
-
-    export type optional_value = {
-        readonly 'selection': optional_value.selection
-        readonly 'optional': optional_value.optional
-    }
-
-    export namespace parameter {
-
-        export type l_entry = Resolver_Signature_Parameters_.types.D
-
-        export type l_id = string
-    }
-
-    export type parameter = {
-        readonly 'l entry': parameter.l_entry
-        readonly 'l id': parameter.l_id
-    }
-
-    export namespace result {
-
-        export namespace state {
-
-            export namespace property {
-
-                export type l_entry = Resolver_Value_Group_.D
-
+            
+            export type Reference_Constraints = p_.Optional_Value<
+                Reference_Constraints.O
+            >
+            
+            export namespace Reference_To_Value_Constraint {
+                
+                export type l_entry = __schema.namespaces.structure.types.Reference_Constraints.O.D
+                
                 export type l_id = string
             }
-
-            export type property = {
-                readonly 'l entry': property.l_entry
-                readonly 'l id': property.l_id
+            
+            export type Reference_To_Value_Constraint = {
+                readonly 'l entry': Reference_To_Value_Constraint.l_entry
+                readonly 'l id': Reference_To_Value_Constraint.l_id
             }
-
-            export type state = Resolver_Value_.state
-
-            export type result = Resolver_Type_Reference_
-        }
-
-        export type state = {
-            readonly 'property': state.property
-            readonly 'state': state.state
-            readonly 'result': state.result
-        }
-
-        export namespace optional_value {
-
-            export namespace property {
-
-                export type l_entry = Resolver_Value_Group_.D
-
-                export type l_id = string
+            
+            export namespace Resolver {
+                
+                export type namespaces = __schema.namespaces.resolver.types.Namespaces
+                
+                export type types = __schema.namespaces.resolver.types.Types
             }
-
-            export type property = {
-                readonly 'l entry': property.l_entry
-                readonly 'l id': property.l_id
+            
+            export type Resolver = {
+                readonly 'namespaces': Resolver.namespaces
+                readonly 'types': Resolver.types
             }
-
-            export type optional_value = Resolver_Value_.optional
-
-            export type result = Resolver_Type_Reference_
+            
+            export namespace Result_Selection {
+                
+                export type context = __schema.namespaces.resolver.types.Guaranteed_Value_Selection
+                
+                export type value = __schema.namespaces.resolver.types.Relative_Value_Selection
+            }
+            
+            export type Result_Selection = 
+                | readonly ['context', Result_Selection.context]
+                | readonly ['value', Result_Selection.value]
+            
+            export namespace Value_Group {
+                
+                export namespace D {
+                    
+                    export type benchmark = __schema.namespaces.structure.types.Group.D
+                    
+                    export namespace value {
+                        
+                        export type resolver = __schema.namespaces.resolver.types.Value
+                    }
+                    
+                    export type value = {
+                        readonly 'resolver': value.resolver
+                    }
+                }
+                
+                export type D = {
+                    readonly 'benchmark': D.benchmark
+                    readonly 'value': D.value
+                }
+            }
+            
+            export type Value_Group = p_.Dictionary<
+                Value_Group.D
+            >
+            
+            export namespace Value_List_Result {
+                
+                export type initial = __schema.namespaces.resolver.types.Guaranteed_Value_Selection
+                
+                export type next = __schema.namespaces.resolver.types.Result_Selection
+            }
+            
+            export type Value_List_Result = {
+                readonly 'initial': Value_List_Result.initial
+                readonly 'next': Value_List_Result.next
+            }
+            
+            export namespace Value {
+                
+                export namespace component {
+                    
+                    export namespace constraints {
+                        
+                        export type definition = __schema.namespaces.structure.types.Value.component
+                    }
+                    
+                    export type constraints = {
+                        readonly 'definition': constraints.definition
+                    }
+                    
+                    export namespace value {
+                        
+                        export namespace location {
+                            
+                            export namespace value {
+                                
+                                export namespace internal {
+                                    
+                                    export type l_entry = __schema.namespaces.signatures.types.Signatures.D
+                                    
+                                    export type l_id = string
+                                }
+                                
+                                export type internal = {
+                                    readonly 'l entry': internal.l_entry
+                                    readonly 'l id': internal.l_id
+                                }
+                                
+                                export namespace child {
+                                    
+                                    export namespace namespace {
+                                        
+                                        export type l_entry = __schema.namespaces.signatures.types.Namespaces.D
+                                        
+                                        export type l_id = string
+                                    }
+                                    
+                                    export type namespace = {
+                                        readonly 'l entry': namespace.l_entry
+                                        readonly 'l id': namespace.l_id
+                                    }
+                                    
+                                    export namespace resolver {
+                                        
+                                        export type l_entry = __schema.namespaces.signatures.types.Signatures.D
+                                        
+                                        export type l_id = string
+                                    }
+                                    
+                                    export type resolver = {
+                                        readonly 'l entry': resolver.l_entry
+                                        readonly 'l id': resolver.l_id
+                                    }
+                                }
+                                
+                                export type child = {
+                                    readonly 'namespace': child.namespace
+                                    readonly 'resolver': child.resolver
+                                }
+                            }
+                            
+                            export type value = 
+                                | readonly ['internal', value.internal]
+                                | readonly ['child', value.child]
+                            
+                            export type result = __schema.namespaces.signatures.types.Signature
+                        }
+                        
+                        export type location = {
+                            readonly 'value': location.value
+                            readonly 'result': location.result
+                        }
+                        
+                        export namespace arguments_ {
+                            
+                            export namespace O {
+                                
+                                export namespace types {
+                                    
+                                    export namespace O {
+                                        
+                                        export namespace D {
+                                            
+                                            export type benchmark = __schema.namespaces.signatures.types.Signature_Parameters.types.D
+                                            
+                                            export namespace value {
+                                                
+                                                export type optional = __schema.namespaces.resolver.types.Optional_Value_Initialization
+                                                
+                                                export type required = __schema.namespaces.resolver.types.Guaranteed_Value_Selection
+                                                
+                                                export namespace parameter {
+                                                    
+                                                    export type l_entry = __schema.namespaces.signatures.types.Signature_Parameters.types.D
+                                                    
+                                                    export type l_id = string
+                                                }
+                                                
+                                                export type parameter = {
+                                                    readonly 'l entry': parameter.l_entry
+                                                    readonly 'l id': parameter.l_id
+                                                }
+                                            }
+                                            
+                                            export type value = 
+                                                | readonly ['optional', value.optional]
+                                                | readonly ['required', value.required]
+                                                | readonly ['parameter', value.parameter]
+                                        }
+                                        
+                                        export type D = {
+                                            readonly 'benchmark': D.benchmark
+                                            readonly 'value': D.value
+                                        }
+                                    }
+                                    
+                                    export type O = p_.Dictionary<
+                                        O.D
+                                    >
+                                }
+                                
+                                export type types = p_.Optional_Value<
+                                    types.O
+                                >
+                                
+                                export namespace lookups {
+                                    
+                                    export namespace O {
+                                        
+                                        export namespace D {
+                                            
+                                            export type benchmark = __schema.namespaces.signatures.types.Signature_Parameters.lookups.D
+                                            
+                                            export namespace value {
+                                                
+                                                export type acyclic = null
+                                                
+                                                export type cyclic = null
+                                                
+                                                export type selection = __schema.namespaces.resolver.types.Lookup_Selection
+                                            }
+                                            
+                                            export type value = 
+                                                | readonly ['acyclic', value.acyclic]
+                                                | readonly ['cyclic', value.cyclic]
+                                                | readonly ['selection', value.selection]
+                                        }
+                                        
+                                        export type D = {
+                                            readonly 'benchmark': D.benchmark
+                                            readonly 'value': D.value
+                                        }
+                                    }
+                                    
+                                    export type O = p_.Dictionary<
+                                        O.D
+                                    >
+                                }
+                                
+                                export type lookups = p_.Optional_Value<
+                                    lookups.O
+                                >
+                            }
+                            
+                            export type O = {
+                                readonly 'types': O.types
+                                readonly 'lookups': O.lookups
+                            }
+                        }
+                        
+                        export type arguments_ = p_.Optional_Value<
+                            arguments_.O
+                        >
+                        
+                        export type constraints = __schema.namespaces.resolver.types.Reference_Constraints
+                    }
+                    
+                    export type value = {
+                        readonly 'location': value.location
+                        readonly 'arguments': value.arguments_
+                        readonly 'constraints': value.constraints
+                    }
+                }
+                
+                export type component = {
+                    readonly 'constraints': component.constraints
+                    readonly 'value': component.value
+                }
+                
+                export namespace dictionary {
+                    
+                    export namespace constraints {
+                        
+                        export type definition = __schema.namespaces.structure.types.Value.dictionary
+                    }
+                    
+                    export type constraints = {
+                        readonly 'definition': constraints.definition
+                    }
+                    
+                    export namespace value {
+                        
+                        export type resolver = __schema.namespaces.resolver.types.Value
+                        
+                        export namespace benchmark {
+                            
+                            export type O = __schema.namespaces.resolver.types.Benchmark
+                        }
+                        
+                        export type benchmark = p_.Optional_Value<
+                            benchmark.O
+                        >
+                    }
+                    
+                    export type value = {
+                        readonly 'resolver': value.resolver
+                        readonly 'benchmark': value.benchmark
+                    }
+                }
+                
+                export type dictionary = {
+                    readonly 'constraints': dictionary.constraints
+                    readonly 'value': dictionary.value
+                }
+                
+                export namespace group {
+                    
+                    export namespace constraints {
+                        
+                        export type definition = __schema.namespaces.structure.types.Value.group
+                    }
+                    
+                    export type constraints = {
+                        readonly 'definition': constraints.definition
+                    }
+                    
+                    export type value = __schema.namespaces.resolver.types.Value_Group
+                }
+                
+                export type group = {
+                    readonly 'constraints': group.constraints
+                    readonly 'value': group.value
+                }
+                
+                export namespace list {
+                    
+                    export namespace constraints {
+                        
+                        export type definition = __schema.namespaces.structure.types.Value.list
+                    }
+                    
+                    export type constraints = {
+                        readonly 'definition': constraints.definition
+                    }
+                    
+                    export namespace value {
+                        
+                        export type resolver = __schema.namespaces.resolver.types.Value
+                        
+                        export namespace result {
+                            
+                            export namespace O {
+                                
+                                export namespace constraints {
+                                    
+                                    export type definition = __schema.namespaces.structure.types.Value.list
+                                    
+                                    export type result = __schema.namespaces.structure.types.Value_Result.O
+                                }
+                                
+                                export type constraints = {
+                                    readonly 'definition': constraints.definition
+                                    readonly 'result': constraints.result
+                                }
+                                
+                                export type value = __schema.namespaces.resolver.types.Value_List_Result
+                            }
+                            
+                            export type O = {
+                                readonly 'constraints': O.constraints
+                                readonly 'value': O.value
+                            }
+                        }
+                        
+                        export type result = p_.Optional_Value<
+                            result.O
+                        >
+                    }
+                    
+                    export type value = {
+                        readonly 'resolver': value.resolver
+                        readonly 'result': value.result
+                    }
+                }
+                
+                export type list = {
+                    readonly 'constraints': list.constraints
+                    readonly 'value': list.value
+                }
+                
+                export namespace nothing {
+                    
+                    export namespace constraints {
+                        
+                        export type definition = __schema.namespaces.structure.types.Value.nothing
+                    }
+                    
+                    export type constraints = {
+                        readonly 'definition': constraints.definition
+                    }
+                    
+                    export type value = null
+                }
+                
+                export type nothing = {
+                    readonly 'constraints': nothing.constraints
+                    readonly 'value': nothing.value
+                }
+                
+                export namespace simple {
+                    
+                    export namespace constraints {
+                        
+                        export type definition = __schema.namespaces.structure.types.Value.simple.value
+                    }
+                    
+                    export type constraints = {
+                        readonly 'definition': constraints.definition
+                    }
+                    
+                    export type value = null
+                }
+                
+                export type simple = {
+                    readonly 'constraints': simple.constraints
+                    readonly 'value': simple.value
+                }
+                
+                export namespace optional {
+                    
+                    export namespace constraints {
+                        
+                        export type definition = __schema.namespaces.structure.types.Value.optional
+                    }
+                    
+                    export type constraints = {
+                        readonly 'definition': constraints.definition
+                    }
+                    
+                    export namespace value {
+                        
+                        export type constraints = __schema.namespaces.resolver.types.Option_Constraints
+                        
+                        export type resolver = __schema.namespaces.resolver.types.Value
+                        
+                        export type not_set_constraints = __schema.namespaces.resolver.types.Absence_Constraints
+                        
+                        export namespace result {
+                            
+                            export namespace O {
+                                
+                                export namespace constraints {
+                                    
+                                    export type definition = __schema.namespaces.structure.types.Value.optional
+                                    
+                                    export type result = __schema.namespaces.structure.types.Value_Result.O
+                                }
+                                
+                                export type constraints = {
+                                    readonly 'definition': constraints.definition
+                                    readonly 'result': constraints.result
+                                }
+                                
+                                export type value = __schema.namespaces.resolver.types.Result_Selection
+                            }
+                            
+                            export type O = {
+                                readonly 'constraints': O.constraints
+                                readonly 'value': O.value
+                            }
+                        }
+                        
+                        export type result = p_.Optional_Value<
+                            result.O
+                        >
+                    }
+                    
+                    export type value = {
+                        readonly 'constraints': value.constraints
+                        readonly 'resolver': value.resolver
+                        readonly 'not set constraints': value.not_set_constraints
+                        readonly 'result': value.result
+                    }
+                }
+                
+                export type optional = {
+                    readonly 'constraints': optional.constraints
+                    readonly 'value': optional.value
+                }
+                
+                export namespace reference {
+                    
+                    export namespace constraints {
+                        
+                        export type definition = __schema.namespaces.structure.types.Value.reference
+                    }
+                    
+                    export type constraints = {
+                        readonly 'definition': constraints.definition
+                    }
+                    
+                    export namespace value {
+                        
+                        export namespace type_ {
+                            
+                            export type lookup = __schema.namespaces.resolver.types.Lookup_Selection
+                            
+                            export type constraints = __schema.namespaces.resolver.types.Reference_Constraints
+                        }
+                        
+                        export type type_ = {
+                            readonly 'lookup': type_.lookup
+                            readonly 'constraints': type_.constraints
+                        }
+                    }
+                    
+                    export type value = {
+                        readonly 'type': value.type_
+                    }
+                }
+                
+                export type reference = {
+                    readonly 'constraints': reference.constraints
+                    readonly 'value': reference.value
+                }
+                
+                export namespace state {
+                    
+                    export namespace constraints {
+                        
+                        export type definition = __schema.namespaces.structure.types.Value.state
+                    }
+                    
+                    export type constraints = {
+                        readonly 'definition': constraints.definition
+                    }
+                    
+                    export namespace value {
+                        
+                        export namespace options {
+                            
+                            export namespace D {
+                                
+                                export type benchmark = __schema.namespaces.structure.types.Value.state.options.D
+                                
+                                export namespace value {
+                                    
+                                    export type constraints = __schema.namespaces.resolver.types.Option_Constraints
+                                    
+                                    export type resolver = __schema.namespaces.resolver.types.Value
+                                    
+                                    export namespace result {
+                                        
+                                        export type O = __schema.namespaces.resolver.types.Result_Selection
+                                    }
+                                    
+                                    export type result = p_.Optional_Value<
+                                        result.O
+                                    >
+                                }
+                                
+                                export type value = {
+                                    readonly 'constraints': value.constraints
+                                    readonly 'resolver': value.resolver
+                                    readonly 'result': value.result
+                                }
+                            }
+                            
+                            export type D = {
+                                readonly 'benchmark': D.benchmark
+                                readonly 'value': D.value
+                            }
+                        }
+                        
+                        export type options = p_.Dictionary<
+                            options.D
+                        >
+                    }
+                    
+                    export type value = {
+                        readonly 'options': value.options
+                    }
+                }
+                
+                export type state = {
+                    readonly 'constraints': state.constraints
+                    readonly 'value': state.value
+                }
+            }
+            
+            export type Value = 
+                | readonly ['component', Value.component]
+                | readonly ['dictionary', Value.dictionary]
+                | readonly ['group', Value.group]
+                | readonly ['list', Value.list]
+                | readonly ['nothing', Value.nothing]
+                | readonly ['simple', Value.simple]
+                | readonly ['optional', Value.optional]
+                | readonly ['reference', Value.reference]
+                | readonly ['state', Value.state]
+            
+            export namespace Types {
+                
+                export namespace D {
+                    
+                    export type benchmark = __schema.namespaces.signatures.types.Signatures.D
+                    
+                    export namespace value {
+                        
+                        export type root_value_resolver = __schema.namespaces.resolver.types.Value
+                    }
+                    
+                    export type value = {
+                        readonly 'root value resolver': value.root_value_resolver
+                    }
+                }
+                
+                export type D = {
+                    readonly 'benchmark': D.benchmark
+                    readonly 'value': D.value
+                }
+            }
+            
+            export type Types = p_.Dictionary<
+                Types.D
+            >
+            
+            export namespace Value_Constraint {
+                
+                export namespace start {
+                    
+                    export namespace value {
+                        
+                        export type value = null
+                        
+                        export type sibling = __schema.namespaces.resolver.types.Reference_To_Value_Constraint
+                    }
+                    
+                    export type value = 
+                        | readonly ['value', value.value]
+                        | readonly ['sibling', value.sibling]
+                    
+                    export type result = __schema.namespaces.structure.types.Value
+                }
+                
+                export type start = {
+                    readonly 'value': start.value
+                    readonly 'result': start.result
+                }
+                
+                export type constraint = __schema.namespaces.resolver.types.Constraint
+            }
+            
+            export type Value_Constraint = {
+                readonly 'start': Value_Constraint.start
+                readonly 'constraint': Value_Constraint.constraint
+            }
+            
+            export namespace Value_Constraints {
+                
+                export namespace D {
+                    
+                    export type benchmark = __schema.namespaces.structure.types.Reference_Constraints.O.D
+                    
+                    export type value = __schema.namespaces.resolver.types.Value_Constraint
+                }
+                
+                export type D = {
+                    readonly 'benchmark': D.benchmark
+                    readonly 'value': D.value
+                }
+            }
+            
+            export type Value_Constraints = p_.Dictionary<
+                Value_Constraints.D
+            >
         }
-
-        export type optional_value = {
-            readonly 'property': optional_value.property
-            readonly 'optional value': optional_value.optional_value
-            readonly 'result': optional_value.result
-        }
+        export namespace namespaces {}
     }
-
-    export type result =
-        | readonly ['state', result.state]
-        | readonly ['optional value', result.optional_value]
-}
-
-type Resolver_Possible_Value_Selection_ =
-    | readonly ['optional value', Resolver_Possible_Value_Selection_.optional_value]
-    | readonly ['parameter', Resolver_Possible_Value_Selection_.parameter]
-    | readonly ['result', Resolver_Possible_Value_Selection_.result]
-
-namespace Resolver_Option_Constraints_ {
-
-    export namespace D {
-
-        export namespace state {
-
-            export type selection = Resolver_Guaranteed_Value_Selection_
-
-            export type selected_state = Value_.state
-
-            export namespace option {
-
-                export type l_entry = Value_.state.options.D
-
-                export type l_id = string
-            }
-
-            export type option = {
-                readonly 'l entry': option.l_entry
-                readonly 'l id': option.l_id
-            }
-        }
-
-        export type state = {
-            readonly 'selection': state.selection
-            readonly 'selected state': state.selected_state
-            readonly 'option': state.option
-        }
-
-        export type assert_is_set = Resolver_Possible_Value_Selection_
-    }
-
-    export type D =
-        | readonly ['state', D.state]
-        | readonly ['assert is set', D.assert_is_set]
-}
-
-type Resolver_Option_Constraints_ = p_.Dictionary<
-    Resolver_Option_Constraints_.D
->
-
-namespace Resolver_Guaranteed_Value_Selection_ {
-
-    export namespace start {
-
-        export namespace sibling {
-
-            export type l_entry = Resolver_Value_Group_.D
-
-            export type l_id = string
-        }
-
-        export type sibling = {
-            readonly 'l entry': sibling.l_entry
-            readonly 'l id': sibling.l_id
-        }
-
-        export namespace parent_sibling {
-
-            export type l_entry = Resolver_Value_Group_.D
-
-            export type l_id = string
-        }
-
-        export type parent_sibling = {
-            readonly 'l entry': parent_sibling.l_entry
-            readonly 'l id': parent_sibling.l_id
-        }
-
-        export namespace option_constraint {
-
-            export type l_entry = Resolver_Option_Constraints_.D
-
-            export type l_id = string
-        }
-
-        export type option_constraint = {
-            readonly 'l entry': option_constraint.l_entry
-            readonly 'l id': option_constraint.l_id
-        }
-
-        export type list_cursor = null
-
-        export type linked_entry = null
-
-        export namespace constraint {
-
-            export namespace component {
-
-                export namespace property {
-
-                    export type l_entry = Resolver_Value_Group_.D
-
-                    export type l_id = string
-                }
-
-                export type property = {
-                    readonly 'l entry': property.l_entry
-                    readonly 'l id': property.l_id
-                }
-
-                export namespace constraint {
-
-                    export type l_entry = Resolver_Value_Constraints_.D
-
-                    export type l_id = string
-                }
-
-                export type constraint = {
-                    readonly 'l entry': constraint.l_entry
-                    readonly 'l id': constraint.l_id
-                }
-            }
-
-            export type component = {
-                readonly 'property': component.property
-                readonly 'constraint': component.constraint
-            }
-
-            export namespace reference {
-
-                export namespace property {
-
-                    export type l_entry = Resolver_Value_Group_.D
-
-                    export type l_id = string
-                }
-
-                export type property = {
-                    readonly 'l entry': property.l_entry
-                    readonly 'l id': property.l_id
-                }
-
-                export namespace constraint {
-
-                    export type l_entry = Resolver_Reference_Constraints_.D
-
-                    export type l_id = string
-                }
-
-                export type constraint = {
-                    readonly 'l entry': constraint.l_entry
-                    readonly 'l id': constraint.l_id
-                }
-            }
-
-            export type reference = {
-                readonly 'property': reference.property
-                readonly 'constraint': reference.constraint
-            }
-        }
-
-        export type constraint =
-            | readonly ['component', constraint.component]
-            | readonly ['reference', constraint.reference]
-
-        export namespace parameter {
-
-            export type l_entry = Resolver_Signature_Parameters_.types.D
-
-            export type l_id = string
-        }
-
-        export type parameter = {
-            readonly 'l entry': parameter.l_entry
-            readonly 'l id': parameter.l_id
-        }
-
-        export namespace result {
-
-            export namespace list {
-
-                export namespace property {
-
-                    export type l_entry = Resolver_Value_Group_.D
-
-                    export type l_id = string
-                }
-
-                export type property = {
-                    readonly 'l entry': property.l_entry
-                    readonly 'l id': property.l_id
-                }
-
-                export type list_result = Resolver_Value_.list.result.O
-            }
-
-            export type list = {
-                readonly 'property': list.property
-                readonly 'list result': list.list_result
-            }
-
-            export namespace state {
-
-                export namespace property {
-
-                    export type l_entry = Resolver_Value_Group_.D
-
-                    export type l_id = string
-                }
-
-                export type property = {
-                    readonly 'l entry': property.l_entry
-                    readonly 'l id': property.l_id
-                }
-
-                export type state = Resolver_Value_.state
-
-                export type result = Resolver_Type_Reference_
-            }
-
-            export type state = {
-                readonly 'property': state.property
-                readonly 'state': state.state
-                readonly 'result': state.result
-            }
-
-            export namespace optional_value {
-
-                export namespace property {
-
-                    export type l_entry = Resolver_Value_Group_.D
-
-                    export type l_id = string
-                }
-
-                export type property = {
-                    readonly 'l entry': property.l_entry
-                    readonly 'l id': property.l_id
-                }
-
-                export type optional_value = Resolver_Value_.optional
-
-                export type result = Resolver_Type_Reference_
-            }
-
-            export type optional_value = {
-                readonly 'property': optional_value.property
-                readonly 'optional value': optional_value.optional_value
-                readonly 'result': optional_value.result
-            }
-        }
-
-        export type result =
-            | readonly ['list', result.list]
-            | readonly ['state', result.state]
-            | readonly ['optional value', result.optional_value]
-    }
-
-    export type start =
-        | readonly ['sibling', start.sibling]
-        | readonly ['parent sibling', start.parent_sibling]
-        | readonly ['option constraint', start.option_constraint]
-        | readonly ['list cursor', start.list_cursor]
-        | readonly ['linked entry', start.linked_entry]
-        | readonly ['constraint', start.constraint]
-        | readonly ['parameter', start.parameter]
-        | readonly ['result', start.result]
-
-    export type tail = Resolver_Relative_Value_Selection_
-
-    export type resulting_node = Value_
-}
-
-type Resolver_Guaranteed_Value_Selection_ = {
-    readonly 'start': Resolver_Guaranteed_Value_Selection_.start
-    readonly 'tail': Resolver_Guaranteed_Value_Selection_.tail
-    readonly 'resulting node': Resolver_Guaranteed_Value_Selection_.resulting_node
-}
-
-namespace Resolver_Benchmark_ {
-
-    export type selection = Resolver_Guaranteed_Value_Selection_
-
-    export type resulting_dictionary = Dictionary_
-
-    export namespace coverage {
-
-        export type dense = null
-
-        export type sparse = null
-    }
-
-    export type coverage =
-        | readonly ['dense', coverage.dense]
-        | readonly ['sparse', coverage.sparse]
-}
-
-type Resolver_Benchmark_ = {
-    readonly 'selection': Resolver_Benchmark_.selection
-    readonly 'resulting dictionary': Resolver_Benchmark_.resulting_dictionary
-    readonly 'coverage': Resolver_Benchmark_.coverage
-}
-
-namespace Resolver_Constraint_ {
-
-    export type selection = Resolver_Relative_Value_Selection_
-
-    export namespace type_ {
-
-        export namespace state {
-
-            export type selected_state = Value_.state
-
-            export namespace option {
-
-                export type l_entry = Value_.state.options.D
-
-                export type l_id = string
-            }
-
-            export type option = {
-                readonly 'l entry': option.l_entry
-                readonly 'l id': option.l_id
-            }
-        }
-
-        export type state = {
-            readonly 'selected state': state.selected_state
-            readonly 'option': state.option
-        }
-
-        export namespace optional_value {
-
-            export type selected_optional_value = Value_.optional
-        }
-
-        export type optional_value = {
-            readonly 'selected optional value': optional_value.selected_optional_value
-        }
-    }
-
-    export type type_ =
-        | readonly ['state', type_.state]
-        | readonly ['optional value', type_.optional_value]
-}
-
-type Resolver_Constraint_ = {
-    readonly 'selection': Resolver_Constraint_.selection
-    readonly 'type': Resolver_Constraint_.type_
-}
-
-namespace Resolver_Lookup_Selection_ {
-
-    export namespace type_ {
-
-        export namespace acyclic {
-
-            export type siblings = Dictionary_
-
-            export namespace resolved_dictionary {
-
-                export type selection = Resolver_Guaranteed_Value_Selection_
-
-                export type selected_dictionary = Dictionary_
-            }
-
-            export type resolved_dictionary = {
-                readonly 'selection': resolved_dictionary.selection
-                readonly 'selected dictionary': resolved_dictionary.selected_dictionary
-            }
-        }
-
-        export type acyclic =
-            | readonly ['siblings', acyclic.siblings]
-            | readonly ['resolved dictionary', acyclic.resolved_dictionary]
-
-        export namespace cyclic {
-
-            export type siblings = Dictionary_
-        }
-
-        export type cyclic =
-            | readonly ['siblings', cyclic.siblings]
-
-        export namespace parameter {
-
-            export type l_entry = Resolver_Signature_Parameters_.lookups.D
-
-            export type l_id = string
-        }
-
-        export type parameter = {
-            readonly 'l entry': parameter.l_entry
-            readonly 'l id': parameter.l_id
-        }
-    }
-
-    export type type_ =
-        | readonly ['acyclic', type_.acyclic]
-        | readonly ['cyclic', type_.cyclic]
-        | readonly ['parameter', type_.parameter]
-
-    export type resulting_dictionary = Dictionary_
-}
-
-type Resolver_Lookup_Selection_ = {
-    readonly 'type': Resolver_Lookup_Selection_.type_
-    readonly 'resulting dictionary': Resolver_Lookup_Selection_.resulting_dictionary
-}
-
-type Resolver_Option_Constraint_Source_ = Option_Constraints_
-
-namespace Resolver_Optional_Value_Constraints_ {
-
-    export type O = Resolver_Value_Constraints_
-}
-
-type Resolver_Optional_Value_Constraints_ = p_.Optional_Value<
-    Resolver_Optional_Value_Constraints_.O
->
-
-namespace Resolver_Optional_Value_Initialization_ {
-
-    export type not_set = null
-
-    export type set_ = Resolver_Guaranteed_Value_Selection_
-
-    export type selection = Resolver_Possible_Value_Selection_
-}
-
-type Resolver_Optional_Value_Initialization_ =
-    | readonly ['not set', Resolver_Optional_Value_Initialization_.not_set]
-    | readonly ['set', Resolver_Optional_Value_Initialization_.set_]
-    | readonly ['selection', Resolver_Optional_Value_Initialization_.selection]
-
-type Resolver_Reference_Constraint_Source_ = Reference_Constraints_
-
-namespace Resolver_Reference_To_Value_Constraint_ {
-
-    export type l_entry = Resolver_Value_Constraints_.D
-
-    export type l_id = string
-}
-
-type Resolver_Reference_To_Value_Constraint_ = {
-    readonly 'l entry': Resolver_Reference_To_Value_Constraint_.l_entry
-    readonly 'l id': Resolver_Reference_To_Value_Constraint_.l_id
-}
-
-namespace Resolver_Types_ {
-
-    export namespace D {
-
-        export type signature = Resolver_Signatures_.D
-
-        export type root_value_resolver = Resolver_Value_
-    }
-
-    export type D = {
-        readonly 'signature': D.signature
-        readonly 'root value resolver': D.root_value_resolver
-    }
-}
-
-type Resolver_Types_ = p_.Dictionary<
-    Resolver_Types_.D
->
-
-namespace Resolver_Value_Constraint_ {
-
-    export namespace start {
-
-        export type value = null
-
-        export type sibling = Resolver_Reference_To_Value_Constraint_
-    }
-
-    export type start =
-        | readonly ['value', start.value]
-        | readonly ['sibling', start.sibling]
-
-    export type constraint = Resolver_Constraint_
-}
-
-type Resolver_Value_Constraint_ = {
-    readonly 'start': Resolver_Value_Constraint_.start
-    readonly 'constraint': Resolver_Value_Constraint_.constraint
-}
-
-namespace Schema_ {
-
-    export type structure = Structure_
-
-    export type resolver = Resolver_
-}
-
-type Schema_ = {
-    readonly 'structure': Schema_.structure
-    readonly 'resolver': Schema_.resolver
-}
-
-namespace Type_Specification_ {
-
-    export type file_extension = string
-
-    export type schema = Schema_
-
-    export namespace root_type {
-
-        export type l_entry = Types_.D
-
-        export type l_id = string
-    }
-
-    export type root_type = {
-        readonly 'l entry': root_type.l_entry
-        readonly 'l id': root_type.l_id
-    }
-}
-
-type Type_Specification_ = {
-    readonly 'file extension': Type_Specification_.file_extension
-    readonly 'schema': Type_Specification_.schema
-    readonly 'root type': Type_Specification_.root_type
-}
-
-// exported root types
-export {
-    type Regular_Expression_ as Regular_Expression,
-    type Basic_Type_ as Basic_Type,
-    type Basic_Types_ as Basic_Types,
-    type Dictionary_ as Dictionary,
-    type Group_ as Group,
-    type Namespaces_ as Namespaces,
-    type Types_ as Types,
-    type Value_ as Value,
-    type Type_ as Type,
-    type Type_Reference_ as Type_Reference,
-    type Value_Path_ as Value_Path,
-    type Value_Reference_ as Value_Reference,
-    type Option_Constraints_ as Option_Constraints,
-    type Option_Constraint_Source_ as Option_Constraint_Source,
-    type Reference_Constraints_ as Reference_Constraints,
-    type Reference_Constraint_Source_ as Reference_Constraint_Source,
-    type Structure_ as Structure,
-    type Value_Result_ as Value_Result,
-    type Presence_ as Presence,
-    type Signatures_Type_Reference_ as Signatures_Type_Reference,
-    type Resolver_Signature_Parameters_ as Resolver_Signature_Parameters,
-    type Resolver_Signatures_ as Resolver_Signatures,
-    type Resolver_Signature_ as Resolver_Signature,
-    type Resolver_Namespaces_ as Resolver_Namespaces,
-    type Resolver_ as Resolver,
-    type Resolver_Absence_Constraints_ as Resolver_Absence_Constraints,
-    type Resolver_Value_Group_ as Resolver_Value_Group,
-    type Resolver_Value_Constraints_ as Resolver_Value_Constraints,
-    type Resolver_Type_Reference_ as Resolver_Type_Reference,
-    type Resolver_Value_Path_ as Resolver_Value_Path,
-    type Resolver_Value_Reference_ as Resolver_Value_Reference,
-    type Resolver_Relative_Value_Selection_ as Resolver_Relative_Value_Selection,
-    type Resolver_Result_Selection_ as Resolver_Result_Selection,
-    type Resolver_Value_List_Result_ as Resolver_Value_List_Result,
-    type Resolver_Reference_Constraints_ as Resolver_Reference_Constraints,
-    type Resolver_Value_ as Resolver_Value,
-    type Resolver_Possible_Value_Selection_ as Resolver_Possible_Value_Selection,
-    type Resolver_Option_Constraints_ as Resolver_Option_Constraints,
-    type Resolver_Guaranteed_Value_Selection_ as Resolver_Guaranteed_Value_Selection,
-    type Resolver_Benchmark_ as Resolver_Benchmark,
-    type Resolver_Constraint_ as Resolver_Constraint,
-    type Resolver_Lookup_Selection_ as Resolver_Lookup_Selection,
-    type Resolver_Option_Constraint_Source_ as Resolver_Option_Constraint_Source,
-    type Resolver_Optional_Value_Constraints_ as Resolver_Optional_Value_Constraints,
-    type Resolver_Optional_Value_Initialization_ as Resolver_Optional_Value_Initialization,
-    type Resolver_Reference_Constraint_Source_ as Resolver_Reference_Constraint_Source,
-    type Resolver_Reference_To_Value_Constraint_ as Resolver_Reference_To_Value_Constraint,
-    type Resolver_Types_ as Resolver_Types,
-    type Resolver_Value_Constraint_ as Resolver_Value_Constraint,
-    type Schema_ as Schema,
-    type Type_Specification_ as Type_Specification,
 }

@@ -2,8 +2,12 @@ import p_list_from_text from "pareto-core/refiner/specials/list_from_text"
 import p_variables from "pareto-core/transformer/specials/variables"
 import create_refinement_context from "pareto-core/__internal/sync/create_refinement_context"
 
-import * as r_parse_tree_from_loc from "astn-runtime/modules/deserialization/schemas/parse_tree/refiners/list_of_characters"
-import * as t_parse_tree_to_text from "astn/modules/parse_tree/schemas/parse_tree/transformers/serialized"
+import * as r_parse_tree_from_loc from "pareto-liana/temp/astn_document"
+import * as p from "pareto-core/transformer"
+import * as target from "astn/modules/parse_tree/schemas/parse_tree/transformers/authoring_target"
+import * as paragraph from "astn/modules/authoring_target/schemas/authoring_target/transformers/paragraph"
+import * as serialize from "pareto-fountain-pen/modules/paragraph/schemas/paragraph/transformers/serialized"
+import * as sh from "pareto-fountain-pen/modules/paragraph/schemas/paragraph/shorthands/deprecated"
 
 import * as vscode_node from 'vscode-languageserver/node'
 import { Connection_Context } from '../connection_context'
@@ -46,8 +50,17 @@ export const create_on_document_formatting: (
 								last_line_length
 							)
 						}),
-						t_parse_tree_to_text.Document(
-							$,
+						serialize.Paragraph(
+							sh.pg.sentences(p.literal.segmented_list([
+								p.from.optional($.header).decide(header => p.literal.list([
+									sh.sentence(p.literal.segmented_list([
+										p.literal.list([sh.ph.text("! ")]),
+										paragraph.Token_Trivia({ comments: header['!']['trailing trivia'].comments }),
+										paragraph.Value(target.Value(header.value), { 'write delimiters': true }),
+									])),
+								]), () => p.literal.list([])),
+								p.literal.list([sh.sentence(paragraph.Value(target.Value($.content), { 'write delimiters': true }))]),
+							])),
 							{
 								'indentation': ' '.repeat(params.options.tabSize || 4),
 							}

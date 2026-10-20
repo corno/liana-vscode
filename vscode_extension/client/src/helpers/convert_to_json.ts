@@ -15,7 +15,7 @@ type Signature = p_i.Refiner_With_Parameter<
 //dependencies
 import * as t_ast_2_json from "astn/modules/parse_tree/schemas/parse_tree/transformers/json_target"
 import * as t_json_to_serialized from "pareto-json/modules/serialization/schemas/without_guaranteed_unique_keys/transformers/serialized"
-import * as r_astn_parse_tree_from_loc from "astn-runtime/modules/deserialization/schemas/parse_tree/refiners/list_of_characters"
+import * as r_astn_parse_tree_from_loc from "pareto-liana/temp/astn_document"
 
 
 export const $$: Signature = ($, abort, $p,) => t_json_to_serialized.Document(

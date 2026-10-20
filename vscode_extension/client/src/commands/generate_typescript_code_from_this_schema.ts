@@ -44,14 +44,14 @@ export default ((deps) => async () => {
 						return null
 					})
 					case 'parse schema': return p_.option($, ($) => {
-						vscode.window.showErrorMessage('Cannot generate TypeScript code because the .liana/schema.slna file is not a valid schema.')
+						vscode.window.showErrorMessage('Cannot generate TypeScript code because the .liana/schema.slna file is not a valid schema: ' + $.error)
 						return null
 					})
 					default: return p_.exhaustive($[0])
 				}
 			})
 		},
-		($) => {
+		($, root_type) => {
 			// Convert to verbose notation using seal
 			p_create_refinement_context<p_schema.List<string>, string>(
 				(abort) => ttt_seal(
@@ -59,12 +59,7 @@ export default ((deps) => async () => {
 					($) => abort("Cannot generate TypeScript code because the file is not valid Liana."),
 					{
 						'unmarshall': {
-							'type': p_.from.state($).decide(($) => {
-								switch ($[0]) {
-									case 'constrained': return p_.option($, ($) => $['root type'].entry)
-									default: return p_.exhaustive($[0])
-								}
-							}),
+							'type': root_type,
 							'tab size': 1, // vscode works with character, not with columns
 						},
 						'target': {

@@ -14,6 +14,7 @@ export type Error = p_.Transformer<
 
 //dependencies
 import * as ser_parse_tree_deserialization from "astn-runtime/modules/deserialization/schemas/parse_tree_deserialization/serializers"
+import { error_message } from "pareto-liana/schemas/temp_type_specifier/reader_error"
 import * as t_get_schema_to_rich_phrase from "../../retrieval_of_schema/transformers/rich_phrase.js"
 import * as t_get_schema_path_to_rich_phrase from "../../retrieval_of_schema_path/transformers/rich_phrase.js"
 
@@ -22,6 +23,8 @@ import * as sh from "pareto-fountain-pen/modules/rich_phrase/schemas/rich_phrase
 export const Error: declarations.Error = ($) => p_.from.state($).decide(
     ($) => {   
         switch ($[0]) {
+            case 'schema header': return sh.ph.text(error_message($[1]))
+            case 'file type': return sh.ph.text($[1])
             case 'deserialize parse tree': return p_.option($, ($) => sh.ph.text(ser_parse_tree_deserialization.Error($)))
             case 'schema': return p_.option($, ($) => t_get_schema_to_rich_phrase.Error($.error))
             case 'schema path': return p_.option($, ($) => t_get_schema_path_to_rich_phrase.Error($))

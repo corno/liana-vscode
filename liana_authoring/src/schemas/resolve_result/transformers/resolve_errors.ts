@@ -195,7 +195,7 @@ const Content: declarations_.Value = (value) => p_.from.state(value['unmarshall 
                                 (selection) => Selection(selection, full_range.Value(value.unmarshalled.instance))
                             ),
                         ]))
-                        case 'optional': return p_.option($, ($) => p_.from.state($.status).decide(
+                        case 'optional': return p_.option($, ($) => p_.literal.segmented_list([p_.from.state($.status).decide(
                             ($) => {
                                 switch ($[0]) {
                                     case 'set': return p_.option($, ($) => Value($['child value']))
@@ -203,7 +203,7 @@ const Content: declarations_.Value = (value) => p_.from.state(value['unmarshall 
                                     default: return p_.exhaustive($[0])
                                 }
                             }
-                        ))
+                        ), Selection($.result, full_range.Value(value.unmarshalled.instance))]))
                         case 'state': return p_.option($, ($) => {
                             return p_.literal.segmented_list([p_.from.optional($.option).decide(
                                 ($) => Value($),

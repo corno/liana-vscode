@@ -4,6 +4,7 @@ import type * as s_stat from "pareto-filesystem-unrestricted-api/modules/unrestr
 export type Result = s_path.Node_Path
 
 export type Error =
+    | ['invalid schema path', null]
     | ['not found', null]
     | ['stat error', s_stat.Error]
 

@@ -13,7 +13,7 @@ export type Error = p_.Transformer<
 }
 
 //dependencies
-import * as ser_deserialize_resolved from "liana-runtime/modules/resolved_document_deserialization/schemas/resolved_document_deserialization/serializers"
+import { error_message } from "pareto-liana/schemas/temp_type_specifier/reader_error"
 import * as ser_read_file from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/read_file/serializers"
 
 import * as sh from "pareto-fountain-pen/modules/rich_phrase/schemas/rich_phrase/shorthands/deprecated"
@@ -21,7 +21,7 @@ import * as sh from "pareto-fountain-pen/modules/rich_phrase/schemas/rich_phrase
 export const Error: declarations.Error = ($) => p_.from.state($.type).decide(
     ($) => {
         switch ($[0]) {
-            case 'deserialize': return p_.option($, ($) => sh.ph.text(ser_deserialize_resolved.Error($)))
+            case 'deserialize': return p_.option($, ($) => sh.ph.text(error_message($)))
             case 'read file': return p_.option($, ($) => sh.ph.text(ser_read_file.Error($)))
             default: return p_.exhaustive($[0])
         }

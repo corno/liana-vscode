@@ -187,7 +187,7 @@ export const Value: declarations_.Value = ($, abort) => {
                             case 'nothing': return p_.option($, ($): s_out.Value => ['nothing', null])
                             case 'simple': return p_.option($, ($): s_out.Value => ['text', {
                                 'value': $.instance.token.value,
-                                'delimiter': $.definition['l entry'].type[0] === 'double quoted' ? ['quote', null] : ['none', null],
+                                'delimiter': $.definition.value['l entry'].type[0] === 'double quoted' ? ['quote', null] : ['none', null],
 
                             }])
                             case 'optional': return p_.option($, ($): s_out.Value => ['optional', p_.from.state($.derived.status).decide(

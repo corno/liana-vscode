@@ -26,7 +26,9 @@ export const $$: p_.Query_Implementation<
                 'type': ['read file', $],
             })
         )).refine(
-            ($, abort) => r_temp_type_specifier_from_loc.Type_Specifier(
+            ($, abort): d.Result => ({
+                'schema path': $d.deprecated['schema path'],
+                'specification': r_temp_type_specifier_from_loc.Type_Specifier(
                 $.data,
                 ($) => abort({
                     'schema path': $d.deprecated['schema path'],
@@ -36,6 +38,6 @@ export const $$: p_.Query_Implementation<
                     'tab size': $s['tab size']
                 }
 
-            )
+            )})
         )
 )

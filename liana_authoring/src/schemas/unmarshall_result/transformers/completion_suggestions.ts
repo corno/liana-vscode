@@ -62,7 +62,7 @@ export const Found: declarations_.Found = ($, $p) => {
 
 
     const s_schema_Value = (
-        $: s_schema.Value,
+        $: s_schema.namespaces.structure.types.Value,
         $p: {
             'style':
             | ['verbose', null]

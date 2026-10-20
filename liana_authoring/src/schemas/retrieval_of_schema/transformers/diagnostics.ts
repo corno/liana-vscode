@@ -23,9 +23,8 @@ namespace declarations_ {
 }
 
 //dependencies
-import * as ser_deserialize_resolved from "liana-runtime/modules/resolved_document_deserialization/schemas/resolved_document_deserialization/serializers"
+import { error_message, error_location } from "pareto-liana/schemas/temp_type_specifier/reader_error"
 import * as ser_rich_phrase from "pareto-fountain-pen/modules/rich_phrase/schemas/rich_phrase/serializers"
-import * as t_resolved_document_deserialization_to_location from "liana-runtime/modules/resolved_document_deserialization/schemas/resolved_document_deserialization/transformers/location"
 
 export const Error: declarations_.Error = ($, $p) => {
 	return p_.from.state($.type).decide(
@@ -41,16 +40,16 @@ export const Error: declarations_.Error = ($, $p) => {
 				case 'deserialize': return p_.option($, ($) => ({
 					'message': p_s.ph.list(p_.literal.list([
 						"failed to deserialize schema: ",
-						ser_deserialize_resolved.Error($)
+						error_message($)
 					])),
 					'severity': ['error', null],
 					'related information': p_.literal.set(p_.literal.list([
 						{
 							'location': {
 								'file path': $p['schema path'],
-								'range': t_resolved_document_deserialization_to_location.Error($)
+								'range': error_location($)
 							},
-							'message': ser_deserialize_resolved.Error($)
+							'message': error_message($)
 						}
 					])),
 					'range': p_.literal.not_set(),

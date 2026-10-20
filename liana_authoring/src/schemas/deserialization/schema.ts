@@ -4,12 +4,15 @@ import type * as s_resolve_result from "../resolve_result/schema.js"
 import type * as s_deserialize_parse_tree from "astn-runtime/modules/deserialization/schemas/parse_tree_deserialization/schema"
 import type * as s_load_schema from "../retrieval_of_schema/schema.js"
 import type * as s_schema_path from "../retrieval_of_schema_path/schema.js"
+import type * as schema_errors from "pareto-liana/modules/schema.generated/schemas/reader_errors/schema"
 
 export type Result = 
 | ['unconstrained', s_unmarshall_result.Document]
 | ['constrained', s_resolve_result.Document]
 
 export type Error =
+    | ['schema header', schema_errors.types.Resolved_Error]
+    | ['file type', string]
     | ['schema path', s_schema_path.Error]
     | ['schema', {
         'schema path': s_path.Node_Path,

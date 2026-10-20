@@ -26,7 +26,7 @@ export type Property_Path = p_.List<
 >
 
 export type Value = {
-    'definition': s_schema.Value
+    'definition': s_schema.namespaces.structure.types.Value
     'instance': s_astn_parse_tree.Value
     'optional parent range stack': p_.Optional_Value<Range_Stack>
     'property path': Property_Path
@@ -54,7 +54,7 @@ export type Value_Unmarshall_Error =
         }]
         | ['unknown option', {
             'option token': s_astn_parse_tree.Text
-            'definition': s_schema.Value.state
+            'definition': s_schema.namespaces.structure.types.Value.state
         }]
     ]
     | ['missing', null]
@@ -72,12 +72,12 @@ export type Unmarshalled_Value =
     | ['text', Text]
 
 export type Component = {
-    'definition': s_schema.Value.component
+    'definition': s_schema.namespaces.structure.types.Value.component
     'value': Value
 }
 
 export type Dictionary = {
-    'definition': s_schema.Value.dictionary
+    'definition': s_schema.namespaces.structure.types.Value.dictionary
     'intermediate': {
         'instance': s_astn_parse_tree.Value.type_.concrete.dictionary
         'entries as list': p_.List<Entry>
@@ -99,7 +99,7 @@ export type Entry_Unmarshall_Error =
     }]
 
 export type Group = {
-    'definition': s_schema.Value.group
+    'definition': s_schema.namespaces.structure.types.Value.group
     'intermediate': Group.intermediate
     'derived': Group.derived
 }
@@ -134,7 +134,7 @@ export namespace Group {
 }
 
 export type Property = {
-    'definition': s_schema.Group.D
+    'definition': s_schema.namespaces.structure.types.Group.D
     'result': Property.result
 }
 
@@ -177,7 +177,7 @@ export type Concise_Property_Definition_Found =
     }]
 
 export type Concise_Property_Definition_Found__yes = {
-    'definition': s_schema.Group.D
+    'definition': s_schema.namespaces.structure.types.Group.D
     'id': string,
     'value': Value
 }
@@ -193,7 +193,7 @@ export type Verbose_Property = {
 
 export type Verbose_Property_Definition_Found =
     | ['yes', {
-        'definition': s_schema.Group.D
+        'definition': s_schema.namespaces.structure.types.Group.D
         'value': p_.Optional_Value<Value>
     }]
     | ['no', null]
@@ -203,7 +203,7 @@ export type Group_Verbose = {
 }
 
 export type List = {
-    'definition': s_schema.Value.list
+    'definition': s_schema.namespaces.structure.types.Value.list
     'instance': s_astn_parse_tree.Value.type_.concrete.list
     'derived': {
         'items': p_.List<Value>
@@ -226,7 +226,7 @@ export type Optional_Instance_Optional =
     | ['not set', s_astn_parse_tree.Value.type_.concrete.optional.not_set]
 
 export type Optional = {
-    'definition': s_schema.Value.optional
+    'definition': s_schema.namespaces.structure.types.Value.optional
     'instance': Optional_Instance
     'derived': Optional.derived
 }
@@ -241,7 +241,7 @@ export namespace Optional {
 }
 
 export type Reference_Selected = {
-    'definition': s_schema.Value.reference.type_.selected
+    'definition': s_schema.namespaces.structure.types.Reference.type_
     'intermediate': {
         'instance': s_astn_parse_tree.Value.type_.concrete.text
     }
@@ -254,7 +254,7 @@ export type Reference = {
 }
 
 export type State = {
-    'definition': s_schema.Value.state
+    'definition': s_schema.namespaces.structure.types.Value.state
     'property pathx': Property_Path
     'parent range stack': Range_Stack
     'intermediate': State.intermediate
@@ -284,7 +284,7 @@ export type State_Option =
     }]
 
 export type State_Set = {
-    'definition': s_schema.Value.state.options.D
+    'definition': s_schema.namespaces.structure.types.Value.state.options.D
     'intermediate': {
         'option token': s_astn_parse_tree.Text
     }
@@ -293,26 +293,26 @@ export type State_Set = {
 }
 
 export type Nothing = {
-    'definition': s_schema.Value.nothing
+    'definition': s_schema.namespaces.structure.types.Value.nothing
     'instance':
     | ['nothing', s_astn_parse_tree.Value.type_.concrete.nothing]
     | ['null literal', s_astn_parse_tree.Value.type_.concrete.text]
 }
 
 export type Text = {
-    'definition': s_schema.Basic_Type
+    'definition': s_schema.namespaces.structure.types.Basic_Type
     'instance': s_astn_parse_tree.Value.type_.concrete.text
 }
 
 export type Simple = {
-    'definition': s_schema.Value.simple
+    'definition': s_schema.namespaces.structure.types.Value.simple
     'instance': s_astn_parse_tree.Value.type_.concrete.text
 }
 
 export type Entry = {
     'parent range stack': Range_Stack
     'property path': Property_Path
-    'definition': s_schema.Dictionary
+    'definition': s_schema.namespaces.structure.types.Dictionary
     'intermediate': {
         'id value pair': s_astn_parse_tree.ID_Value_Pairs.L
     }

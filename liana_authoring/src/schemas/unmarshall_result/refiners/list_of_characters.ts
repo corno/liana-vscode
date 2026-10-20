@@ -26,7 +26,7 @@ namespace declarations_ {
 
 //depencencies
 import * as t_parse_tree_to_unmarshall_result from "../../astn_parse_tree/transformers/unmarshall_result.js"
-import * as r_parse_tree_from_list_of_characters from "astn-runtime/modules/deserialization/schemas/parse_tree/refiners/list_of_characters"
+import * as r_parse_tree_from_list_of_characters from "pareto-liana/temp/astn_document"
 
 export const Document: declarations_.Document = ($, abort, $p) => t_parse_tree_to_unmarshall_result.Document(
     r_parse_tree_from_list_of_characters.Document(

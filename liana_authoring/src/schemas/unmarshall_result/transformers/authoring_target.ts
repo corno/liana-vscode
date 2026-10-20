@@ -293,7 +293,7 @@ export const Any_Value: declarations_.Any_Value = ($, $p) => {
                             case 'simple': return p_.option($, ($) => temp_value(['concrete', {
                                 'type': ['text', {
                                     'value': $.instance.token.value,
-                                    'delimiter': $.definition['l entry'].type[0] === 'double quoted' ? ['quote', null] : ['none', null],
+                                    'delimiter': $.definition.value['l entry'].type[0] === 'double quoted' ? ['quote', null] : ['none', null],
                                     'trivia': {
                                         'comments': $.instance['trailing trivia'].comments
                                     }

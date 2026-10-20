@@ -21,6 +21,7 @@ import * as sh from "pareto-fountain-pen/modules/rich_phrase/schemas/rich_phrase
 export const Error: declarations.Error = ($) => p_.from.state($).decide(
     ($) => {
         switch ($[0]) {
+            case 'invalid schema path': return sh.ph.text("The nearest .liana schema context is not a directory")
             case 'not found': return p_.option($, ($) => sh.ph.text("schema not found"))
             case 'stat error': return p_.option($, ($) => sh.ph.text(ser_stat_possible_node.Error($)))
             default: return p_.exhaustive($[0])

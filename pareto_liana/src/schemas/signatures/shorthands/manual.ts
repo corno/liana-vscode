@@ -4,15 +4,15 @@ import type * as s_target from "../schema.js"
 
 
 export const signatures = (
-    signatures: sh.Raw_Or_Normal_Dictionary<s_target.Resolver_Signatures.D>,
-): s_target.Resolver_Signatures => {
+    signatures: sh.Raw_Or_Normal_Dictionary<s_target.namespaces.signatures.types.Signatures.D>,
+): s_target.namespaces.signatures.types.Signatures => {
     return sh.dictionary(signatures)
 }
 
 export const sig_params = (
-    types: sh.Raw_Or_Normal_Dictionary<s_target.Resolver_Signature_Parameters.types.D>,
-    lookups: sh.Raw_Or_Normal_Dictionary<s_target.Resolver_Signature_Parameters.lookups.D>,
-): s_target.Resolver_Signature_Parameters => {
+    types: sh.Raw_Or_Normal_Dictionary<s_target.namespaces.signatures.types.Signature_Parameters.types.D>,
+    lookups: sh.Raw_Or_Normal_Dictionary<s_target.namespaces.signatures.types.Signature_Parameters.lookups.D>,
+): s_target.namespaces.signatures.types.Signature_Parameters => {
     return {
         'types': sh.dictionary(types),
         'lookups': sh.dictionary(lookups),
@@ -25,9 +25,9 @@ export const sig_params = (
 export namespace sig {
 
     export const local = (
-        types: sh.Raw_Or_Normal_Dictionary<s_target.Resolver_Signature_Parameters.types.D>,
-        lookups: sh.Raw_Or_Normal_Dictionary<s_target.Resolver_Signature_Parameters.lookups.D>,
-    ): s_target.Resolver_Signatures.D => {
+        types: sh.Raw_Or_Normal_Dictionary<s_target.namespaces.signatures.types.Signature_Parameters.types.D>,
+        lookups: sh.Raw_Or_Normal_Dictionary<s_target.namespaces.signatures.types.Signature_Parameters.lookups.D>,
+    ): s_target.namespaces.signatures.types.Signatures.D => {
         return {
             'parameters': sh.state(['local', {
                 'types': sh.dictionary(types),
@@ -38,7 +38,7 @@ export namespace sig {
 
     export const same_as = (
         name: string
-    ): s_target.Resolver_Signatures.D => {
+    ): s_target.namespaces.signatures.types.Signatures.D => {
         return {
             'parameters': sh.state(['same as', sh.reference(name)]),
         }
@@ -51,7 +51,7 @@ export namespace parameter {
     export const type = (
         name: string,
         presence?: 'optional' | 'required',
-    ): s_target.Resolver_Signature_Parameters.types.D => {
+    ): s_target.namespaces.signatures.types.Signature_Parameters.types.D => {
         return {
             'type': {
                 'location': sh.state(['internal', sh.reference(name)]),
@@ -66,7 +66,7 @@ export namespace parameter {
         name: string,
         type?: 'acyclic' | 'cyclic',
         presence?: 'optional' | 'required',
-    ): s_target.Resolver_Signature_Parameters.lookups.D => {
+    ): s_target.namespaces.signatures.types.Signature_Parameters.lookups.D => {
         return {
             'referent': {
                 'location': sh.state(['internal', sh.reference(name)]),

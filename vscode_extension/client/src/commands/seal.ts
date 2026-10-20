@@ -25,30 +25,25 @@ export default ((deps) => () => {
 			p_.from.state($.type).decide(($): null => {
 				switch ($[0]) {
 					case 'read file': return p_.option($, ($) => {
-						vscode.window.showErrorMessage('Cannot seal because no .liana/schema.slna file could be found in the same directory as the liana file: ' + $.error.message)
+						vscode.window.showErrorMessage('Cannot seal because no .liana/schema.slna file could be found in an ancestor directory of the Liana file: ' + $.error.message)
 						return null
 					})
 					case 'parse schema': return p_.option($, ($) => {
-						vscode.window.showErrorMessage('Cannot seal because the .liana/schema.slna file is not a valid schema.')
+						vscode.window.showErrorMessage('Cannot seal because the .liana/schema.slna file is not a valid schema: ' + $.error)
 						return null
 					})
 					default: return p_.exhaustive($[0])
 				}
 			})
 		},
-		($) => {
+		($, root_type) => {
 			p_create_refinement_context<p_di.List<string>, string>(
 				(abort) => ttt_seal(
 					editor.document.getText(),
 					($) => abort("Sealing failed because the file is not valid Liana."),
 					{
 						'unmarshall': {
-							'type': p_.from.state($).decide(($) => {
-								switch ($[0]) {
-									case 'constrained': return p_.option($, ($) => $['root type'].entry)
-									default: return p_.exhaustive($[0])
-								}
-							}),
+							'type': root_type,
 							'tab size': 1, // vscode works with character, not with columns
 						},
 						'target': {

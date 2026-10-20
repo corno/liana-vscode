@@ -15,7 +15,7 @@ export type Value = {
     'reference dictionary'?: p_.Optional_Value<s_unmarshall_result.Dictionary>
     'state option constraints'?: p_.Dictionary<p_.Dictionary<Selection>>
     'constraints': p_.Dictionary<Selection>
-    'definition': s_schema.Resolver_Value
+    'definition': s_schema.namespaces.resolver.types.Value
     'unmarshalled': s_unmarshall_result.Value
     'unmarshall result': Value_Unmarshall_Result
 }
@@ -78,7 +78,7 @@ export type Property = {
 }
 
 export type Property_Unmarshalled = {
-    'definition': s_schema.Resolver_Value
+    'definition': s_schema.namespaces.resolver.types.Value
     'resolved': Value
 }
 
@@ -90,6 +90,7 @@ export type List = {
 
 export type Optional = {
     'unmarshalled': s_unmarshall_result.Optional
+    'result': Selection
     'status':
     | ['set', {
         'child value': Value

@@ -26,7 +26,7 @@ namespace declarations {
         s_in.Value,
         s_out.Value,
         {
-            'definition': s_in_definition.Value
+            'definition': s_in_definition.namespaces.structure.types.Value
             'property path': s_out.Property_Path
             'parent range stack': p_di.Optional_Value<s_out.Range_Stack>
         }
@@ -409,8 +409,8 @@ export const Value: declarations.Value = ($, $p) => {
                                         })
                                         case 'simple': return p_.option($, ($): s_out.Unmarshalled_Value => {
                                             const def = $
-                                            if ($v_concrete_value[0] === 'text' && !matches_token(def['l entry'], $v_concrete_value[1].token.value)) {
-                                                return abort(['incorrect', ['invalid token', def['l id']]])
+                                            if ($v_concrete_value[0] === 'text' && !matches_token(def.value['l entry'], $v_concrete_value[1].token.value)) {
+                                                return abort(['incorrect', ['invalid token', def.value['l id']]])
                                             }
                                             return ['simple', p_.from.state($v_concrete_value).decide(
                                                 ($) => {
@@ -517,30 +517,11 @@ export const Value: declarations.Value = ($, $p) => {
                                             }]
                                         })
                                         case 'reference': return p_.option($, ($): s_out.Unmarshalled_Value => {
-                                            return ['reference', {
-                                                'type': p_.from.state($.type).decide(
-                                                    ($) => {
-                                                        switch ($[0]) {
-                                                            case 'selected': return p_.option($, ($) => {
-                                                                const def = $
-                                                                return ['selected', p_.from.state($v_concrete_value).decide(
-                                                                    ($) => {
-                                                                        switch ($[0]) {
-                                                                            case 'text': return p_.option($, ($) => ({
-                                                                                'definition': def,
-                                                                                'value': $.token.value,
-                                                                                'intermediate': {
-                                                                                    'instance': $,
-                                                                                }
-                                                                            }))
-                                                                            default: return abort(['incorrect', ['wrong type', null]])
-                                                                        }
-                                                                    })]
-                                                            })
-                                                            default: return p_.exhaustive($[0])
-                                                        }
-                                                    })
-                                            }]
+                                            if ($v_concrete_value[0] !== 'text') return abort(['incorrect', ['wrong type', null]])
+                                            return ['reference', { type: ['selected', {
+                                                definition: $.type,
+                                                intermediate: { instance: $v_concrete_value[1] },
+                                            }] }]
                                         })
                                         case 'state': return p_.option($, ($): s_out.Unmarshalled_Value => {
                                             const $v_def = $

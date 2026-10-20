@@ -87,33 +87,74 @@ written; the extension does not normalize string contents when opening them.
 
 ## Tutorial: Creating Your First Language
 
-### Liana Next schemas
+### Current Liana schemas
 
-The extension uses Liana Next exclusively. A type specification contains a flat
-schema and a `root type` selecting one of its resolvers:
+The extension supports only the latest deployed Liana format. A Type Specification
+contains a structural schema, separate resolver signature and implementation
+trees, and a file tree selecting the root type for each document:
 
 ```astn
 (
     `schema`: (
-        `basic types`: {}
-        `types`: { 'Root': < | `nothing` ~ > }
-        `signatures`: { 'Root': < ~ | `local` < {} {} > ~ > }
-        `resolvers`: { 'Root': < ~ | `nothing` ~ > }
+        `structure`: (
+            `namespaces`: {}
+            `basic types`: {}
+            `types`: { 'Root': (`root value`: | `nothing` ~) }
+        )
+        `resolver`: (
+            `signatures`: (
+                `namespaces`: {}
+                `types`: { 'Root': (`parameters`: | `local` (`types`: {} `lookups`: {})) }
+            )
+            `implementations`: (
+                `namespaces`: {}
+                `types`: { 'Root': (`root value resolver`: | `nothing` ~) }
+            )
+        )
     )
-    `root type`: 'Root'
+    `directory`: | `dictionary` (
+        `node`: | `file` (`file extension`: "example" `type`: 'Root')
+    )
 )
 ```
 
-Text belongs in `basic types`, alongside boolean, date, and number. A value uses
-`simple` to reference a basic type directly. Schema sets, imports, schema paths,
-complexity wrappers, external references, and stack lookups are removed.
-Unknown root/basic-type references produce schema-loading diagnostics.
+Place this bare specification in `.liana/schema.slna`. Files such as
+`document.example.lna` and `document.example.slna` use its `Root` type.
+The nearest ancestor `.liana` directory is authoritative: a missing or invalid
+schema there is an error, not a reason to search farther. Named `group`
+directories and arbitrary-name `dictionary` directories may be nested. Root
+selection happens per document; a cached schema never fixes all its files to one
+type. Unknown, ambiguous and extension-mismatched paths are rejected.
 
-State resolver declarations place the optional result type before the options:
-`definition`, `result`, `options`. Each option keeps its own optional result
-selection after `constraints` and `resolver`. In concise notation, a state
-without a result uses `< ~ _ { ... } >`; each option without a result selection
-uses `< { ... } ... _ >`.
+Self-contained documents instead use a header containing both the logical path
+and the same specification:
+
+```astn
+! (
+    `path`: (`directories`: [] `file name`: "document.example.lna")
+    `schema`: # // insert the complete Type Specification here
+)
+~
+```
+
+The header's path selects the type independently of the exported file's location.
+Older root-type specifications and older header shapes are not supported.
+
+Basic types declare token syntax (`double quoted` or `undelimited`), an optional
+regular expression, and optional `file path` metadata. Booleans, dates and numbers
+can be modeled with token patterns; they are not built-in semantic value kinds.
+The authoring-only `hyperlink` rename and optional `presence` proposal are not
+part of this deployed format.
+
+Structural list, optional and state values declare their result targets.
+Resolvers provide the corresponding result selections: a list supplies `initial`
+and `next`, an optional supplies one selection for its present payload, and a
+state supplies a selection per option. A state resolver contains only `options`;
+there is no resolver-level result-type field.
+
+A guaranteed selection may start with `optional fallback`. Both branches must
+select the exact same structural target. The fallback is evaluated only when the
+possible selection is absent, never for an invalid, unavailable or cyclic value.
 
 Document reference checks are schema-driven: selected dictionary references report
 missing identifiers at the reference token, acyclic lookups report cycles, and
@@ -175,8 +216,8 @@ the existing environment through. Explicit dictionaries must supply every callee
 parameter; optional arguments must explicitly select `not set` when absent. Type
 parameter bindings resolve their source name against the caller's signature and
 their destination name against the callee's signature. Argument benchmarks and
-resolver/signature coverage are dense. Compatibility validation at pass-through
-boundaries remains future work; `_` retains its current optional representation.
+resolver/signature coverage are dense. `_` retains its existing forwarding
+behavior at whole-arguments and category boundaries.
 
 List and state results are explicitly declared by their producers. A list result
 declares its `type`, an `initial` selection, and a `next` selection evaluated after

@@ -9,7 +9,7 @@ import { component_type } from '../select_component.js'
 
 export namespace s_function {
     export type Parameters = {
-        'state ancestors'?: p_di.List<s_in.Value.state>
+        'state ancestors'?: p_di.List<s_in.namespaces.structure.types.Value.state>
         'style':
         | ['concise', null]
         | ['verbose', null]
@@ -20,12 +20,12 @@ export namespace s_function {
 namespace declarations_ {
 
     export type Value = p_.Transformer_With_Parameter<
-        s_in.Value,
+        s_in.namespaces.structure.types.Value,
         s_out.Value,
         s_function.Parameters
     >
     export type Value_data = p_.Transformer_With_Parameter<
-        s_in.Value,
+        s_in.namespaces.structure.types.Value,
         s_out.Value.data,
         s_function.Parameters
     >
@@ -39,12 +39,12 @@ export const Value: declarations_.Value = ($, $p) => ({
 export const Value_data: declarations_.Value_data = ($, $p) => p_.from.state($).decide(
     ($): s_out.Value.data => {
         switch ($[0]) {
-            case 'simple': return p_.option($, ($) => $['l entry'].type[0] === 'undelimited'
-                || p_.from.optional($['l entry']['regular expression']).decide(() => true, () => false)
+            case 'simple': return p_.option($, ($) => $.value['l entry'].type[0] === 'undelimited'
+                || p_.from.optional($.value['l entry']['regular expression']).decide(() => true, () => false)
                 ? ['missing', { '#': { comments: p_.literal.list([]) } }]
                 : ['concrete', {
                 'type': ['text', {
-                    'delimiter': $['l entry'].type[0] === 'double quoted' ? ['quote', null] : ['none', null],
+                    'delimiter': $.value['l entry'].type[0] === 'double quoted' ? ['quote', null] : ['none', null],
                     'value': "",
                     'trivia': {
                         'comments': p_.literal.list([])
@@ -138,7 +138,7 @@ export const Value_data: declarations_.Value_data = ($, $p) => p_.from.state($).
             case 'state': return p_.option($, ($) => {
                 const options = $.options.__get_raw()
                 const only = options.length === 1 ? options[0] : undefined
-                const ancestors = $p['state ancestors'] ?? p_.literal.list<s_in.Value.state>([])
+                const ancestors = $p['state ancestors'] ?? p_.literal.list<s_in.namespaces.structure.types.Value.state>([])
                 const recursive = p_.from.list(ancestors).on_has_match(
                     (state) => state === $ ? p_.literal.set(true) : p_.literal.not_set<boolean>(), () => false,
                 )

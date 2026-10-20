@@ -25,7 +25,7 @@ const escape = (value: string): string => p.from.text(value).escape(p.literal.li
     duplicate_character: () => p_unreachable_code_path('duplicate regular-expression escape character'),
 })
 
-const pattern = (expression: schema.Regular_Expression): string => {
+const pattern = (expression: schema.namespaces.structure.types.Regular_Expression): string => {
     switch (expression[0]) {
         case 'any character': return '[\\s\\S]'
         case 'literal': return escape(expression[1])
@@ -39,7 +39,7 @@ const pattern = (expression: schema.Regular_Expression): string => {
     }
 }
 
-export const matches_token = (type: schema.Basic_Type, value: string): boolean =>
+export const matches_token = (type: schema.namespaces.structure.types.Basic_Type, value: string): boolean =>
     p.from.optional(type['regular expression']).decide(
         expression => new RegExp('^(?:' + pattern(expression) + ')(?![\\s\\S])', 'u').test(value),
         () => true)

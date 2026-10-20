@@ -1,16 +1,16 @@
 import * as p from '../../../../../temp/pareto_core_refiner.js'
 import type * as core from 'pareto-core/schema'
-import type * as source from '../../unresolved/schema.js'
+import type * as source from './source.js'
 import type * as target from '../schema.js'
 import type * as errors from '../../../../../temp/liana_runtime_resolving_schema.js'
 
 type Abort = (error: errors.Error) => never
 type Types = {
-    acyclic: p.lookup.Acyclic<target.Types.D>
-    cyclic: p.lookup.Cyclic<target.Types.D>
-    basic: core.Optional_Value<target.Basic_Types>
-    children: target.Namespaces
-    siblings: p.lookup.Acyclic<target.Namespaces.D>
+    acyclic: p.lookup.Acyclic<target.namespaces.structure.types.Types.D>
+    cyclic: p.lookup.Cyclic<target.namespaces.structure.types.Types.D>
+    basic: core.Optional_Value<target.namespaces.structure.types.Basic_Types>
+    children: target.namespaces.structure.types.Namespaces
+    siblings: p.lookup.Acyclic<target.namespaces.structure.types.Namespaces.D>
 }
 
 type Type_Environment = {
@@ -40,34 +40,29 @@ const Lookup = <T extends core.Value>(lookup: p.lookup.Acyclic<T>, id: string, a
     }),
 })
 
-function Expect(node: target.Value, kind: 'component', abort: Abort): target.Value.component
-function Expect(node: target.Value, kind: 'dictionary', abort: Abort): target.Value.dictionary
-function Expect(node: target.Value, kind: 'group', abort: Abort): target.Value.group
-function Expect(node: target.Value, kind: 'list', abort: Abort): target.Value.list
-function Expect(node: target.Value, kind: 'optional', abort: Abort): target.Value.optional
-function Expect(node: target.Value, kind: 'reference', abort: Abort): target.Value.reference
-function Expect(node: target.Value, kind: 'state', abort: Abort): target.Value.state
-function Expect(node: target.Value, kind: 'simple', abort: Abort): target.Value.simple
-function Expect(node: target.Value, kind: 'nothing', abort: Abort): target.Value.nothing
-function Expect(node: target.Value, kind: target.Value[0], abort: Abort): target.Value[1] {
+function Expect(node: target.namespaces.structure.types.Value, kind: 'component', abort: Abort): target.namespaces.structure.types.Value.component
+function Expect(node: target.namespaces.structure.types.Value, kind: 'dictionary', abort: Abort): target.namespaces.structure.types.Value.dictionary
+function Expect(node: target.namespaces.structure.types.Value, kind: 'group', abort: Abort): target.namespaces.structure.types.Value.group
+function Expect(node: target.namespaces.structure.types.Value, kind: 'list', abort: Abort): target.namespaces.structure.types.Value.list
+function Expect(node: target.namespaces.structure.types.Value, kind: 'optional', abort: Abort): target.namespaces.structure.types.Value.optional
+function Expect(node: target.namespaces.structure.types.Value, kind: 'reference', abort: Abort): target.namespaces.structure.types.Value.reference
+function Expect(node: target.namespaces.structure.types.Value, kind: 'state', abort: Abort): target.namespaces.structure.types.Value.state
+function Expect(node: target.namespaces.structure.types.Value, kind: 'simple', abort: Abort): target.namespaces.structure.types.Value.simple
+function Expect(node: target.namespaces.structure.types.Value, kind: 'nothing', abort: Abort): target.namespaces.structure.types.Value.nothing
+function Expect(node: target.namespaces.structure.types.Value, kind: target.namespaces.structure.types.Value[0], abort: Abort): target.namespaces.structure.types.Value[1] {
     if (node[0] !== kind) return abort({ type: ['constraint', ['state', { expected: kind, found: node[0] }]] })
     return node[1]
 }
 
-const Component_Type = ($: target.Value.component): target.Type => {
-    switch ($.type[0]) {
-        case 'internal': return $.type[1]['l entry']
-        case 'internal cyclic': return $.type[1]['l entry'].get_circular_dependent()
-        case 'child': return $.type[1].type['l entry']
-        default: return p.exhaustive($.type[0])
-    }
+const Component_Type = ($: target.namespaces.structure.types.Value.component): target.namespaces.structure.types.Type => {
+    return $.type.result
 }
 
-const Type_Reference = ($: source.Type_Reference, types: Type_Environment, abort: Abort): target.Type_Reference => {
+const Type_Reference = ($: source.Type_Reference, types: Type_Environment, abort: Abort): target.namespaces.structure.types.Type_Reference => {
     switch ($.location[0]) {
         case 'internal': {
             const type = Lookup(types.acyclic, $.location[1], abort)
-            return { location: ['internal', type], 'resulting type': type['l entry'] }
+            return { location: { value: ['internal', type], result: type['l entry'] } }
         }
         case 'child':
         case 'sibling': {
@@ -78,63 +73,64 @@ const Type_Reference = ($: source.Type_Reference, types: Type_Environment, abort
             const type = Entry(namespace['l entry'].types, selected.type, abort)
             const selection = { namespace, type }
             return {
-                location: $.location[0] === 'child' ? ['child', selection] : ['sibling', selection],
-                'resulting type': type['l entry'],
+                location: { value: $.location[0] === 'child' ? ['child', selection] : ['sibling', selection],
+                    result: type['l entry'] },
             }
         }
         default: return p.exhaustive($.location[0])
     }
 }
 
-const Value_Path = ($: source.Value_Path, root: target.Value, abort: Abort): target.Value_Path => {
+const Value_Path = ($: source.Value_Path, root: target.namespaces.structure.types.Value, abort: Abort): target.namespaces.structure.types.Value_Path => {
     let current = root
-    const tail = p.from.list($.tail).map((step): target.Value_Path.tail.L => {
-        let item: target.Value_Path.tail.L
+    const tail = p.from.list($.tail).map((step): target.namespaces.structure.types.Value_Path.tail.value.L => {
+        let item: target.namespaces.structure.types.Value_Path.tail.value.L.value.value
+        const definition = current
         switch (step[0]) {
             case 'dictionary':
                 current = Expect(current, 'dictionary', abort).value
-                item = ['dictionary', null]
+                item = ['dictionary', { constraints: { definition: Expect(definition, 'dictionary', abort) }, value: null }]
                 break
             case 'list':
                 current = Expect(current, 'list', abort).value
-                item = ['list', null]
+                item = ['list', { constraints: { definition: Expect(definition, 'list', abort) }, value: null }]
                 break
             case 'optional':
                 current = Expect(current, 'optional', abort).value
-                item = ['optional', null]
+                item = ['optional', { constraints: { definition: Expect(definition, 'optional', abort) }, value: null }]
                 break
             case 'group': {
                 const entry = Entry(Expect(current, 'group', abort), step[1], abort)
                 current = entry['l entry'].value
-                item = ['group', entry]
+                item = ['group', { constraints: { definition: Expect(definition, 'group', abort) }, value: entry }]
                 break
             }
             case 'state': {
                 const entry = Entry(Expect(current, 'state', abort).options, step[1], abort)
                 current = entry['l entry'].value
-                item = ['state', entry]
+                item = ['state', { constraints: { definition: Expect(definition, 'state', abort) }, value: entry }]
                 break
             }
             default: return p.exhaustive(step[0])
         }
-        return item
+        return { value: { value: item, result: current }, result: current }
     })
-    return { tail, 'resulting node': current }
+    return { tail: { value: tail, result: current } }
 }
 
-const Value_Reference = ($: source.Value_Reference, types: Type_Environment, abort: Abort): target.Value_Reference => {
+const Value_Reference = ($: source.Value_Reference, types: Type_Environment, abort: Abort): target.namespaces.structure.types.Value_Reference => {
     const type = Type_Reference($.type, types, abort)
-    return { type, path: Value_Path($.path, type['resulting type']['root value'], abort) }
+    return { type, path: Value_Path($.path, type.location.result['root value'], abort) }
 }
 
-const Constraints = ($: source.Option_Constraints, types: Type_Environment, abort: Abort): target.Option_Constraints =>
+const Constraints = ($: source.Option_Constraints, types: Type_Environment, abort: Abort): target.namespaces.structure.types.Option_Constraints =>
     p.from.optional($).map(($) => p.from.dictionary($).map(($) => Value_Reference($, types, abort)))
 
-const Value = ($: source.Value, types: Types, abort: Abort): target.Value => {
+const Value = ($: source.Value, types: Types, abort: Abort): target.namespaces.structure.types.Value => {
     switch ($[0]) {
         case 'component': {
             const selected = $[1].type
-            let type: target.Value.component.type_
+            let type: target.namespaces.structure.types.Value.component.type_.value
             switch (selected[0]) {
                 case 'internal cyclic': type = ['internal cyclic', {
                     'l id': selected[1],
@@ -152,7 +148,10 @@ const Value = ($: source.Value, types: Types, abort: Abort): target.Value => {
                 }
                 default: return p.exhaustive(selected[0])
             }
-            return ['component', { type }]
+            return ['component', { type: { value: type, get result() {
+                return type[0] === 'child' ? type[1].type['l entry']
+                    : type[0] === 'internal' ? type[1]['l entry'] : type[1]['l entry'].get_circular_dependent()
+            } }, constraints: Constraints($[1].constraints, types, abort) }]
         }
         case 'dictionary': return ['dictionary', { value: Value($[1].value, types, abort) }]
         case 'group': return ['group', p.from.dictionary($[1]).map(($) => ({
@@ -164,19 +163,25 @@ const Value = ($: source.Value, types: Types, abort: Abort): target.Value => {
             result: p.from.optional($[1].result).map(($) => Value_Reference($, types, abort)),
         }]
         case 'nothing': return ['nothing', null]
-        case 'simple': return ['simple', Entry(Required(types.basic, abort), $[1], abort)]
+        case 'simple': {
+            const basic = Required(types.basic, abort)
+            return ['simple', { constraints: { 'basic types': basic }, value: Entry(basic, $[1], abort) }]
+        }
         case 'optional': return ['optional', {
             constraints: Constraints($[1].constraints, types, abort),
             value: Value($[1].value, types, abort),
+            result: p.from.optional($[1].result).map(($) => Value_Reference($, types, abort)),
         }]
         case 'reference': {
             const referent = Value_Reference($[1].referent, types, abort)
-            const selected = $[1].type[1]
-            return ['reference', { referent, type: ['selected', {
-                dictionary: Expect(referent.path['resulting node'], 'dictionary', abort),
+            const selected = $[1].type
+            return ['reference', { referent: {
+                constraints: { dictionary: Expect(referent.path.tail.result, 'dictionary', abort) },
+                value: referent,
+            }, type: {
                 dependency: selected.dependency,
                 constraints: Constraints(selected.constraints, types, abort),
-            }] }]
+            } }]
         }
         case 'state': return ['state', {
             options: p.from.dictionary($[1].options).map(($) => ({
@@ -190,51 +195,81 @@ const Value = ($: source.Value, types: Types, abort: Abort): target.Value => {
     }
 }
 
-export const Schema = ($: source.Schema, abort: Abort): target.Schema => {
+export const Schema = ($: source.Schema, abort: Abort): target.types.Schema => {
     const structure = Structure($.structure, p.select_lookup.acyclic.not_set(), abort)
     const links: Context['benchmark_links'] = { entries: undefined, checks: undefined, last_check: undefined }
-    const schema = {
-        structure,
-        resolver: Resolver_Tree($.resolver, structure, p.select_lookup.acyclic.not_set(), links, abort),
-    }
+    const signatures = Signature_Tree($.resolver.signatures, structure, p.select_lookup.acyclic.not_set(), abort)
+    const schema = { structure, resolver: { signatures, implementations: Resolver_Tree(
+        $.resolver.implementations, signatures, structure, p.select_lookup.acyclic.not_set(), links, abort,
+    ) } }
     Check_Benchmark_Links(links, abort)
     return schema
 }
 
-const Structure = ($: source.Structure, siblings: Types['siblings'], abort: Abort): target.Structure => {
-    const namespaces = p.from.dictionary($.namespaces).resolve(($, id, siblings): target.Structure => Structure($, siblings, abort))
+const Structure = ($: source.Structure, siblings: Types['siblings'], abort: Abort): target.namespaces.structure.types.Structure => {
+    const namespaces = p.from.dictionary($.namespaces).resolve(($, id, siblings): target.namespaces.structure.types.Structure => Structure($, siblings, abort))
     const basic = $['basic types']
-    const types = p.from.dictionary($.types).resolve(($, id, acyclic, cyclic): target.Type => ({
+    const types = p.from.dictionary($.types).resolve(($, id, acyclic, cyclic): target.namespaces.structure.types.Type => ({
         'root value': Value($['root value'], { basic: p.literal.set(basic), acyclic, cyclic, children: namespaces, siblings }, abort),
     }))
     return { namespaces, 'basic types': basic, types }
 }
 
-const Resolver_Tree = ($: source.Resolver, definition: target.Structure, siblings: Types['siblings'],
-    links: Context['benchmark_links'], abort: Abort): target.Resolver => {
+const Signature_Tree = ($: source.Signature_Namespace, definition: target.namespaces.structure.types.Structure, siblings: Types['siblings'], abort: Abort): target.namespaces.signatures.types.Signature_Namespace => {
     Dense($.namespaces, definition.namespaces, abort)
-    const namespaces = p.from.dictionary($.namespaces).map(($, id) => Resolver_Tree($,
-        Entry(definition.namespaces, id, abort)['l entry'],
-        p.select_lookup.acyclic.from_resolved_dictionary(definition.namespaces), links, abort))
+    const namespaces = p.from.dictionary($.namespaces).map(($, id) => {
+        const benchmark = Entry(definition.namespaces, id, abort)['l entry']
+        return { benchmark, value: Signature_Tree($, benchmark,
+            p.select_lookup.acyclic.from_resolved_dictionary(definition.namespaces), abort) }
+    })
+    return { namespaces, types: Signatures($.types, definition.types, {
+        acyclic: p.select_lookup.acyclic.from_resolved_dictionary(definition.types),
+        children: definition.namespaces, siblings,
+    }, abort) }
+}
+
+const Resolver_Tree = ($: source.Resolver, signatures: target.namespaces.signatures.types.Signature_Namespace, definition: target.namespaces.structure.types.Structure, siblings: Types['siblings'],
+    links: Context['benchmark_links'], abort: Abort): target.namespaces.resolver.types.Resolver => {
+    Dense($.namespaces, definition.namespaces, abort)
+    const namespaces = p.from.dictionary($.namespaces).map(($, id) => {
+        const benchmark = Entry(signatures.namespaces, id, abort)['l entry']
+        return { benchmark, value: Resolver_Tree($, benchmark.value, benchmark.benchmark,
+            p.select_lookup.acyclic.from_resolved_dictionary(definition.namespaces), links, abort) }
+    })
     const environment = {
         acyclic: p.select_lookup.acyclic.from_resolved_dictionary(definition.types),
         children: definition.namespaces,
         siblings,
     }
-    const signatures = Signatures($.signatures, definition.types, environment, abort)
-    return { namespaces, signatures, types: Resolvers($.types, definition.types, signatures, environment, namespaces, links, abort) }
+    return { namespaces, types: Resolvers($.types, definition.types, signatures.types, environment, signatures.namespaces, links, abort) }
 }
 
-export const Type_Specification = ($: source.Type_Specification, abort: Abort): target.Type_Specification => {
+export const Type_Specification = ($: source.Type_Specification, abort: Abort): target.types.Type_Specification => {
     const schema = Schema($.schema, abort)
-    return { 'file extension': $['file extension'], schema, 'root type': Entry(schema.structure.types, $['root type'], abort) }
+    return { schema, directory: Directory($.directory, schema.structure.types, abort) }
 }
 
-const Signatures = ($: source.Resolver_Signatures, types: target.Types, environment: Type_Environment, abort: Abort): target.Resolver_Signatures => {
+const Directory = ($: source.Directory, types: target.namespaces.structure.types.Types, abort: Abort): target.types.Directory => {
+    switch ($[0]) {
+        case 'group': return ['group', { nodes: p.from.dictionary($[1].nodes).map(($) => File_Tree_Node($, types, abort)) }]
+        case 'dictionary': return ['dictionary', { node: File_Tree_Node($[1].node, types, abort) }]
+        default: return p.exhaustive($[0])
+    }
+}
+
+const File_Tree_Node = ($: source.Node, types: target.namespaces.structure.types.Types, abort: Abort): target.types.Node => {
+    switch ($[0]) {
+        case 'file': return ['file', { 'file extension': $[1]['file extension'], type: Entry(types, $[1].type, abort) }]
+        case 'directory': return ['directory', Directory($[1], types, abort)]
+        default: return p.exhaustive($[0])
+    }
+}
+
+const Signatures = ($: source.Resolver_Signatures, types: target.namespaces.structure.types.Types, environment: Type_Environment, abort: Abort): target.namespaces.signatures.types.Signatures => {
     Dense($, types, abort)
-    return p.from.dictionary($).resolve(($, id, siblings): target.Resolver_Signatures.D => {
+    return p.from.dictionary($).resolve(($, id, siblings): target.namespaces.signatures.types.Signatures.D => {
         const benchmark = Entry(types, id, abort)['l entry']
-        const parameters: target.Resolver_Signature.parameters = $.parameters[0] === 'same as'
+        const parameters: target.namespaces.signatures.types.Signature.parameters.value = $.parameters[0] === 'same as'
             ? ['same as', Lookup(siblings, $.parameters[1], abort)]
             : ['local', {
                 types: p.from.dictionary($.parameters[1].types).map(($) => ({
@@ -243,14 +278,14 @@ const Signatures = ($: source.Resolver_Signatures, types: target.Types, environm
                 })),
                 lookups: p.from.dictionary($.parameters[1].lookups).map(($) => {
                     const value = Type_Reference($.referent, environment, abort)
-                    const dictionary = Expect(value['resulting type']['root value'], 'dictionary', abort)
-                    return { referent: value, dictionary, type: $.type, presence: $.presence }
+                    const dictionary = Expect(value.location.result['root value'], 'dictionary', abort)
+                    return { referent: { value, constraints: { dictionary } }, type: $.type, presence: $.presence }
                 }),
             }]
         return {
-            type: benchmark,
-            parameters,
-            'resolved parameters': parameters[0] === 'local' ? parameters[1] : parameters[1]['l entry']['resolved parameters'],
+            benchmark,
+            value: { parameters: { value: parameters, result: parameters[0] === 'local'
+                ? parameters[1] : parameters[1]['l entry'].value.parameters.result } },
         }
     })
 }
@@ -262,23 +297,23 @@ const Dense = <T extends core.Value, B extends core.Value>(values: core.Dictiona
 }
 
 type Benchmark_Link = {
-    owner: target.Value
-    target: target.Value
+    owner: target.namespaces.structure.types.Value
+    target: target.namespaces.structure.types.Value
     next: Benchmark_Link | undefined
 }
 
 type Context = {
-    types: target.Types
-    signatures: target.Resolver_Signatures
+    types: target.namespaces.structure.types.Types
+    signatures: target.namespaces.signatures.types.Signatures
     environment: Type_Environment
-    children: target.Resolver_Namespaces
-    signature: target.Resolver_Signature
-    siblings: p.lookup.Acyclic<target.Resolver_Value_Group.D>
-    parent: p.lookup.Acyclic<target.Resolver_Value_Group.D>
-    options: core.Optional_Value<target.Resolver_Option_Constraints>
-    cursor: target.Value_Result
-    benchmark: core.Optional_Value<target.Resolver_Benchmark>
-    dictionary: core.Optional_Value<target.Dictionary>
+    children: target.namespaces.signatures.types.Namespaces
+    signature: target.namespaces.signatures.types.Signature
+    siblings: p.lookup.Acyclic<target.namespaces.structure.types.Group.D>
+    parent: p.lookup.Acyclic<target.namespaces.structure.types.Group.D>
+    options: target.namespaces.structure.types.Option_Constraints
+    cursor: target.namespaces.structure.types.Value_Result
+    benchmark: core.Optional_Value<target.namespaces.resolver.types.Benchmark>
+    dictionary: core.Optional_Value<target.namespaces.structure.types.Dictionary>
     benchmark_links: {
         entries: Benchmark_Link | undefined
         checks: Benchmark_Link | undefined
@@ -286,14 +321,14 @@ type Context = {
     }
 }
 
-const Resolvers = ($: source.Resolver_Types, types: target.Types, signatures: target.Resolver_Signatures,
-    environment: Type_Environment, children: target.Resolver_Namespaces,
-    benchmark_links: Context['benchmark_links'], abort: Abort): target.Resolver_Types => {
+const Resolvers = ($: source.Resolver_Types, types: target.namespaces.structure.types.Types, signatures: target.namespaces.signatures.types.Signatures,
+    environment: Type_Environment, children: target.namespaces.signatures.types.Namespaces,
+    benchmark_links: Context['benchmark_links'], abort: Abort): target.namespaces.resolver.types.Types => {
     Dense($, signatures, abort)
     const resolvers = p.from.dictionary($).map(($, id) => {
         const benchmark = Entry(signatures, id, abort)['l entry']
-        const signature = benchmark
-        return { signature, 'root value resolver': Resolver($['root value resolver'], signature.type['root value'], {
+        const signature = benchmark.value
+        return { benchmark, value: { 'root value resolver': Resolver($['root value resolver'], benchmark.benchmark['root value'], {
             types, signatures, signature, benchmark_links, environment, children,
             siblings: p.select_lookup.acyclic.not_set(),
             parent: p.select_lookup.acyclic.not_set(),
@@ -301,7 +336,7 @@ const Resolvers = ($: source.Resolver_Types, types: target.Types, signatures: ta
             cursor: p.literal.not_set(),
             benchmark: p.literal.not_set(),
             dictionary: p.literal.not_set(),
-        }, abort) }
+        }, abort) } }
     })
     return resolvers
 }
@@ -321,7 +356,7 @@ const Check_Benchmark_Links = (benchmark_links: Context['benchmark_links'], abor
         if (!found) {
             const owner = check.owner
             const name = owner[0] === 'component'
-                ? owner[1].type[0] === 'child' ? owner[1].type[1].type['l id'] : owner[1].type[1]['l id']
+                ? owner[1].type.value[0] === 'child' ? owner[1].type.value[1].type['l id'] : owner[1].type.value[1]['l id']
                 : owner[0]
             return abort({ type: ['constraint', ['state', { expected: 'benchmarked dictionary entry', found: name }]] })
         }
@@ -332,175 +367,196 @@ const Check_Benchmark_Links = (benchmark_links: Context['benchmark_links'], abor
 const Type_Node = ($: source.Type_Reference, context: Context, abort: Abort) =>
     Type_Reference($, context.environment, abort)
 
-const Relative = ($: source.Resolver_Relative_Value_Selection, root: target.Value, context: Context, abort: Abort): target.Resolver_Relative_Value_Selection => {
+const Relative = ($: source.Resolver_Relative_Value_Selection, root: target.namespaces.structure.types.Value, context: Context, abort: Abort): target.namespaces.resolver.types.Relative_Value_Selection => {
     let current = root
-    const path = p.from.list($.path).map((step): target.Resolver_Relative_Value_Selection.path.L => {
-        let item: target.Resolver_Relative_Value_Selection.path.L
+    const path = p.from.list($.path).map((step): target.namespaces.resolver.types.Relative_Value_Selection.path.value.L => {
+        let item: target.namespaces.resolver.types.Relative_Value_Selection.path.value.L.value.value
+        const definition = current
         switch (step[0]) {
             case 'component':
                 current = Component_Type(Expect(current, 'component', abort))['root value']
-                item = ['component', null]
+                item = ['component', { constraints: { definition: Expect(definition, 'component', abort) }, value: null }]
                 break
             case 'group': {
                 const entry = Entry(Expect(current, 'group', abort), step[1], abort)
                 current = entry['l entry'].value
-                item = ['group', entry]
+                item = ['group', { constraints: { definition: Expect(definition, 'group', abort) }, value: entry }]
                 break
             }
             case 'reference': {
                 const definition = Expect(current, 'reference', abort)
-                current = definition.type[1].dictionary.value
-                item = ['reference', { definition }]
+                current = definition.referent.constraints.dictionary.value
+                item = ['reference', { constraints: { definition }, value: {} }]
                 break
             }
             case 'optional':
                 current = Expect(current, 'optional', abort).value
-                item = ['optional', null]
+                item = ['optional', { constraints: { definition: Expect(definition, 'optional', abort) }, value: null }]
                 break
             case 'state result': {
-                Expect(current, 'state', abort)
-                const type = Type_Node(step[1], context, abort)
-                current = type['resulting type']['root value']
-                item = ['state result', type]
+                const type = Required(Expect(current, 'state', abort).result, abort)
+                current = type.path.tail.result
+                item = ['state result', { constraints: { definition: Expect(definition, 'state', abort) }, value: null }]
                 break
             }
             case 'list result': {
-                Expect(current, 'list', abort)
-                const value = Type_Node(step[1], context, abort)
-                current = value['resulting type']['root value']
-                item = ['list result', value]
+                const value = Required(Expect(current, 'list', abort).result, abort)
+                current = value.path.tail.result
+                item = ['list result', { constraints: { definition: Expect(definition, 'list', abort) }, value: null }]
                 break
             }
             case 'benchmark link': {
                 const reference = Value_Reference(step[1], context.environment, abort)
-                const check: Benchmark_Link = { owner: current, target: reference.path['resulting node'], next: undefined }
+                const check: Benchmark_Link = { owner: current, target: reference.path.tail.result, next: undefined }
                 if (context.benchmark_links.last_check === undefined) context.benchmark_links.checks = check
                 else context.benchmark_links.last_check.next = check
                 context.benchmark_links.last_check = check
-                current = reference.path['resulting node']
+                current = reference.path.tail.result
                 item = ['benchmark link', reference]
                 break
             }
             case 'component constraint': {
-                Expect(current, 'component', abort)
+                const component = Expect(current, 'component', abort)
+                const declaration = Entry(Required(component.constraints, abort), step[1].name, abort)['l entry']
                 const reference = Value_Reference(step[1].target, context.environment, abort)
-                current = reference.path['resulting node']
-                item = ['component constraint', { name: step[1].name, target: reference }]
+                if (reference.path.tail.result !== declaration.path.tail.result) return abort({
+                    type: ['constraint', ['same node', 'component constraint target']],
+                })
+                current = reference.path.tail.result
+                item = ['component constraint', {
+                    constraints: { definition: Expect(definition, 'component', abort) },
+                    value: { name: step[1].name, target: reference },
+                }]
                 break
             }
             case 'option constraint': {
                 const option = Entry(Expect(current, 'state', abort).options, step[1].option, abort)
                 const declarations = Required(option['l entry'].constraints, abort)
                 const constraint = Entry(declarations, step[1].constraint, abort)
-                current = constraint['l entry'].path['resulting node']
-                item = ['option constraint', {
-                    option,
-                    constraint,
-                }]
+                current = constraint['l entry'].path.tail.result
+                item = ['option constraint', { constraints: { definition: Expect(definition, 'state', abort) },
+                    value: { option, constraint } }]
                 break
             }
             case 'optional value constraint': {
                 const source = Expect(current, 'optional', abort).constraints
                 const declarations = Required(source, abort)
                 const constraint = Entry(declarations, step[1], abort)
-                current = constraint['l entry'].path['resulting node']
+                current = constraint['l entry'].path.tail.result
                 item = ['optional value constraint', {
-                    source,
-                    constraint,
+                    constraints: { definition: Expect(definition, 'optional', abort) }, value: constraint,
                 }]
                 break
             }
             case 'reference constraint': {
-                const source = Expect(current, 'reference', abort).type[1].constraints
+                const source = Expect(current, 'reference', abort).type.constraints
                 const declarations = Required(source, abort)
-                const constraint = Entry(declarations, step[1][1], abort)
-                current = constraint['l entry'].path['resulting node']
-                item = ['reference constraint', ['selected', {
-                    source,
-                    constraint,
-                }]]
+                const constraint = Entry(declarations, step[1], abort)
+                current = constraint['l entry'].path.tail.result
+                item = ['reference constraint', {
+                    constraints: { definition: Expect(definition, 'reference', abort) }, value: constraint,
+                }]
                 break
             }
             default: return p.exhaustive(step[0])
         }
-        return item
+        return { value: { value: item, result: current }, result: current }
     })
-    return { path, 'resulting node': current }
+    return { path: { value: path, result: current } }
 }
 
-const Possible_Node = ($: target.Resolver_Possible_Value_Selection): target.Value => {
-    switch ($[0]) {
-        case 'parameter': return $[1]['l entry'].type['resulting type']['root value']
-        case 'optional value': return $[1].optional.value
-        case 'result': return $[1][1].result['resulting type']['root value']
-        default: return p.exhaustive($[0])
-    }
+const Possible_Node = ($: target.namespaces.resolver.types.Possible_Value_Selection): target.namespaces.structure.types.Value => $.result
+
+const Option_Node = ($: target.namespaces.resolver.types.Option_Constraints.O.value.D): target.namespaces.structure.types.Value => $.value.result
+
+const Constraint_Node = ($: target.namespaces.resolver.types.Value_Constraint): target.namespaces.structure.types.Value =>
+    $.constraint.type.result
+
+const Check_Constraints = <T extends core.Value>(
+    declarations: target.namespaces.structure.types.Option_Constraints, implementations: core.Optional_Value<core.Dictionary<T>>,
+    node: (value: T) => target.namespaces.structure.types.Value, abort: Abort,
+): void => {
+    p.from.optional(declarations).decide((declarations) => {
+        const values = Required(implementations, abort)
+        Dense(values, declarations, abort)
+        Dense(declarations, values, abort)
+        p.from.dictionary(values).map((value, id) => {
+            if (node(value) !== Entry(declarations, id, abort)['l entry'].path.tail.result) return abort({
+                type: ['constraint', ['same node', `constraint ${id}`]],
+            })
+            return null
+        })
+        return null
+    }, () => p.from.optional(implementations).decide(
+        () => abort({ type: ['constraint', ['state', { expected: 'no constraint implementation', found: 'undeclared constraint implementation' }]] }),
+        () => null,
+    ))
 }
 
-const Option_Node = ($: target.Resolver_Option_Constraints.D): target.Value =>
-    $[0] === 'state' ? $[1].option['l entry'].value : Possible_Node($[1])
-
-const Constraint_Node = ($: target.Resolver_Value_Constraint): target.Value =>
-    $.constraint.type[0] === 'state'
-        ? $.constraint.type[1].option['l entry'].value
-        : $.constraint.type[1]['selected optional value'].value
-
-const Guaranteed = ($: source.Resolver_Guaranteed_Value_Selection, context: Context, abort: Abort): target.Resolver_Guaranteed_Value_Selection => {
-    let node: target.Value
-    let start: target.Resolver_Guaranteed_Value_Selection.start
+const Guaranteed = ($: source.Resolver_Guaranteed_Value_Selection, context: Context, abort: Abort): target.namespaces.resolver.types.Guaranteed_Value_Selection => {
+    let node: target.namespaces.structure.types.Value
+    let start: target.namespaces.resolver.types.Guaranteed_Value_Selection.start.value
     switch ($.start[0]) {
+        case 'optional fallback': {
+            const selection = Possible($.start[1].selection, context, abort)
+            const fallback = Guaranteed($.start[1].fallback, context, abort)
+            node = fallback.tail.path.result
+            if (selection.result !== node) return abort({ type: ['constraint', ['same node', 'optional fallback target type']] })
+            start = ['optional fallback', { selection, fallback }]
+            break
+        }
         case 'sibling':
         case 'parent sibling': {
             const entry = Lookup($.start[0] === 'sibling' ? context.siblings : context.parent, $.start[1], abort)
             start = $.start[0] === 'sibling' ? ['sibling', entry] : ['parent sibling', entry]
-            node = entry['l entry'].definition.value
+            node = entry['l entry'].value
             break
         }
         case 'parameter': {
-            const entry = Entry(context.signature['resolved parameters'].types, $.start[1], abort)
+            const entry = Entry(context.signature.parameters.result.types, $.start[1], abort)
             start = ['parameter', entry]
-            node = entry['l entry'].type['resulting type']['root value']
+            node = entry['l entry'].type.location.result['root value']
             break
         }
         case 'option constraint': {
             const entry = Entry(Required(context.options, abort), $.start[1], abort)
-            start = ['option constraint', entry]
-            node = Option_Node(entry['l entry'])
+            start = ['option constraint', { constraints: { oc: context.options }, value: entry }]
+            node = entry['l entry'].path.tail.result
             break
         }
         case 'list cursor':
-            node = Required(context.cursor, abort).path['resulting node']
-            start = ['list cursor', null]
+            node = Required(context.cursor, abort).path.tail.result
+            start = ['list cursor', { constraints: { result: Required(context.cursor, abort) }, value: null }]
             break
         case 'linked entry':
-            node = Required(context.benchmark, abort)['resulting dictionary'].value
-            start = ['linked entry', null]
+            node = Required(context.benchmark, abort).selection.constraints.dictionary.value
+            start = ['linked entry', { constraints: { entry: node }, value: null }]
             break
         case 'constraint': {
             const selection = $.start[1]
             const value = Lookup(context.siblings, selection[1].property, abort)
-            const resolver = value['l entry'].resolver
+            const resolver = value['l entry'].value
             if (selection[0] === 'component') {
                 if (resolver[0] !== 'component') return abort({ type: ['constraint', ['state', { expected: 'component', found: resolver[0] }]] })
                 const component = resolver[1]
                 const constraints = Required(component.constraints, abort)
                 const constraint = Entry(constraints, selection[1].constraint, abort)
-                start = ['constraint', ['component', {
-                    property: value,
+                node = constraint['l entry'].path.tail.result
+                start = ['constraint', { value: ['component', {
+                    property: { value, constraints: { component } },
                     constraint,
-                }]]
-                node = Constraint_Node(constraint['l entry'])
+                }], result: node }]
             } else {
                 if (resolver[0] !== 'reference') return abort({ type: ['constraint', ['state', { expected: 'reference', found: resolver[0] }]] })
                 const reference = resolver[1]
-                const selected = reference.type[1]
+                const selected = reference.type
                 const constraints = Required(selected.constraints, abort)
                 const constraint = Entry(constraints, selection[1].constraint, abort)
-                start = ['constraint', ['reference', {
-                    property: value,
+                node = constraint['l entry'].path.tail.result
+                start = ['constraint', { value: ['reference', {
+                    property: { value, constraints: { reference } },
                     constraint,
-                }]]
-                node = Constraint_Node(constraint['l entry'])
+                }], result: node }]
             }
             break
         }
@@ -508,52 +564,60 @@ const Guaranteed = ($: source.Resolver_Guaranteed_Value_Selection, context: Cont
             const result = $.start[1]
             if (result[0] !== 'list') {
                 const possible = Possible(['result', result], context, abort)
-                if (possible[0] !== 'result') return abort({ type: ['constraint', ['optional value is not set', null]] })
-                start = ['result', possible[1]]
+                if (possible.value[0] !== 'result') return abort({ type: ['constraint', ['optional value is not set', null]] })
+                start = ['result', possible.value[1]]
                 node = Possible_Node(possible)
                 break
             }
             const value = Lookup(context.siblings, result[1].property, abort)
-            const resolver = value['l entry'].resolver
+            const resolver = value['l entry'].value
             if (resolver[0] !== 'list') return abort({ type: ['constraint', ['state', { expected: 'list', found: resolver[0] }]] })
             const list = resolver[1]
             const selection = Required(list.result, abort)
-            start = ['result', ['list', {
-                property: value,
-                'list result': selection,
-            }]]
-            node = selection.type['resulting type']['root value']
+            node = selection.path.tail.result
+            start = ['result', { value: ['list', {
+                property: { value, constraints: { list, result: selection } },
+            }], result: node }]
             break
         }
         default: return p.exhaustive($.start[0])
     }
     const tail = Relative($.tail, node, context, abort)
-    return { start, tail, 'resulting node': tail['resulting node'] }
+    return { start: { value: start, result: node }, tail }
 }
 
-const Possible = ($: source.Resolver_Possible_Value_Selection, context: Context, abort: Abort): target.Resolver_Possible_Value_Selection => {
+const Possible = ($: source.Resolver_Possible_Value_Selection, context: Context, abort: Abort): target.namespaces.resolver.types.Possible_Value_Selection => {
     switch ($[0]) {
-        case 'parameter': return ['parameter', Entry(context.signature['resolved parameters'].types, $[1], abort)]
+        case 'parameter': {
+            const entry = Entry(context.signature.parameters.result.types, $[1], abort)
+            return { value: ['parameter', entry], result: entry['l entry'].type.location.result['root value'] }
+        }
         case 'optional value': {
             const value = Guaranteed($[1].selection, context, abort)
-            const optional = Expect(value['resulting node'], 'optional', abort)
-            return ['optional value', { selection: value, optional }]
+            const optional = Expect(value.tail.path.result, 'optional', abort)
+            const tail = Relative($[1].tail, optional.value, context, abort)
+            return { value: ['optional value', { selection: { constraints: { optional }, value }, tail }], result: tail.path.result }
         }
         case 'result': {
             const selection = $[1]
             const value = Lookup(context.siblings, selection[1].property, abort)
-            const resolver = value['l entry'].resolver
-            const result = Type_Node(selection[1].result, context, abort)
+            const resolver = value['l entry'].value
             switch (selection[0]) {
                 case 'state': {
                     if (resolver[0] !== 'state') return abort({ type: ['constraint', ['state', { expected: 'state', found: resolver[0] }]] })
                     const state = resolver[1]
-                    return ['result', ['state', { property: value, state, result }]]
+                    const result = Required(state.result, abort)
+                    const node = result.path.tail.result
+                    return { value: ['result', { value: ['state', { property: { value,
+                        constraints: { state, result } } }], result: node }], result: node }
                 }
                 case 'optional value': {
                     if (resolver[0] !== 'optional') return abort({ type: ['constraint', ['state', { expected: 'optional', found: resolver[0] }]] })
                     const optional = resolver[1]
-                    return ['result', ['optional value', { property: value, 'optional value': optional, result }]]
+                    const result = Required(optional.result, abort)
+                    const node = result.path.tail.result
+                    return { value: ['result', { value: ['optional value', { property: { value,
+                        constraints: { optional, result } } }], result: node }], result: node }
                 }
                 default: return p.exhaustive(selection[0])
             }
@@ -562,94 +626,123 @@ const Possible = ($: source.Resolver_Possible_Value_Selection, context: Context,
     }
 }
 
-const Option_Constraints = ($: source.Resolver_Option_Constraints, context: Context, abort: Abort): target.Resolver_Option_Constraints =>
-    p.from.dictionary($).map(($): target.Resolver_Option_Constraints.D => {
+const Constraint_Declarations = <T extends core.Value>(
+    implementations: core.Dictionary<T>, declarations: target.namespaces.structure.types.Reference_Constraints, abort: Abort,
+): target.namespaces.structure.types.Reference_Constraints.O =>
+    p.from.optional(declarations).decide(($) => {
+        Dense(implementations, $, abort)
+        Dense($, implementations, abort)
+        return $
+    }, () => abort({ type: ['constraint', ['state', {
+        expected: 'no constraint implementation', found: 'undeclared constraint implementation',
+    }]] }))
+
+const Option_Constraints = ($: source.Resolver_Option_Constraints, declarations: target.namespaces.structure.types.Option_Constraints, context: Context, abort: Abort): target.namespaces.resolver.types.Option_Constraints.O => {
+    const benchmark = Constraint_Declarations($, declarations, abort)
+    const value = p.from.dictionary($).map(($, id): target.namespaces.resolver.types.Option_Constraints.O.value.D => {
+        const declaration = Entry(benchmark, id, abort)['l entry']
         switch ($[0]) {
             case 'state': {
                 const value = Guaranteed($[1].selection, context, abort)
-                const state = Expect(value['resulting node'], 'state', abort)
-                return ['state', {
-                    selection: value,
-                    'selected state': state,
-                    option: Entry(state.options, $[1].option, abort),
-                }]
+                const state = Expect(value.tail.path.result, 'state', abort)
+                const option = Entry(state.options, $[1].option, abort)
+                return { benchmark: declaration, value: { value: ['state', {
+                    selection: { value, constraints: { state } }, option,
+                }], result: option['l entry'].value } }
             }
-            case 'assert is set': return ['assert is set', Possible($[1], context, abort)]
+            case 'assert is set': {
+                const value = Possible($[1], context, abort)
+                return { benchmark: declaration, value: { value: ['assert is set', value], result: value.result } }
+            }
             default: return p.exhaustive($[0])
         }
     })
+    Check_Constraints(declarations, p.literal.set(value), Option_Node, abort)
+    return { constraints: { declarations: benchmark }, value }
+}
 
-const Value_Constraints = ($: source.Resolver_Value_Constraints, node: target.Value, context: Context, abort: Abort): target.Resolver_Value_Constraints =>
-    p.from.dictionary($).resolve(($, id, siblings): target.Resolver_Value_Constraint => {
-        const start: target.Resolver_Value_Constraint.start = $.start[0] === 'value'
-            ? ['value', null] : ['sibling', Lookup(siblings, $.start[1], abort)]
-        const selection = Relative($.constraint.selection,
-            start[0] === 'value' ? node : Constraint_Node(start[1]['l entry']), context, abort)
-        let type: target.Resolver_Constraint.type_
+const Value_Constraints = ($: source.Resolver_Value_Constraints, declarations: target.namespaces.structure.types.Reference_Constraints, node: target.namespaces.structure.types.Value, context: Context, abort: Abort): target.namespaces.resolver.types.Reference_Constraints.O => {
+    const benchmark = Constraint_Declarations($, declarations, abort)
+    const value = p.from.dictionary($).map(($, id): target.namespaces.resolver.types.Value_Constraints.D => {
+        const start: target.namespaces.resolver.types.Value_Constraint.start.value = $.start[0] === 'value'
+            ? ['value', null] : ['sibling', Entry(benchmark, $.start[1], abort)]
+        const initial = start[0] === 'value' ? node : start[1]['l entry'].path.tail.result
+        const selection = Relative($.constraint.selection, initial, context, abort)
+        let type: target.namespaces.resolver.types.Constraint.type_.value
+        let result: target.namespaces.structure.types.Value
         switch ($.constraint.type[0]) {
             case 'state': {
-                const state = Expect(selection['resulting node'], 'state', abort)
-                type = ['state', { 'selected state': state, option: Entry(state.options, $.constraint.type[1].option, abort) }]
+                const state = Expect(selection.path.result, 'state', abort)
+                const option = Entry(state.options, $.constraint.type[1].option, abort)
+                type = ['state', { constraints: { state }, value: { option } }]
+                result = option['l entry'].value
                 break
             }
-            case 'optional value':
-                type = ['optional value', { 'selected optional value': Expect(selection['resulting node'], 'optional', abort) }]
+            case 'optional value': {
+                const optional = Expect(selection.path.result, 'optional', abort)
+                type = ['optional value', { constraints: { optional }, value: {} }]
+                result = optional.value
                 break
+            }
             default: return p.exhaustive($.constraint.type[0])
         }
-        return { start, constraint: { selection, type } }
+        return { benchmark: Entry(benchmark, id, abort)['l entry'],
+            value: { start: { value: start, result: initial }, constraint: { selection, type: { value: type, result } } } }
     })
+    Check_Constraints(declarations, p.literal.set(value), ($) => Constraint_Node($.value), abort)
+    return { constraints: { declarations: benchmark }, value }
+}
 
-const Result = ($: source.Resolver_Result_Selection, node: target.Value, context: Context, expected: target.Value, abort: Abort): target.Resolver_Result_Selection => {
-    const selection: target.Resolver_Result_Selection = $[0] === 'value'
+const Result = ($: source.Resolver_Result_Selection, node: target.namespaces.structure.types.Value, context: Context, expected: target.namespaces.structure.types.Value, abort: Abort): target.namespaces.resolver.types.Result_Selection => {
+    const selection: target.namespaces.resolver.types.Result_Selection = $[0] === 'value'
         ? ['value', Relative($[1], node, context, abort)]
         : ['context', Guaranteed($[1], context, abort)]
-    if (selection[1]['resulting node'] !== expected) return abort({ type: ['constraint', ['same node', 'result type']] })
+    const result = selection[0] === 'value' ? selection[1].path.result : selection[1].tail.path.result
+    if (result !== expected) return abort({ type: ['constraint', ['same node', 'result type']] })
     return selection
 }
 
-const Benchmark = ($: source.Resolver_Benchmark, context: Context, abort: Abort): target.Resolver_Benchmark => {
+const Benchmark = ($: source.Resolver_Benchmark, context: Context, abort: Abort): target.namespaces.resolver.types.Benchmark => {
     const value = Guaranteed($.selection, context, abort)
-    const dictionary = Expect(value['resulting node'], 'dictionary', abort)
+    const dictionary = Expect(value.tail.path.result, 'dictionary', abort)
     return {
-        selection: value,
-        'resulting dictionary': dictionary,
+        selection: { value, constraints: { dictionary } },
         coverage: $.coverage,
     }
 }
 
-const Lookup_Selection = ($: source.Resolver_Lookup_Selection, context: Context, abort: Abort): target.Resolver_Lookup_Selection => {
-    let type: target.Resolver_Lookup_Selection.type_
-    let dictionary: target.Dictionary
+const Lookup_Selection = ($: source.Resolver_Lookup_Selection, context: Context, abort: Abort): target.namespaces.resolver.types.Lookup_Selection => {
+    let type: target.namespaces.resolver.types.Lookup_Selection.type_.value
+    let dictionary: target.namespaces.structure.types.Dictionary
     switch ($.type[0]) {
         case 'parameter': {
-            const entry = Entry(context.signature['resolved parameters'].lookups, $.type[1], abort)
-            dictionary = entry['l entry'].dictionary
+            const entry = Entry(context.signature.parameters.result.lookups, $.type[1], abort)
+            dictionary = entry['l entry'].referent.constraints.dictionary
             type = ['parameter', entry]
             break
         }
         case 'cyclic':
             dictionary = Required(context.dictionary, abort)
-            type = ['cyclic', ['siblings', dictionary]]
+            type = ['cyclic', { value: ['siblings', { constraints: { cd: dictionary }, value: null }], result: dictionary }]
             break
         case 'acyclic':
             if ($.type[1][0] === 'siblings') {
                 dictionary = Required(context.dictionary, abort)
-                type = ['acyclic', ['siblings', dictionary]]
+                type = ['acyclic', { value: ['siblings', { constraints: { cd: dictionary }, value: null }], result: dictionary }]
             } else {
                 const value = Guaranteed($.type[1][1].selection, context, abort)
-                dictionary = Expect(value['resulting node'], 'dictionary', abort)
-                type = ['acyclic', ['resolved dictionary', {
-                    selection: value, 'selected dictionary': dictionary,
-                }]]
+                dictionary = Expect(value.tail.path.result, 'dictionary', abort)
+                type = ['acyclic', { value: ['resolved dictionary', {
+                    selection: { value, constraints: { dictionary } },
+                }], result: dictionary }]
             }
             break
         default: return p.exhaustive($.type[0])
     }
-    return { type, 'resulting dictionary': dictionary }
+    return { type: { value: type, result: dictionary } }
 }
 
-const Optional_Initialization = ($: source.Resolver_Optional_Value_Initialization, context: Context, abort: Abort): target.Resolver_Optional_Value_Initialization => {
+const Optional_Initialization = ($: source.Resolver_Optional_Value_Initialization, context: Context, abort: Abort): target.namespaces.resolver.types.Optional_Value_Initialization => {
     switch ($[0]) {
         case 'not set': return ['not set', null]
         case 'set': return ['set', Guaranteed($[1], context, abort)]
@@ -658,84 +751,90 @@ const Optional_Initialization = ($: source.Resolver_Optional_Value_Initializatio
     }
 }
 
-const Resolver = ($: source.Resolver_Value, definition: target.Value, context: Context, abort: Abort): target.Resolver_Value => {
+const Resolver = ($: source.Resolver_Value, definition: target.namespaces.structure.types.Value, context: Context, abort: Abort): target.namespaces.resolver.types.Value => {
     switch ($[0]) {
         case 'component': {
             const component = Expect(definition, 'component', abort)
             const selected = $[1].location
-            let location: target.Resolver_Value.component.location
-            let signature: target.Resolver_Signature
+            let location: target.namespaces.resolver.types.Value.component.value.location.value
+            let signature: target.namespaces.signatures.types.Signature
+            let selected_type: target.namespaces.structure.types.Type
             if (selected[0] === 'internal') {
                 const entry = Entry(context.signatures, selected[1], abort)
                 location = ['internal', entry]
-                signature = entry['l entry']
+                signature = entry['l entry'].value
+                selected_type = entry['l entry'].benchmark
             } else {
                 const namespace = Entry(context.children, selected[1].namespace, abort)
-                const resolver = Entry(namespace['l entry'].signatures, selected[1].resolver, abort)
+                const resolver = Entry(namespace['l entry'].value.types, selected[1].resolver, abort)
                 location = ['child', { namespace, resolver }]
-                signature = resolver['l entry']
+                signature = resolver['l entry'].value
+                selected_type = resolver['l entry'].benchmark
             }
-            if (signature.type !== Component_Type(component)) return abort({ type: ['constraint', ['same node', 'component type']] })
+            if (selected_type !== Component_Type(component)) return abort({ type: ['constraint', ['same node', 'component type']] })
+            const constraints = p.from.optional($[1].constraints).map(($) =>
+                Value_Constraints($, component.constraints, selected_type['root value'], context, abort))
+            Check_Constraints(component.constraints, p.from.optional(constraints).map(($) => $.value), ($) => Constraint_Node($.value), abort)
             return ['component', {
-                    definition: component,
-                    location,
-                    signature,
+                constraints: { definition: component }, value: {
+                    location: { value: location, result: signature },
                     arguments: p.from.optional($[1].arguments).map(($) => ({
                         types: p.from.optional($.types).map(($) => {
-                            Dense($, signature['resolved parameters'].types, abort)
+                            Dense($, signature.parameters.result.types, abort)
                             return p.from.dictionary($).map(($, id) => {
-                                Entry(signature['resolved parameters'].types, id, abort)
-                                let value: target.Resolver_Value.component.arguments_.O.types.O.D
-                                switch ($[0]) {
-                                    case 'optional': value = ['optional', Optional_Initialization($[1], context, abort)]; break
-                                    case 'required': value = ['required', Guaranteed($[1], context, abort)]; break
-                                    case 'parameter': value = ['parameter', Entry(context.signature['resolved parameters'].types, $[1], abort)]; break
-                                    default: return p.exhaustive($[0])
-                                }
-                                return value
+                            const benchmark = Entry(signature.parameters.result.types, id, abort)['l entry']
+                            let value: target.namespaces.resolver.types.Value.component.value.arguments_.O.types.O.D.value
+                            switch ($[0]) {
+                                case 'optional': value = ['optional', Optional_Initialization($[1], context, abort)]; break
+                                case 'required': value = ['required', Guaranteed($[1], context, abort)]; break
+                                case 'parameter': value = ['parameter', Entry(context.signature.parameters.result.types, $[1], abort)]; break
+                                default: return p.exhaustive($[0])
+                            }
+                            return { benchmark, value }
                             })
                         }),
                         lookups: p.from.optional($.lookups).map(($) => {
-                            Dense($, signature['resolved parameters'].lookups, abort)
-                            return p.from.dictionary($).map(($, id): target.Resolver_Value.component.arguments_.O.lookups.O.D => {
-                                Entry(signature['resolved parameters'].lookups, id, abort)
-                                return $[0] === 'selection' ? ['selection', Lookup_Selection($[1], context, abort)] : $
+                            Dense($, signature.parameters.result.lookups, abort)
+                            return p.from.dictionary($).map(($, id): target.namespaces.resolver.types.Value.component.value.arguments_.O.lookups.O.D => {
+                            const benchmark = Entry(signature.parameters.result.lookups, id, abort)['l entry']
+                            return { benchmark, value: $[0] === 'selection' ? ['selection', Lookup_Selection($[1], context, abort)] : $ }
                             })
                         }),
                     })),
-                    constraints: p.from.optional($[1].constraints).map(($) =>
-                        Value_Constraints($, signature.type['root value'], context, abort)),
-            }]
+                    constraints,
+            } }]
         }
         case 'dictionary': {
             const dictionary = Expect(definition, 'dictionary', abort)
             const benchmark = p.from.optional($[1].benchmark).map(($) => Benchmark($, context, abort))
             p.from.optional(benchmark).map(($) => {
                 context.benchmark_links.entries = {
-                    owner: dictionary.value, target: $['resulting dictionary'].value, next: context.benchmark_links.entries,
+                    owner: dictionary.value, target: $.selection.constraints.dictionary.value, next: context.benchmark_links.entries,
                 }
                 return null
             })
             return ['dictionary', {
-                    definition: dictionary,
+                constraints: { definition: dictionary }, value: {
                     benchmark,
                     resolver: Resolver($[1].resolver, dictionary.value, {
                         ...context, dictionary: p.literal.set(dictionary), benchmark,
                     }, abort),
-            }]
+            } }]
         }
         case 'group': {
             const group = Expect(definition, 'group', abort)
             Dense($[1], group, abort)
-            return ['group', p.from.dictionary($[1]).resolve(
-                ($, id, siblings): target.Resolver_Value_Group.D => {
+            return ['group', { constraints: { definition: group }, value: p.from.dictionary($[1]).resolve(
+                ($, id, siblings): target.namespaces.resolver.types.Value_Group.D => {
                     const benchmark = Entry(group, id, abort)['l entry']
                     return {
-                        definition: benchmark,
-                        resolver: Resolver($.resolver, benchmark.value, { ...context, siblings, parent: context.siblings }, abort),
+                        benchmark,
+                        value: { resolver: Resolver($.resolver, benchmark.value, {
+                            ...context, siblings: p.select_lookup.acyclic.from_resolved_dictionary(group), parent: context.siblings,
+                        }, abort) },
                     }
                 },
-            )]
+            ) }]
         }
         case 'list': {
             const list = Expect(definition, 'list', abort)
@@ -746,64 +845,80 @@ const Resolver = ($: source.Resolver_Value, definition: target.Value, context: C
                     () => null,
                 ),
             )
-            const result = p.from.optional($[1].result).map(($): target.Resolver_Value_List_Result => {
+            const result = p.from.optional($[1].result).map(($): target.namespaces.resolver.types.Value.list.value.result.O => {
                 const declaration = Required(list.result, abort)
-                const expected = declaration.path['resulting node']
-                const type = Type_Node($.type, context, abort)
-                if (type['resulting type']['root value'] !== expected) return abort({
-                    type: ['constraint', ['same node', 'structural list result type']],
-                })
+                const expected = declaration.path.tail.result
                 const initial = Guaranteed($.initial, context, abort)
-                if (initial['resulting node'] !== expected) return abort({
+                if (initial.tail.path.result !== expected) return abort({
                     type: ['constraint', ['same node', 'list initial result type']],
                 })
                 const next = Result($.next, list.value, { ...context, cursor: list.result }, expected, abort)
-                return { type, initial, next }
+                return { constraints: { definition: list, result: declaration }, value: { initial, next } }
             })
             return ['list', {
-                    definition: list, result,
+                constraints: { definition: list }, value: { result,
                     resolver: Resolver($[1].resolver, list.value, {
                         ...context, cursor: list.result,
                     }, abort),
-            }]
+            } }]
         }
-        case 'nothing': Expect(definition, 'nothing', abort); return ['nothing', null]
-        case 'simple': Expect(definition, 'simple', abort); return ['simple', null]
+        case 'nothing': return ['nothing', { constraints: { definition: Expect(definition, 'nothing', abort) }, value: null }]
+        case 'simple': return ['simple', { constraints: { definition: Expect(definition, 'simple', abort).value }, value: null }]
         case 'optional': {
             const optional = Expect(definition, 'optional', abort)
-            const constraints = p.from.optional($[1].constraints).map(($) => Option_Constraints($, context, abort))
+            const constraints = p.from.optional($[1].constraints).map(($) => Option_Constraints($, optional.constraints, context, abort))
+            Check_Constraints(optional.constraints, p.from.optional(constraints).map(($) => $.value), Option_Node, abort)
+            p.from.optional(optional.result).decide(
+                () => Required($[1].result, abort),
+                () => p.from.optional($[1].result).decide(
+                    () => abort({ type: ['constraint', ['state', { expected: 'no optional result', found: 'optional result' }]] }),
+                    () => null,
+                ),
+            )
+            const next = { ...context, options: optional.constraints }
             return ['optional', {
+                constraints: { definition: optional }, value: {
                     constraints,
-                    resolver: Resolver($[1].resolver, optional.value, { ...context, options: constraints }, abort),
+                    resolver: Resolver($[1].resolver, optional.value, next, abort),
+                    result: p.from.optional($[1].result).map(($) => {
+                        const result = Required(optional.result, abort)
+                        return { constraints: { definition: optional, result },
+                            value: Result($, optional.value, next, result.path.tail.result, abort) }
+                    }),
                     'not set constraints': p.from.optional($[1]['not set constraints']).map(($) =>
                         p.from.dictionary($).map(($) => Possible($, context, abort))),
-            }]
+            } }]
         }
         case 'reference': {
             const reference = Expect(definition, 'reference', abort)
-            const selected = $[1].type[1]
+            const selected = $[1].type
             const lookup = Lookup_Selection(selected.lookup, context, abort)
+            if (lookup.type.result !== reference.referent.constraints.dictionary) return abort({
+                type: ['constraint', ['same node', 'reference lookup dictionary']],
+            })
+            const constraints = p.from.optional(selected.constraints).map(($) =>
+                Value_Constraints($, reference.type.constraints, lookup.type.result.value, context, abort))
+            Check_Constraints(reference.type.constraints, p.from.optional(constraints).map(($) => $.value), ($) => Constraint_Node($.value), abort)
             return ['reference', {
-                definition: reference, type: ['selected', {
-                    definition: reference.type[1], lookup,
-                    constraints: p.from.optional(selected.constraints).map(($) =>
-                        Value_Constraints($, lookup['resulting dictionary'].value, context, abort)),
-                }],
+                constraints: { definition: reference }, value: { type: { lookup,
+                    constraints,
+                } },
             }]
         }
         case 'state': {
             const state = Expect(definition, 'state', abort)
             Dense($[1].options, state.options, abort)
-            const result = p.from.optional($[1].result).map(($) => Type_Node($, context, abort))
+            const result = state.result
             return ['state', {
-                    definition: state, result,
+                constraints: { definition: state }, value: {
                     options: p.from.dictionary($[1].options).map(($, id) => {
                         const benchmark = Entry(state.options, id, abort)['l entry']
-                        const constraints = p.from.optional($.constraints).map(($) => Option_Constraints($, context, abort))
-                        const next = { ...context, options: constraints }
+                        const constraints = p.from.optional($.constraints).map(($) => Option_Constraints($, benchmark.constraints, context, abort))
+                        Check_Constraints(benchmark.constraints, p.from.optional(constraints).map(($) => $.value), Option_Node, abort)
+                        const next = { ...context, options: benchmark.constraints }
                         const resolver = Resolver($.resolver, benchmark.value, next, abort)
                         const result_context = resolver[0] === 'group'
-                            ? { ...next, siblings: p.select_lookup.acyclic.from_resolved_dictionary(resolver[1]), parent: context.siblings }
+                            ? { ...next, siblings: p.select_lookup.acyclic.from_resolved_dictionary(Expect(benchmark.value, 'group', abort)), parent: context.siblings }
                             : next
                         p.from.optional(result).decide(
                             () => Required($.result, abort),
@@ -813,12 +928,12 @@ const Resolver = ($: source.Resolver_Value, definition: target.Value, context: C
                             ),
                         )
                         return {
-                            constraints,
+                            benchmark, value: { constraints,
                             resolver,
-                            result: p.from.optional($.result).map(($) => Result($, benchmark.value, result_context, Required(result, abort)['resulting type']['root value'], abort)),
+                            result: p.from.optional($.result).map(($) => Result($, benchmark.value, result_context, Required(result, abort).path.tail.result, abort)) },
                         }
                     }),
-            }]
+            } }]
         }
         default: return p.exhaustive($[0])
     }

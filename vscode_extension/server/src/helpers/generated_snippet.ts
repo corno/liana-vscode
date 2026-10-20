@@ -56,7 +56,7 @@ export const generated_snippet = async (
             resolve,
         ))
         if (loaded === null) return { ...edit, newText: text }
-        const select = (value: resolved.Value, ancestors: readonly schema.Value[]): vscode.TextEdit | undefined => {
+        const select = (value: resolved.Value, ancestors: readonly schema.namespaces.structure.types.Value[]): vscode.TextEdit | undefined => {
             const definition = value.unmarshalled.definition
             const range = create_range_from_range(full_range.Value(value.unmarshalled.instance))
             const from = proposed.offsetAt(range.start)

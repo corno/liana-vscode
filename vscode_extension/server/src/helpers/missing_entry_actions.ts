@@ -33,7 +33,7 @@ export const missing_entry_actions = async (
         const edits: vscode.TextEdit[] = []
         let relevant = false
         const collect = (value: import('liana-authoring/schemas/resolve_result/schema').Value,
-            ancestors: readonly import('pareto-liana/modules/schema.generated/schemas/resolved/schema').Value[]) => {
+            ancestors: readonly import('pareto-liana/modules/schema.generated/schemas/resolved/schema').namespaces.structure.types.Value[]) => {
             const result = value['unmarshall result']
             const definition = value.unmarshalled.definition
             if (result[0] === 'success' && result[1][0] === 'dictionary' && !ancestors.includes(definition)) {
@@ -96,7 +96,8 @@ export const missing_entry_actions = async (
         title: `Add all missing required entries (${count})`,
         kind: vscode.CodeActionKind.QuickFix,
         isPreferred: true,
-        diagnostics: params.context.diagnostics.filter((diagnostic) => diagnostic.message.startsWith('Missing required benchmark entry ')),
+        diagnostics: params.context.diagnostics.filter((diagnostic) => typeof diagnostic.message === 'string'
+            && diagnostic.message.startsWith('Missing required benchmark entry ')),
         edit: { documentChanges: [vscode.TextDocumentEdit.create(
             { uri: document.uri, version: document.version }, insertions.map(({ offset, text }) =>
                 vscode.TextEdit.insert(document.positionAt(offset), text)),

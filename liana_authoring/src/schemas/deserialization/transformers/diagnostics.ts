@@ -18,13 +18,28 @@ namespace declarations_ {
 import * as t_get_schema from "../../retrieval_of_schema/transformers/diagnostics.js"
 import * as t_deserialize_to_location from "astn-runtime/modules/deserialization/schemas/parse_tree_deserialization/transformers/location"
 import * as ser_parse_tree_deserialization from "astn-runtime/modules/deserialization/schemas/parse_tree_deserialization/serializers"
+import { error_message, error_location } from "pareto-liana/schemas/temp_type_specifier/reader_error"
 
 export const Error: declarations_.Error = ($) => p_.from.state($).decide(
 	($) => {
 		switch ($[0]) {
+			case 'schema header': return {
+				'severity': ['error', null],
+				'message': error_message($[1]),
+				'range': p_.literal.set(error_location($[1])),
+				'related information': p_.literal.not_set(),
+				'type': ['schema', null],
+			}
+			case 'file type': return {
+				'severity': ['error', null],
+				'message': $[1],
+				'range': p_.literal.not_set(),
+				'related information': p_.literal.not_set(),
+				'type': ['schema', null],
+			}
 			case 'schema path': return p_.option($, ($) => ({
 				'severity': ['error', null],
-				'message': "no schema found",
+				'message': $[0] === 'invalid schema path' ? "The nearest .liana schema context is not a directory" : "Cannot find or inspect a .liana schema context",
 				'range': p_.literal.not_set(),
 				'related information': p_.literal.not_set(),
 				'type': ['deserialize', null]
