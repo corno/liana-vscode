@@ -24,6 +24,7 @@ const sealed_target = require('pareto-liana/modules/schema.generated/schemas/res
 const { $$: seal } = require('../client/out/helpers/seal.js')
 const { $$: convert_to_json } = require('../client/out/helpers/convert_to_json.js')
 const { create_on_document_formatting } = require('../server/out/connection/on_document_formatting.js')
+const { create_on_diagnostics } = require('../server/out/connection/on_diagnostics.js')
 
 const fail = error => { throw new Error(JSON.stringify(error)) }
 const chars = source => p.literal.list(Array.from(source, c => c.codePointAt(0)))
@@ -73,6 +74,33 @@ const selected = (schema, directories, file) => file_type(schema, {
 }, message => { throw new Error(message) })
 const header = (schema, directories, file, body) =>
     `! (\`path\`: (\`directories\`: [${directories.map(directory => JSON.stringify(directory)).join(' ')}] \`file name\`: ${JSON.stringify(file)}) \`schema\`: ${schema})\n${body}`
+
+test('diagnostics settle after an edit invalidates an in-flight document load', { timeout: 5000 }, async () => {
+    const directory = mkdtempSync(join(tmpdir(), 'liana-diagnostics-'))
+    try {
+        mkdirSync(join(directory, '.liana'))
+        writeFileSync(join(directory, '.liana/schema.slna'), specification(dictionary('data', 'Text')))
+        const uri = pathToFileURL(join(directory, 'document.data.lna')).href
+        const cache = fresh_cache()
+        let document = TextDocument.create(uri, 'liana', 1, '~')
+        const diagnose = create_on_diagnostics({ documents: { get: () => document }, cache })
+        const params = { textDocument: { uri } }
+        const old_report = diagnose(params)
+        assert.equal(cache.documents.map.get(`${uri}@1`)[0], 'pending')
+
+        cache.documents.map.delete(`${uri}@1`)
+        document = TextDocument.create(uri, 'liana', 2, '"fixed"')
+        const new_report = diagnose(params)
+        const [old_diagnostics, new_diagnostics] = await Promise.all([old_report, new_report])
+
+        assert.ok(old_diagnostics.items.length > 0)
+        assert.deepEqual(new_diagnostics.items, [])
+        assert.equal(cache.documents.map.has(`${uri}@1`), false)
+        assert.equal(cache.documents.map.get(`${uri}@2`)[0], 'success')
+    } finally {
+        rmSync(directory, { recursive: true, force: true })
+    }
+})
 
 test('latest file-tree selection covers named, nested, dictionary and encoded files', () => {
     const schema = parse(specification())

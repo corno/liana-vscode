@@ -50,25 +50,23 @@ export function get_cached_or_fresh<Result, Error>(
 	const new_pending: Pending_Request<Result, Error> = {
 		callbacks: [{ on_success, on_error }]
 	}
-	cache.map.set(key, ['pending', new_pending])
+	const pending_entry: Cache_Entry<Result, Error> = ['pending', new_pending]
+	cache.map.set(key, pending_entry)
 	
 	// Execute the query once
 	if_not_in_cache(
 		(result) => {
-			// Get pending entry and notify all waiting callbacks
-			const pending_entry = cache.map.get(key)
-			if (pending_entry && pending_entry[0] === 'pending') {
-				pending_entry[1].callbacks.forEach(cb => cb.on_success(result))
+			// Invalidation must not strand callers or restore an obsolete cache entry.
+			if (cache.map.get(key) === pending_entry) {
+				cache.map.set(key, ['success', result])
 			}
-			cache.map.set(key, ['success', result])
+			new_pending.callbacks.forEach(cb => cb.on_success(result))
 		},
 		(error) => {
-			// Get pending entry and notify all waiting callbacks
-			const pending_entry = cache.map.get(key)
-			if (pending_entry && pending_entry[0] === 'pending') {
-				pending_entry[1].callbacks.forEach(cb => cb.on_error(error))
+			if (cache.map.get(key) === pending_entry) {
+				cache.map.set(key, ['error', error])
 			}
-			cache.map.set(key, ['error', error])
+			new_pending.callbacks.forEach(cb => cb.on_error(error))
 		}
 	)
 }

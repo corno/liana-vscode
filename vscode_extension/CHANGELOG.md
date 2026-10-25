@@ -22,6 +22,9 @@
   per-option payload/context selections; typed consumers verify producer types.
 
 ### Fixed
+- Editing or closing a document during validation no longer strands pending
+  diagnostic requests. Invalidated cache loads still notify their original
+  callers without restoring stale results or settling a replacement request.
 - Do not suggest replacing a missing reference with another `#` when its lookup
   is unavailable or empty; keep reference markers in generated parent skeletons.
 - Keep reference suggestions visible inside existing quoted identifiers by
