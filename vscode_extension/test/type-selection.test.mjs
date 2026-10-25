@@ -1446,6 +1446,35 @@ const actionsAt = (source, schema, offset, only) => {
     })
 }
 
+test('code actions skip structural fixes for source parse errors while diagnostics retain the error', async () => {
+    const { create_on_diagnostics } = require('../server/out/connection/on_diagnostics.js')
+    const { missing_entry_actions } = require('../server/out/helpers/missing_entry_actions.js')
+    const { missing_reference_actions } = require('../server/out/helpers/missing_reference_actions.js')
+    for (const source of ['"unterminated', "'unterminated", '`unterminated', '< {']) {
+        const schema = benchmarkSchema(true)
+        assert.deepEqual(await actionsAt(source, schema, 0, ['quickfix']), [])
+        assert.equal((await actionsAt(source, schema, 0)).length, 4)
+        await requestAt(source, schema, 0, context => async params => {
+            const actions = {
+                ...params, range: { start: params.position, end: params.position },
+                context: { diagnostics: [] },
+            }
+            assert.deepEqual(await missing_entry_actions(context, actions), [])
+            assert.deepEqual(await missing_reference_actions(context, actions), [])
+            const report = await create_on_diagnostics(context)(params)
+            assert.equal(report.items.length, 1)
+            assert.equal(report.items[0].severity, 1)
+            assert.equal(report.items[0].source, 'liana-deserialize')
+            assert.ok(report.items[0].message.length > 0)
+        })
+    }
+})
+
+test('code actions still report schema loading failures rather than suppressing them', async () => {
+    await assert.rejects(actionsAt('#', 'invalid schema', 0, ['quickfix']),
+        error => error.code === -32603 && error.message.startsWith('Cannot load document for missing-entry fixes:'))
+})
+
 test('missing dense-entry diagnostics highlight only the opening dictionary brace', async () => {
     for (const source of [
         "< {} { 'first': ~ 'second': ~ } >",

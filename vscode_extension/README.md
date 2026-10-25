@@ -86,6 +86,9 @@ For missing required entries in a dense dictionary, use **Quick Fix → Add all
 missing required entries**. This adds all currently missing entries in the
 document with schema-generated values, preserving existing entries and comments.
 Missing-entry diagnostics underline only the opening `{`, not the entire dictionary.
+When the document has a syntax error (for example, an unterminated string), entry
+creation fixes are unavailable until it is corrected. The syntax error remains
+visible in diagnostics without producing internal-error messages for code actions.
 
 For **Reference 'foo' does not exist**, use **Quick Fix → Create entry 'foo' in
 referenced dictionary**. The entry is added to the dictionary selected by the

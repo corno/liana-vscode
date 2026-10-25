@@ -17,8 +17,13 @@ export const missing_reference_actions = async (
     if (document === undefined) return []
     const loaded = await new Promise<resolved.Document | null>((resolve, reject) => load_document(
         document, context.cache,
-        (error) => { reject(new vscode.ResponseError(vscode.ErrorCodes.InternalError,
-            'Cannot load document for reference creation: ' + JSON.stringify(error))); return null },
+        (error) => {
+            // Source syntax errors are reported by diagnostics, not failed code-action requests.
+            if (error[0] === 'deserialize parse tree') return null
+            reject(new vscode.ResponseError(vscode.ErrorCodes.InternalError,
+                'Cannot load document for reference creation: ' + JSON.stringify(error)))
+            return null
+        },
         (instance) => instance[0] === 'constrained' ? instance[1] : null,
         resolve,
     ))

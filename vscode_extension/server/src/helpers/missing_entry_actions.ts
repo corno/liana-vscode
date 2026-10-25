@@ -24,8 +24,13 @@ export const missing_entry_actions = async (
     for (;;) {
         const loaded = await new Promise<import('liana-authoring/schemas/resolve_result/schema').Document | null>((resolve, reject) => load_document(
             proposed, { schemas: context.cache.schemas, documents: create_cache() },
-            (error) => { reject(new vscode.ResponseError(vscode.ErrorCodes.InternalError,
-                'Cannot load document for missing-entry fixes: ' + JSON.stringify(error))); return null },
+            (error) => {
+                // Source syntax errors are reported by diagnostics, not failed code-action requests.
+                if (proposed === document && error[0] === 'deserialize parse tree') return null
+                reject(new vscode.ResponseError(vscode.ErrorCodes.InternalError,
+                    'Cannot load document for missing-entry fixes: ' + JSON.stringify(error)))
+                return null
+            },
             (instance) => instance[0] === 'constrained' ? instance[1] : null,
             resolve,
         ))
