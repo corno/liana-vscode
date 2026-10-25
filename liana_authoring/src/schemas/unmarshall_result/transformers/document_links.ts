@@ -1,11 +1,9 @@
 
 import * as p_ from 'pareto-core/transformer'
-import * as p_s from 'pareto-core/serializer'
 
 //schemas
 import type * as s_in from "../../../schemas/unmarshall_result/schema.js"
 import type * as s_out from "../../../schemas/document_links/schema.js"
-import type * as s_schema from "pareto-liana/modules/schema.generated/schemas/resolved/schema"
 
 
 namespace declarations_ {
@@ -94,7 +92,14 @@ export const Value: declarations_.Value = ($) => p_.from.state($['unmarshall res
                             }
                         ))
                         case 'reference': return p_.option($, ($) => p_.literal.list([]))
-                        case 'simple': return p_.option($, ($) => p_.literal.list([]))
+                        case 'simple': return p_.option($, ($) => p_.from.optional($.definition.value['l entry'].hyperlink).decide(
+                            (link) => p_.literal.list([{
+                                range: $.instance.range,
+                                target: link.prefix + $.instance.token.value + link.suffix,
+                                tooltip: p_.literal.not_set<string>(),
+                            }]),
+                            () => p_.literal.list([]),
+                        ))
                         case 'state': return p_.option($, ($) => p_.from.state($.derived['option status']).decide(
                             ($) => {
                                 switch ($[0]) {

@@ -58,7 +58,7 @@ export const $$: p.Query_Implementation<
     const root_resolver = transform.from.dictionary(specification.schema.resolver.implementations.types).get_possible_entry(
         root_type['l id'], $ => $, () => abort(['file type', `No resolver for root type: ${root_type['l id']}`]),
     )
-    const parameters = root_resolver.benchmark.value.parameters.result
+    const signature = root_resolver.benchmark.value.signature.result
     const unmarshalled = unmarshal.Document(prepared.document, {
         definition: root_type['l entry'],
         'property path': transform.literal.list([]),
@@ -66,11 +66,11 @@ export const $$: p.Query_Implementation<
     return ['constrained', resolve.Document(unmarshalled, {
         parameters: {
             acyclic: dictionary.map_value_dictionary_to_generic_dictionary(
-                transform.from.dictionary(parameters.lookups).filter($ => $.type[0] === 'acyclic'),
+                transform.from.dictionary(signature.lookups).filter($ => $.type[0] === 'acyclic'),
                 () => ['not found because of root', null],
             ),
             cyclic: dictionary.map_value_dictionary_to_generic_dictionary(
-                transform.from.dictionary(parameters.lookups).filter($ => $.type[0] === 'cyclic'),
+                transform.from.dictionary(signature.lookups).filter($ => $.type[0] === 'cyclic'),
                 () => ['not found because of root', null],
             ),
         },
@@ -78,6 +78,6 @@ export const $$: p.Query_Implementation<
     }, {
         definition: root_resolver,
         resolvers: specification.schema,
-        'type parameters': transform.from.dictionary(parameters.types).map(() => ['not found because of root', null]),
+        'type parameters': transform.from.dictionary(signature.values).map(() => ['not found because of root', null]),
     })]
 }))

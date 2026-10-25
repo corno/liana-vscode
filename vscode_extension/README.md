@@ -116,9 +116,9 @@ trees, and a file tree selecting the root type for each document:
             `types`: { 'Root': (`root value`: | `nothing` ~) }
         )
         `resolver`: (
-            `signatures`: (
+            `declarations`: (
                 `namespaces`: {}
-                `types`: { 'Root': (`parameters`: | `local` (`types`: {} `lookups`: {})) }
+                `types`: { 'Root': (`signature`: | `local` (`values`: {} `lookups`: {})) }
             )
             `implementations`: (
                 `namespaces`: {}
@@ -155,10 +155,10 @@ The header's path selects the type independently of the exported file's location
 Older root-type specifications and older header shapes are not supported.
 
 Basic types declare token syntax (`double quoted` or `undelimited`), an optional
-regular expression, and optional `file path` metadata. Booleans, dates and numbers
-can be modeled with token patterns; they are not built-in semantic value kinds.
-The authoring-only `hyperlink` rename and optional `presence` proposal are not
-part of this deployed format.
+regular expression, and optional `hyperlink` metadata. Booleans, dates and
+numbers can be modeled with token patterns; they are not built-in semantic value
+kinds. Resolver declarations describe value and lookup arguments, including
+their required or optional `presence`.
 
 Structural list, optional and state values declare their result targets.
 Resolvers provide the corresponding result selections: a list supplies `initial`
@@ -295,12 +295,13 @@ You can toggle the document's default between verbose and concise notation with 
 ## creating your first schema
 - select ctrl-d, which should give you a couple of suggestions. 
 - Choose the verbose group suggestion.
-- Set `root type` to `'root'`.
-- Add a type in `types` named `'root'`, a matching signature in `signatures`,
-  and a matching resolver in `resolvers`.
+- Set the root file node in `directory` to type `'root'`.
+- Add a type in `types` named `'root'`, a matching declaration in
+  `resolver.declarations`, and a matching implementation in
+  `resolver.implementations`.
 - type a colon (:). It should be automatically expanded to ': #'.
 - use ctrl-d, select, use ctrl-d again, select 'group'. You have now configured your first value. You will be doing this a lot.
-- Add a text flavor named `'text'` to `basic types`.
+- Add a basic type named `'text'` to `basic types`.
 - In the group, add a property named `'message'` whose value is `simple 'text'`.
 - Give the root resolver a matching group with a `simple` resolver for `message`.
 
@@ -309,29 +310,42 @@ If all went well, you ended up with a file that looks like this
 ````
 (
     `schema`: (
-        `basic types`: {
-            'text': < | `text` < | `single line` ~ | `no` ~ > >
-        }
-        `types`: {
-            'root': (
-                `root value`: | `group` {
-                    'message': (
-                        `description`: _
-                        `value`: | `simple` 'text'
+        `structure`: (
+            `namespaces`: {}
+            `basic types`: {
+                'text': (`type`: | `double quoted` ~ `regular expression`: _ `hyperlink`: _)
+            }
+            `types`: {
+                'root': (
+                    `root value`: | `group` {
+                        'message': (
+                            `description`: _
+                            `value`: | `simple` 'text'
+                        )
+                    }
+                )
+            }
+        )
+        `resolver`: (
+            `declarations`: (
+                `namespaces`: {}
+                `types`: {
+                    'root': (`signature`: | `local` (`values`: {} `lookups`: {}))
+                }
+            )
+            `implementations`: (
+                `namespaces`: {}
+                `types`: {
+                    'root': (
+                        `root value resolver`: | `group` {
+                            'message': (`resolver`: | `simple` ~)
+                        }
                     )
                 }
             )
-        }
-        `signatures`: {
-            'root': < ~ | `local` < {} {} > ~ >
-        }
-        `resolvers`: {
-            'root': < ~ | `group` {
-                'message': < ~ | `simple` ~ >
-            } >
-        }
+        )
     )
-    `root type`: 'root'
+    `directory`: | `dictionary` (`node`: | `file` (`file extension`: "" `type`: 'root'))
 )
 ````
 

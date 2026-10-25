@@ -263,7 +263,7 @@ const Relative = (
                     case 'component': return $[0] === 'component' ? ['resolved', $[1].value] : Unavailable()
                     case 'group': return $[0] === 'group' ? Property(step[1].value['l id'], p_lookup.acyclic.from_resolved_dictionary($[1].properties)) : Unavailable()
                     case 'optional': return $[0] === 'optional'
-                        ? $[1].status[0] === 'set' ? ['resolved', $[1].status[1]['child value']] : ['not set', null] : Unavailable()
+                        ? $[1].status[0] === 'set' ? ['resolved', $[1].status[1]['child value']] : $[1].status : Unavailable()
                     case 'list result': return $[0] === 'list' ? $[1].result : Unavailable()
                     case 'reference': {
                         if ($[0] !== 'reference') return Unavailable()
@@ -306,7 +306,7 @@ const Possible = (
     switch (selection[0]) {
         case 'optional value': return Relative(selection[1].tail, Select(Guaranteed(selection[1].selection.value, context), value =>
             value[0] === 'optional'
-                ? value[1].status[0] === 'set' ? ['resolved', value[1].status[1]['child value']] : ['not set', null]
+                ? value[1].status[0] === 'set' ? ['resolved', value[1].status[1]['child value']] : value[1].status
                 : Unavailable()))
         case 'parameter': return p_.from.dictionary(context.types).get_possible_entry(selection[1]['l id'], Parameter, Unavailable)
         case 'result': {
@@ -349,7 +349,8 @@ const Constraint = (
             Unavailable
         ) : ['constraint failed', 'expected a state value']
         case 'optional value': return value[0] === 'optional'
-            ? value[1].status[0] === 'set' ? ['resolved', value[1].status[1]['child value']] : ['constraint failed', 'expected an optional value to be set']
+            ? value[1].status[0] === 'set' ? ['resolved', value[1].status[1]['child value']]
+                : value[1].status[0] === 'unavailable' ? Unavailable() : ['constraint failed', 'expected an optional value to be set']
             : ['constraint failed', 'expected an optional value']
         default: return p_.exhaustive(constraint[0])
     }
@@ -620,11 +621,11 @@ export const Resolver_Guaranteed_Value_Selection = (
 
 const Type_Arguments = (
     args: s_in_definition.namespaces.resolver.types.Value.component.value.arguments_,
-    signature: s_in_definition.namespaces.signatures.types.Signature,
+    signature: s_in_definition.namespaces.declarations.types.Signature,
     context: temp.Context,
 ): p_di.Dictionary<temp.Type_Parameter_Resolve_Status> => p_i_temp.from_option_decide(args,
     (args) => p_i_temp.from_option_decide(args.types,
-        (supplied) => p_.from.dictionary(signature.parameters.result.types).map(
+        (supplied) => p_.from.dictionary(signature.values).map(
             (parameter, id): temp.Type_Parameter_Resolve_Status => {
                 const assigned = p_.from.dictionary(supplied).get_possible_entry<temp.Type_Parameter_Resolve_Status>(id,
                     ({ value: binding }): temp.Type_Parameter_Resolve_Status => {
@@ -641,7 +642,7 @@ const Type_Arguments = (
                     () => ['constraint failed', `missing type argument '${id}' in explicit arguments`],
                 )
                 return assigned[0] === 'resolved'
-                    ? Referenced_Value(assigned, parameter.type.location.result['root value']) : assigned
+                    ? Referenced_Value(assigned, parameter.value.subselection.tail.result) : assigned
             },
         ),
         () => context.types,
@@ -661,7 +662,23 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
     }
 > = ($, $l, $p) => {
     const context: temp.Context = { 'lookups': $l, 'types': $p['type parameters'] }
+    const presence_failure: s_out.Selection | null = (() => {
+        const definition = $p.definition
+        const result = $['unmarshall result']
+        if (definition[0] !== 'optional' || result[0] !== 'success' || result[1][0] !== 'optional') return null
+        const present = result[1][1].derived.status[0] === 'set'
+        return p_.from.optional(definition[1].value.presence).decide((selection): s_out.Selection | null => {
+            const selected = Possible(selection, context)
+            switch (selected[0]) {
+                case 'resolved':
+                case 'not set': return (selected[0] === 'resolved') === present
+                    ? null : ['constraint failed', 'Optional presence does not match the selected value']
+                default: return selected
+            }
+        }, () => null)
+    })()
     const constraints = (): p_di.Dictionary<s_out.Selection> => {
+        if (presence_failure !== null) return p_.literal.dictionary({})
         const result = $['unmarshall result']
         if (result[0] === 'error') return p_.literal.dictionary({})
         const definition = $p.definition
@@ -690,6 +707,7 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
     }
     const checks = constraints()
     return {
+        ...(presence_failure === null ? {} : { 'presence check': presence_failure }),
         'benchmark link': $l['linked entry'] ?? Unavailable(),
         get 'state option constraints'() {
             const definition = $p.definition
@@ -749,11 +767,11 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                                                     ...$l,
                                                                     'parameters': {
                                                                         'acyclic': p_temp_dictionary.map_value_dictionary_to_generic_dictionary(
-                                                                            p_.from.dictionary(def2.benchmark.value.parameters.result.lookups).filter(($) => $.type[0] === 'acyclic'),
+                                                                            p_.from.dictionary(def2.benchmark.value.signature.result.lookups).filter(($) => $.type[0] === 'acyclic'),
                                                                             (parameter, id): temp.Acyclic_Parameter_Resolve_Status => Lookup_Argument(def.arguments, id, context)
                                                                         ),
                                                                         'cyclic': p_temp_dictionary.map_value_dictionary_to_generic_dictionary(
-                                                                            p_.from.dictionary(def2.benchmark.value.parameters.result.lookups).filter(($) => $.type[0] === 'cyclic'),
+                                                                            p_.from.dictionary(def2.benchmark.value.signature.result.lookups).filter(($) => $.type[0] === 'cyclic'),
                                                                             (parameter, id): temp.Cyclic_Parameter_Resolve_Status => Lookup_Argument(def.arguments, id, context)
                                                                         ),
                                                                     },
@@ -761,7 +779,7 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                                                 {
                                                                     'definition': def2.value['root value resolver'],
                                                                     'resolver': resolver_namespace,
-                                                                    'type parameters': Type_Arguments(def.arguments, def2.benchmark.value, context),
+                                                                    'type parameters': Type_Arguments(def.arguments, def2.benchmark.value.signature.result, context),
                                                                 }
                                                             )
                                                         }, def.constraints)
@@ -949,6 +967,7 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                                     case 'optional': return p_.option($, ($): s_out.Optional => ({
                                                         'unmarshalled': $,
                                                         get result(): s_out.Selection {
+                                                            if (presence_failure !== null) return Unavailable()
                                                             if (!Checks_Passed(checks)) return Unavailable()
                                                             if (this.status[0] !== 'set') return ['not set', null]
                                                             const child = this.status[1]['child value']
@@ -959,7 +978,7 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                                                 () => ['not set', null],
                                                             )
                                                         },
-                                                        'status': p_.from.state($.derived.status).decide(
+                                                        'status': presence_failure !== null ? ['unavailable', null] : p_.from.state($.derived.status).decide(
                                                             ($) => {
                                                                 switch ($[0]) {
                                                                     case 'set': return p_.option($, ($) => ['set', {

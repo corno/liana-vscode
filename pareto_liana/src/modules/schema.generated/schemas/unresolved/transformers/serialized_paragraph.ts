@@ -132,8 +132,8 @@ export namespace namespaces {
                 s_parameters.Parameters
             >
             
-            export type Value_Path = p_.Transformer_With_Parameter<
-                s_source.namespaces.structure.types.Value_Path,
+            export type Value_Subselection = p_.Transformer_With_Parameter<
+                s_source.namespaces.structure.types.Value_Subselection,
                 s_target.Lines,
                 s_parameters.Parameters
             >
@@ -247,8 +247,8 @@ export namespace namespaces {
             $p,
         )
         
-        export const Value_Path: declarations.Value_Path = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
-            t_to_sealed_target.namespaces.structure.Value_Path(
+        export const Value_Subselection: declarations.Value_Subselection = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+            t_to_sealed_target.namespaces.structure.Value_Subselection(
                 $,
             ),
             $p,
@@ -297,48 +297,60 @@ export namespace namespaces {
         )
         export namespace namespaces {}
     }
-    export namespace signatures {
+    export namespace declarations {
         
         export namespace declarations {
             
             export type Presence = p_.Transformer_With_Parameter<
-                s_source.namespaces.signatures.types.Presence,
+                s_source.namespaces.declarations.types.Presence,
                 s_target.Lines,
                 s_parameters.Parameters
             >
             
             export type Signature_Type_Reference = p_.Transformer_With_Parameter<
-                s_source.namespaces.signatures.types.Signature_Type_Reference,
+                s_source.namespaces.declarations.types.Signature_Type_Reference,
                 s_target.Lines,
                 s_parameters.Parameters
             >
             
-            export type Signature_Parameters = p_.Transformer_With_Parameter<
-                s_source.namespaces.signatures.types.Signature_Parameters,
+            export type Signature_Value_Subselection = p_.Transformer_With_Parameter<
+                s_source.namespaces.declarations.types.Signature_Value_Subselection,
                 s_target.Lines,
                 s_parameters.Parameters
             >
             
-            export type Signatures = p_.Transformer_With_Parameter<
-                s_source.namespaces.signatures.types.Signatures,
+            export type Signature_Value_Reference = p_.Transformer_With_Parameter<
+                s_source.namespaces.declarations.types.Signature_Value_Reference,
                 s_target.Lines,
                 s_parameters.Parameters
             >
             
             export type Signature = p_.Transformer_With_Parameter<
-                s_source.namespaces.signatures.types.Signature,
+                s_source.namespaces.declarations.types.Signature,
+                s_target.Lines,
+                s_parameters.Parameters
+            >
+            
+            export type Declarations = p_.Transformer_With_Parameter<
+                s_source.namespaces.declarations.types.Declarations,
+                s_target.Lines,
+                s_parameters.Parameters
+            >
+            
+            export type Declaration = p_.Transformer_With_Parameter<
+                s_source.namespaces.declarations.types.Declaration,
                 s_target.Lines,
                 s_parameters.Parameters
             >
             
             export type Namespaces = p_.Transformer_With_Parameter<
-                s_source.namespaces.signatures.types.Namespaces,
+                s_source.namespaces.declarations.types.Namespaces,
                 s_target.Lines,
                 s_parameters.Parameters
             >
             
-            export type Signature_Namespace = p_.Transformer_With_Parameter<
-                s_source.namespaces.signatures.types.Signature_Namespace,
+            export type Declaration_Namespace = p_.Transformer_With_Parameter<
+                s_source.namespaces.declarations.types.Declaration_Namespace,
                 s_target.Lines,
                 s_parameters.Parameters
             >
@@ -347,49 +359,63 @@ export namespace namespaces {
         // implementations
         
         export const Presence: declarations.Presence = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
-            t_to_sealed_target.namespaces.signatures.Presence(
+            t_to_sealed_target.namespaces.declarations.Presence(
                 $,
             ),
             $p,
         )
         
         export const Signature_Type_Reference: declarations.Signature_Type_Reference = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
-            t_to_sealed_target.namespaces.signatures.Signature_Type_Reference(
+            t_to_sealed_target.namespaces.declarations.Signature_Type_Reference(
                 $,
             ),
             $p,
         )
         
-        export const Signature_Parameters: declarations.Signature_Parameters = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
-            t_to_sealed_target.namespaces.signatures.Signature_Parameters(
+        export const Signature_Value_Subselection: declarations.Signature_Value_Subselection = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+            t_to_sealed_target.namespaces.declarations.Signature_Value_Subselection(
                 $,
             ),
             $p,
         )
         
-        export const Signatures: declarations.Signatures = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
-            t_to_sealed_target.namespaces.signatures.Signatures(
+        export const Signature_Value_Reference: declarations.Signature_Value_Reference = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+            t_to_sealed_target.namespaces.declarations.Signature_Value_Reference(
                 $,
             ),
             $p,
         )
         
         export const Signature: declarations.Signature = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
-            t_to_sealed_target.namespaces.signatures.Signature(
+            t_to_sealed_target.namespaces.declarations.Signature(
+                $,
+            ),
+            $p,
+        )
+        
+        export const Declarations: declarations.Declarations = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+            t_to_sealed_target.namespaces.declarations.Declarations(
+                $,
+            ),
+            $p,
+        )
+        
+        export const Declaration: declarations.Declaration = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+            t_to_sealed_target.namespaces.declarations.Declaration(
                 $,
             ),
             $p,
         )
         
         export const Namespaces: declarations.Namespaces = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
-            t_to_sealed_target.namespaces.signatures.Namespaces(
+            t_to_sealed_target.namespaces.declarations.Namespaces(
                 $,
             ),
             $p,
         )
         
-        export const Signature_Namespace: declarations.Signature_Namespace = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
-            t_to_sealed_target.namespaces.signatures.Signature_Namespace(
+        export const Declaration_Namespace: declarations.Declaration_Namespace = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+            t_to_sealed_target.namespaces.declarations.Declaration_Namespace(
                 $,
             ),
             $p,
@@ -412,8 +438,8 @@ export namespace namespaces {
                 s_parameters.Parameters
             >
             
-            export type Value_Path = p_.Transformer_With_Parameter<
-                s_source.namespaces.resolver.types.Value_Path,
+            export type Value_Subselection = p_.Transformer_With_Parameter<
+                s_source.namespaces.resolver.types.Value_Subselection,
                 s_target.Lines,
                 s_parameters.Parameters
             >
@@ -555,8 +581,8 @@ export namespace namespaces {
             $p,
         )
         
-        export const Value_Path: declarations.Value_Path = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
-            t_to_sealed_target.namespaces.resolver.Value_Path(
+        export const Value_Subselection: declarations.Value_Subselection = ($, $p) => t_sealed_target_to_serialized_paragraph.Document(
+            t_to_sealed_target.namespaces.resolver.Value_Subselection(
                 $,
             ),
             $p,

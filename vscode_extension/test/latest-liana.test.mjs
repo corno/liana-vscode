@@ -48,15 +48,15 @@ const tree = `| \`group\` (\`nodes\`: {
 const specification = (directory = tree) => `(
     \`schema\`: (
         \`structure\`: (\`namespaces\`: {} \`basic types\`: {
-            'text': (\`type\`: | \`double quoted\` ~ \`regular expression\`: _ \`file path\`: _)
+            'text': (\`type\`: | \`double quoted\` ~ \`regular expression\`: _ \`hyperlink\`: _)
         } \`types\`: {
             'Text': (\`root value\`: | \`simple\` 'text')
             'Nothing': (\`root value\`: | \`nothing\` ~)
         })
         \`resolver\`: (
-            \`signatures\`: (\`namespaces\`: {} \`types\`: {
-                'Text': (\`parameters\`: | \`local\` (\`lookups\`: {} \`types\`: {}))
-                'Nothing': (\`parameters\`: | \`local\` (\`lookups\`: {} \`types\`: {}))
+            \`declarations\`: (\`namespaces\`: {} \`types\`: {
+                'Text': (\`signature\`: | \`local\` (\`lookups\`: {} \`values\`: {}))
+                'Nothing': (\`signature\`: | \`local\` (\`lookups\`: {} \`values\`: {}))
             })
             \`implementations\`: (\`namespaces\`: {} \`types\`: {
                 'Text': (\`root value resolver\`: | \`simple\` ~)
@@ -66,6 +66,8 @@ const specification = (directory = tree) => `(
     )
     \`directory\`: ${directory}
 )`
+const signature_value = (type, presence) =>
+    `(\`value\`: (\`type\`: (\`location\`: | \`internal\` '${type}') \`subselection\`: (\`tail\`: [])) \`presence\`: | \`${presence}\` ~)`
 const selected = (schema, directories, file) => file_type(schema, {
     directories: p.literal.list(directories), 'file name': file,
 }, message => { throw new Error(message) })
@@ -346,9 +348,9 @@ test('formatting and JSON conversion consume the current header without losing t
 test('optional fallback branches must resolve to the exact same structural target', () => {
     const selection = "(`start`: | `optional fallback` (`selection`: | `parameter` 'input' `fallback`: (`start`: | `parameter` 'fallback' `tail`: (`path`: []))) `tail`: (`path`: []))"
     const source = specification(dictionary('', 'Nothing'))
-        .replace("'Nothing': (`parameters`: | `local` (`lookups`: {} `types`: {}))", `'Nothing': (\`parameters\`: | \`local\` (\`lookups\`: {} \`types\`: {
-            'input': (\`type\`: (\`location\`: | \`internal\` 'Nothing') \`presence\`: | \`optional\` ~)
-            'fallback': (\`type\`: (\`location\`: | \`internal\` 'Nothing') \`presence\`: | \`required\` ~)
+        .replace("'Nothing': (`signature`: | `local` (`lookups`: {} `values`: {}))", `'Nothing': (\`signature\`: | \`local\` (\`lookups\`: {} \`values\`: {
+            'input': ${signature_value('Nothing', 'optional')}
+            'fallback': ${signature_value('Nothing', 'required')}
         }))`)
     const component = `| \`component\` (\`location\`: | \`internal\` 'Nothing' \`arguments\`: * (\`lookups\`: * {} \`types\`: * {
         'input': | \`optional\` | \`set\` ${selection}
@@ -359,7 +361,7 @@ test('optional fallback branches must resolve to the exact same structural targe
         .replace("'Nothing': (`root value`: | `nothing` ~)", "'Nothing': (`root value`: | `component` (`constraints`: _ `type`: | `internal cyclic` 'Nothing'))")
         .replace("'Nothing': (`root value resolver`: | `nothing` ~)", `'Nothing': (\`root value resolver\`: ${component})`)
     assert.doesNotThrow(() => parse(full))
-    assert.throws(() => parse(full.replace("'fallback': (`type`: (`location`: | `internal` 'Nothing')", "'fallback': (`type`: (`location`: | `internal` 'Text')")))
+    assert.throws(() => parse(full.replace("'fallback': (`value`: (`type`: (`location`: | `internal` 'Nothing')", "'fallback': (`value`: (`type`: (`location`: | `internal` 'Text')")))
 })
 
 test('current generated schema diagnostics describe invalid token syntax explicitly', () => {
@@ -380,7 +382,7 @@ test('optional producer results select the declared payload and remain absent wh
             \`constraints\`: _ \`value\`: | \`component\` (\`type\`: | \`internal\` 'Text' \`constraints\`: _)
             \`result\`: * (\`type\`: (\`location\`: | \`internal\` 'Text') \`path\`: (\`tail\`: []))))`)
         .replace("'Nothing': (`root value resolver`: | `nothing` ~)", `'Nothing': (\`root value resolver\`: | \`optional\` (
-            \`constraints\`: _ \`not set constraints\`: _
+            \`presence\`: _ \`constraints\`: _ \`not set constraints\`: _
             \`resolver\`: | \`component\` (\`location\`: | \`internal\` 'Text' \`arguments\`: _ \`constraints\`: _)
             \`result\`: * | \`value\` (\`path\`: [| \`component\` ~])))`)
     const dir = mkdtempSync(join(tmpdir(), 'liana-optional-result-'))
@@ -398,7 +400,7 @@ test('optional producer results select the declared payload and remain absent wh
     }
 })
 
-for (const name of ['liana', 'boekhouding']) {
+for (const name of ['liana', 'boekhouding', 'pareto_next']) {
     test(`maintained ${name} authoring fixture parses, resolves, seals and round-trips`, async () => {
         const dir = mkdtempSync(join(tmpdir(), `liana-maintained-${name}-`))
         try {

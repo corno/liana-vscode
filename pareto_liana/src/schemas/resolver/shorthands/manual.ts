@@ -574,6 +574,7 @@ export namespace r {
         type_resolver: s_target.namespaces.resolver.types.Value
     ): s_target.namespaces.resolver.types.Value => {
         return sh.state(['optional', {
+            'presence': sh.optional.not_set(),
             'constraints': sh.optional.not_set<s_target.namespaces.resolver.types.Option_Constraints.O>(),
             'not set constraints': sh.optional.not_set(),
             'resolver': type_resolver,
@@ -586,6 +587,7 @@ export namespace r {
         type_resolver: s_target.namespaces.resolver.types.Value
     ): s_target.namespaces.resolver.types.Value => {
         return sh.state(['optional', {
+            'presence': sh.optional.not_set(),
             'not set constraints': sh.optional.not_set(),
             'constraints': sh.optional.set(sh.dictionary(constraints)),
             'resolver': type_resolver,

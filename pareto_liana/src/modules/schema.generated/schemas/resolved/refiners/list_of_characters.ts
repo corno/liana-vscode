@@ -9,9 +9,6 @@ import * as s_parameters from "liana-runtime/modules/resolved_document_deseriali
 
 // refiner dependencies
 import * as r_from_unresolved from "./unresolved.js"
-import * as manual from "./unresolved_manual.js"
-import * as parse from "astn-runtime/modules/deserialization/schemas/parse_tree/refiners/list_of_characters"
-import * as range from "astn-runtime/modules/deserialization/schemas/parse_tree/transformers/start_token_range"
 import * as r_unresolved_from_list_of_characters from "../../unresolved/refiners/list_of_characters.js"
 
 export namespace declarations {
@@ -65,22 +62,22 @@ export const Node: declarations.Node = ($, abort, $p) => r_from_unresolved.Node(
     ($) => abort(['resolving', $]),
 )
 
-export const Schema: declarations.Schema = ($, abort, $p) => manual.Schema(
+export const Schema: declarations.Schema = ($, abort, $p) => r_from_unresolved.Schema(
     r_unresolved_from_list_of_characters.Schema(
         $,
         ($) => abort(['unresolved document deserialization', $]),
         $p,
     ),
-    (error) => abort(['resolving', { ...error, location: range.Value(parse.Document($, error => abort(['unresolved document deserialization', ['parse tree deserialization', error]]), $p).content) }]),
+    ($) => abort(['resolving', $]),
 )
 
-export const Type_Specification: declarations.Type_Specification = ($, abort, $p) => manual.Type_Specification(
+export const Type_Specification: declarations.Type_Specification = ($, abort, $p) => r_from_unresolved.Type_Specification(
     r_unresolved_from_list_of_characters.Type_Specification(
         $,
         ($) => abort(['unresolved document deserialization', $]),
         $p,
     ),
-    (error) => abort(['resolving', { ...error, location: range.Value(parse.Document($, error => abort(['unresolved document deserialization', ['parse tree deserialization', error]]), $p).content) }]),
+    ($) => abort(['resolving', $]),
 )
 export namespace namespaces {
     export namespace structure {
@@ -157,8 +154,8 @@ export namespace namespaces {
                 s_parameters.Parameters
             >
             
-            export type Value_Path = p_.Refiner_With_Parameter<
-                s_target.namespaces.structure.types.Value_Path,
+            export type Value_Subselection = p_.Refiner_With_Parameter<
+                s_target.namespaces.structure.types.Value_Subselection,
                 s_error.types.Resolved_Error,
                 s_source.List_Of_Characters,
                 s_parameters.Parameters
@@ -299,8 +296,8 @@ export namespace namespaces {
             ($) => abort(['resolving', $]),
         )
         
-        export const Value_Path: declarations.Value_Path = ($, abort, $p) => r_from_unresolved.namespaces.structure.Value_Path(
-            r_unresolved_from_list_of_characters.namespaces.structure.Value_Path(
+        export const Value_Subselection: declarations.Value_Subselection = ($, abort, $p) => r_from_unresolved.namespaces.structure.Value_Subselection(
+            r_unresolved_from_list_of_characters.namespaces.structure.Value_Subselection(
                 $,
                 ($) => abort(['unresolved document deserialization', $]),
                 $p,
@@ -363,54 +360,68 @@ export namespace namespaces {
         )
         export namespace namespaces {}
     }
-    export namespace signatures {
+    export namespace declarations {
         
         export namespace declarations {
             
             export type Presence = p_.Refiner_With_Parameter<
-                s_target.namespaces.signatures.types.Presence,
+                s_target.namespaces.declarations.types.Presence,
                 s_error.types.Resolved_Error,
                 s_source.List_Of_Characters,
                 s_parameters.Parameters
             >
             
             export type Signature_Type_Reference = p_.Refiner_With_Parameter<
-                s_target.namespaces.signatures.types.Signature_Type_Reference,
+                s_target.namespaces.declarations.types.Signature_Type_Reference,
                 s_error.types.Resolved_Error,
                 s_source.List_Of_Characters,
                 s_parameters.Parameters
             >
             
-            export type Signature_Parameters = p_.Refiner_With_Parameter<
-                s_target.namespaces.signatures.types.Signature_Parameters,
+            export type Signature_Value_Subselection = p_.Refiner_With_Parameter<
+                s_target.namespaces.declarations.types.Signature_Value_Subselection,
                 s_error.types.Resolved_Error,
                 s_source.List_Of_Characters,
                 s_parameters.Parameters
             >
             
-            export type Signatures = p_.Refiner_With_Parameter<
-                s_target.namespaces.signatures.types.Signatures,
+            export type Signature_Value_Reference = p_.Refiner_With_Parameter<
+                s_target.namespaces.declarations.types.Signature_Value_Reference,
                 s_error.types.Resolved_Error,
                 s_source.List_Of_Characters,
                 s_parameters.Parameters
             >
             
             export type Signature = p_.Refiner_With_Parameter<
-                s_target.namespaces.signatures.types.Signature,
+                s_target.namespaces.declarations.types.Signature,
+                s_error.types.Resolved_Error,
+                s_source.List_Of_Characters,
+                s_parameters.Parameters
+            >
+            
+            export type Declarations = p_.Refiner_With_Parameter<
+                s_target.namespaces.declarations.types.Declarations,
+                s_error.types.Resolved_Error,
+                s_source.List_Of_Characters,
+                s_parameters.Parameters
+            >
+            
+            export type Declaration = p_.Refiner_With_Parameter<
+                s_target.namespaces.declarations.types.Declaration,
                 s_error.types.Resolved_Error,
                 s_source.List_Of_Characters,
                 s_parameters.Parameters
             >
             
             export type Namespaces = p_.Refiner_With_Parameter<
-                s_target.namespaces.signatures.types.Namespaces,
+                s_target.namespaces.declarations.types.Namespaces,
                 s_error.types.Resolved_Error,
                 s_source.List_Of_Characters,
                 s_parameters.Parameters
             >
             
-            export type Signature_Namespace = p_.Refiner_With_Parameter<
-                s_target.namespaces.signatures.types.Signature_Namespace,
+            export type Declaration_Namespace = p_.Refiner_With_Parameter<
+                s_target.namespaces.declarations.types.Declaration_Namespace,
                 s_error.types.Resolved_Error,
                 s_source.List_Of_Characters,
                 s_parameters.Parameters
@@ -419,8 +430,8 @@ export namespace namespaces {
         
         // implementations
         
-        export const Presence: declarations.Presence = ($, abort, $p) => r_from_unresolved.namespaces.signatures.Presence(
-            r_unresolved_from_list_of_characters.namespaces.signatures.Presence(
+        export const Presence: declarations.Presence = ($, abort, $p) => r_from_unresolved.namespaces.declarations.Presence(
+            r_unresolved_from_list_of_characters.namespaces.declarations.Presence(
                 $,
                 ($) => abort(['unresolved document deserialization', $]),
                 $p,
@@ -428,8 +439,8 @@ export namespace namespaces {
             ($) => abort(['resolving', $]),
         )
         
-        export const Signature_Type_Reference: declarations.Signature_Type_Reference = ($, abort, $p) => r_from_unresolved.namespaces.signatures.Signature_Type_Reference(
-            r_unresolved_from_list_of_characters.namespaces.signatures.Signature_Type_Reference(
+        export const Signature_Type_Reference: declarations.Signature_Type_Reference = ($, abort, $p) => r_from_unresolved.namespaces.declarations.Signature_Type_Reference(
+            r_unresolved_from_list_of_characters.namespaces.declarations.Signature_Type_Reference(
                 $,
                 ($) => abort(['unresolved document deserialization', $]),
                 $p,
@@ -437,8 +448,8 @@ export namespace namespaces {
             ($) => abort(['resolving', $]),
         )
         
-        export const Signature_Parameters: declarations.Signature_Parameters = ($, abort, $p) => r_from_unresolved.namespaces.signatures.Signature_Parameters(
-            r_unresolved_from_list_of_characters.namespaces.signatures.Signature_Parameters(
+        export const Signature_Value_Subselection: declarations.Signature_Value_Subselection = ($, abort, $p) => r_from_unresolved.namespaces.declarations.Signature_Value_Subselection(
+            r_unresolved_from_list_of_characters.namespaces.declarations.Signature_Value_Subselection(
                 $,
                 ($) => abort(['unresolved document deserialization', $]),
                 $p,
@@ -446,8 +457,8 @@ export namespace namespaces {
             ($) => abort(['resolving', $]),
         )
         
-        export const Signatures: declarations.Signatures = ($, abort, $p) => r_from_unresolved.namespaces.signatures.Signatures(
-            r_unresolved_from_list_of_characters.namespaces.signatures.Signatures(
+        export const Signature_Value_Reference: declarations.Signature_Value_Reference = ($, abort, $p) => r_from_unresolved.namespaces.declarations.Signature_Value_Reference(
+            r_unresolved_from_list_of_characters.namespaces.declarations.Signature_Value_Reference(
                 $,
                 ($) => abort(['unresolved document deserialization', $]),
                 $p,
@@ -455,8 +466,8 @@ export namespace namespaces {
             ($) => abort(['resolving', $]),
         )
         
-        export const Signature: declarations.Signature = ($, abort, $p) => r_from_unresolved.namespaces.signatures.Signature(
-            r_unresolved_from_list_of_characters.namespaces.signatures.Signature(
+        export const Signature: declarations.Signature = ($, abort, $p) => r_from_unresolved.namespaces.declarations.Signature(
+            r_unresolved_from_list_of_characters.namespaces.declarations.Signature(
                 $,
                 ($) => abort(['unresolved document deserialization', $]),
                 $p,
@@ -464,8 +475,8 @@ export namespace namespaces {
             ($) => abort(['resolving', $]),
         )
         
-        export const Namespaces: declarations.Namespaces = ($, abort, $p) => r_from_unresolved.namespaces.signatures.Namespaces(
-            r_unresolved_from_list_of_characters.namespaces.signatures.Namespaces(
+        export const Declarations: declarations.Declarations = ($, abort, $p) => r_from_unresolved.namespaces.declarations.Declarations(
+            r_unresolved_from_list_of_characters.namespaces.declarations.Declarations(
                 $,
                 ($) => abort(['unresolved document deserialization', $]),
                 $p,
@@ -473,8 +484,26 @@ export namespace namespaces {
             ($) => abort(['resolving', $]),
         )
         
-        export const Signature_Namespace: declarations.Signature_Namespace = ($, abort, $p) => r_from_unresolved.namespaces.signatures.Signature_Namespace(
-            r_unresolved_from_list_of_characters.namespaces.signatures.Signature_Namespace(
+        export const Declaration: declarations.Declaration = ($, abort, $p) => r_from_unresolved.namespaces.declarations.Declaration(
+            r_unresolved_from_list_of_characters.namespaces.declarations.Declaration(
+                $,
+                ($) => abort(['unresolved document deserialization', $]),
+                $p,
+            ),
+            ($) => abort(['resolving', $]),
+        )
+        
+        export const Namespaces: declarations.Namespaces = ($, abort, $p) => r_from_unresolved.namespaces.declarations.Namespaces(
+            r_unresolved_from_list_of_characters.namespaces.declarations.Namespaces(
+                $,
+                ($) => abort(['unresolved document deserialization', $]),
+                $p,
+            ),
+            ($) => abort(['resolving', $]),
+        )
+        
+        export const Declaration_Namespace: declarations.Declaration_Namespace = ($, abort, $p) => r_from_unresolved.namespaces.declarations.Declaration_Namespace(
+            r_unresolved_from_list_of_characters.namespaces.declarations.Declaration_Namespace(
                 $,
                 ($) => abort(['unresolved document deserialization', $]),
                 $p,
@@ -501,8 +530,8 @@ export namespace namespaces {
                 s_parameters.Parameters
             >
             
-            export type Value_Path = p_.Refiner_With_Parameter<
-                s_target.namespaces.resolver.types.Value_Path,
+            export type Value_Subselection = p_.Refiner_With_Parameter<
+                s_target.namespaces.resolver.types.Value_Subselection,
                 s_error.types.Resolved_Error,
                 s_source.List_Of_Characters,
                 s_parameters.Parameters
@@ -669,8 +698,8 @@ export namespace namespaces {
             ($) => abort(['resolving', $]),
         )
         
-        export const Value_Path: declarations.Value_Path = ($, abort, $p) => r_from_unresolved.namespaces.resolver.Value_Path(
-            r_unresolved_from_list_of_characters.namespaces.resolver.Value_Path(
+        export const Value_Subselection: declarations.Value_Subselection = ($, abort, $p) => r_from_unresolved.namespaces.resolver.Value_Subselection(
+            r_unresolved_from_list_of_characters.namespaces.resolver.Value_Subselection(
                 $,
                 ($) => abort(['unresolved document deserialization', $]),
                 $p,

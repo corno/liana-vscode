@@ -76,7 +76,7 @@ export const Schema: declarations.Schema = ($, abort) => ({
         abort,
     )),
     'resolver': p_.change_context($['resolver'], ($) => ({
-        'signatures': p_.change_context($['signatures'], ($) => __operations.namespaces.signatures.Signature_Namespace(
+        'declarations': p_.change_context($['declarations'], ($) => __operations.namespaces.declarations.Declaration_Namespace(
             $,
             abort,
         )),
@@ -162,10 +162,10 @@ export namespace namespaces {
                 s_source.namespaces.structure.types.Value
             >
             
-            export type Value_Path = p_.Refiner<
-                s_target.namespaces.structure.types.Value_Path,
+            export type Value_Subselection = p_.Refiner<
+                s_target.namespaces.structure.types.Value_Subselection,
                 s_error.types.Resolving_Error,
-                s_source.namespaces.structure.types.Value_Path
+                s_source.namespaces.structure.types.Value_Subselection
             >
             
             export type Value_Reference = p_.Refiner<
@@ -254,7 +254,7 @@ export namespace namespaces {
                 $,
                 abort,
             ))),
-            'file path': p_.change_context($['file path'], ($) => p_.from.optional($).map(($) => ({
+            'hyperlink': p_.change_context($['hyperlink'], ($) => p_.from.optional($).map(($) => ({
                 'prefix': p_.change_context($['prefix'], ($) => $),
                 'suffix': p_.change_context($['suffix'], ($) => $),
             }))),
@@ -413,38 +413,38 @@ export namespace namespaces {
             }
         })
         
-        export const Value_Path: declarations.Value_Path = ($, abort) => ({
+        export const Value_Subselection: declarations.Value_Subselection = ($, abort) => ({
             'tail': p_.change_context($['tail'], ($) => ({
                 'value': p_.from.list($).map(
                     ($) => ({
                         'value': {
-                            'value': p_.from.state($).decide(($): s_target.namespaces.structure.types.Value_Path.tail.value.L.value.value => {
+                            'value': p_.from.state($).decide(($): s_target.namespaces.structure.types.Value_Subselection.tail.value.L.value.value => {
                                 switch ($[0]) {
-                                    case 'dictionary': return p_.option($, ($): s_target.namespaces.structure.types.Value_Path.tail.value.L.value.value => p_.change_context($, ($) => ['dictionary', {
+                                    case 'dictionary': return p_.option($, ($): s_target.namespaces.structure.types.Value_Subselection.tail.value.L.value.value => p_.change_context($, ($) => ['dictionary', {
                                         'constraints': {
                                             'definition': p_implement_me("OPTION CONSTRAINT: definition"),
                                         },
                                         'value': null,
                                     }]))
-                                    case 'group': return p_.option($, ($): s_target.namespaces.structure.types.Value_Path.tail.value.L.value.value => p_.change_context($, ($) => ['group', {
+                                    case 'group': return p_.option($, ($): s_target.namespaces.structure.types.Value_Subselection.tail.value.L.value.value => p_.change_context($, ($) => ['group', {
                                         'constraints': {
                                             'definition': p_implement_me("OPTION CONSTRAINT: definition"),
                                         },
                                         'value': p_implement_me("SELECTED REF"),
                                     }]))
-                                    case 'list': return p_.option($, ($): s_target.namespaces.structure.types.Value_Path.tail.value.L.value.value => p_.change_context($, ($) => ['list', {
+                                    case 'list': return p_.option($, ($): s_target.namespaces.structure.types.Value_Subselection.tail.value.L.value.value => p_.change_context($, ($) => ['list', {
                                         'constraints': {
                                             'definition': p_implement_me("OPTION CONSTRAINT: definition"),
                                         },
                                         'value': null,
                                     }]))
-                                    case 'optional': return p_.option($, ($): s_target.namespaces.structure.types.Value_Path.tail.value.L.value.value => p_.change_context($, ($) => ['optional', {
+                                    case 'optional': return p_.option($, ($): s_target.namespaces.structure.types.Value_Subselection.tail.value.L.value.value => p_.change_context($, ($) => ['optional', {
                                         'constraints': {
                                             'definition': p_implement_me("OPTION CONSTRAINT: definition"),
                                         },
                                         'value': null,
                                     }]))
-                                    case 'state': return p_.option($, ($): s_target.namespaces.structure.types.Value_Path.tail.value.L.value.value => p_.change_context($, ($) => ['state', {
+                                    case 'state': return p_.option($, ($): s_target.namespaces.structure.types.Value_Subselection.tail.value.L.value.value => p_.change_context($, ($) => ['state', {
                                         'constraints': {
                                             'definition': p_implement_me("OPTION CONSTRAINT: definition"),
                                         },
@@ -467,7 +467,7 @@ export namespace namespaces {
                 $,
                 abort,
             )),
-            'path': p_.change_context($['path'], ($) => __operations.namespaces.structure.Value_Path(
+            'path': p_.change_context($['path'], ($) => __operations.namespaces.structure.Value_Subselection(
                 $,
                 abort,
             )),
@@ -533,73 +533,85 @@ export namespace namespaces {
         ))
         export namespace namespaces {}
     }
-    export namespace signatures {
+    export namespace declarations {
         
         export namespace declarations {
             
             export type Presence = p_.Refiner<
-                s_target.namespaces.signatures.types.Presence,
+                s_target.namespaces.declarations.types.Presence,
                 s_error.types.Resolving_Error,
-                s_source.namespaces.signatures.types.Presence
+                s_source.namespaces.declarations.types.Presence
             >
             
             export type Signature_Type_Reference = p_.Refiner<
-                s_target.namespaces.signatures.types.Signature_Type_Reference,
+                s_target.namespaces.declarations.types.Signature_Type_Reference,
                 s_error.types.Resolving_Error,
-                s_source.namespaces.signatures.types.Signature_Type_Reference
+                s_source.namespaces.declarations.types.Signature_Type_Reference
             >
             
-            export type Signature_Parameters = p_.Refiner<
-                s_target.namespaces.signatures.types.Signature_Parameters,
+            export type Signature_Value_Subselection = p_.Refiner<
+                s_target.namespaces.declarations.types.Signature_Value_Subselection,
                 s_error.types.Resolving_Error,
-                s_source.namespaces.signatures.types.Signature_Parameters
+                s_source.namespaces.declarations.types.Signature_Value_Subselection
             >
             
-            export type Signatures = p_.Refiner<
-                s_target.namespaces.signatures.types.Signatures,
+            export type Signature_Value_Reference = p_.Refiner<
+                s_target.namespaces.declarations.types.Signature_Value_Reference,
                 s_error.types.Resolving_Error,
-                s_source.namespaces.signatures.types.Signatures
+                s_source.namespaces.declarations.types.Signature_Value_Reference
             >
             
             export type Signature = p_.Refiner<
-                s_target.namespaces.signatures.types.Signature,
+                s_target.namespaces.declarations.types.Signature,
                 s_error.types.Resolving_Error,
-                s_source.namespaces.signatures.types.Signature
+                s_source.namespaces.declarations.types.Signature
+            >
+            
+            export type Declarations = p_.Refiner<
+                s_target.namespaces.declarations.types.Declarations,
+                s_error.types.Resolving_Error,
+                s_source.namespaces.declarations.types.Declarations
+            >
+            
+            export type Declaration = p_.Refiner<
+                s_target.namespaces.declarations.types.Declaration,
+                s_error.types.Resolving_Error,
+                s_source.namespaces.declarations.types.Declaration
             >
             
             export type Namespaces = p_.Refiner<
-                s_target.namespaces.signatures.types.Namespaces,
+                s_target.namespaces.declarations.types.Namespaces,
                 s_error.types.Resolving_Error,
-                s_source.namespaces.signatures.types.Namespaces
+                s_source.namespaces.declarations.types.Namespaces
             >
             
-            export type Signature_Namespace = p_.Refiner<
-                s_target.namespaces.signatures.types.Signature_Namespace,
+            export type Declaration_Namespace = p_.Refiner<
+                s_target.namespaces.declarations.types.Declaration_Namespace,
                 s_error.types.Resolving_Error,
-                s_source.namespaces.signatures.types.Signature_Namespace
+                s_source.namespaces.declarations.types.Declaration_Namespace
             >
         }
         
         // implementations
         
-        export const Presence: declarations.Presence = ($, abort) => p_.from.state($).decide(($): s_target.namespaces.signatures.types.Presence => {
+        export const Presence: declarations.Presence = ($, abort) => p_.from.state($).decide(($): s_target.namespaces.declarations.types.Presence => {
             switch ($[0]) {
-                case 'optional': return p_.option($, ($): s_target.namespaces.signatures.types.Presence => p_.change_context($, ($) => ['optional', null]))
-                case 'required': return p_.option($, ($): s_target.namespaces.signatures.types.Presence => p_.change_context($, ($) => ['required', null]))
+                case 'optional': return p_.option($, ($): s_target.namespaces.declarations.types.Presence => p_.change_context($, ($) => ['optional', null]))
+                case 'required': return p_.option($, ($): s_target.namespaces.declarations.types.Presence => p_.change_context($, ($) => ['required', null]))
                 default: return p_.exhaustive($[0])
             }
         })
         
         export const Signature_Type_Reference: declarations.Signature_Type_Reference = ($, abort) => ({
             'location': p_.change_context($['location'], ($) => ({
-                'value': p_.from.state($).decide(($): s_target.namespaces.signatures.types.Signature_Type_Reference.location.value => {
+                'value': p_.from.state($).decide(($): s_target.namespaces.declarations.types.Signature_Type_Reference.location.value => {
                     switch ($[0]) {
-                        case 'internal': return p_.option($, ($): s_target.namespaces.signatures.types.Signature_Type_Reference.location.value => p_.change_context($, ($) => ['internal', p_implement_me("SELECTED REF")]))
-                        case 'child': return p_.option($, ($): s_target.namespaces.signatures.types.Signature_Type_Reference.location.value => p_.change_context($, ($) => ['child', {
+                        case 'internal': return p_.option($, ($): s_target.namespaces.declarations.types.Signature_Type_Reference.location.value => p_.change_context($, ($) => ['internal', p_implement_me("SELECTED REF")]))
+                        case 'child': return p_.option($, ($): s_target.namespaces.declarations.types.Signature_Type_Reference.location.value => p_.change_context($, ($) => ['child', {
                             'namespace': p_.change_context($['namespace'], ($) => p_implement_me("SELECTED REF")),
                             'type': p_.change_context($['type'], ($) => p_implement_me("SELECTED REF")),
                         }]))
-                        case 'sibling': return p_.option($, ($): s_target.namespaces.signatures.types.Signature_Type_Reference.location.value => p_.change_context($, ($) => ['sibling', {
+                        case 'sibling': return p_.option($, ($): s_target.namespaces.declarations.types.Signature_Type_Reference.location.value => p_.change_context($, ($) => ['sibling', {
                             'namespace': p_.change_context($['namespace'], ($) => p_implement_me("SELECTED REF")),
                             'type': p_.change_context($['type'], ($) => p_implement_me("SELECTED REF")),
                         }]))
@@ -610,14 +622,74 @@ export namespace namespaces {
             })),
         })
         
-        export const Signature_Parameters: declarations.Signature_Parameters = ($, abort) => ({
-            'types': p_.change_context($['types'], ($) => p_.from.dictionary($).map(
+        export const Signature_Value_Subselection: declarations.Signature_Value_Subselection = ($, abort) => ({
+            'tail': p_.change_context($['tail'], ($) => ({
+                'value': p_.from.list($).map(
+                    ($) => ({
+                        'value': {
+                            'value': p_.from.state($).decide(($): s_target.namespaces.declarations.types.Signature_Value_Subselection.tail.value.L.value.value => {
+                                switch ($[0]) {
+                                    case 'dictionary': return p_.option($, ($): s_target.namespaces.declarations.types.Signature_Value_Subselection.tail.value.L.value.value => p_.change_context($, ($) => ['dictionary', {
+                                        'constraints': {
+                                            'definition': p_implement_me("OPTION CONSTRAINT: definition"),
+                                        },
+                                        'value': null,
+                                    }]))
+                                    case 'group': return p_.option($, ($): s_target.namespaces.declarations.types.Signature_Value_Subselection.tail.value.L.value.value => p_.change_context($, ($) => ['group', {
+                                        'constraints': {
+                                            'definition': p_implement_me("OPTION CONSTRAINT: definition"),
+                                        },
+                                        'value': p_implement_me("SELECTED REF"),
+                                    }]))
+                                    case 'list': return p_.option($, ($): s_target.namespaces.declarations.types.Signature_Value_Subselection.tail.value.L.value.value => p_.change_context($, ($) => ['list', {
+                                        'constraints': {
+                                            'definition': p_implement_me("OPTION CONSTRAINT: definition"),
+                                        },
+                                        'value': null,
+                                    }]))
+                                    case 'optional': return p_.option($, ($): s_target.namespaces.declarations.types.Signature_Value_Subselection.tail.value.L.value.value => p_.change_context($, ($) => ['optional', {
+                                        'constraints': {
+                                            'definition': p_implement_me("OPTION CONSTRAINT: definition"),
+                                        },
+                                        'value': null,
+                                    }]))
+                                    case 'state': return p_.option($, ($): s_target.namespaces.declarations.types.Signature_Value_Subselection.tail.value.L.value.value => p_.change_context($, ($) => ['state', {
+                                        'constraints': {
+                                            'definition': p_implement_me("OPTION CONSTRAINT: definition"),
+                                        },
+                                        'value': p_implement_me("SELECTED REF"),
+                                    }]))
+                                    default: return p_.exhaustive($[0])
+                                }
+                            }),
+                            'result': p_implement_me("STATE RESULT"),
+                        },
+                        'result': p_implement_me("LIST ITEM RESULT"),
+                    }),
+                ),
+                'result': p_implement_me("LIST RESULT"),
+            })),
+        })
+        
+        export const Signature_Value_Reference: declarations.Signature_Value_Reference = ($, abort) => ({
+            'type': p_.change_context($['type'], ($) => __operations.namespaces.declarations.Signature_Type_Reference(
+                $,
+                abort,
+            )),
+            'subselection': p_.change_context($['subselection'], ($) => __operations.namespaces.declarations.Signature_Value_Subselection(
+                $,
+                abort,
+            )),
+        })
+        
+        export const Signature: declarations.Signature = ($, abort) => ({
+            'values': p_.change_context($['values'], ($) => p_.from.dictionary($).map(
                 ($, id) => ({
-                    'type': p_.change_context($['type'], ($) => __operations.namespaces.signatures.Signature_Type_Reference(
+                    'value': p_.change_context($['value'], ($) => __operations.namespaces.declarations.Signature_Value_Reference(
                         $,
                         abort,
                     )),
-                    'presence': p_.change_context($['presence'], ($) => __operations.namespaces.signatures.Presence(
+                    'presence': p_.change_context($['presence'], ($) => __operations.namespaces.declarations.Presence(
                         $,
                         abort,
                     )),
@@ -629,19 +701,19 @@ export namespace namespaces {
                         'constraints': {
                             'dictionary': p_implement_me("VALUE CONSTRAINT: dictionary"),
                         },
-                        'value': __operations.namespaces.signatures.Signature_Type_Reference(
+                        'value': __operations.namespaces.declarations.Signature_Value_Reference(
                             $,
                             abort,
                         ),
                     })),
-                    'type': p_.change_context($['type'], ($) => p_.from.state($).decide(($): s_target.namespaces.signatures.types.Signature_Parameters.lookups.D.type_ => {
+                    'type': p_.change_context($['type'], ($) => p_.from.state($).decide(($): s_target.namespaces.declarations.types.Signature.lookups.D.type_ => {
                         switch ($[0]) {
-                            case 'cyclic': return p_.option($, ($): s_target.namespaces.signatures.types.Signature_Parameters.lookups.D.type_ => p_.change_context($, ($) => ['cyclic', null]))
-                            case 'acyclic': return p_.option($, ($): s_target.namespaces.signatures.types.Signature_Parameters.lookups.D.type_ => p_.change_context($, ($) => ['acyclic', null]))
+                            case 'cyclic': return p_.option($, ($): s_target.namespaces.declarations.types.Signature.lookups.D.type_ => p_.change_context($, ($) => ['cyclic', null]))
+                            case 'acyclic': return p_.option($, ($): s_target.namespaces.declarations.types.Signature.lookups.D.type_ => p_.change_context($, ($) => ['acyclic', null]))
                             default: return p_.exhaustive($[0])
                         }
                     })),
-                    'presence': p_.change_context($['presence'], ($) => __operations.namespaces.signatures.Presence(
+                    'presence': p_.change_context($['presence'], ($) => __operations.namespaces.declarations.Presence(
                         $,
                         abort,
                     )),
@@ -649,25 +721,25 @@ export namespace namespaces {
             )),
         })
         
-        export const Signatures: declarations.Signatures = ($, abort) => p_.from.dictionary($).map(
+        export const Declarations: declarations.Declarations = ($, abort) => p_.from.dictionary($).map(
             ($, id) => ({
                 'benchmark': p_implement_me("BENCHMARK ENTRY"),
-                'value': __operations.namespaces.signatures.Signature(
+                'value': __operations.namespaces.declarations.Declaration(
                     $,
                     abort,
                 ),
             }),
         )
         
-        export const Signature: declarations.Signature = ($, abort) => ({
-            'parameters': p_.change_context($['parameters'], ($) => ({
-                'value': p_.from.state($).decide(($): s_target.namespaces.signatures.types.Signature.parameters.value => {
+        export const Declaration: declarations.Declaration = ($, abort) => ({
+            'signature': p_.change_context($['signature'], ($) => ({
+                'value': p_.from.state($).decide(($): s_target.namespaces.declarations.types.Declaration.signature.value => {
                     switch ($[0]) {
-                        case 'local': return p_.option($, ($): s_target.namespaces.signatures.types.Signature.parameters.value => p_.change_context($, ($) => ['local', __operations.namespaces.signatures.Signature_Parameters(
+                        case 'local': return p_.option($, ($): s_target.namespaces.declarations.types.Declaration.signature.value => p_.change_context($, ($) => ['local', __operations.namespaces.declarations.Signature(
                             $,
                             abort,
                         )]))
-                        case 'same as': return p_.option($, ($): s_target.namespaces.signatures.types.Signature.parameters.value => p_.change_context($, ($) => ['same as', p_implement_me("SELECTED REF")]))
+                        case 'same as': return p_.option($, ($): s_target.namespaces.declarations.types.Declaration.signature.value => p_.change_context($, ($) => ['same as', p_implement_me("SELECTED REF")]))
                         default: return p_.exhaustive($[0])
                     }
                 }),
@@ -678,19 +750,19 @@ export namespace namespaces {
         export const Namespaces: declarations.Namespaces = ($, abort) => p_.from.dictionary($).map(
             ($, id) => ({
                 'benchmark': p_implement_me("BENCHMARK ENTRY"),
-                'value': __operations.namespaces.signatures.Signature_Namespace(
+                'value': __operations.namespaces.declarations.Declaration_Namespace(
                     $,
                     abort,
                 ),
             }),
         )
         
-        export const Signature_Namespace: declarations.Signature_Namespace = ($, abort) => ({
-            'namespaces': p_.change_context($['namespaces'], ($) => __operations.namespaces.signatures.Namespaces(
+        export const Declaration_Namespace: declarations.Declaration_Namespace = ($, abort) => ({
+            'namespaces': p_.change_context($['namespaces'], ($) => __operations.namespaces.declarations.Namespaces(
                 $,
                 abort,
             )),
-            'types': p_.change_context($['types'], ($) => __operations.namespaces.signatures.Signatures(
+            'types': p_.change_context($['types'], ($) => __operations.namespaces.declarations.Declarations(
                 $,
                 abort,
             )),
@@ -713,10 +785,10 @@ export namespace namespaces {
                 s_source.namespaces.resolver.types.Type_Reference
             >
             
-            export type Value_Path = p_.Refiner<
-                s_target.namespaces.resolver.types.Value_Path,
+            export type Value_Subselection = p_.Refiner<
+                s_target.namespaces.resolver.types.Value_Subselection,
                 s_error.types.Resolving_Error,
-                s_source.namespaces.resolver.types.Value_Path
+                s_source.namespaces.resolver.types.Value_Subselection
             >
             
             export type Value_Reference = p_.Refiner<
@@ -869,38 +941,38 @@ export namespace namespaces {
             })),
         })
         
-        export const Value_Path: declarations.Value_Path = ($, abort) => ({
+        export const Value_Subselection: declarations.Value_Subselection = ($, abort) => ({
             'tail': p_.change_context($['tail'], ($) => ({
                 'value': p_.from.list($).map(
                     ($) => ({
                         'value': {
-                            'value': p_.from.state($).decide(($): s_target.namespaces.resolver.types.Value_Path.tail.value.L.value.value => {
+                            'value': p_.from.state($).decide(($): s_target.namespaces.resolver.types.Value_Subselection.tail.value.L.value.value => {
                                 switch ($[0]) {
-                                    case 'dictionary': return p_.option($, ($): s_target.namespaces.resolver.types.Value_Path.tail.value.L.value.value => p_.change_context($, ($) => ['dictionary', {
+                                    case 'dictionary': return p_.option($, ($): s_target.namespaces.resolver.types.Value_Subselection.tail.value.L.value.value => p_.change_context($, ($) => ['dictionary', {
                                         'constraints': {
                                             'definition': p_implement_me("OPTION CONSTRAINT: definition"),
                                         },
                                         'value': null,
                                     }]))
-                                    case 'group': return p_.option($, ($): s_target.namespaces.resolver.types.Value_Path.tail.value.L.value.value => p_.change_context($, ($) => ['group', {
+                                    case 'group': return p_.option($, ($): s_target.namespaces.resolver.types.Value_Subselection.tail.value.L.value.value => p_.change_context($, ($) => ['group', {
                                         'constraints': {
                                             'definition': p_implement_me("OPTION CONSTRAINT: definition"),
                                         },
                                         'value': p_implement_me("SELECTED REF"),
                                     }]))
-                                    case 'list': return p_.option($, ($): s_target.namespaces.resolver.types.Value_Path.tail.value.L.value.value => p_.change_context($, ($) => ['list', {
+                                    case 'list': return p_.option($, ($): s_target.namespaces.resolver.types.Value_Subselection.tail.value.L.value.value => p_.change_context($, ($) => ['list', {
                                         'constraints': {
                                             'definition': p_implement_me("OPTION CONSTRAINT: definition"),
                                         },
                                         'value': null,
                                     }]))
-                                    case 'optional': return p_.option($, ($): s_target.namespaces.resolver.types.Value_Path.tail.value.L.value.value => p_.change_context($, ($) => ['optional', {
+                                    case 'optional': return p_.option($, ($): s_target.namespaces.resolver.types.Value_Subselection.tail.value.L.value.value => p_.change_context($, ($) => ['optional', {
                                         'constraints': {
                                             'definition': p_implement_me("OPTION CONSTRAINT: definition"),
                                         },
                                         'value': null,
                                     }]))
-                                    case 'state': return p_.option($, ($): s_target.namespaces.resolver.types.Value_Path.tail.value.L.value.value => p_.change_context($, ($) => ['state', {
+                                    case 'state': return p_.option($, ($): s_target.namespaces.resolver.types.Value_Subselection.tail.value.L.value.value => p_.change_context($, ($) => ['state', {
                                         'constraints': {
                                             'definition': p_implement_me("OPTION CONSTRAINT: definition"),
                                         },
@@ -923,7 +995,7 @@ export namespace namespaces {
                 $,
                 abort,
             )),
-            'path': p_.change_context($['path'], ($) => __operations.namespaces.resolver.Value_Path(
+            'path': p_.change_context($['path'], ($) => __operations.namespaces.resolver.Value_Subselection(
                 $,
                 abort,
             )),
@@ -1528,6 +1600,10 @@ export namespace namespaces {
                         'definition': p_implement_me("OPTION CONSTRAINT: definition"),
                     },
                     'value': {
+                        'presence': p_.change_context($['presence'], ($) => p_.from.optional($).map(($) => __operations.namespaces.resolver.Possible_Value_Selection(
+                            $,
+                            abort,
+                        ))),
                         'constraints': p_.change_context($['constraints'], ($) => __operations.namespaces.resolver.Option_Constraints(
                             $,
                             abort,

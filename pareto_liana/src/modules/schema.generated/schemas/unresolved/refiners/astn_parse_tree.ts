@@ -188,18 +188,18 @@ export const Schema: declarations.Schema = ($, abort) => p_.change_context(r_unm
         ($) => abort(['value', $]),
         {
             'expected properties': p_.literal.dictionary({
-                "signatures": null,
+                "declarations": null,
                 "implementations": null,
             }),
         },
     ), ($) => ({
-        'signatures': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+        'declarations': p_.change_context(r_unmarshalled_from_parse_tree.Property(
             $,
             ($) => abort(['value', $]),
             {
-                'id': 'signatures',
+                'id': 'declarations',
             },
-        ), ($) => __operations.namespaces.signatures.Signature_Namespace(
+        ), ($) => __operations.namespaces.declarations.Declaration_Namespace(
             $,
             abort,
         )),
@@ -312,8 +312,8 @@ export namespace namespaces {
                 s_source.Value
             >
             
-            export type Value_Path = p_.Refiner<
-                s_target.namespaces.structure.types.Value_Path,
+            export type Value_Subselection = p_.Refiner<
+                s_target.namespaces.structure.types.Value_Subselection,
                 s_error.types.Unmarshalling_Error,
                 s_source.Value
             >
@@ -480,7 +480,7 @@ export namespace namespaces {
                 'expected properties': p_.literal.dictionary({
                     "type": null,
                     "regular expression": null,
-                    "file path": null,
+                    "hyperlink": null,
                 }),
             },
         ), ($) => ({
@@ -524,11 +524,11 @@ export namespace namespaces {
                 $,
                 abort,
             ))),
-            'file path': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+            'hyperlink': p_.change_context(r_unmarshalled_from_parse_tree.Property(
                 $,
                 ($) => abort(['value', $]),
                 {
-                    'id': 'file path',
+                    'id': 'hyperlink',
                 },
             ), ($) => p_.from.optional(r_unmarshalled_from_parse_tree.Optional(
                 $,
@@ -1077,7 +1077,7 @@ export namespace namespaces {
             }
         }))
         
-        export const Value_Path: declarations.Value_Path = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+        export const Value_Subselection: declarations.Value_Subselection = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
             $,
             ($) => abort(['value', $]),
             {
@@ -1099,7 +1099,7 @@ export namespace namespaces {
                 ($) => p_.change_context($['value'], ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
                     $,
                     ($) => abort(['value', $]),
-                ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.structure.types.Value_Path.tail.L => {
+                ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.structure.types.Value_Subselection.tail.L => {
                     switch ($text) {
                         case "dictionary": return p_.change_context($['value'], ($) => ['dictionary', r_unmarshalled_from_parse_tree.Nothing(
                             $,
@@ -1158,7 +1158,7 @@ export namespace namespaces {
                 {
                     'id': 'path',
                 },
-            ), ($) => __operations.namespaces.structure.Value_Path(
+            ), ($) => __operations.namespaces.structure.Value_Subselection(
                 $,
                 abort,
             )),
@@ -1318,48 +1318,60 @@ export namespace namespaces {
         ))
         export namespace namespaces {}
     }
-    export namespace signatures {
+    export namespace declarations {
         
         export namespace declarations {
             
             export type Presence = p_.Refiner<
-                s_target.namespaces.signatures.types.Presence,
+                s_target.namespaces.declarations.types.Presence,
                 s_error.types.Unmarshalling_Error,
                 s_source.Value
             >
             
             export type Signature_Type_Reference = p_.Refiner<
-                s_target.namespaces.signatures.types.Signature_Type_Reference,
+                s_target.namespaces.declarations.types.Signature_Type_Reference,
                 s_error.types.Unmarshalling_Error,
                 s_source.Value
             >
             
-            export type Signature_Parameters = p_.Refiner<
-                s_target.namespaces.signatures.types.Signature_Parameters,
+            export type Signature_Value_Subselection = p_.Refiner<
+                s_target.namespaces.declarations.types.Signature_Value_Subselection,
                 s_error.types.Unmarshalling_Error,
                 s_source.Value
             >
             
-            export type Signatures = p_.Refiner<
-                s_target.namespaces.signatures.types.Signatures,
+            export type Signature_Value_Reference = p_.Refiner<
+                s_target.namespaces.declarations.types.Signature_Value_Reference,
                 s_error.types.Unmarshalling_Error,
                 s_source.Value
             >
             
             export type Signature = p_.Refiner<
-                s_target.namespaces.signatures.types.Signature,
+                s_target.namespaces.declarations.types.Signature,
+                s_error.types.Unmarshalling_Error,
+                s_source.Value
+            >
+            
+            export type Declarations = p_.Refiner<
+                s_target.namespaces.declarations.types.Declarations,
+                s_error.types.Unmarshalling_Error,
+                s_source.Value
+            >
+            
+            export type Declaration = p_.Refiner<
+                s_target.namespaces.declarations.types.Declaration,
                 s_error.types.Unmarshalling_Error,
                 s_source.Value
             >
             
             export type Namespaces = p_.Refiner<
-                s_target.namespaces.signatures.types.Namespaces,
+                s_target.namespaces.declarations.types.Namespaces,
                 s_error.types.Unmarshalling_Error,
                 s_source.Value
             >
             
-            export type Signature_Namespace = p_.Refiner<
-                s_target.namespaces.signatures.types.Signature_Namespace,
+            export type Declaration_Namespace = p_.Refiner<
+                s_target.namespaces.declarations.types.Declaration_Namespace,
                 s_error.types.Unmarshalling_Error,
                 s_source.Value
             >
@@ -1370,7 +1382,7 @@ export namespace namespaces {
         export const Presence: declarations.Presence = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.State(
             $,
             ($) => abort(['value', $]),
-        ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.signatures.types.Presence => {
+        ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.declarations.types.Presence => {
             switch ($text) {
                 case "optional": return p_.change_context($['value'], ($) => ['optional', r_unmarshalled_from_parse_tree.Nothing(
                     $,
@@ -1407,7 +1419,7 @@ export namespace namespaces {
             ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
                 $,
                 ($) => abort(['value', $]),
-            ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.signatures.types.Signature_Type_Reference.location => {
+            ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.declarations.types.Signature_Type_Reference.location => {
                 switch ($text) {
                     case "internal": return p_.change_context($['value'], ($) => ['internal', r_unmarshalled_from_parse_tree.Text(
                         $,
@@ -1485,21 +1497,108 @@ export namespace namespaces {
             }))),
         }))
         
-        export const Signature_Parameters: declarations.Signature_Parameters = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+        export const Signature_Value_Subselection: declarations.Signature_Value_Subselection = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
             $,
             ($) => abort(['value', $]),
             {
                 'expected properties': p_.literal.dictionary({
-                    "types": null,
+                    "tail": null,
+                }),
+            },
+        ), ($) => ({
+            'tail': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                $,
+                ($) => abort(['value', $]),
+                {
+                    'id': 'tail',
+                },
+            ), ($) => p_.from.list(r_unmarshalled_from_parse_tree.List(
+                $,
+                ($) => abort(['value', $]),
+            )['items']).map(
+                ($) => p_.change_context($['value'], ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
+                    $,
+                    ($) => abort(['value', $]),
+                ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.declarations.types.Signature_Value_Subselection.tail.L => {
+                    switch ($text) {
+                        case "dictionary": return p_.change_context($['value'], ($) => ['dictionary', r_unmarshalled_from_parse_tree.Nothing(
+                            $,
+                            ($) => abort(['value', $]),
+                        )])
+                        case "group": return p_.change_context($['value'], ($) => ['group', r_unmarshalled_from_parse_tree.Text(
+                            $,
+                            ($) => abort(['value', $]),
+                        )])
+                        case "list": return p_.change_context($['value'], ($) => ['list', r_unmarshalled_from_parse_tree.Nothing(
+                            $,
+                            ($) => abort(['value', $]),
+                        )])
+                        case "optional": return p_.change_context($['value'], ($) => ['optional', r_unmarshalled_from_parse_tree.Nothing(
+                            $,
+                            ($) => abort(['value', $]),
+                        )])
+                        case "state": return p_.change_context($['value'], ($) => ['state', r_unmarshalled_from_parse_tree.Text(
+                            $,
+                            ($) => abort(['value', $]),
+                        )])
+                        default: return abort(
+                            ['value', ['liana', {
+                                'type': ['state', ['unknown option', $['option']['token']['value']]],
+                                'range': $['option']['range'],
+                            }]],
+                        )
+                    }
+                }))),
+            )),
+        }))
+        
+        export const Signature_Value_Reference: declarations.Signature_Value_Reference = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+            $,
+            ($) => abort(['value', $]),
+            {
+                'expected properties': p_.literal.dictionary({
+                    "type": null,
+                    "subselection": null,
+                }),
+            },
+        ), ($) => ({
+            'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                $,
+                ($) => abort(['value', $]),
+                {
+                    'id': 'type',
+                },
+            ), ($) => __operations.namespaces.declarations.Signature_Type_Reference(
+                $,
+                abort,
+            )),
+            'subselection': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                $,
+                ($) => abort(['value', $]),
+                {
+                    'id': 'subselection',
+                },
+            ), ($) => __operations.namespaces.declarations.Signature_Value_Subselection(
+                $,
+                abort,
+            )),
+        }))
+        
+        export const Signature: declarations.Signature = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+            $,
+            ($) => abort(['value', $]),
+            {
+                'expected properties': p_.literal.dictionary({
+                    "values": null,
                     "lookups": null,
                 }),
             },
         ), ($) => ({
-            'types': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+            'values': p_.change_context(r_unmarshalled_from_parse_tree.Property(
                 $,
                 ($) => abort(['value', $]),
                 {
-                    'id': 'types',
+                    'id': 'values',
                 },
             ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.Dictionary(
                 $,
@@ -1510,18 +1609,18 @@ export namespace namespaces {
                     ($) => abort(['value', $]),
                     {
                         'expected properties': p_.literal.dictionary({
-                            "type": null,
+                            "value": null,
                             "presence": null,
                         }),
                     },
                 ), ($) => ({
-                    'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                    'value': p_.change_context(r_unmarshalled_from_parse_tree.Property(
                         $,
                         ($) => abort(['value', $]),
                         {
-                            'id': 'type',
+                            'id': 'value',
                         },
-                    ), ($) => __operations.namespaces.signatures.Signature_Type_Reference(
+                    ), ($) => __operations.namespaces.declarations.Signature_Value_Reference(
                         $,
                         abort,
                     )),
@@ -1531,7 +1630,7 @@ export namespace namespaces {
                         {
                             'id': 'presence',
                         },
-                    ), ($) => __operations.namespaces.signatures.Presence(
+                    ), ($) => __operations.namespaces.declarations.Presence(
                         $,
                         abort,
                     )),
@@ -1564,7 +1663,7 @@ export namespace namespaces {
                         {
                             'id': 'referent',
                         },
-                    ), ($) => __operations.namespaces.signatures.Signature_Type_Reference(
+                    ), ($) => __operations.namespaces.declarations.Signature_Value_Reference(
                         $,
                         abort,
                     )),
@@ -1577,7 +1676,7 @@ export namespace namespaces {
                     ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
                         $,
                         ($) => abort(['value', $]),
-                    ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.signatures.types.Signature_Parameters.lookups.D.type_ => {
+                    ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.declarations.types.Signature.lookups.D.type_ => {
                         switch ($text) {
                             case "cyclic": return p_.change_context($['value'], ($) => ['cyclic', r_unmarshalled_from_parse_tree.Nothing(
                                 $,
@@ -1601,7 +1700,7 @@ export namespace namespaces {
                         {
                             'id': 'presence',
                         },
-                    ), ($) => __operations.namespaces.signatures.Presence(
+                    ), ($) => __operations.namespaces.declarations.Presence(
                         $,
                         abort,
                     )),
@@ -1609,37 +1708,37 @@ export namespace namespaces {
             ))),
         }))
         
-        export const Signatures: declarations.Signatures = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Dictionary(
+        export const Declarations: declarations.Declarations = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Dictionary(
             $,
             ($) => abort(['value', $]),
         ), ($) => p_.from.dictionary($['entries']).map(
-            ($, id) => __operations.namespaces.signatures.Signature(
+            ($, id) => __operations.namespaces.declarations.Declaration(
                 $,
                 abort,
             ),
         ))
         
-        export const Signature: declarations.Signature = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+        export const Declaration: declarations.Declaration = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
             $,
             ($) => abort(['value', $]),
             {
                 'expected properties': p_.literal.dictionary({
-                    "parameters": null,
+                    "signature": null,
                 }),
             },
         ), ($) => ({
-            'parameters': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+            'signature': p_.change_context(r_unmarshalled_from_parse_tree.Property(
                 $,
                 ($) => abort(['value', $]),
                 {
-                    'id': 'parameters',
+                    'id': 'signature',
                 },
             ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
                 $,
                 ($) => abort(['value', $]),
-            ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.signatures.types.Signature.parameters => {
+            ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.declarations.types.Declaration.signature => {
                 switch ($text) {
-                    case "local": return p_.change_context($['value'], ($) => ['local', __operations.namespaces.signatures.Signature_Parameters(
+                    case "local": return p_.change_context($['value'], ($) => ['local', __operations.namespaces.declarations.Signature(
                         $,
                         abort,
                     )])
@@ -1661,13 +1760,13 @@ export namespace namespaces {
             $,
             ($) => abort(['value', $]),
         ), ($) => p_.from.dictionary($['entries']).map(
-            ($, id) => __operations.namespaces.signatures.Signature_Namespace(
+            ($, id) => __operations.namespaces.declarations.Declaration_Namespace(
                 $,
                 abort,
             ),
         ))
         
-        export const Signature_Namespace: declarations.Signature_Namespace = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+        export const Declaration_Namespace: declarations.Declaration_Namespace = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
             $,
             ($) => abort(['value', $]),
             {
@@ -1683,7 +1782,7 @@ export namespace namespaces {
                 {
                     'id': 'namespaces',
                 },
-            ), ($) => __operations.namespaces.signatures.Namespaces(
+            ), ($) => __operations.namespaces.declarations.Namespaces(
                 $,
                 abort,
             )),
@@ -1693,7 +1792,7 @@ export namespace namespaces {
                 {
                     'id': 'types',
                 },
-            ), ($) => __operations.namespaces.signatures.Signatures(
+            ), ($) => __operations.namespaces.declarations.Declarations(
                 $,
                 abort,
             )),
@@ -1716,8 +1815,8 @@ export namespace namespaces {
                 s_source.Value
             >
             
-            export type Value_Path = p_.Refiner<
-                s_target.namespaces.resolver.types.Value_Path,
+            export type Value_Subselection = p_.Refiner<
+                s_target.namespaces.resolver.types.Value_Subselection,
                 s_error.types.Unmarshalling_Error,
                 s_source.Value
             >
@@ -1954,7 +2053,7 @@ export namespace namespaces {
             }))),
         }))
         
-        export const Value_Path: declarations.Value_Path = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+        export const Value_Subselection: declarations.Value_Subselection = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
             $,
             ($) => abort(['value', $]),
             {
@@ -1976,7 +2075,7 @@ export namespace namespaces {
                 ($) => p_.change_context($['value'], ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
                     $,
                     ($) => abort(['value', $]),
-                ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Value_Path.tail.L => {
+                ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Value_Subselection.tail.L => {
                     switch ($text) {
                         case "dictionary": return p_.change_context($['value'], ($) => ['dictionary', r_unmarshalled_from_parse_tree.Nothing(
                             $,
@@ -2035,7 +2134,7 @@ export namespace namespaces {
                 {
                     'id': 'path',
                 },
-            ), ($) => __operations.namespaces.resolver.Value_Path(
+            ), ($) => __operations.namespaces.resolver.Value_Subselection(
                 $,
                 abort,
             )),
@@ -3225,6 +3324,7 @@ export namespace namespaces {
                     ($) => abort(['value', $]),
                     {
                         'expected properties': p_.literal.dictionary({
+                            "presence": null,
                             "constraints": null,
                             "resolver": null,
                             "not set constraints": null,
@@ -3232,6 +3332,19 @@ export namespace namespaces {
                         }),
                     },
                 ), ($) => ({
+                    'presence': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                        $,
+                        ($) => abort(['value', $]),
+                        {
+                            'id': 'presence',
+                        },
+                    ), ($) => p_.from.optional(r_unmarshalled_from_parse_tree.Optional(
+                        $,
+                        ($) => abort(['value', $]),
+                    )['optional']).map(($) => __operations.namespaces.resolver.Possible_Value_Selection(
+                        $,
+                        abort,
+                    ))),
                     'constraints': p_.change_context(r_unmarshalled_from_parse_tree.Property(
                         $,
                         ($) => abort(['value', $]),

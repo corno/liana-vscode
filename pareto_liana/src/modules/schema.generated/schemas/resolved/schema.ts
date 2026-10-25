@@ -71,13 +71,13 @@ export namespace types {
         
         export namespace resolver {
             
-            export type signatures = __schema.namespaces.signatures.types.Signature_Namespace
+            export type declarations = __schema.namespaces.declarations.types.Declaration_Namespace
             
             export type implementations = __schema.namespaces.resolver.types.Resolver
         }
         
         export type resolver = {
-            readonly 'signatures': resolver.signatures
+            readonly 'declarations': resolver.declarations
             readonly 'implementations': resolver.implementations
         }
     }
@@ -184,7 +184,7 @@ export namespace namespaces {
                     regular_expression.O
                 >
                 
-                export namespace file_path {
+                export namespace hyperlink {
                     
                     export namespace O {
                         
@@ -199,15 +199,15 @@ export namespace namespaces {
                     }
                 }
                 
-                export type file_path = p_.Optional_Value<
-                    file_path.O
+                export type hyperlink = p_.Optional_Value<
+                    hyperlink.O
                 >
             }
             
             export type Basic_Type = {
                 readonly 'type': Basic_Type.type_
                 readonly 'regular expression': Basic_Type.regular_expression
-                readonly 'file path': Basic_Type.file_path
+                readonly 'hyperlink': Basic_Type.hyperlink
             }
             
             export namespace Basic_Types {
@@ -585,7 +585,7 @@ export namespace namespaces {
                 | readonly ['reference', Value.reference]
                 | readonly ['state', Value.state]
             
-            export namespace Value_Path {
+            export namespace Value_Subselection {
                 
                 export namespace tail {
                     
@@ -750,15 +750,15 @@ export namespace namespaces {
                 }
             }
             
-            export type Value_Path = {
-                readonly 'tail': Value_Path.tail
+            export type Value_Subselection = {
+                readonly 'tail': Value_Subselection.tail
             }
             
             export namespace Value_Reference {
                 
                 export type type_ = __schema.namespaces.structure.types.Type_Reference
                 
-                export type path = __schema.namespaces.structure.types.Value_Path
+                export type path = __schema.namespaces.structure.types.Value_Subselection
             }
             
             export type Value_Reference = {
@@ -872,7 +872,7 @@ export namespace namespaces {
         }
         export namespace namespaces {}
     }
-    export namespace signatures {
+    export namespace declarations {
         export namespace types {
             
             export namespace Presence {
@@ -987,25 +987,206 @@ export namespace namespaces {
                 readonly 'location': Signature_Type_Reference.location
             }
             
-            export namespace Signature_Parameters {
+            export namespace Signature_Value_Subselection {
                 
-                export namespace types {
+                export namespace tail {
+                    
+                    export namespace value {
+                        
+                        export namespace L {
+                            
+                            export namespace value {
+                                
+                                export namespace value {
+                                    
+                                    export namespace dictionary {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.dictionary
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export type value = null
+                                    }
+                                    
+                                    export type dictionary = {
+                                        readonly 'constraints': dictionary.constraints
+                                        readonly 'value': dictionary.value
+                                    }
+                                    
+                                    export namespace group {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.group
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export namespace value {
+                                            
+                                            export type l_entry = __schema.namespaces.structure.types.Group.D
+                                            
+                                            export type l_id = string
+                                        }
+                                        
+                                        export type value = {
+                                            readonly 'l entry': value.l_entry
+                                            readonly 'l id': value.l_id
+                                        }
+                                    }
+                                    
+                                    export type group = {
+                                        readonly 'constraints': group.constraints
+                                        readonly 'value': group.value
+                                    }
+                                    
+                                    export namespace list {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.list
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export type value = null
+                                    }
+                                    
+                                    export type list = {
+                                        readonly 'constraints': list.constraints
+                                        readonly 'value': list.value
+                                    }
+                                    
+                                    export namespace optional {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.optional
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export type value = null
+                                    }
+                                    
+                                    export type optional = {
+                                        readonly 'constraints': optional.constraints
+                                        readonly 'value': optional.value
+                                    }
+                                    
+                                    export namespace state {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type definition = __schema.namespaces.structure.types.Value.state
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'definition': constraints.definition
+                                        }
+                                        
+                                        export namespace value {
+                                            
+                                            export type l_entry = __schema.namespaces.structure.types.Value.state.options.D
+                                            
+                                            export type l_id = string
+                                        }
+                                        
+                                        export type value = {
+                                            readonly 'l entry': value.l_entry
+                                            readonly 'l id': value.l_id
+                                        }
+                                    }
+                                    
+                                    export type state = {
+                                        readonly 'constraints': state.constraints
+                                        readonly 'value': state.value
+                                    }
+                                }
+                                
+                                export type value = 
+                                    | readonly ['dictionary', value.dictionary]
+                                    | readonly ['group', value.group]
+                                    | readonly ['list', value.list]
+                                    | readonly ['optional', value.optional]
+                                    | readonly ['state', value.state]
+                                
+                                export type result = __schema.namespaces.structure.types.Value
+                            }
+                            
+                            export type value = {
+                                readonly 'value': value.value
+                                readonly 'result': value.result
+                            }
+                            
+                            export type result = __schema.namespaces.structure.types.Value
+                        }
+                        
+                        export type L = {
+                            readonly 'value': L.value
+                            readonly 'result': L.result
+                        }
+                    }
+                    
+                    export type value = p_.List<
+                        value.L
+                    >
+                    
+                    export type result = __schema.namespaces.structure.types.Value
+                }
+                
+                export type tail = {
+                    readonly 'value': tail.value
+                    readonly 'result': tail.result
+                }
+            }
+            
+            export type Signature_Value_Subselection = {
+                readonly 'tail': Signature_Value_Subselection.tail
+            }
+            
+            export namespace Signature_Value_Reference {
+                
+                export type type_ = __schema.namespaces.declarations.types.Signature_Type_Reference
+                
+                export type subselection = __schema.namespaces.declarations.types.Signature_Value_Subselection
+            }
+            
+            export type Signature_Value_Reference = {
+                readonly 'type': Signature_Value_Reference.type_
+                readonly 'subselection': Signature_Value_Reference.subselection
+            }
+            
+            export namespace Signature {
+                
+                export namespace values {
                     
                     export namespace D {
                         
-                        export type type_ = __schema.namespaces.signatures.types.Signature_Type_Reference
+                        export type value = __schema.namespaces.declarations.types.Signature_Value_Reference
                         
-                        export type presence = __schema.namespaces.signatures.types.Presence
+                        export type presence = __schema.namespaces.declarations.types.Presence
                     }
                     
                     export type D = {
-                        readonly 'type': D.type_
+                        readonly 'value': D.value
                         readonly 'presence': D.presence
                     }
                 }
                 
-                export type types = p_.Dictionary<
-                    types.D
+                export type values = p_.Dictionary<
+                    values.D
                 >
                 
                 export namespace lookups {
@@ -1023,7 +1204,7 @@ export namespace namespaces {
                                 readonly 'dictionary': constraints.dictionary
                             }
                             
-                            export type value = __schema.namespaces.signatures.types.Signature_Type_Reference
+                            export type value = __schema.namespaces.declarations.types.Signature_Value_Reference
                         }
                         
                         export type referent = {
@@ -1042,7 +1223,7 @@ export namespace namespaces {
                             | readonly ['cyclic', type_.cyclic]
                             | readonly ['acyclic', type_.acyclic]
                         
-                        export type presence = __schema.namespaces.signatures.types.Presence
+                        export type presence = __schema.namespaces.declarations.types.Presence
                     }
                     
                     export type D = {
@@ -1057,18 +1238,18 @@ export namespace namespaces {
                 >
             }
             
-            export type Signature_Parameters = {
-                readonly 'types': Signature_Parameters.types
-                readonly 'lookups': Signature_Parameters.lookups
+            export type Signature = {
+                readonly 'values': Signature.values
+                readonly 'lookups': Signature.lookups
             }
             
-            export namespace Signatures {
+            export namespace Declarations {
                 
                 export namespace D {
                     
                     export type benchmark = __schema.namespaces.structure.types.Types.D
                     
-                    export type value = __schema.namespaces.signatures.types.Signature
+                    export type value = __schema.namespaces.declarations.types.Declaration
                 }
                 
                 export type D = {
@@ -1077,21 +1258,21 @@ export namespace namespaces {
                 }
             }
             
-            export type Signatures = p_.Dictionary<
-                Signatures.D
+            export type Declarations = p_.Dictionary<
+                Declarations.D
             >
             
-            export namespace Signature {
+            export namespace Declaration {
                 
-                export namespace parameters {
+                export namespace signature {
                     
                     export namespace value {
                         
-                        export type local = __schema.namespaces.signatures.types.Signature_Parameters
+                        export type local = __schema.namespaces.declarations.types.Signature
                         
                         export namespace same_as {
                             
-                            export type l_entry = __schema.namespaces.signatures.types.Signatures.D
+                            export type l_entry = __schema.namespaces.declarations.types.Declarations.D
                             
                             export type l_id = string
                         }
@@ -1106,17 +1287,17 @@ export namespace namespaces {
                         | readonly ['local', value.local]
                         | readonly ['same as', value.same_as]
                     
-                    export type result = __schema.namespaces.signatures.types.Signature_Parameters
+                    export type result = __schema.namespaces.declarations.types.Signature
                 }
                 
-                export type parameters = {
-                    readonly 'value': parameters.value
-                    readonly 'result': parameters.result
+                export type signature = {
+                    readonly 'value': signature.value
+                    readonly 'result': signature.result
                 }
             }
             
-            export type Signature = {
-                readonly 'parameters': Signature.parameters
+            export type Declaration = {
+                readonly 'signature': Declaration.signature
             }
             
             export namespace Namespaces {
@@ -1125,7 +1306,7 @@ export namespace namespaces {
                     
                     export type benchmark = __schema.namespaces.structure.types.Namespaces.D
                     
-                    export type value = __schema.namespaces.signatures.types.Signature_Namespace
+                    export type value = __schema.namespaces.declarations.types.Declaration_Namespace
                 }
                 
                 export type D = {
@@ -1138,16 +1319,16 @@ export namespace namespaces {
                 Namespaces.D
             >
             
-            export namespace Signature_Namespace {
+            export namespace Declaration_Namespace {
                 
-                export type namespaces = __schema.namespaces.signatures.types.Namespaces
+                export type namespaces = __schema.namespaces.declarations.types.Namespaces
                 
-                export type types = __schema.namespaces.signatures.types.Signatures
+                export type types = __schema.namespaces.declarations.types.Declarations
             }
             
-            export type Signature_Namespace = {
-                readonly 'namespaces': Signature_Namespace.namespaces
-                readonly 'types': Signature_Namespace.types
+            export type Declaration_Namespace = {
+                readonly 'namespaces': Declaration_Namespace.namespaces
+                readonly 'types': Declaration_Namespace.types
             }
         }
         export namespace namespaces {}
@@ -1272,7 +1453,7 @@ export namespace namespaces {
                 readonly 'location': Type_Reference.location
             }
             
-            export namespace Value_Path {
+            export namespace Value_Subselection {
                 
                 export namespace tail {
                     
@@ -1437,15 +1618,15 @@ export namespace namespaces {
                 }
             }
             
-            export type Value_Path = {
-                readonly 'tail': Value_Path.tail
+            export type Value_Subselection = {
+                readonly 'tail': Value_Subselection.tail
             }
             
             export namespace Value_Reference {
                 
                 export type type_ = __schema.namespaces.resolver.types.Type_Reference
                 
-                export type path = __schema.namespaces.resolver.types.Value_Path
+                export type path = __schema.namespaces.resolver.types.Value_Subselection
             }
             
             export type Value_Reference = {
@@ -2003,7 +2184,7 @@ export namespace namespaces {
                         
                         export namespace parameter {
                             
-                            export type l_entry = __schema.namespaces.signatures.types.Signature_Parameters.types.D
+                            export type l_entry = __schema.namespaces.declarations.types.Signature.values.D
                             
                             export type l_id = string
                         }
@@ -2403,7 +2584,7 @@ export namespace namespaces {
                         
                         export namespace parameter {
                             
-                            export type l_entry = __schema.namespaces.signatures.types.Signature_Parameters.lookups.D
+                            export type l_entry = __schema.namespaces.declarations.types.Signature.lookups.D
                             
                             export type l_id = string
                         }
@@ -2436,7 +2617,7 @@ export namespace namespaces {
                 
                 export namespace D {
                     
-                    export type benchmark = __schema.namespaces.signatures.types.Namespaces.D
+                    export type benchmark = __schema.namespaces.declarations.types.Namespaces.D
                     
                     export type value = __schema.namespaces.resolver.types.Resolver
                 }
@@ -2486,7 +2667,7 @@ export namespace namespaces {
                     
                     export namespace parameter {
                         
-                        export type l_entry = __schema.namespaces.signatures.types.Signature_Parameters.types.D
+                        export type l_entry = __schema.namespaces.declarations.types.Signature.values.D
                         
                         export type l_id = string
                     }
@@ -2855,7 +3036,7 @@ export namespace namespaces {
                                 
                                 export namespace internal {
                                     
-                                    export type l_entry = __schema.namespaces.signatures.types.Signatures.D
+                                    export type l_entry = __schema.namespaces.declarations.types.Declarations.D
                                     
                                     export type l_id = string
                                 }
@@ -2869,7 +3050,7 @@ export namespace namespaces {
                                     
                                     export namespace namespace {
                                         
-                                        export type l_entry = __schema.namespaces.signatures.types.Namespaces.D
+                                        export type l_entry = __schema.namespaces.declarations.types.Namespaces.D
                                         
                                         export type l_id = string
                                     }
@@ -2881,7 +3062,7 @@ export namespace namespaces {
                                     
                                     export namespace resolver {
                                         
-                                        export type l_entry = __schema.namespaces.signatures.types.Signatures.D
+                                        export type l_entry = __schema.namespaces.declarations.types.Declarations.D
                                         
                                         export type l_id = string
                                     }
@@ -2902,7 +3083,7 @@ export namespace namespaces {
                                 | readonly ['internal', value.internal]
                                 | readonly ['child', value.child]
                             
-                            export type result = __schema.namespaces.signatures.types.Signature
+                            export type result = __schema.namespaces.declarations.types.Declaration
                         }
                         
                         export type location = {
@@ -2920,7 +3101,7 @@ export namespace namespaces {
                                         
                                         export namespace D {
                                             
-                                            export type benchmark = __schema.namespaces.signatures.types.Signature_Parameters.types.D
+                                            export type benchmark = __schema.namespaces.declarations.types.Signature.values.D
                                             
                                             export namespace value {
                                                 
@@ -2930,7 +3111,7 @@ export namespace namespaces {
                                                 
                                                 export namespace parameter {
                                                     
-                                                    export type l_entry = __schema.namespaces.signatures.types.Signature_Parameters.types.D
+                                                    export type l_entry = __schema.namespaces.declarations.types.Signature.values.D
                                                     
                                                     export type l_id = string
                                                 }
@@ -2968,7 +3149,7 @@ export namespace namespaces {
                                         
                                         export namespace D {
                                             
-                                            export type benchmark = __schema.namespaces.signatures.types.Signature_Parameters.lookups.D
+                                            export type benchmark = __schema.namespaces.declarations.types.Signature.lookups.D
                                             
                                             export namespace value {
                                                 
@@ -3188,6 +3369,15 @@ export namespace namespaces {
                     
                     export namespace value {
                         
+                        export namespace presence {
+                            
+                            export type O = __schema.namespaces.resolver.types.Possible_Value_Selection
+                        }
+                        
+                        export type presence = p_.Optional_Value<
+                            presence.O
+                        >
+                        
                         export type constraints = __schema.namespaces.resolver.types.Option_Constraints
                         
                         export type resolver = __schema.namespaces.resolver.types.Value
@@ -3225,6 +3415,7 @@ export namespace namespaces {
                     }
                     
                     export type value = {
+                        readonly 'presence': value.presence
                         readonly 'constraints': value.constraints
                         readonly 'resolver': value.resolver
                         readonly 'not set constraints': value.not_set_constraints
@@ -3352,7 +3543,7 @@ export namespace namespaces {
                 
                 export namespace D {
                     
-                    export type benchmark = __schema.namespaces.signatures.types.Signatures.D
+                    export type benchmark = __schema.namespaces.declarations.types.Declarations.D
                     
                     export namespace value {
                         

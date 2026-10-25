@@ -26,7 +26,7 @@ export const token = (
 ): s_target.namespaces.structure.types.Basic_Type => ({
     type: type === 'double quoted' ? ['double quoted', null] : ['undelimited', null],
     'regular expression': sh.optional.null_or_value(regular_expression),
-    'file path': sh.optional.not_set(),
+    'hyperlink': sh.optional.not_set(),
 })
 
 export const prop = (value: s_target.namespaces.structure.types.Value): s_target.namespaces.structure.types.Group.D => ({
@@ -48,7 +48,7 @@ export const toption_with_description = (description: string, value: s_target.na
     description: sh.optional.set(description), constraints: sh.optional.not_set(), value,
 })
 export const type_reference = (type: string): s_target.namespaces.structure.types.Type_Reference => ({ location: ['internal', type] })
-export const value_reference = (type: string, tail: s_target.namespaces.structure.types.Value_Path.tail.L[]): s_target.namespaces.structure.types.Value_Reference => ({
+export const value_reference = (type: string, tail: s_target.namespaces.structure.types.Value_Subselection.tail.L[]): s_target.namespaces.structure.types.Value_Reference => ({
     type: type_reference(type), path: { tail: sh.list(tail) },
 })
 
@@ -67,7 +67,7 @@ export namespace t {
         ['optional', { value, constraints: sh.optional.not_set(), result: sh.optional.not_set() }]
     export const reference = (
         type: string,
-        tail: s_target.namespaces.structure.types.Value_Path.tail.L[],
+        tail: s_target.namespaces.structure.types.Value_Subselection.tail.L[],
         dependency: 'cyclic' | 'acyclic' = 'acyclic',
     ): s_target.namespaces.structure.types.Value => ['reference', {
         referent: value_reference(type, tail),
@@ -80,8 +80,8 @@ export namespace t {
 }
 
 export namespace vp {
-    export const d = (): s_target.namespaces.structure.types.Value_Path.tail.L => ['dictionary', null]
-    export const g = (property: string): s_target.namespaces.structure.types.Value_Path.tail.L => ['group', property]
-    export const s = (option: string): s_target.namespaces.structure.types.Value_Path.tail.L => ['state', option]
-    export const o = (): s_target.namespaces.structure.types.Value_Path.tail.L => ['optional', null]
+    export const d = (): s_target.namespaces.structure.types.Value_Subselection.tail.L => ['dictionary', null]
+    export const g = (property: string): s_target.namespaces.structure.types.Value_Subselection.tail.L => ['group', property]
+    export const s = (option: string): s_target.namespaces.structure.types.Value_Subselection.tail.L => ['state', option]
+    export const o = (): s_target.namespaces.structure.types.Value_Subselection.tail.L => ['optional', null]
 }

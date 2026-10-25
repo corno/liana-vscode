@@ -46,6 +46,7 @@ const Selection = ($: s_in.Selection, range: s_location.Range): s_out.Errors => 
 }
 
 export const Value: declarations_.Value = ($) => p_.literal.segmented_list([
+    $['presence check'] === undefined ? p_.literal.list([]) : Selection($['presence check'], full_range.Value($.unmarshalled.instance)),
     p_.from.dictionary($.constraints).flatten_to_list(
         (selection) => Selection(selection, full_range.Value($.unmarshalled.instance))
     ),
@@ -200,7 +201,8 @@ const Content: declarations_.Value = (value) => p_.from.state(value['unmarshall 
                             ($) => {
                                 switch ($[0]) {
                                     case 'set': return p_.option($, ($) => Value($['child value']))
-                                    case 'not set': return p_.option($, ($) => p_.literal.list([]))
+                                    case 'not set':
+                                    case 'unavailable': return p_.literal.list([])
                                     default: return p_.exhaustive($[0])
                                 }
                             }

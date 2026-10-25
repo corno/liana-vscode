@@ -10,6 +10,7 @@ export type Document = {
 }
 
 export type Value = {
+    'presence check'?: Selection
     'benchmark link'?: Selection
     'reference candidates'?: p_.Optional_Value<p_.List<string>>
     'reference dictionary'?: p_.Optional_Value<s_unmarshall_result.Dictionary>
@@ -96,6 +97,7 @@ export type Optional = {
         'child value': Value
     }]
     | ['not set', null]
+    | ['unavailable', null]
 }
 
 export type Selection =

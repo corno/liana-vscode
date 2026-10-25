@@ -12,7 +12,6 @@ const { TextDocument } = serverRequire('vscode-languageserver-textdocument')
 const { load_document } = require('../server/out/to_be_backend/load_document.js')
 const { file_type } = require('pareto-liana/schemas/temp_type_specifier/file_type')
 const { Type_Specifier } = require('pareto-liana/schemas/temp_type_specifier/refiners/list_of_characters')
-const { Type_Specification } = require('pareto-liana/modules/schema.generated/schemas/resolved/refiners/list_of_characters')
 const serialize_schema = require('pareto-liana/modules/schema.generated/schemas/resolved/transformers/paragraph')
 const sealed_target = require('pareto-liana/modules/schema.generated/schemas/resolved/transformers/astn_sealed_target')
 const serialize_paragraph = require('pareto-fountain-pen/modules/paragraph/schemas/paragraph/serializers')
@@ -44,11 +43,17 @@ const snippetText = text => text.replace(/^\$0/, '').replace(/\\([\\$}])/g, '$1'
 const { quote_identifier } = require('../server/out/helpers/quote_identifier.js')
 const fail = error => { throw error }
 const parse = source => Type_Specifier(chars(source), fail, { 'tab size': 4 })
-const basic = (type, resolver = '| `simple` ~', expression = '_') => specification(`| \`simple\` 'Basic'`, resolver, `{ 'Basic': (\`type\`: ${type} \`regular expression\`: ${expression} \`file path\`: _) }`)
+const signature = (values = '{}', lookups = '{}') =>
+    `(\`signature\`: | \`local\` (\`values\`: ${values} \`lookups\`: ${lookups}))`
+const signature_value = (type, presence = 'required', tail = '[]') =>
+    `(\`value\`: (\`type\`: (\`location\`: | \`internal\` '${type}') \`subselection\`: (\`tail\`: ${tail})) \`presence\`: | \`${presence}\` ~)`
+const signature_lookup = (type, mode, presence = 'required') =>
+    `(\`referent\`: (\`type\`: (\`location\`: | \`internal\` '${type}') \`subselection\`: (\`tail\`: [])) \`type\`: | \`${mode}\` ~ \`presence\`: | \`${presence}\` ~)`
+const basic = (type, resolver = '| `simple` ~', expression = '_') => specification(`| \`simple\` 'Basic'`, resolver, `{ 'Basic': (\`type\`: ${type} \`regular expression\`: ${expression} \`hyperlink\`: _) }`)
 const specification = (value = '| `nothing` ~', resolver = '| `nothing` ~', basicTypes = '{}', root = 'Root') =>
     `(\`schema\`: (\`structure\`: (\`namespaces\`: {} \`basic types\`: ${basicTypes}
         \`types\`: { 'Root': (\`root value\`: ${value}) }
-        ) \`resolver\`: (\`signatures\`: (\`namespaces\`: {} \`types\`: { 'Root': (\`parameters\`: | \`local\` (\`types\`: {} \`lookups\`: {}) ) }) \`implementations\`: (\`namespaces\`: {} \`types\`: { 'Root': (\`root value resolver\`: ${resolver}) })
+        ) \`resolver\`: (\`declarations\`: (\`namespaces\`: {} \`types\`: { 'Root': ${signature()} }) \`implementations\`: (\`namespaces\`: {} \`types\`: { 'Root': (\`root value resolver\`: ${resolver}) })
     )) \`directory\`: | \`dictionary\` (\`node\`: | \`file\` (\`file extension\`: "" \`type\`: '${root}')))`
 const selectedType = specification => file_type(specification, { directories: p.literal.list([]), 'file name': 'document.liana.lna' }, fail)
 const rootType = source => selectedType(parse(source)[1])['l entry']
@@ -116,7 +121,7 @@ test('hover on not-set optional value shows the property description in verbose 
     const schema = specification(`| \`group\` {
         'maybe': (\`description\`: * "set this only when an override is needed" \`value\`: | \`optional\` (\`constraints\`: _ \`value\`: | \`nothing\` ~ \`result\`: _))
     }`, `| \`group\` {
-        'maybe': (\`resolver\`: | \`optional\` (\`constraints\`: _ \`not set constraints\`: _ \`resolver\`: | \`nothing\` ~ \`result\`: _))
+        'maybe': (\`resolver\`: | \`optional\` (\`presence\`: _ \`constraints\`: _ \`not set constraints\`: _ \`resolver\`: | \`nothing\` ~ \`result\`: _))
     }`)
     const source = "(`maybe`: _)"
     const hover = await hoverAt(source, schema, source.indexOf('_'))
@@ -138,7 +143,7 @@ test('hover on not-set optional value shows the property description in concise 
     const schema = specification(`| \`group\` {
         'maybe': (\`description\`: * "concise optional description" \`value\`: | \`optional\` (\`constraints\`: _ \`value\`: | \`nothing\` ~ \`result\`: _))
     }`, `| \`group\` {
-        'maybe': (\`resolver\`: | \`optional\` (\`constraints\`: _ \`not set constraints\`: _ \`resolver\`: | \`nothing\` ~ \`result\`: _))
+        'maybe': (\`resolver\`: | \`optional\` (\`presence\`: _ \`constraints\`: _ \`not set constraints\`: _ \`resolver\`: | \`nothing\` ~ \`result\`: _))
     }`)
     const source = "< _ >"
     const hover = await hoverAt(source, schema, source.indexOf('_'))
@@ -156,9 +161,9 @@ test('optional markers show their property description without leaking it into n
             'plain': (\`description\`: _ \`value\`: | \`optional\` (\`constraints\`: _ \`value\`: | \`nothing\` ~ \`result\`: _))
         } \`result\`: _))
     }`, `| \`group\` {
-        'maybe': (\`resolver\`: | \`optional\` (\`constraints\`: _ \`not set constraints\`: _ \`resolver\`: | \`group\` {
-            'inner': (\`resolver\`: | \`optional\` (\`constraints\`: _ \`not set constraints\`: _ \`resolver\`: | \`nothing\` ~ \`result\`: _))
-            'plain': (\`resolver\`: | \`optional\` (\`constraints\`: _ \`not set constraints\`: _ \`resolver\`: | \`nothing\` ~ \`result\`: _))
+        'maybe': (\`resolver\`: | \`optional\` (\`presence\`: _ \`constraints\`: _ \`not set constraints\`: _ \`resolver\`: | \`group\` {
+            'inner': (\`resolver\`: | \`optional\` (\`presence\`: _ \`constraints\`: _ \`not set constraints\`: _ \`resolver\`: | \`nothing\` ~ \`result\`: _))
+            'plain': (\`resolver\`: | \`optional\` (\`presence\`: _ \`constraints\`: _ \`not set constraints\`: _ \`resolver\`: | \`nothing\` ~ \`result\`: _))
         } \`result\`: _))
     }`)
     for (const source of ["(`maybe`: * (`inner`: _ `plain`: _))", "< * < _ _ > >"]) {
@@ -219,9 +224,9 @@ test('the bundled template exposes the namespace-aware schema and root type', ()
     assert.equal(entry(loaded[1].schema.structure['basic types'], 'text').type[0], 'double quoted')
 })
 
-test('Next references and resolvers round-trip without old wrapper fields', () => {
+test('latest references and resolvers round-trip without old wrapper fields', () => {
     const source = readFileSync(new URL('../liana_authoring_environment_template/.liana/schema.slna', import.meta.url), 'utf8')
-    const resolved = Type_Specification(chars(source), fail, { 'tab size': 4 })
+    const resolved = parse(source)[1]
     let serialized = ''
     serialize_paragraph.Paragraph(serialize_schema.Type_Specification(resolved), {
         indentation: '', newline: '',
@@ -261,8 +266,7 @@ test('nested components pass through whole categories or explicitly bind every t
     const dir = mkdtempSync(join(tmpdir(), 'liana-server-parameters-'))
     try {
         mkdirSync(join(dir, '.liana'))
-        const parameter = presence => `(\`type\`: (\`location\`: | \`internal\` 'Leaf' ) \`presence\`: | \`${presence}\` ~)`
-        const signature = types => `(\`parameters\`: | \`local\` (\`types\`: ${types} \`lookups\`: {}) )`
+        const parameter = presence => signature_value('Leaf', presence)
         const component = (name, args) => `(\`root value resolver\`: | \`component\` (
             \`location\`: | \`internal\` '${name}' \`arguments\`: ${args} \`constraints\`: _
         ))`
@@ -278,7 +282,7 @@ test('nested components pass through whole categories or explicitly bind every t
                         'Middle': (\`root value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`internal\` 'Leaf'))
                         'Leaf': (\`root value\`: | \`nothing\` ~)
                     }
-                    ) \`resolver\`: (\`signatures\`: (\`namespaces\`: {} \`types\`: {
+                    ) \`resolver\`: (\`declarations\`: (\`namespaces\`: {} \`types\`: {
                         'Root': ${signature(`{ 'child namespaces': ${parameter('optional')} 'basic types': ${parameter('optional')} 'inherited': ${parameter('required')} }`)}
                         'Middle': ${signature(`{ 'child namespaces': ${parameter('optional')} 'basic types': ${parameter('optional')} 'inherited': ${parameter('required')} }`)}
                         'Leaf': ${signature(`{ 'forwarded': ${parameter('optional')} 'inherited': ${parameter('required')} }`)}
@@ -389,8 +393,8 @@ const dependentReferenceSchema = () => {
         \`type\`: (\`lookup\`: (\`type\`: | \`acyclic\` | \`resolved dictionary\` (
                 \`selection\`: (\`start\`: | \`sibling\` '${start}' \`tail\`: (\`path\`: [${path}] ) )
                 ) ) \`constraints\`: _))`
-    const signatures = ['Root', 'Nodes', 'Members'].map(name =>
-        `'${name}': (\`parameters\`: | \`local\` (\`types\`: {} \`lookups\`: {}) )`
+    const declarations = ['Root', 'Nodes', 'Members'].map(name =>
+        `'${name}': ${signature()}`
     ).join('')
     return `(\`schema\`: (\`structure\`: (\`namespaces\`: {} \`basic types\`: {}
         \`types\`: {
@@ -404,7 +408,7 @@ const dependentReferenceSchema = () => {
             }))
             'Members': (\`root value\`: | \`dictionary\` (\`value\`: | \`nothing\` ~))
         }
-        ) \`resolver\`: (\`signatures\`: (\`namespaces\`: {} \`types\`: {${signatures}}) \`implementations\`: (\`namespaces\`: {} \`types\`: {
+        ) \`resolver\`: (\`declarations\`: (\`namespaces\`: {} \`types\`: {${declarations}}) \`implementations\`: (\`namespaces\`: {} \`types\`: {
             'Root': (\`root value resolver\`: | \`group\` {
                 'member': (\`resolver\`: ${resolverReference('chosen', '| `reference` () | `group` \'members\' | `component` ~')})
                 'chosen': (\`resolver\`: ${resolverReference('entries', '| `component` ~')})
@@ -466,14 +470,14 @@ test('definition navigation supports forwarded acyclic and cyclic lookups, inclu
     for (const mode of ['internal cyclic', 'internal']) {
         const root = typeReference('Other', mode)
         const source = specification(root).replace(
-            '`signatures`: {',
-            '`signatures`: { \'Other\': (`parameters`: | `local` (`types`: {} `lookups`: {}) )',
+            "'Root': (`signature`: | `local` (`values`: {} `lookups`: {})) }",
+            "'Root': (`signature`: | `local` (`values`: {} `lookups`: {})) 'Other': (`signature`: | `local` (`values`: {} `lookups`: {})) }",
         ).replace(
             `\`types\`: { 'Root': (\`root value\`: ${root}) }`,
             `\`types\`: { 'Root': (\`root value\`: ${root}) 'Other': (\`root value\`: | \`nothing\` ~) }`,
         )
         const links = await definitionAt(source, template(), source.indexOf("'Other'") + 2)
-        // The signature dictionary is a separate lookup from the types dictionary.
+        // The declaration dictionary is a separate lookup from the types dictionary.
         const doc = TextDocument.create('file:///test.lna', 'liana', 1, source)
         assert.equal(links.length, 1)
         assert.equal(doc.offsetAt(links[0].targetSelectionRange.start), source.indexOf("'Other':"))
@@ -761,14 +765,13 @@ const benchmarkSchema = dense => specification(`| \`group\` {
 }`)
 
 const argumentBindingSchema = args => {
-    const parameter = `(\`type\`: (\`location\`: | \`internal\` 'Leaf' ) \`presence\`: | \`optional\` ~)`
-    const signature = types => `(\`parameters\`: | \`local\` (\`types\`: ${types} \`lookups\`: {}) )`
+    const parameter = signature_value('Leaf', 'optional')
     return `(\`schema\`: (\`structure\`: (\`namespaces\`: {} \`basic types\`: {}
         \`types\`: {
             'Root': (\`root value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`internal\` 'Leaf'))
             'Leaf': (\`root value\`: | \`nothing\` ~)
         }
-        ) \`resolver\`: (\`signatures\`: (\`namespaces\`: {} \`types\`: {
+        ) \`resolver\`: (\`declarations\`: (\`namespaces\`: {} \`types\`: {
             'Root': ${signature(`{ 'input': ${parameter} }`)}
             'Leaf': ${signature(`{ 'child': ${parameter} }`)}
         }) \`implementations\`: (\`namespaces\`: {} \`types\`: {
@@ -807,7 +810,7 @@ test('runtime type initialization inherits only at whole/category boundaries, ne
     const schema = argumentBindingSchema('* (`types`: * { \'child\': | `parameter` \'input\' } `lookups`: * {})')
         .replace("'Leaf': (`root value`: | `nothing` ~)", "'Leaf': (`root value`: | `optional` (`result`: _ `constraints`: _ `value`: | `nothing` ~))")
         .replace("'Leaf': (`root value resolver`: | `nothing` ~)",
-            "'Leaf': (`root value resolver`: | `optional` (`result`: _ `not set constraints`: _ `constraints`: _ `resolver`: | `nothing` ~))")
+            "'Leaf': (`root value resolver`: | `optional` (`presence`: _ `result`: _ `not set constraints`: _ `constraints`: _ `resolver`: | `nothing` ~))")
     const resolved = parse(schema)[1].schema
     const implementations = { ...resolved.resolver.implementations, types: p.from.dictionary(resolved.resolver.implementations.types).map((type, id) => {
         if (id !== 'Leaf') return type
@@ -845,8 +848,7 @@ test('runtime type initialization inherits only at whole/category boundaries, ne
 const lookupBindingSchema = (mode, args) => {
     const component = name => `| \`component\` (\`constraints\`: _ \`type\`: | \`internal\` '${name}')`
     const call = (name, args = '_') => `| \`component\` (\`location\`: | \`internal\` '${name}' \`arguments\`: ${args} \`constraints\`: _)`
-    const parameter = `(\`referent\`: (\`location\`: | \`internal\` 'Nodes' ) \`type\`: | \`${mode}\` ~ \`presence\`: | \`optional\` ~)`
-    const signature = (lookups = '{}') => `(\`parameters\`: | \`local\` (\`types\`: {} \`lookups\`: ${lookups}) )`
+    const parameter = signature_lookup('Nodes', mode, 'optional')
     return `(\`schema\`: (\`structure\`: (\`namespaces\`: {} \`basic types\`: {}
         \`types\`: {
             'Root': (\`root value\`: | \`group\` {
@@ -859,10 +861,10 @@ const lookupBindingSchema = (mode, args) => {
                 \`type\`: (\`dependency\`: | \`${mode}\` ~ \`constraints\`: _)))
             'Nodes': (\`root value\`: | \`dictionary\` (\`value\`: | \`nothing\` ~))
         }
-        ) \`resolver\`: (\`signatures\`: (\`namespaces\`: {} \`types\`: {
+        ) \`resolver\`: (\`declarations\`: (\`namespaces\`: {} \`types\`: {
             'Root': ${signature()} 'Nodes': ${signature()}
-            'Middle': ${signature(`{ 'source': ${parameter} 'unused': ${parameter} }`)}
-            'Leaf': ${signature(`{ 'source': ${parameter} 'unused': ${parameter} }`)}
+            'Middle': ${signature('{}', `{ 'source': ${parameter} 'unused': ${parameter} }`)}
+            'Leaf': ${signature('{}', `{ 'source': ${parameter} 'unused': ${parameter} }`)}
         }) \`implementations\`: (\`namespaces\`: {} \`types\`: {
             'Root': (\`root value resolver\`: | \`group\` {
                 'entries': (\`resolver\`: ${call('Nodes')})
@@ -982,7 +984,7 @@ test('dense benchmarks require complete coverage and report both sides of a rena
     ])
     for (const diagnostic of diagnostics.filter(d => d.message.startsWith('Missing'))) {
         const range = diagnostic.range.__get_raw()[0][1]
-        assert.equal(source.slice(range.start.absolute, range.end.absolute), "{ 'typo': ~ }")
+        assert.equal(source.slice(range.start.absolute, range.end.absolute), '{')
     }
 })
 
@@ -1120,7 +1122,7 @@ test('optional value constraints require optional nodes, matching the handwritte
     const valid = invalid
         .replace("'Leaf': (`root value`: | `nothing` ~)", "'Leaf': (`root value`: | `optional` (`result`: _ `constraints`: _ `value`: | `nothing` ~))")
         .replace("'Leaf': (`root value resolver`: | `nothing` ~)",
-            "'Leaf': (`root value resolver`: | `optional` (`result`: _ `not set constraints`: _ `constraints`: _ `resolver`: | `nothing` ~))")
+            "'Leaf': (`root value resolver`: | `optional` (`presence`: _ `result`: _ `not set constraints`: _ `constraints`: _ `resolver`: | `nothing` ~))")
     assert.doesNotThrow(() => parse(valid))
     assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(valid, template())).__get_raw(), [])
     assert.throws(() => parse(invalid))
@@ -1214,7 +1216,7 @@ test('state result declarations reject missing, unexpected and wrongly typed opt
         .replace('`result`: _', `\`result\`: ${parent}`), stateResolverText
         .replaceAll('`resolver`: | `nothing` ~ `result`: _', `\`resolver\`: ${componentResolver} \`result\`: ${option}`))
         .replace('`types`: {', '`types`: { \'Nothing\': (`root value`: | `nothing` ~)')
-        .replace('`signatures`: (`namespaces`: {} `types`: {', '`signatures`: (`namespaces`: {} `types`: { \'Nothing\': (`parameters`: | `local` (`types`: {} `lookups`: {}) )')
+        .replace('`declarations`: (`namespaces`: {} `types`: {', '`declarations`: (`namespaces`: {} `types`: { \'Nothing\': ' + signature())
         .replace("`types`: { 'Root': (`root value resolver`:", "`types`: { 'Nothing': (`root value resolver`: | `nothing` ~) 'Root': (`root value resolver`:")
     assert.doesNotThrow(() => parse(schema(type, selection)))
     assert.throws(() => parse(schema(type, '_')))
@@ -1280,7 +1282,7 @@ test('optional presence checks distinguish absent, failed and invalid prerequisi
     const source = '* ~'
     const unmarshalled = document(source, specification(
         '| `optional` (`result`: _ `constraints`: _ `value`: | `nothing` ~)',
-        '| `optional` (`result`: _ `not set constraints`: _ `constraints`: _ `resolver`: | `nothing` ~)',
+        '| `optional` (`presence`: _ `result`: _ `not set constraints`: _ `constraints`: _ `resolver`: | `nothing` ~)',
     )).content
     for (const [status, severity] of [
         [['not set', null], 'error'],
@@ -1289,6 +1291,7 @@ test('optional presence checks distinguish absent, failed and invalid prerequisi
     ]) {
         const value = resolver.Value(unmarshalled, {}, {
             definition: resolved_value('optional', {
+                presence: p.literal.not_set(),
                 constraints: option_checks(p.literal.dictionary({ required: ['assert is set', possible_parameter('input')] })),
                 'not set constraints': p.literal.not_set(),
                 resolver: resolved_value('nothing', null),
@@ -1300,6 +1303,109 @@ test('optional presence checks distinguish absent, failed and invalid prerequisi
         assert.equal(diagnostics.length, severity === null ? 0 : 1)
         if (severity !== null) assert.equal(diagnostics[0].severity[0], severity)
     }
+})
+
+test('optional presence matches both states and blocks constraints and payload resolution on failure', () => {
+    const schema = specification(
+        '| `optional` (`result`: _ `constraints`: _ `value`: | `nothing` ~)',
+        '| `optional` (`presence`: _ `result`: _ `not set constraints`: _ `constraints`: _ `resolver`: | `nothing` ~)',
+    )
+    const seed = nothingValue()
+    for (const source of ['_', '* ~']) {
+        for (const status of [
+            ['resolved', seed], ['not set', null], ['constraint failed', 'invalid prerequisite'],
+            ['unavailable', null], ['cycle', p.literal.list(['input'])],
+        ]) {
+            const matches = (status[0] === 'resolved' && source === '* ~') || (status[0] === 'not set' && source === '_')
+            const value = resolver.Value(document(source, schema).content, {}, {
+                definition: resolved_value('optional', {
+                    presence: p.literal.set(possible_parameter('input')),
+                    get constraints() { assert.ok(matches, 'present constraints evaluated before presence'); return p.literal.not_set() },
+                    get 'not set constraints'() { assert.ok(matches, 'absent constraints evaluated before presence'); return p.literal.not_set() },
+                    get resolver() { assert.ok(matches, 'payload evaluated before presence'); return resolved_value('nothing', null) },
+                    result: p.literal.not_set(),
+                }),
+                'type parameters': p.literal.dictionary({ input: status }),
+            })
+            const optional = value['unmarshall result'][1][1]
+            assert.equal(optional.status[0], matches ? source === '_' ? 'not set' : 'set' : 'unavailable')
+            if (!matches) assert.equal(optional.result[0], 'unavailable')
+            const diagnostics = resolveDiagnostics.Document({ content: value }).__get_raw()
+            assert.equal(diagnostics.length, matches || status[0] === 'unavailable' ? 0 : 1)
+            if (!matches && ['resolved', 'not set'].includes(status[0])) {
+                assert.match(diagnostics[0].message, /presence does not match/)
+            }
+        }
+    }
+})
+
+test('hyperlink metadata creates links without changing authored values and preserves URI targets', async () => {
+    const { create_on_document_link } = require('../server/out/connection/on_document_link.js')
+    for (const [prefix, suffix, token, expected] of [
+        ['https://example.test/docs/', '.html', 'hello', 'https://example.test/docs/hello.html'],
+        ['', '', 'file:///tmp/a%20b.txt', 'file:///tmp/a%20b.txt'],
+        ['../assets/', '.png', 'image', '/assets/image.png'],
+        ['', '', '/tmp/a b.txt', 'file:///tmp/a%20b.txt'],
+    ]) {
+        const schema = basic('| `double quoted` ~').replace('`hyperlink`: _',
+            `\`hyperlink\`: * (\`prefix\`: "${prefix}" \`suffix\`: "${suffix}")`)
+        const source = JSON.stringify(token)
+        const parsed = document(source, schema)
+        const generated = links.Document(parsed).__get_raw()
+        assert.equal(generated.length, 1)
+        assert.equal(generated[0].target, prefix + token + suffix)
+        assert.equal(parsed.content['unmarshall result'][1][1].instance.token.value, token)
+        const result = await requestAt(source, schema, 0, create_on_document_link)
+        assert.equal(result.length, 1)
+        if (prefix === '../assets/') assert.ok(result[0].target.endsWith(expected))
+        else assert.equal(result[0].target, expected)
+        assert.deepEqual(result[0].range, { start: { line: 0, character: 0 }, end: { line: 0, character: source.length } })
+    }
+})
+
+test('production loading enforces optional presence against a sibling in both states', async () => {
+    const optional = '| `optional` (`result`: _ `constraints`: _ `value`: | `nothing` ~)'
+    const selection = "| `optional value` (`selection`: (`start`: | `sibling` 'first' `tail`: (`path`: [])) `tail`: (`path`: []))"
+    const optionalResolver = presence => `| \`optional\` (\`presence\`: ${presence} \`result\`: _ \`constraints\`: _ \`not set constraints\`: _ \`resolver\`: | \`nothing\` ~)`
+    const schema = specification(
+        `| \`group\` { 'first': (\`description\`: _ \`value\`: ${optional}) 'second': (\`description\`: _ \`value\`: ${optional}) }`,
+        `| \`group\` { 'first': (\`resolver\`: ${optionalResolver('_')}) 'second': (\`resolver\`: ${optionalResolver(`* ${selection}`)}) }`,
+    )
+    for (const first of ['_', '* ~']) {
+        for (const second of ['_', '* ~']) {
+            const loaded = await loadWithSchema(`(\`first\`: ${first} \`second\`: ${second})`, schema)
+            const diagnostics = resolveDiagnostics.Document(loaded).__get_raw()
+            assert.equal(diagnostics.length, first === second ? 0 : 1)
+            if (first !== second) assert.match(diagnostics[0].message, /presence does not match/)
+        }
+    }
+})
+
+test('declaration parameters resolve and execute against nonempty structural subselections', () => {
+    const schema = argumentBindingSchema('* (`types`: * { \'child\': | `parameter` \'input\' } `lookups`: * {})')
+        .replace("'Leaf': (`root value`: | `nothing` ~)", "'Leaf': (`root value`: | `optional` (`result`: _ `constraints`: _ `value`: | `nothing` ~))")
+        .replace("'Leaf': (`root value resolver`: | `nothing` ~)",
+            "'Leaf': (`root value resolver`: | `optional` (`presence`: * | `parameter` 'child' `result`: _ `not set constraints`: _ `constraints`: _ `resolver`: | `nothing` ~))")
+        .replaceAll('`subselection`: (`tail`: [])', '`subselection`: (`tail`: [| `optional` ~])')
+    const resolved = parse(schema)[1].schema
+    const leaf = entry(resolved.structure.types, 'Leaf')['root value'][1].value
+    assert.equal(entry(resolved.resolver.declarations.types, 'Leaf').value.signature.result.values.__get_raw()[0][1].value.subselection.tail.result, leaf)
+    for (const [source, status, expected] of [
+        ['_', ['not set', null], 0], ['* ~', ['resolved', nothingValue()], 0],
+        ['_', ['resolved', nothingValue()], 1], ['* ~', ['not set', null], 1],
+    ]) {
+        const value = resolver.Value(document(source, schema).content, {}, {
+            definition: entry(resolved.resolver.implementations.types, 'Root').value['root value resolver'],
+            resolver: resolved.resolver.implementations,
+            'type parameters': p.literal.dictionary({ input: status }),
+        })
+        assert.equal(resolveDiagnostics.Document({ content: value }).__get_raw().length, expected)
+    }
+})
+
+test('legacy signatures and file-path metadata are rejected', () => {
+    assert.throws(() => parse(specification().replace('`declarations`:', '`signatures`:')))
+    assert.throws(() => parse(basic('| `double quoted` ~').replace('`hyperlink`:', '`file path`:')))
 })
 
 test('document loading uses Next root selection, preserves caching and reports schema errors', async () => {
@@ -1460,11 +1566,11 @@ test('completion recursively fills dense resolver dictionaries and chooses their
     assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, template())).__get_raw(), [])
 })
 
-test('one quick fix handles missing signatures and resolvers together', async () => {
+test('one quick fix handles missing declarations and resolvers together', async () => {
     const source = specification()
-        .replace("'Root': (`parameters`: | `local` (`types`: {} `lookups`: {}) )", '')
+        .replace(`'Root': ${signature()}`, '')
         .replace("'Root': (`root value resolver`: | `nothing` ~)", '')
-    const offset = source.indexOf('`types`: {', source.indexOf('`signatures`:')) + '`types`: '.length
+    const offset = source.indexOf('`types`: {', source.indexOf('`declarations`:')) + '`types`: '.length
     const actions = await actionsAt(source, template(), offset, ['quickfix'])
     assert.equal(actions.length, 1)
     assert.equal(actions[0].edit.documentChanges[0].edits.length, 2)
@@ -1594,9 +1700,9 @@ const namespaced_schema = () => {
             })
             'Nodes': (\`root value\`: | \`dictionary\` (\`value\`: | \`nothing\` ~))
         })`
-    const signatures = `{
-        'Root': (\`parameters\`: | \`local\` (\`types\`: {} \`lookups\`: {}))
-        'Nodes': (\`parameters\`: | \`local\` (\`types\`: {} \`lookups\`: {}))
+    const declarations = `{
+        'Root': ${signature()}
+        'Nodes': ${signature()}
     }`
     const implementation = `(
         \`namespaces\`: {} \`types\`: {
@@ -1624,12 +1730,12 @@ const namespaced_schema = () => {
                     'right': (\`description\`: _ \`value\`: ${child('right')})
                 }) })
             \`resolver\`: (
-                \`signatures\`: (
+                \`declarations\`: (
                     \`namespaces\`: {
-                        'left': (\`namespaces\`: {} \`types\`: ${signatures})
-                        'right': (\`namespaces\`: {} \`types\`: ${signatures})
+                        'left': (\`namespaces\`: {} \`types\`: ${declarations})
+                        'right': (\`namespaces\`: {} \`types\`: ${declarations})
                     }
-                    \`types\`: { 'Root': (\`parameters\`: | \`local\` (\`types\`: {} \`lookups\`: {})) })
+                    \`types\`: { 'Root': ${signature()} })
                 \`implementations\`: (
                 \`namespaces\`: { 'left': ${implementation} 'right': ${implementation} }
                 \`types\`: { 'Root': (\`root value resolver\`: | \`group\` {
@@ -1663,7 +1769,7 @@ test('same-named types in child namespaces keep resolution, completion and navig
 
 test('missing resolver coverage is reported instead of synthesizing a resolver', () => {
     const schema = specification().replace("'Root': (`root value resolver`: | `nothing` ~)", '')
-        .replace("'Root': (`parameters`: | `local` (`types`: {} `lookups`: {}) )", '')
+        .replace(`'Root': ${signature()}`, '')
     assert.throws(() => parse(schema), error => {
         assert.equal(error[0], 'resolving')
         assert.equal(error[1].type[0], 'missing required entries')
@@ -1714,7 +1820,7 @@ test('regex constructs preserve literal metacharacters, Unicode, empty choices a
 test('not-set optional constraints reject present prerequisites without cascading from invalid ones', () => {
     const schema = specification(
         '| `optional` (`result`: _ `constraints`: _ `value`: | `nothing` ~)',
-        '| `optional` (`result`: _ `not set constraints`: _ `constraints`: _ `resolver`: | `nothing` ~)',
+        '| `optional` (`presence`: _ `result`: _ `not set constraints`: _ `constraints`: _ `resolver`: | `nothing` ~)',
     )
     const seed = nothingValue()
     for (const [status, expected] of [
@@ -1724,6 +1830,7 @@ test('not-set optional constraints reject present prerequisites without cascadin
     ]) {
         const value = resolver.Value(document('_', schema).content, {}, {
             definition: resolved_value('optional', {
+                presence: p.literal.not_set(),
                 constraints: p.literal.not_set(),
                 'not set constraints': p.literal.set(p.literal.dictionary({ absent: possible_parameter('input') })),
                 resolver: resolved_value('nothing', null),

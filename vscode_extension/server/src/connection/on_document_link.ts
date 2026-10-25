@@ -10,7 +10,7 @@ import { load_document } from '../to_be_backend/load_document'
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
 import * as path from 'path'
-import { pathToFileURL } from 'url'
+import { fileURLToPath, pathToFileURL } from 'url'
 import { Connection_Context } from '../connection_context'
 
 export const create_on_document_link: (
@@ -31,10 +31,9 @@ export const create_on_document_link: (
 					(instance) => {
 						// Get the directory of the current document for resolving relative paths
 						const doc_uri = doc.uri
-						const doc_path = doc_uri.startsWith('file://') ? decodeURIComponent(doc_uri.slice(7)) : doc_uri
+						const doc_path = doc_uri.startsWith('file:') ? fileURLToPath(doc_uri) : doc_uri
 						const doc_dir = path.dirname(doc_path)
 
-						// TODO: Replace with actual transformer call when available
 						return t_unmarshall_result_to_document_links.Document(
 							p_.from.state(instance).decide(($) => {
 								switch ($[0]) {
@@ -45,12 +44,9 @@ export const create_on_document_link: (
 							}),
 						).__get_raw().map(($) => {
 							// Resolve the target path (handle both relative and absolute paths)
-							const target_path = path.isAbsolute($.target)
+							const target_uri = /^[a-z][a-z0-9+.-]*:/i.test($.target) && !path.isAbsolute($.target)
 								? $.target
-								: path.resolve(doc_dir, $.target)
-
-							// Convert to file:// URI
-							const target_uri = pathToFileURL(target_path).toString()
+								: pathToFileURL(path.resolve(doc_dir, $.target)).toString()
 
 							return {
 								'range': helpers_range.create_range_from_range($.range),

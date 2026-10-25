@@ -81,10 +81,10 @@ const Type_Reference = ($: source.Type_Reference, types: Type_Environment, abort
     }
 }
 
-const Value_Path = ($: source.Value_Path, root: target.namespaces.structure.types.Value, abort: Abort): target.namespaces.structure.types.Value_Path => {
+const Value_Path = ($: source.Value_Path, root: target.namespaces.structure.types.Value, abort: Abort): target.namespaces.structure.types.Value_Subselection => {
     let current = root
-    const tail = p.from.list($.tail).map((step): target.namespaces.structure.types.Value_Path.tail.value.L => {
-        let item: target.namespaces.structure.types.Value_Path.tail.value.L.value.value
+    const tail = p.from.list($.tail).map((step): target.namespaces.structure.types.Value_Subselection.tail.value.L => {
+        let item: target.namespaces.structure.types.Value_Subselection.tail.value.L.value.value
         const definition = current
         switch (step[0]) {
             case 'dictionary':
@@ -116,6 +116,89 @@ const Value_Path = ($: source.Value_Path, root: target.namespaces.structure.type
         return { value: { value: item, result: current }, result: current }
     })
     return { tail: { value: tail, result: current } }
+}
+
+const Signature_Value_Path = (
+    $: source.Signature_Value_Subselection,
+    root: target.namespaces.structure.types.Value,
+    abort: Abort,
+): target.namespaces.declarations.types.Signature_Value_Subselection => {
+    let current = root
+    const tail = p.from.list($.tail).map((step): target.namespaces.declarations.types.Signature_Value_Subselection.tail.value.L => {
+        let item: target.namespaces.declarations.types.Signature_Value_Subselection.tail.value.L.value.value
+        const definition = current
+        switch (step[0]) {
+            case 'dictionary':
+                current = Expect(current, 'dictionary', abort).value
+                item = ['dictionary', { constraints: { definition: Expect(definition, 'dictionary', abort) }, value: null }]
+                break
+            case 'list':
+                current = Expect(current, 'list', abort).value
+                item = ['list', { constraints: { definition: Expect(definition, 'list', abort) }, value: null }]
+                break
+            case 'optional':
+                current = Expect(current, 'optional', abort).value
+                item = ['optional', { constraints: { definition: Expect(definition, 'optional', abort) }, value: null }]
+                break
+            case 'group': {
+                const entry = Entry(Expect(current, 'group', abort), step[1], abort)
+                current = entry['l entry'].value
+                item = ['group', { constraints: { definition: Expect(definition, 'group', abort) }, value: entry }]
+                break
+            }
+            case 'state': {
+                const entry = Entry(Expect(current, 'state', abort).options, step[1], abort)
+                current = entry['l entry'].value
+                item = ['state', { constraints: { definition: Expect(definition, 'state', abort) }, value: entry }]
+                break
+            }
+            default: return p.exhaustive(step[0])
+        }
+        return { value: { value: item, result: current }, result: current }
+    })
+    return { tail: { value: tail, result: current } }
+}
+
+const Signature_Type_Reference = (
+    $: source.Signature_Type_Reference,
+    types: Type_Environment,
+    abort: Abort,
+): target.namespaces.declarations.types.Signature_Type_Reference => {
+    const location = $.location
+    switch (location[0]) {
+        case 'internal': {
+            const type = Lookup(types.acyclic, location[1], abort)
+            return { location: { value: ['internal', type], result: type['l entry'] } }
+        }
+        case 'child':
+        case 'sibling': {
+            const selected = location[1]
+            const namespace = location[0] === 'child'
+                ? Entry(types.children, selected.namespace, abort)
+                : Lookup(types.siblings, selected.namespace, abort)
+            const type = Entry(namespace['l entry'].types, selected.type, abort)
+            const selection = { namespace, type }
+            return {
+                location: {
+                    value: location[0] === 'child' ? ['child', selection] : ['sibling', selection],
+                    result: type['l entry'],
+                },
+            }
+        }
+        default: return p.exhaustive(location[0])
+    }
+}
+
+const Signature_Value_Reference = (
+    $: source.Signature_Value_Reference,
+    types: Type_Environment,
+    abort: Abort,
+): target.namespaces.declarations.types.Signature_Value_Reference => {
+    const type = Signature_Type_Reference($.type, types, abort)
+    return {
+        type,
+        subselection: Signature_Value_Path($.subselection, type.location.result['root value'], abort),
+    }
 }
 
 const Value_Reference = ($: source.Value_Reference, types: Type_Environment, abort: Abort): target.namespaces.structure.types.Value_Reference => {
@@ -198,9 +281,9 @@ const Value = ($: source.Value, types: Types, abort: Abort): target.namespaces.s
 export const Schema = ($: source.Schema, abort: Abort): target.types.Schema => {
     const structure = Structure($.structure, p.select_lookup.acyclic.not_set(), abort)
     const links: Context['benchmark_links'] = { entries: undefined, checks: undefined, last_check: undefined }
-    const signatures = Signature_Tree($.resolver.signatures, structure, p.select_lookup.acyclic.not_set(), abort)
-    const schema = { structure, resolver: { signatures, implementations: Resolver_Tree(
-        $.resolver.implementations, signatures, structure, p.select_lookup.acyclic.not_set(), links, abort,
+    const declarations = Declaration_Tree($.resolver.declarations, structure, p.select_lookup.acyclic.not_set(), abort)
+    const schema = { structure, resolver: { declarations, implementations: Resolver_Tree(
+        $.resolver.implementations, declarations, structure, p.select_lookup.acyclic.not_set(), links, abort,
     ) } }
     Check_Benchmark_Links(links, abort)
     return schema
@@ -215,25 +298,37 @@ const Structure = ($: source.Structure, siblings: Types['siblings'], abort: Abor
     return { namespaces, 'basic types': basic, types }
 }
 
-const Signature_Tree = ($: source.Signature_Namespace, definition: target.namespaces.structure.types.Structure, siblings: Types['siblings'], abort: Abort): target.namespaces.signatures.types.Signature_Namespace => {
+const Declaration_Tree = (
+    $: source.Signature_Namespace,
+    definition: target.namespaces.structure.types.Structure,
+    siblings: Types['siblings'],
+    abort: Abort,
+): target.namespaces.declarations.types.Declaration_Namespace => {
     Dense($.namespaces, definition.namespaces, abort)
     const namespaces = p.from.dictionary($.namespaces).map(($, id) => {
         const benchmark = Entry(definition.namespaces, id, abort)['l entry']
-        return { benchmark, value: Signature_Tree($, benchmark,
-            p.select_lookup.acyclic.from_resolved_dictionary(definition.namespaces), abort) }
+        return { benchmark, value: Declaration_Tree(
+            $, benchmark, p.select_lookup.acyclic.from_resolved_dictionary(definition.namespaces), abort,
+        ) }
     })
-    return { namespaces, types: Signatures($.types, definition.types, {
+    return { namespaces, types: Declarations($.types, definition.types, {
         acyclic: p.select_lookup.acyclic.from_resolved_dictionary(definition.types),
         children: definition.namespaces, siblings,
     }, abort) }
 }
 
-const Resolver_Tree = ($: source.Resolver, signatures: target.namespaces.signatures.types.Signature_Namespace, definition: target.namespaces.structure.types.Structure, siblings: Types['siblings'],
-    links: Context['benchmark_links'], abort: Abort): target.namespaces.resolver.types.Resolver => {
+const Resolver_Tree = (
+    $: source.Resolver,
+    declarations: target.namespaces.declarations.types.Declaration_Namespace,
+    definition: target.namespaces.structure.types.Structure,
+    siblings: Types['siblings'],
+    links: Context['benchmark_links'],
+    abort: Abort,
+): target.namespaces.resolver.types.Resolver => {
     Dense($.namespaces, definition.namespaces, abort)
     const namespaces = p.from.dictionary($.namespaces).map(($, id) => {
-        const benchmark = Entry(signatures.namespaces, id, abort)['l entry']
-        return { benchmark, value: Resolver_Tree($, benchmark.value, benchmark.benchmark,
+        const benchmark = Entry(declarations.namespaces, id, abort)['l entry']
+        return { benchmark, value: Resolver_Tree($, benchmark.value, Entry(definition.namespaces, id, abort)['l entry'],
             p.select_lookup.acyclic.from_resolved_dictionary(definition.namespaces), links, abort) }
     })
     const environment = {
@@ -241,7 +336,7 @@ const Resolver_Tree = ($: source.Resolver, signatures: target.namespaces.signatu
         children: definition.namespaces,
         siblings,
     }
-    return { namespaces, types: Resolvers($.types, definition.types, signatures.types, environment, signatures.namespaces, links, abort) }
+    return { namespaces, types: Resolvers($.types, definition.types, declarations.types, environment, declarations.namespaces, links, abort) }
 }
 
 export const Type_Specification = ($: source.Type_Specification, abort: Abort): target.types.Type_Specification => {
@@ -265,27 +360,39 @@ const File_Tree_Node = ($: source.Node, types: target.namespaces.structure.types
     }
 }
 
-const Signatures = ($: source.Resolver_Signatures, types: target.namespaces.structure.types.Types, environment: Type_Environment, abort: Abort): target.namespaces.signatures.types.Signatures => {
+const Declarations = (
+    $: source.Resolver_Signatures,
+    types: target.namespaces.structure.types.Types,
+    environment: Type_Environment,
+    abort: Abort,
+): target.namespaces.declarations.types.Declarations => {
     Dense($, types, abort)
-    return p.from.dictionary($).resolve(($, id, siblings): target.namespaces.signatures.types.Signatures.D => {
+    return p.from.dictionary($).resolve(($, id, siblings): target.namespaces.declarations.types.Declarations.D => {
         const benchmark = Entry(types, id, abort)['l entry']
-        const parameters: target.namespaces.signatures.types.Signature.parameters.value = $.parameters[0] === 'same as'
-            ? ['same as', Lookup(siblings, $.parameters[1], abort)]
-            : ['local', {
-                types: p.from.dictionary($.parameters[1].types).map(($) => ({
-                    type: Type_Reference($.type, environment, abort),
-                    presence: $.presence,
-                })),
-                lookups: p.from.dictionary($.parameters[1].lookups).map(($) => {
-                    const value = Type_Reference($.referent, environment, abort)
-                    const dictionary = Expect(value.location.result['root value'], 'dictionary', abort)
-                    return { referent: { value, constraints: { dictionary } }, type: $.type, presence: $.presence }
-                }),
-            }]
+        const signature: target.namespaces.declarations.types.Declaration.signature.value =
+            $.signature[0] === 'same as'
+                ? ['same as', Lookup(siblings, $.signature[1], abort)]
+                : ['local', {
+                    values: p.from.dictionary($.signature[1].values).map(($) => ({
+                        value: Signature_Value_Reference($.value, environment, abort),
+                        presence: $.presence,
+                    })),
+                    lookups: p.from.dictionary($.signature[1].lookups).map(($) => {
+                        const value = Signature_Value_Reference($.referent, environment, abort)
+                        const dictionary = Expect(value.subselection.tail.result, 'dictionary', abort)
+                        return {
+                            referent: { value, constraints: { dictionary } },
+                            type: $.type,
+                            presence: $.presence,
+                        }
+                    }),
+                }]
+        const result = signature[0] === 'local'
+            ? signature[1]
+            : signature[1]['l entry'].value.signature.result
         return {
             benchmark,
-            value: { parameters: { value: parameters, result: parameters[0] === 'local'
-                ? parameters[1] : parameters[1]['l entry'].value.parameters.result } },
+            value: { signature: { value: signature, result } },
         }
     })
 }
@@ -304,10 +411,10 @@ type Benchmark_Link = {
 
 type Context = {
     types: target.namespaces.structure.types.Types
-    signatures: target.namespaces.signatures.types.Signatures
+    signatures: target.namespaces.declarations.types.Declarations
     environment: Type_Environment
-    children: target.namespaces.signatures.types.Namespaces
-    signature: target.namespaces.signatures.types.Signature
+    children: target.namespaces.declarations.types.Namespaces
+    signature: target.namespaces.declarations.types.Signature
     siblings: p.lookup.Acyclic<target.namespaces.structure.types.Group.D>
     parent: p.lookup.Acyclic<target.namespaces.structure.types.Group.D>
     options: target.namespaces.structure.types.Option_Constraints
@@ -321,13 +428,17 @@ type Context = {
     }
 }
 
-const Resolvers = ($: source.Resolver_Types, types: target.namespaces.structure.types.Types, signatures: target.namespaces.signatures.types.Signatures,
-    environment: Type_Environment, children: target.namespaces.signatures.types.Namespaces,
+const Resolvers = (
+    $: source.Resolver_Types,
+    types: target.namespaces.structure.types.Types,
+    signatures: target.namespaces.declarations.types.Declarations,
+    environment: Type_Environment,
+    children: target.namespaces.declarations.types.Namespaces,
     benchmark_links: Context['benchmark_links'], abort: Abort): target.namespaces.resolver.types.Types => {
     Dense($, signatures, abort)
     const resolvers = p.from.dictionary($).map(($, id) => {
         const benchmark = Entry(signatures, id, abort)['l entry']
-        const signature = benchmark.value
+        const signature = benchmark.value.signature.result
         return { benchmark, value: { 'root value resolver': Resolver($['root value resolver'], benchmark.benchmark['root value'], {
             types, signatures, signature, benchmark_links, environment, children,
             siblings: p.select_lookup.acyclic.not_set(),
@@ -513,9 +624,9 @@ const Guaranteed = ($: source.Resolver_Guaranteed_Value_Selection, context: Cont
             break
         }
         case 'parameter': {
-            const entry = Entry(context.signature.parameters.result.types, $.start[1], abort)
+            const entry = Entry(context.signature.values, $.start[1], abort)
             start = ['parameter', entry]
-            node = entry['l entry'].type.location.result['root value']
+            node = entry['l entry'].value.subselection.tail.result
             break
         }
         case 'option constraint': {
@@ -589,8 +700,8 @@ const Guaranteed = ($: source.Resolver_Guaranteed_Value_Selection, context: Cont
 const Possible = ($: source.Resolver_Possible_Value_Selection, context: Context, abort: Abort): target.namespaces.resolver.types.Possible_Value_Selection => {
     switch ($[0]) {
         case 'parameter': {
-            const entry = Entry(context.signature.parameters.result.types, $[1], abort)
-            return { value: ['parameter', entry], result: entry['l entry'].type.location.result['root value'] }
+            const entry = Entry(context.signature.values, $[1], abort)
+            return { value: ['parameter', entry], result: entry['l entry'].value.subselection.tail.result }
         }
         case 'optional value': {
             const value = Guaranteed($[1].selection, context, abort)
@@ -716,7 +827,7 @@ const Lookup_Selection = ($: source.Resolver_Lookup_Selection, context: Context,
     let dictionary: target.namespaces.structure.types.Dictionary
     switch ($.type[0]) {
         case 'parameter': {
-            const entry = Entry(context.signature.parameters.result.lookups, $.type[1], abort)
+            const entry = Entry(context.signature.lookups, $.type[1], abort)
             dictionary = entry['l entry'].referent.constraints.dictionary
             type = ['parameter', entry]
             break
@@ -757,18 +868,21 @@ const Resolver = ($: source.Resolver_Value, definition: target.namespaces.struct
             const component = Expect(definition, 'component', abort)
             const selected = $[1].location
             let location: target.namespaces.resolver.types.Value.component.value.location.value
-            let signature: target.namespaces.signatures.types.Signature
+            let declaration: target.namespaces.declarations.types.Declaration
+            let signature: target.namespaces.declarations.types.Signature
             let selected_type: target.namespaces.structure.types.Type
             if (selected[0] === 'internal') {
                 const entry = Entry(context.signatures, selected[1], abort)
                 location = ['internal', entry]
-                signature = entry['l entry'].value
+                declaration = entry['l entry'].value
+                signature = declaration.signature.result
                 selected_type = entry['l entry'].benchmark
             } else {
                 const namespace = Entry(context.children, selected[1].namespace, abort)
                 const resolver = Entry(namespace['l entry'].value.types, selected[1].resolver, abort)
                 location = ['child', { namespace, resolver }]
-                signature = resolver['l entry'].value
+                declaration = resolver['l entry'].value
+                signature = declaration.signature.result
                 selected_type = resolver['l entry'].benchmark
             }
             if (selected_type !== Component_Type(component)) return abort({ type: ['constraint', ['same node', 'component type']] })
@@ -777,27 +891,29 @@ const Resolver = ($: source.Resolver_Value, definition: target.namespaces.struct
             Check_Constraints(component.constraints, p.from.optional(constraints).map(($) => $.value), ($) => Constraint_Node($.value), abort)
             return ['component', {
                 constraints: { definition: component }, value: {
-                    location: { value: location, result: signature },
+                    location: { value: location, result: declaration },
                     arguments: p.from.optional($[1].arguments).map(($) => ({
                         types: p.from.optional($.types).map(($) => {
-                            Dense($, signature.parameters.result.types, abort)
+                            Dense($, signature.values, abort)
+                            Dense(signature.values, $, abort)
                             return p.from.dictionary($).map(($, id) => {
-                            const benchmark = Entry(signature.parameters.result.types, id, abort)['l entry']
-                            let value: target.namespaces.resolver.types.Value.component.value.arguments_.O.types.O.D.value
-                            switch ($[0]) {
-                                case 'optional': value = ['optional', Optional_Initialization($[1], context, abort)]; break
-                                case 'required': value = ['required', Guaranteed($[1], context, abort)]; break
-                                case 'parameter': value = ['parameter', Entry(context.signature.parameters.result.types, $[1], abort)]; break
-                                default: return p.exhaustive($[0])
-                            }
-                            return { benchmark, value }
+                                const benchmark = Entry(signature.values, id, abort)['l entry']
+                                let value: target.namespaces.resolver.types.Value.component.value.arguments_.O.types.O.D.value
+                                switch ($[0]) {
+                                    case 'optional': value = ['optional', Optional_Initialization($[1], context, abort)]; break
+                                    case 'required': value = ['required', Guaranteed($[1], context, abort)]; break
+                                    case 'parameter': value = ['parameter', Entry(context.signature.values, $[1], abort)]; break
+                                    default: return p.exhaustive($[0])
+                                }
+                                return { benchmark, value }
                             })
                         }),
                         lookups: p.from.optional($.lookups).map(($) => {
-                            Dense($, signature.parameters.result.lookups, abort)
+                            Dense($, signature.lookups, abort)
+                            Dense(signature.lookups, $, abort)
                             return p.from.dictionary($).map(($, id): target.namespaces.resolver.types.Value.component.value.arguments_.O.lookups.O.D => {
-                            const benchmark = Entry(signature.parameters.result.lookups, id, abort)['l entry']
-                            return { benchmark, value: $[0] === 'selection' ? ['selection', Lookup_Selection($[1], context, abort)] : $ }
+                                const benchmark = Entry(signature.lookups, id, abort)['l entry']
+                                return { benchmark, value: $[0] === 'selection' ? ['selection', Lookup_Selection($[1], context, abort)] : $ }
                             })
                         }),
                     })),
@@ -878,6 +994,7 @@ const Resolver = ($: source.Resolver_Value, definition: target.namespaces.struct
             const next = { ...context, options: optional.constraints }
             return ['optional', {
                 constraints: { definition: optional }, value: {
+                    presence: p.from.optional($[1].presence).map(($) => Possible($, context, abort)),
                     constraints,
                     resolver: Resolver($[1].resolver, optional.value, next, abort),
                     result: p.from.optional($[1].result).map(($) => {

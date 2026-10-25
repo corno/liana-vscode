@@ -87,7 +87,7 @@ export const Schema: declarations.Schema = ($) => ['group', ['verbose', p_.liter
         $,
     )),
     "resolver": p_.change_context($['resolver'], ($) => ['group', ['verbose', p_.literal.dictionary({
-        "signatures": p_.change_context($['signatures'], ($) => __operations.namespaces.signatures.Signature_Namespace(
+        "declarations": p_.change_context($['declarations'], ($) => __operations.namespaces.declarations.Declaration_Namespace(
             $,
         )),
         "implementations": p_.change_context($['implementations'], ($) => __operations.namespaces.resolver.Resolver(
@@ -159,8 +159,8 @@ export namespace namespaces {
                 s_target.Value
             >
             
-            export type Value_Path = p_.Transformer<
-                s_source.namespaces.structure.types.Value_Path,
+            export type Value_Subselection = p_.Transformer<
+                s_source.namespaces.structure.types.Value_Subselection,
                 s_target.Value
             >
             
@@ -279,7 +279,7 @@ export namespace namespaces {
             "regular expression": p_.change_context($['regular expression'], ($) => ['optional', p_.from.optional($).decide(($): s_target.Value.optional => ['set', __operations.namespaces.structure.Regular_Expression(
                 $,
             )], (): s_target.Value.optional => ['not set', null])]),
-            "file path": p_.change_context($['file path'], ($) => ['optional', p_.from.optional($).decide(($): s_target.Value.optional => ['set', ['group', ['verbose', p_.literal.dictionary({
+            "hyperlink": p_.change_context($['hyperlink'], ($) => ['optional', p_.from.optional($).decide(($): s_target.Value.optional => ['set', ['group', ['verbose', p_.literal.dictionary({
                 "prefix": p_.change_context($['prefix'], ($) => ['text', {
                     'delimiter': ['quote', null],
                     'value': $,
@@ -486,7 +486,7 @@ export namespace namespaces {
             }
         })]
         
-        export const Value_Path: declarations.Value_Path = ($) => ['group', ['verbose', p_.literal.dictionary({
+        export const Value_Subselection: declarations.Value_Subselection = ($) => ['group', ['verbose', p_.literal.dictionary({
             "tail": p_.change_context($['tail'], ($) => ['list', p_.from.list($).map(
                 ($) => p_.change_context($, ($) => ['state', p_.from.state($).decide(($): s_target.Value.state => {
                     switch ($[0]) {
@@ -524,7 +524,7 @@ export namespace namespaces {
             "type": p_.change_context($['type'], ($) => __operations.namespaces.structure.Type_Reference(
                 $,
             )),
-            "path": p_.change_context($['path'], ($) => __operations.namespaces.structure.Value_Path(
+            "path": p_.change_context($['path'], ($) => __operations.namespaces.structure.Value_Subselection(
                 $,
             )),
         })]]
@@ -582,42 +582,52 @@ export namespace namespaces {
         )], (): s_target.Value.optional => ['not set', null])]
         export namespace namespaces {}
     }
-    export namespace signatures {
+    export namespace declarations {
         
         export namespace declarations {
             
             export type Presence = p_.Transformer<
-                s_source.namespaces.signatures.types.Presence,
+                s_source.namespaces.declarations.types.Presence,
                 s_target.Value
             >
             
             export type Signature_Type_Reference = p_.Transformer<
-                s_source.namespaces.signatures.types.Signature_Type_Reference,
+                s_source.namespaces.declarations.types.Signature_Type_Reference,
                 s_target.Value
             >
             
-            export type Signature_Parameters = p_.Transformer<
-                s_source.namespaces.signatures.types.Signature_Parameters,
+            export type Signature_Value_Subselection = p_.Transformer<
+                s_source.namespaces.declarations.types.Signature_Value_Subselection,
                 s_target.Value
             >
             
-            export type Signatures = p_.Transformer<
-                s_source.namespaces.signatures.types.Signatures,
+            export type Signature_Value_Reference = p_.Transformer<
+                s_source.namespaces.declarations.types.Signature_Value_Reference,
                 s_target.Value
             >
             
             export type Signature = p_.Transformer<
-                s_source.namespaces.signatures.types.Signature,
+                s_source.namespaces.declarations.types.Signature,
+                s_target.Value
+            >
+            
+            export type Declarations = p_.Transformer<
+                s_source.namespaces.declarations.types.Declarations,
+                s_target.Value
+            >
+            
+            export type Declaration = p_.Transformer<
+                s_source.namespaces.declarations.types.Declaration,
                 s_target.Value
             >
             
             export type Namespaces = p_.Transformer<
-                s_source.namespaces.signatures.types.Namespaces,
+                s_source.namespaces.declarations.types.Namespaces,
                 s_target.Value
             >
             
-            export type Signature_Namespace = p_.Transformer<
-                s_source.namespaces.signatures.types.Signature_Namespace,
+            export type Declaration_Namespace = p_.Transformer<
+                s_source.namespaces.declarations.types.Declaration_Namespace,
                 s_target.Value
             >
         }
@@ -674,20 +684,63 @@ export namespace namespaces {
             })]),
         })]]
         
-        export const Signature_Parameters: declarations.Signature_Parameters = ($) => ['group', ['verbose', p_.literal.dictionary({
-            "types": p_.change_context($['types'], ($) => ['dictionary', p_.from.dictionary($).map(
+        export const Signature_Value_Subselection: declarations.Signature_Value_Subselection = ($) => ['group', ['verbose', p_.literal.dictionary({
+            "tail": p_.change_context($['tail'], ($) => ['list', p_.from.list($).map(
+                ($) => p_.change_context($, ($) => ['state', p_.from.state($).decide(($): s_target.Value.state => {
+                    switch ($[0]) {
+                        case 'dictionary': return p_.option($, ($): s_target.Value.state => ({
+                            'option': 'dictionary',
+                            'value': ['nothing', null],
+                        }))
+                        case 'group': return p_.option($, ($): s_target.Value.state => ({
+                            'option': 'group',
+                            'value': ['reference', {
+                                'value': $,
+                            }],
+                        }))
+                        case 'list': return p_.option($, ($): s_target.Value.state => ({
+                            'option': 'list',
+                            'value': ['nothing', null],
+                        }))
+                        case 'optional': return p_.option($, ($): s_target.Value.state => ({
+                            'option': 'optional',
+                            'value': ['nothing', null],
+                        }))
+                        case 'state': return p_.option($, ($): s_target.Value.state => ({
+                            'option': 'state',
+                            'value': ['reference', {
+                                'value': $,
+                            }],
+                        }))
+                        default: return p_.exhaustive($[0])
+                    }
+                })]),
+            )]),
+        })]]
+        
+        export const Signature_Value_Reference: declarations.Signature_Value_Reference = ($) => ['group', ['verbose', p_.literal.dictionary({
+            "type": p_.change_context($['type'], ($) => __operations.namespaces.declarations.Signature_Type_Reference(
+                $,
+            )),
+            "subselection": p_.change_context($['subselection'], ($) => __operations.namespaces.declarations.Signature_Value_Subselection(
+                $,
+            )),
+        })]]
+        
+        export const Signature: declarations.Signature = ($) => ['group', ['verbose', p_.literal.dictionary({
+            "values": p_.change_context($['values'], ($) => ['dictionary', p_.from.dictionary($).map(
                 ($, id) => ['group', ['verbose', p_.literal.dictionary({
-                    "type": p_.change_context($['type'], ($) => __operations.namespaces.signatures.Signature_Type_Reference(
+                    "value": p_.change_context($['value'], ($) => __operations.namespaces.declarations.Signature_Value_Reference(
                         $,
                     )),
-                    "presence": p_.change_context($['presence'], ($) => __operations.namespaces.signatures.Presence(
+                    "presence": p_.change_context($['presence'], ($) => __operations.namespaces.declarations.Presence(
                         $,
                     )),
                 })]],
             )]),
             "lookups": p_.change_context($['lookups'], ($) => ['dictionary', p_.from.dictionary($).map(
                 ($, id) => ['group', ['verbose', p_.literal.dictionary({
-                    "referent": p_.change_context($['referent'], ($) => __operations.namespaces.signatures.Signature_Type_Reference(
+                    "referent": p_.change_context($['referent'], ($) => __operations.namespaces.declarations.Signature_Value_Reference(
                         $,
                     )),
                     "type": p_.change_context($['type'], ($) => ['state', p_.from.state($).decide(($): s_target.Value.state => {
@@ -703,25 +756,25 @@ export namespace namespaces {
                             default: return p_.exhaustive($[0])
                         }
                     })]),
-                    "presence": p_.change_context($['presence'], ($) => __operations.namespaces.signatures.Presence(
+                    "presence": p_.change_context($['presence'], ($) => __operations.namespaces.declarations.Presence(
                         $,
                     )),
                 })]],
             )]),
         })]]
         
-        export const Signatures: declarations.Signatures = ($) => ['dictionary', p_.from.dictionary($).map(
-            ($, id) => __operations.namespaces.signatures.Signature(
+        export const Declarations: declarations.Declarations = ($) => ['dictionary', p_.from.dictionary($).map(
+            ($, id) => __operations.namespaces.declarations.Declaration(
                 $,
             ),
         )]
         
-        export const Signature: declarations.Signature = ($) => ['group', ['verbose', p_.literal.dictionary({
-            "parameters": p_.change_context($['parameters'], ($) => ['state', p_.from.state($).decide(($): s_target.Value.state => {
+        export const Declaration: declarations.Declaration = ($) => ['group', ['verbose', p_.literal.dictionary({
+            "signature": p_.change_context($['signature'], ($) => ['state', p_.from.state($).decide(($): s_target.Value.state => {
                 switch ($[0]) {
                     case 'local': return p_.option($, ($): s_target.Value.state => ({
                         'option': 'local',
-                        'value': __operations.namespaces.signatures.Signature_Parameters(
+                        'value': __operations.namespaces.declarations.Signature(
                             $,
                         ),
                     }))
@@ -737,16 +790,16 @@ export namespace namespaces {
         })]]
         
         export const Namespaces: declarations.Namespaces = ($) => ['dictionary', p_.from.dictionary($).map(
-            ($, id) => __operations.namespaces.signatures.Signature_Namespace(
+            ($, id) => __operations.namespaces.declarations.Declaration_Namespace(
                 $,
             ),
         )]
         
-        export const Signature_Namespace: declarations.Signature_Namespace = ($) => ['group', ['verbose', p_.literal.dictionary({
-            "namespaces": p_.change_context($['namespaces'], ($) => __operations.namespaces.signatures.Namespaces(
+        export const Declaration_Namespace: declarations.Declaration_Namespace = ($) => ['group', ['verbose', p_.literal.dictionary({
+            "namespaces": p_.change_context($['namespaces'], ($) => __operations.namespaces.declarations.Namespaces(
                 $,
             )),
-            "types": p_.change_context($['types'], ($) => __operations.namespaces.signatures.Signatures(
+            "types": p_.change_context($['types'], ($) => __operations.namespaces.declarations.Declarations(
                 $,
             )),
         })]]
@@ -766,8 +819,8 @@ export namespace namespaces {
                 s_target.Value
             >
             
-            export type Value_Path = p_.Transformer<
-                s_source.namespaces.resolver.types.Value_Path,
+            export type Value_Subselection = p_.Transformer<
+                s_source.namespaces.resolver.types.Value_Subselection,
                 s_target.Value
             >
             
@@ -916,7 +969,7 @@ export namespace namespaces {
             })]),
         })]]
         
-        export const Value_Path: declarations.Value_Path = ($) => ['group', ['verbose', p_.literal.dictionary({
+        export const Value_Subselection: declarations.Value_Subselection = ($) => ['group', ['verbose', p_.literal.dictionary({
             "tail": p_.change_context($['tail'], ($) => ['list', p_.from.list($).map(
                 ($) => p_.change_context($, ($) => ['state', p_.from.state($).decide(($): s_target.Value.state => {
                     switch ($[0]) {
@@ -954,7 +1007,7 @@ export namespace namespaces {
             "type": p_.change_context($['type'], ($) => __operations.namespaces.resolver.Type_Reference(
                 $,
             )),
-            "path": p_.change_context($['path'], ($) => __operations.namespaces.resolver.Value_Path(
+            "path": p_.change_context($['path'], ($) => __operations.namespaces.resolver.Value_Subselection(
                 $,
             )),
         })]]
@@ -1513,6 +1566,9 @@ export namespace namespaces {
                 case 'optional': return p_.option($, ($): s_target.Value.state => ({
                     'option': 'optional',
                     'value': ['group', ['verbose', p_.literal.dictionary({
+                        "presence": p_.change_context($['presence'], ($) => ['optional', p_.from.optional($).decide(($): s_target.Value.optional => ['set', __operations.namespaces.resolver.Possible_Value_Selection(
+                            $,
+                        )], (): s_target.Value.optional => ['not set', null])]),
                         "constraints": p_.change_context($['constraints'], ($) => __operations.namespaces.resolver.Option_Constraints(
                             $,
                         )),
