@@ -13,24 +13,24 @@
                     }
                     `types`: {
                         'Schema': < | `group` {
-                            'types': < _ | `component` < | `internal cyclic` 'Types' _ > >
+                            'types': < _ | `component` < | `local cyclic` 'Types' _ > >
                         } >
-                        'Schemas': < | `dictionary` < | `component` < | `internal cyclic` 'Schema' _ > > >
+                        'Schemas': < | `dictionary` < | `component` < | `local cyclic` 'Schema' _ > > >
                         'Type': < | `group` {
-                            'root': < * "Root value of this named type" | `component` < | `internal cyclic` 'Value' _ > >
+                            'root': < * "Root value of this named type" | `component` < | `local cyclic` 'Value' _ > >
                         } >
-                        'Types': < | `dictionary` < | `component` < | `internal cyclic` 'Type' _ > > >
+                        'Types': < | `dictionary` < | `component` < | `local cyclic` 'Type' _ > > >
                         'Value': < | `state` < {
                             'boolean': < _ _ | `nothing` ~ >
                             'component': < _ _ | `state` < {
-                                'cyclic': < _ _ | `reference` < < < | `internal` 'Types' > < [] > > < | `cyclic` ~ _ > > >
-                                'acyclic': < _ _ | `reference` < < < | `internal` 'Types' > < [] > > < | `acyclic` ~ _ > > >
+                                'cyclic': < _ _ | `reference` < < < | `local` 'Types' > < [] > > < | `cyclic` ~ _ > > >
+                                'acyclic': < _ _ | `reference` < < < | `local` 'Types' > < [] > > < | `acyclic` ~ _ > > >
                             } _ > >
-                            'dictionary': < _ _ | `component` < | `internal cyclic` 'Value' _ > >
+                            'dictionary': < _ _ | `component` < | `local cyclic` 'Value' _ > >
                             'group': < _ _ | `group` {
-                                'properties': < _ | `dictionary` < | `component` < | `internal cyclic` 'Value' _ > > >
+                                'properties': < _ | `dictionary` < | `component` < | `local cyclic` 'Value' _ > > >
                             } >
-                            'list': < _ _ | `component` < | `internal cyclic` 'Value' _ > >
+                            'list': < _ _ | `component` < | `local cyclic` 'Value' _ > >
                             'nothing': < _ _ | `nothing` ~ >
                             'number': < _ _ | `state` < {
                                 'approximation': < _ _ | `nothing` ~ >
@@ -39,259 +39,58 @@
                                     'natural': < _ _ | `nothing` ~ >
                                 } _ > >
                             } _ > >
-                            'optional': < _ _ | `component` < | `internal cyclic` 'Value' _ > >
+                            'optional': < _ _ | `component` < | `local cyclic` 'Value' _ > >
                             'reference': < _ _ | `group` {
-                                'type reference': < _ | `reference` < < < | `internal` 'Types' > < [] > > < | `acyclic` ~ _ > > >
-                                'subselection': < _ | `component` < | `internal cyclic` 'Value Definition Subselection' _ > >
+                                'type reference': < _ | `reference` < < < | `local` 'Types' > < [] > > < | `acyclic` ~ _ > > >
+                                'subselection': < _ | `component` < | `local cyclic` 'Value Definition Subselection' _ > >
                                 'cyclic': < _ | `simple` 'boolean' >
                             } >
                             'state': < _ _ | `group` {
-                                'options': < _ | `dictionary` < | `component` < | `internal cyclic` 'Value' _ > > >
+                                'options': < _ | `dictionary` < | `component` < | `local cyclic` 'Value' _ > > >
                             } >
                             'text': < _ _ | `nothing` ~ >
                         } _ > >
                         'Value Definition Reference': < | `group` {
-                            'type': < _ | `reference` < < < | `internal` 'Types' > < [] > > < | `acyclic` ~ _ > > >
-                            'subselection': < _ | `component` < | `internal cyclic` 'Value Definition Subselection' _ > >
+                            'type': < _ | `reference` < < < | `local` 'Types' > < [] > > < | `acyclic` ~ _ > > >
+                            'subselection': < _ | `component` < | `local cyclic` 'Value Definition Subselection' _ > >
                         } >
                         'Value Definition Subselection': < | `group` {
                             'steps': < _ | `list` < | `state` < {
                                 'dictionary': < _ * {
-                                    'definition': < < | `internal` 'Value' > < [
+                                    'definition': < < | `local` 'Value' > < [
                                         | `state` 'dictionary'
                                     ] > >
                                 } | `nothing` ~ >
                                 'group': < _ * {
-                                    'definition': < < | `internal` 'Value' > < [
+                                    'definition': < < | `local` 'Value' > < [
                                         | `state` 'group'
                                     ] > >
-                                } | `reference` < < < | `internal` 'Value' > < [
+                                } | `reference` < < < | `local` 'Value' > < [
                                     | `state` 'group'
                                     | `group` 'properties'
                                 ] > > < | `acyclic` ~ _ > > >
                                 'list': < _ * {
-                                    'definition': < < | `internal` 'Value' > < [
+                                    'definition': < < | `local` 'Value' > < [
                                         | `state` 'list'
                                     ] > >
                                 } | `nothing` ~ >
                                 'optional': < _ * {
-                                    'definition': < < | `internal` 'Value' > < [
+                                    'definition': < < | `local` 'Value' > < [
                                         | `state` 'optional'
                                     ] > >
                                 } | `nothing` ~ >
                                 'state': < _ * {
-                                    'definition': < < | `internal` 'Value' > < [
+                                    'definition': < < | `local` 'Value' > < [
                                         | `state` 'state'
                                     ] > >
-                                } | `reference` < < < | `internal` 'Value' > < [
+                                } | `reference` < < < | `local` 'Value' > < [
                                     | `state` 'state'
                                     | `group` 'options'
                                 ] > > < | `acyclic` ~ _ > > >
-                            } * < < | `internal` 'Value' > < [] > > > * < < | `internal` 'Value' > < [] > > > >
+                            } * < < | `local` 'Value' > < [] > > > * < < | `local` 'Value' > < [] > > > >
                         } >
                     }
                 )
-                'transformer expression': {
-                    'namespaces': {}
-                    'basic types': {}
-                    'types': {
-                        'Value Expression': < | `state` < {
-                            'specials': < _ _ | `state` < {
-                                'implement me': < _ * {
-                                    'development': < < | `internal` 'Phase' > < [
-                                        | `state` 'development'
-                                    ] > >
-                                } | `group` {
-                                    'remark': < _ | `simple` 'text' >
-                                } >
-                            } _ > >
-                            'initialize': < _ _ | `state` < {
-                                'boolean': < _ * {
-                                    'boolean': < < | `sibling` < 'schema' 'Value' > > < [
-                                        | `state` 'boolean'
-                                    ] > >
-                                } | `group` {
-                                    'type': < _ | `state` < {
-                                        'literal': < _ _ | `simple` 'boolean' >
-                                    } _ > >
-                                } >
-                                'dictionary': < _ * {
-                                    'dictionary': < < | `sibling` < 'schema' 'Value' > > < [
-                                        | `state` 'dictionary'
-                                    ] > >
-                                } | `group` {
-                                    'type': < _ | `state` < {} _ > >
-                                } >
-                                'group': < _ * {
-                                    'group': < < | `sibling` < 'schema' 'Value' > > < [
-                                        | `state` 'group'
-                                    ] > >
-                                } | `group` {
-                                    'type': < _ | `state` < {} _ > >
-                                } >
-                                'list': < _ * {
-                                    'list': < < | `sibling` < 'schema' 'Value' > > < [
-                                        | `state` 'list'
-                                    ] > >
-                                } | `group` {
-                                    'type': < _ | `state` < {
-                                        'segmented': < _ _ | `group` {
-                                            'items': < _ | `list` < | `component` < | `internal cyclic` 'Value Expression' _ > _ > >
-                                        } >
-                                    } _ > >
-                                } >
-                                'nothing': < _ * {
-                                    'target': < < | `sibling` < 'schema' 'Value' > > < [
-                                        | `state` 'nothing'
-                                    ] > >
-                                } | `nothing` ~ >
-                                'number': < _ * {
-                                    'number': < < | `sibling` < 'schema' 'Value' > > < [
-                                        | `state` 'number'
-                                    ] > >
-                                } | `state` < {} _ > >
-                                'optional': < _ * {
-                                    'optional': < < | `sibling` < 'schema' 'Value' > > < [
-                                        | `state` 'optional'
-                                    ] > >
-                                } | `group` {
-                                    'type': < _ | `state` < {
-                                        'not set': < _ _ | `nothing` ~ >
-                                    } _ > >
-                                } >
-                                'state': < _ * {
-                                    'state': < < | `sibling` < 'schema' 'Value' > > < [
-                                        | `state` 'state'
-                                    ] > >
-                                } | `group` {
-                                    'option': < _ | `reference` < < < | `sibling` < 'schema' 'Value' > > < [
-                                        | `state` 'state'
-                                        | `group` 'options'
-                                    ] > > < | `acyclic` ~ _ > > >
-                                    'value': < _ | `component` < | `internal cyclic` 'Value Expression' _ > >
-                                } >
-                                'text': < _ * {
-                                    'text': < < | `sibling` < 'schema' 'Value' > > < [
-                                        | `state` 'text'
-                                    ] > >
-                                } | `group` {
-                                    'type': < _ | `state` < {
-                                        'literal': < _ _ | `simple` 'text' >
-                                        'composed': < _ _ | `list` < | `component` < | `internal cyclic` 'Value Expression' _ > _ > >
-                                        'id': < _ * {
-                                            'dictionary to list': < < | `sibling` < 'schema' 'Value' > > < [] > >
-                                        } | `nothing` ~ >
-                                    } _ > >
-                                } >
-                            } _ > >
-                            'convert': < _ _ | `group` {
-                                'selection': < _ | `component` < | `internal cyclic` 'Value Instance Selection' _ > >
-                                'type': < _ | `state` < {
-                                    'boolean': < _ * {
-                                        'boolean': < < | `sibling` < 'schema' 'Value' > > < [
-                                            | `state` 'boolean'
-                                        ] > >
-                                    } | `group` {
-                                        'operation': < _ | `state` < {
-                                            'copy': < _ * {
-                                                'target': < < | `sibling` < 'schema' 'Value' > > < [
-                                                    | `state` 'boolean'
-                                                ] > >
-                                            } | `nothing` ~ >
-                                            'decide': < _ _ | `group` {
-                                                'if true': < _ | `component` < | `internal cyclic` 'Value Expression' _ > >
-                                                'if false': < _ | `component` < | `internal cyclic` 'Value Expression' _ > >
-                                            } >
-                                        } _ > >
-                                    } >
-                                    'component': < _ * {
-                                        'component': < < | `sibling` < 'schema' 'Value' > > < [
-                                            | `state` 'component'
-                                        ] > >
-                                    } | `group` {
-                                        'operation': < _ | `state` < {
-                                            'source call': < _ * {
-                                                'definitions': < < | `internal` 'Source Declarations' > < [] > >
-                                            } | `component` < | `internal cyclic` 'Source Call' _ > >
-                                            'target call': < _ * {
-                                                'definitions': < < | `internal` 'Target Declarations' > < [] > >
-                                            } | `component` < | `internal cyclic` 'Target Call' _ > >
-                                        } _ > >
-                                    } >
-                                    'dictionary': < _ * {
-                                        'dictionary': < < | `sibling` < 'schema' 'Value' > > < [
-                                            | `state` 'dictionary'
-                                        ] > >
-                                    } | `group` {
-                                        'operation': < _ | `state` < {} _ > >
-                                    } >
-                                    'list': < _ * {
-                                        'list': < < | `sibling` < 'schema' 'Value' > > < [
-                                            | `state` 'list'
-                                        ] > >
-                                    } | `group` {
-                                        'operation': < _ | `state` < {
-                                            'reduce': < _ _ | `group` {
-                                                'initialize': < _ | `component` < | `internal cyclic` 'Value Expression' _ > >
-                                                'update': < _ | `component` < | `internal cyclic` 'Value Expression' _ > >
-                                            } >
-                                        } _ > >
-                                    } >
-                                    'state': < _ * {
-                                        'state': < < | `sibling` < 'schema' 'Value' > > < [
-                                            | `state` 'state'
-                                        ] > >
-                                    } | `group` {
-                                        'operation': < _ | `state` < {} _ > >
-                                    } >
-                                    'optional': < _ * {
-                                        'optional': < < | `sibling` < 'schema' 'Value' > > < [
-                                            | `state` 'optional'
-                                        ] > >
-                                    } | `group` {
-                                        'operation': < _ | `state` < {} _ > >
-                                    } >
-                                    'text': < _ * {
-                                        'text': < < | `sibling` < 'schema' 'Value' > > < [
-                                            | `state` 'text'
-                                        ] > >
-                                    } | `group` {
-                                        'operation': < _ | `state` < {
-                                            'copy': < _ * {
-                                                'target': < < | `sibling` < 'schema' 'Value' > > < [
-                                                    | `state` 'text'
-                                                ] > >
-                                            } | `nothing` ~ >
-                                            'serialize': < _ * {
-                                                'target': < < | `sibling` < 'schema' 'Value' > > < [
-                                                    | `state` 'text'
-                                                ] > >
-                                            } | `component` < | `internal cyclic` 'Text Expression' _ > >
-                                        } _ > >
-                                    } >
-                                    'number': < _ * {
-                                        'number': < < | `sibling` < 'schema' 'Value' > > < [
-                                            | `state` 'number'
-                                        ] > >
-                                    } | `group` {
-                                        'operation': < _ | `state` < {
-                                            'copy': < _ * {
-                                                'target': < < | `sibling` < 'schema' 'Value' > > < [
-                                                    | `state` 'number'
-                                                ] > >
-                                            } | `nothing` ~ >
-                                            'serialize': < _ * {
-                                                'target': < < | `sibling` < 'schema' 'Value' > > < [
-                                                    | `state` 'text'
-                                                ] > >
-                                            } | `component` < | `internal cyclic` 'Number Expression' _ > >
-                                        } _ > >
-                                    } >
-                                } _ > >
-                            } >
-                        } _ > >
-                    }
-                }
                 'transformer': (
                     `namespaces`: {}
                     `basic types`: {
@@ -303,11 +102,11 @@
                     }
                     `types`: {
                         'Error Definition Reference': < | `optional` < * {
-                            'error schema': < < | `internal` 'Schema Reference' > < [] > >
-                        } | `component` < | `internal cyclic` 'Transformer Value Definition Reference' _ > _ > >
+                            'error schema': < < | `local` 'Schema Reference' > < [] > >
+                        } | `component` < | `local cyclic` 'Transformer Value Definition Reference' _ > _ > >
                         'Number Expression': < | `state` < {
                             'implement me': < _ * {
-                                'development': < < | `internal` 'Phase' > < [
+                                'development': < < | `local` 'Phase' > < [
                                     | `state` 'development'
                                 ] > >
                             } | `group` {
@@ -315,21 +114,21 @@
                             } >
                         } _ > >
                         'Parameter Definition Reference': < | `optional` < * {
-                            'parameter schema': < < | `internal` 'Schema Reference' > < [] > >
-                        } | `component` < | `internal cyclic` 'Transformer Value Definition Reference' _ > _ > >
+                            'parameter schema': < < | `local` 'Schema Reference' > < [] > >
+                        } | `component` < | `local cyclic` 'Transformer Value Definition Reference' _ > _ > >
                         'Phase': < | `state` < {
                             'development': < _ _ | `nothing` ~ >
                             'production': < _ _ | `nothing` ~ >
                         } _ > >
-                        'Schema Reference': < | `reference` < < < | `sibling` < 'schema' 'Schemas' > > < [] > > < | `acyclic` ~ _ > > >
+                        'Schema Reference': < | `reference` < < < | `sibling namespace` < 'schema' 'Schemas' > > < [] > > < | `acyclic` ~ _ > > >
                         'Source Call': < | `group` {
-                            'declaration': < _ | `reference` < < < | `internal` 'Source Declarations' > < [] > > < | `acyclic` ~ _ > > >
+                            'declaration': < _ | `reference` < < < | `local` 'Source Declarations' > < [] > > < | `acyclic` ~ _ > > >
                             'argument': < _ | `optional` < _ | `state` < {
                                 'pass through': < _ _ | `nothing` ~ >
                                 'expression': < _ * {
-                                    'parameter': < < | `internal` 'Transformer Value Definition Reference' > < [] > >
+                                    'parameter': < < | `local` 'Transformer Value Definition Reference' > < [] > >
                                 } | `group` {
-                                    'value': < _ | `component` < | `internal cyclic` 'Value Expression' _ > >
+                                    'value': < _ | `component` < | `local cyclic` 'Value Expression' _ > >
                                 } >
                             } _ > _ > >
                         } >
@@ -338,24 +137,24 @@
                                 'transformer': < _ _ | `nothing` ~ >
                                 'consumer': < _ _ | `nothing` ~ >
                             } _ > >
-                            'source': < _ | `component` < | `internal` 'Transformer Value Definition Reference' _ > >
-                            'error': < _ | `component` < | `internal cyclic` 'Error Definition Reference' _ > >
-                            'parameter': < _ | `component` < | `internal cyclic` 'Parameter Definition Reference' _ > >
+                            'source': < _ | `component` < | `local` 'Transformer Value Definition Reference' _ > >
+                            'error': < _ | `component` < | `local cyclic` 'Error Definition Reference' _ > >
+                            'parameter': < _ | `component` < | `local cyclic` 'Parameter Definition Reference' _ > >
                         } > >
                         'Source Signature': < | `group` {
-                            'schema': < _ | `component` < | `internal cyclic` 'Schema Reference' _ > >
-                            'error schema': < _ | `optional` < _ | `component` < | `internal cyclic` 'Schema Reference' _ > * < < | `internal` 'Schema Reference' > < [] > > > >
-                            'parameter schema': < _ | `optional` < _ | `component` < | `internal cyclic` 'Schema Reference' _ > * < < | `internal` 'Schema Reference' > < [] > > > >
-                            'declarations': < _ | `component` < | `internal cyclic` 'Source Declarations' _ > >
+                            'schema': < _ | `component` < | `local cyclic` 'Schema Reference' _ > >
+                            'error schema': < _ | `optional` < _ | `component` < | `local cyclic` 'Schema Reference' _ > * < < | `local` 'Schema Reference' > < [] > > > >
+                            'parameter schema': < _ | `optional` < _ | `component` < | `local cyclic` 'Schema Reference' _ > * < < | `local` 'Schema Reference' > < [] > > > >
+                            'declarations': < _ | `component` < | `local cyclic` 'Source Declarations' _ > >
                         } >
                         'Target Call': < | `group` {
-                            'declaration': < _ | `reference` < < < | `internal` 'Target Declarations' > < [] > > < | `acyclic` ~ _ > > >
+                            'declaration': < _ | `reference` < < < | `local` 'Target Declarations' > < [] > > < | `acyclic` ~ _ > > >
                             'argument': < _ | `optional` < _ | `state` < {
                                 'pass through': < _ _ | `nothing` ~ >
                                 'expression': < _ * {
-                                    'parameter': < < | `internal` 'Transformer Value Definition Reference' > < [] > >
+                                    'parameter': < < | `local` 'Transformer Value Definition Reference' > < [] > >
                                 } | `group` {
-                                    'value': < _ | `component` < | `internal cyclic` 'Value Expression' _ > >
+                                    'value': < _ | `component` < | `local cyclic` 'Value Expression' _ > >
                                 } >
                             } _ > _ > >
                         } >
@@ -364,24 +163,24 @@
                                 'transformer': < _ _ | `nothing` ~ >
                                 'consumer': < _ _ | `nothing` ~ >
                             } _ > >
-                            'target': < _ | `component` < | `internal` 'Transformer Value Definition Reference' _ > >
-                            'error': < _ | `component` < | `internal cyclic` 'Error Definition Reference' _ > >
-                            'parameter': < _ | `component` < | `internal cyclic` 'Parameter Definition Reference' _ > >
+                            'target': < _ | `component` < | `local` 'Transformer Value Definition Reference' _ > >
+                            'error': < _ | `component` < | `local cyclic` 'Error Definition Reference' _ > >
+                            'parameter': < _ | `component` < | `local cyclic` 'Parameter Definition Reference' _ > >
                         } > >
                         'Target Signature': < | `group` {
-                            'schema': < _ | `component` < | `internal cyclic` 'Schema Reference' _ > >
-                            'error schema': < _ | `optional` < _ | `component` < | `internal cyclic` 'Schema Reference' _ > * < < | `internal` 'Schema Reference' > < [] > > > >
-                            'parameter schema': < _ | `optional` < _ | `component` < | `internal cyclic` 'Schema Reference' _ > * < < | `internal` 'Schema Reference' > < [] > > > >
-                            'declarations': < _ | `component` < | `internal cyclic` 'Target Declarations' _ > >
+                            'schema': < _ | `component` < | `local cyclic` 'Schema Reference' _ > >
+                            'error schema': < _ | `optional` < _ | `component` < | `local cyclic` 'Schema Reference' _ > * < < | `local` 'Schema Reference' > < [] > > > >
+                            'parameter schema': < _ | `optional` < _ | `component` < | `local cyclic` 'Schema Reference' _ > * < < | `local` 'Schema Reference' > < [] > > > >
+                            'declarations': < _ | `component` < | `local cyclic` 'Target Declarations' _ > >
                         } >
                         'Text Expression': < | `state` < {
-                            'composed': < _ _ | `list` < | `component` < | `internal cyclic` 'Text Expression' _ > _ > >
+                            'composed': < _ _ | `list` < | `component` < | `local cyclic` 'Text Expression' _ > _ > >
                             'escape': < _ _ | `list` < | `group` {
                                 'character': < _ | `simple` 'natural' >
                                 'emit': < _ | `simple` 'literal text' >
                             } _ > >
                             'implement me': < _ * {
-                                'development': < < | `internal` 'Phase' > < [
+                                'development': < < | `local` 'Phase' > < [
                                     | `state` 'development'
                                 ] > >
                             } | `group` {
@@ -390,87 +189,282 @@
                             'literal': < _ _ | `simple` 'literal text' >
                         } _ > >
                         'Transformer': < | `group` {
-                            'schema': < _ | `component` < | `internal cyclic` 'Schema Reference' _ > >
+                            'schema': < _ | `component` < | `local cyclic` 'Schema Reference' _ > >
                             'sources': < _ | `dictionary` < | `group` {
-                                'signature': < _ | `component` < | `internal cyclic` 'Source Signature' _ > >
+                                'signature': < _ | `component` < | `local cyclic` 'Source Signature' _ > >
                                 'implementations': < _ | `dictionary` < | `group` {
-                                    'expression': < _ | `component` < | `internal cyclic` 'Value Expression' _ > >
+                                    'expression': < _ | `component` < | `local cyclic` 'Value Expression' _ > >
                                 } > >
                             } > >
                             'targets': < _ | `dictionary` < | `group` {
-                                'signature': < _ | `component` < | `internal cyclic` 'Target Signature' _ > >
+                                'signature': < _ | `component` < | `local cyclic` 'Target Signature' _ > >
                                 'implementations': < _ | `dictionary` < | `group` {
-                                    'expression': < _ | `component` < | `internal cyclic` 'Value Expression' _ > >
+                                    'expression': < _ | `component` < | `local cyclic` 'Value Expression' _ > >
                                 } > >
                             } > >
                         } >
                         'Transformer Value Definition Reference': < | `group` {
-                            'type': < _ | `reference` < < < | `sibling` < 'schema' 'Types' > > < [] > > < | `acyclic` ~ _ > > >
-                            'subselection': < _ | `component` < | `internal cyclic` 'Transformer Value Definition Subselection' _ > >
+                            'type': < _ | `reference` < < < | `sibling namespace` < 'schema' 'Types' > > < [] > > < | `acyclic` ~ _ > > >
+                            'subselection': < _ | `component` < | `local cyclic` 'Transformer Value Definition Subselection' _ > >
                         } >
                         'Transformer Value Definition Subselection': < | `group` {
                             'steps': < _ | `list` < | `state` < {
                                 'dictionary': < _ * {
-                                    'definition': < < | `sibling` < 'schema' 'Value' > > < [
+                                    'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                         | `state` 'dictionary'
                                     ] > >
                                 } | `nothing` ~ >
                                 'group': < _ * {
-                                    'definition': < < | `sibling` < 'schema' 'Value' > > < [
+                                    'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                         | `state` 'group'
                                     ] > >
-                                } | `reference` < < < | `sibling` < 'schema' 'Value' > > < [
+                                } | `reference` < < < | `sibling namespace` < 'schema' 'Value' > > < [
                                     | `state` 'group'
                                     | `group` 'properties'
                                 ] > > < | `acyclic` ~ _ > > >
                                 'list': < _ * {
-                                    'definition': < < | `sibling` < 'schema' 'Value' > > < [
+                                    'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                         | `state` 'list'
                                     ] > >
                                 } | `nothing` ~ >
                                 'optional': < _ * {
-                                    'definition': < < | `sibling` < 'schema' 'Value' > > < [
+                                    'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                         | `state` 'optional'
                                     ] > >
                                 } | `nothing` ~ >
                                 'state': < _ * {
-                                    'definition': < < | `sibling` < 'schema' 'Value' > > < [
+                                    'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                         | `state` 'state'
                                     ] > >
-                                } | `reference` < < < | `sibling` < 'schema' 'Value' > > < [
+                                } | `reference` < < < | `sibling namespace` < 'schema' 'Value' > > < [
                                     | `state` 'state'
                                     | `group` 'options'
                                 ] > > < | `acyclic` ~ _ > > >
-                            } * < < | `sibling` < 'schema' 'Value' > > < [] > > > * < < | `sibling` < 'schema' 'Value' > > < [] > > > >
+                            } * < < | `sibling namespace` < 'schema' 'Value' > > < [] > > > * < < | `sibling namespace` < 'schema' 'Value' > > < [] > > > >
                         } >
-                        'Transformers': < | `dictionary` < | `component` < | `internal cyclic` 'Transformer' _ > > >
+                        'Transformers': < | `dictionary` < | `component` < | `local cyclic` 'Transformer' _ > > >
+                        'Value Expression': < | `state` < {
+                            'specials': < _ _ | `state` < {
+                                'implement me': < _ * {
+                                    'development': < < | `local` 'Phase' > < [
+                                        | `state` 'development'
+                                    ] > >
+                                } | `group` {
+                                    'remark': < _ | `simple` 'text' >
+                                } >
+                            } _ > >
+                            'initialize': < _ _ | `state` < {
+                                'boolean': < _ * {
+                                    'boolean': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                        | `state` 'boolean'
+                                    ] > >
+                                } | `group` {
+                                    'type': < _ | `state` < {
+                                        'literal': < _ _ | `simple` 'boolean' >
+                                    } _ > >
+                                } >
+                                'dictionary': < _ * {
+                                    'dictionary': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                        | `state` 'dictionary'
+                                    ] > >
+                                } | `group` {
+                                    'type': < _ | `state` < {} _ > >
+                                } >
+                                'group': < _ * {
+                                    'group': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                        | `state` 'group'
+                                    ] > >
+                                } | `group` {
+                                    'type': < _ | `state` < {} _ > >
+                                } >
+                                'list': < _ * {
+                                    'list': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                        | `state` 'list'
+                                    ] > >
+                                } | `group` {
+                                    'type': < _ | `state` < {
+                                        'segmented': < _ _ | `group` {
+                                            'items': < _ | `list` < | `component` < | `local cyclic` 'Value Expression' _ > _ > >
+                                        } >
+                                    } _ > >
+                                } >
+                                'nothing': < _ * {
+                                    'target': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                        | `state` 'nothing'
+                                    ] > >
+                                } | `nothing` ~ >
+                                'number': < _ * {
+                                    'number': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                        | `state` 'number'
+                                    ] > >
+                                } | `state` < {} _ > >
+                                'optional': < _ * {
+                                    'optional': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                        | `state` 'optional'
+                                    ] > >
+                                } | `group` {
+                                    'type': < _ | `state` < {
+                                        'not set': < _ _ | `nothing` ~ >
+                                    } _ > >
+                                } >
+                                'state': < _ * {
+                                    'state': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                        | `state` 'state'
+                                    ] > >
+                                } | `group` {
+                                    'option': < _ | `reference` < < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                        | `state` 'state'
+                                        | `group` 'options'
+                                    ] > > < | `acyclic` ~ _ > > >
+                                    'value': < _ | `component` < | `local cyclic` 'Value Expression' _ > >
+                                } >
+                                'text': < _ * {
+                                    'text': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                        | `state` 'text'
+                                    ] > >
+                                } | `group` {
+                                    'type': < _ | `state` < {
+                                        'literal': < _ _ | `simple` 'text' >
+                                        'composed': < _ _ | `list` < | `component` < | `local cyclic` 'Value Expression' _ > _ > >
+                                        'id': < _ * {
+                                            'dictionary to list': < < | `sibling namespace` < 'schema' 'Value' > > < [] > >
+                                        } | `nothing` ~ >
+                                    } _ > >
+                                } >
+                            } _ > >
+                            'convert': < _ _ | `group` {
+                                'selection': < _ | `component` < | `local cyclic` 'Value Instance Selection' _ > >
+                                'type': < _ | `state` < {
+                                    'boolean': < _ * {
+                                        'boolean': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                            | `state` 'boolean'
+                                        ] > >
+                                    } | `group` {
+                                        'operation': < _ | `state` < {
+                                            'copy': < _ * {
+                                                'target': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                                    | `state` 'boolean'
+                                                ] > >
+                                            } | `nothing` ~ >
+                                            'decide': < _ _ | `group` {
+                                                'if true': < _ | `component` < | `local cyclic` 'Value Expression' _ > >
+                                                'if false': < _ | `component` < | `local cyclic` 'Value Expression' _ > >
+                                            } >
+                                        } _ > >
+                                    } >
+                                    'component': < _ * {
+                                        'component': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                            | `state` 'component'
+                                        ] > >
+                                    } | `group` {
+                                        'operation': < _ | `state` < {
+                                            'source call': < _ * {
+                                                'definitions': < < | `local` 'Source Declarations' > < [] > >
+                                            } | `component` < | `local cyclic` 'Source Call' _ > >
+                                            'target call': < _ * {
+                                                'definitions': < < | `local` 'Target Declarations' > < [] > >
+                                            } | `component` < | `local cyclic` 'Target Call' _ > >
+                                        } _ > >
+                                    } >
+                                    'dictionary': < _ * {
+                                        'dictionary': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                            | `state` 'dictionary'
+                                        ] > >
+                                    } | `group` {
+                                        'operation': < _ | `state` < {} _ > >
+                                    } >
+                                    'list': < _ * {
+                                        'list': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                            | `state` 'list'
+                                        ] > >
+                                    } | `group` {
+                                        'operation': < _ | `state` < {
+                                            'reduce': < _ _ | `group` {
+                                                'initialize': < _ | `component` < | `local cyclic` 'Value Expression' _ > >
+                                                'update': < _ | `component` < | `local cyclic` 'Value Expression' _ > >
+                                            } >
+                                        } _ > >
+                                    } >
+                                    'state': < _ * {
+                                        'state': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                            | `state` 'state'
+                                        ] > >
+                                    } | `group` {
+                                        'operation': < _ | `state` < {} _ > >
+                                    } >
+                                    'optional': < _ * {
+                                        'optional': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                            | `state` 'optional'
+                                        ] > >
+                                    } | `group` {
+                                        'operation': < _ | `state` < {} _ > >
+                                    } >
+                                    'text': < _ * {
+                                        'text': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                            | `state` 'text'
+                                        ] > >
+                                    } | `group` {
+                                        'operation': < _ | `state` < {
+                                            'copy': < _ * {
+                                                'target': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                                    | `state` 'text'
+                                                ] > >
+                                            } | `nothing` ~ >
+                                            'serialize': < _ * {
+                                                'target': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                                    | `state` 'text'
+                                                ] > >
+                                            } | `component` < | `local cyclic` 'Text Expression' _ > >
+                                        } _ > >
+                                    } >
+                                    'number': < _ * {
+                                        'number': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                            | `state` 'number'
+                                        ] > >
+                                    } | `group` {
+                                        'operation': < _ | `state` < {
+                                            'copy': < _ * {
+                                                'target': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                                    | `state` 'number'
+                                                ] > >
+                                            } | `nothing` ~ >
+                                            'serialize': < _ * {
+                                                'target': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                                    | `state` 'text'
+                                                ] > >
+                                            } | `component` < | `local cyclic` 'Number Expression' _ > >
+                                        } _ > >
+                                    } >
+                                } _ > >
+                            } >
+                        } _ > >
                         'Value Instance Selection': < | `group` {
                             'type': < _ | `state` < {
                                 'context value': < _ _ | `nothing` ~ >
                                 'source parameter value': < _ * {
-                                    'parameter': < < | `internal` 'Transformer Value Definition Reference' > < [] > >
+                                    'parameter': < < | `local` 'Transformer Value Definition Reference' > < [] > >
                                 } | `group` {
-                                    'subselection': < _ | `component` < | `internal` 'Value Instance Subselection' _ > >
+                                    'subselection': < _ | `component` < | `local` 'Value Instance Subselection' _ > >
                                 } >
                                 'target parameter value': < _ * {
-                                    'parameter': < < | `internal` 'Transformer Value Definition Reference' > < [] > >
+                                    'parameter': < < | `local` 'Transformer Value Definition Reference' > < [] > >
                                 } | `group` {
-                                    'subselection': < _ | `component` < | `internal` 'Value Instance Subselection' _ > >
+                                    'subselection': < _ | `component` < | `local` 'Value Instance Subselection' _ > >
                                 } >
-                                'subselection': < _ _ | `component` < | `internal` 'Value Instance Subselection' _ > >
-                            } * < < | `sibling` < 'schema' 'Value' > > < [] > > > >
+                                'subselection': < _ _ | `component` < | `local` 'Value Instance Subselection' _ > >
+                            } * < < | `sibling namespace` < 'schema' 'Value' > > < [] > > > >
                         } >
                         'Value Instance Subselection': < | `group` {
                             'steps': < _ | `list` < | `state` < {
                                 'group': < _ * {
-                                    'definition': < < | `sibling` < 'schema' 'Value' > > < [
+                                    'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                         | `state` 'group'
                                     ] > >
-                                } | `reference` < < < | `sibling` < 'schema' 'Value' > > < [
+                                } | `reference` < < < | `sibling namespace` < 'schema' 'Value' > > < [
                                     | `state` 'group'
                                     | `group` 'properties'
                                 ] > > < | `acyclic` ~ _ > > >
-                            } * < < | `sibling` < 'schema' 'Value' > > < [] > > > * < < | `sibling` < 'schema' 'Value' > > < [] > > > >
+                            } * < < | `sibling namespace` < 'schema' 'Value' > > < [] > > > * < < | `sibling namespace` < 'schema' 'Value' > > < [] > > > >
                         } >
                     }
                 )
@@ -484,9 +478,9 @@
             }
             `types`: {
                 'Module': < | `group` {
-                    'schemas': < _ | `component` < | `child` < 'schema' 'Schemas' > _ > >
-                    'transformers': < _ | `component` < | `child` < 'transformer' 'Transformers' > _ > >
-                    'phase': < _ | `component` < | `child` < 'transformer' 'Phase' > _ > >
+                    'schemas': < _ | `component` < | `child namespace` < 'schema' 'Schemas' > _ > >
+                    'transformers': < _ | `component` < | `child namespace` < 'transformer' 'Transformers' > _ > >
+                    'phase': < _ | `component` < | `child namespace` < 'transformer' 'Phase' > _ > >
                 } >
             }
         )
@@ -499,16 +493,16 @@
                             'Schema': < | `local` < {} {} > >
                             'Schemas': < | `local` < {} {} > >
                             'Type': < | `local` < {} {
-                                'cyclic types': < < < | `internal` 'Types' > < [] > > | `cyclic` ~ | `required` ~ >
-                                'acyclic types': < < < | `internal` 'Types' > < [] > > | `acyclic` ~ | `required` ~ >
+                                'cyclic types': < < < | `local` 'Types' > < [] > > | `cyclic` ~ | `required` ~ >
+                                'acyclic types': < < < | `local` 'Types' > < [] > > | `acyclic` ~ | `required` ~ >
                             } > >
                             'Types': < | `local` < {} {} > >
                             'Value': < | `same as` 'Type' >
                             'Value Definition Reference': < | `local` < {
-                                'types': < < < | `internal` 'Types' > < [] > > | `required` ~ >
+                                'types': < < < | `local` 'Types' > < [] > > | `required` ~ >
                             } {} > >
                             'Value Definition Subselection': < | `local` < {
-                                'value': < < < | `internal` 'Value' > < [] > > | `required` ~ >
+                                'value': < < < | `local` 'Value' > < [] > > | `required` ~ >
                             } {} > >
                         }
                     )
@@ -516,98 +510,98 @@
                         `namespaces`: {}
                         `types`: {
                             'Error Definition Reference': < | `local` < {
-                                'error schema': < < < | `internal` 'Schema Reference' > < [] > > | `optional` ~ >
+                                'error schema': < < < | `local` 'Schema Reference' > < [] > > | `optional` ~ >
                             } {} > >
                             'Number Expression': < | `local` < {
-                                'phase': < < < | `internal` 'Phase' > < [] > > | `required` ~ >
+                                'phase': < < < | `local` 'Phase' > < [] > > | `required` ~ >
                             } {} > >
                             'Parameter Definition Reference': < | `local` < {
-                                'parameter schema': < < < | `internal` 'Schema Reference' > < [] > > | `optional` ~ >
+                                'parameter schema': < < < | `local` 'Schema Reference' > < [] > > | `optional` ~ >
                             } {} > >
                             'Phase': < | `local` < {} {} > >
                             'Schema Reference': < | `local` < {
-                                'schemas': < < < | `sibling` < 'schema' 'Schemas' > > < [] > > | `required` ~ >
+                                'schemas': < < < | `sibling namespace` < 'schema' 'Schemas' > > < [] > > | `required` ~ >
                             } {} > >
                             'Source Call': < | `local` < {
-                                'dictionary to list': < < < | `sibling` < 'schema' 'Value' > > < [] > > | `optional` ~ >
-                                'phase': < < < | `internal` 'Phase' > < [] > > | `required` ~ >
-                                'source definitions': < < < | `internal` 'Source Declarations' > < [] > > | `optional` ~ >
-                                'target definitions': < < < | `internal` 'Target Declarations' > < [] > > | `optional` ~ >
-                                'definitions': < < < | `internal` 'Source Declarations' > < [] > > | `required` ~ >
-                                'context': < < < | `sibling` < 'schema' 'Value' > > < [] > > | `required` ~ >
-                                'target': < < < | `sibling` < 'schema' 'Value' > > < [] > > | `required` ~ >
-                                'source parameter': < < < | `internal` 'Transformer Value Definition Reference' > < [] > > | `optional` ~ >
-                                'target parameter': < < < | `internal` 'Transformer Value Definition Reference' > < [] > > | `optional` ~ >
+                                'dictionary to list': < < < | `sibling namespace` < 'schema' 'Value' > > < [] > > | `optional` ~ >
+                                'phase': < < < | `local` 'Phase' > < [] > > | `required` ~ >
+                                'source definitions': < < < | `local` 'Source Declarations' > < [] > > | `optional` ~ >
+                                'target definitions': < < < | `local` 'Target Declarations' > < [] > > | `optional` ~ >
+                                'definitions': < < < | `local` 'Source Declarations' > < [] > > | `required` ~ >
+                                'context': < < < | `sibling namespace` < 'schema' 'Value' > > < [] > > | `required` ~ >
+                                'target': < < < | `sibling namespace` < 'schema' 'Value' > > < [] > > | `required` ~ >
+                                'source parameter': < < < | `local` 'Transformer Value Definition Reference' > < [] > > | `optional` ~ >
+                                'target parameter': < < < | `local` 'Transformer Value Definition Reference' > < [] > > | `optional` ~ >
                             } {} > >
                             'Source Declarations': < | `local` < {
-                                'local types': < < < | `sibling` < 'schema' 'Types' > > < [] > > | `required` ~ >
-                                'types': < < < | `sibling` < 'schema' 'Types' > > < [] > > | `required` ~ >
-                                'error schema': < < < | `internal` 'Schema Reference' > < [] > > | `optional` ~ >
-                                'parameter schema': < < < | `internal` 'Schema Reference' > < [] > > | `optional` ~ >
+                                'local types': < < < | `sibling namespace` < 'schema' 'Types' > > < [] > > | `required` ~ >
+                                'types': < < < | `sibling namespace` < 'schema' 'Types' > > < [] > > | `required` ~ >
+                                'error schema': < < < | `local` 'Schema Reference' > < [] > > | `optional` ~ >
+                                'parameter schema': < < < | `local` 'Schema Reference' > < [] > > | `optional` ~ >
                             } {} > >
                             'Source Signature': < | `local` < {
-                                'phase': < < < | `internal` 'Phase' > < [] > > | `required` ~ >
-                                'local types': < < < | `sibling` < 'schema' 'Types' > > < [] > > | `required` ~ >
-                                'schemas': < < < | `sibling` < 'schema' 'Schemas' > > < [] > > | `required` ~ >
+                                'phase': < < < | `local` 'Phase' > < [] > > | `required` ~ >
+                                'local types': < < < | `sibling namespace` < 'schema' 'Types' > > < [] > > | `required` ~ >
+                                'schemas': < < < | `sibling namespace` < 'schema' 'Schemas' > > < [] > > | `required` ~ >
                             } {} > >
                             'Target Call': < | `local` < {
-                                'dictionary to list': < < < | `sibling` < 'schema' 'Value' > > < [] > > | `optional` ~ >
-                                'phase': < < < | `internal` 'Phase' > < [] > > | `required` ~ >
-                                'source definitions': < < < | `internal` 'Source Declarations' > < [] > > | `optional` ~ >
-                                'target definitions': < < < | `internal` 'Target Declarations' > < [] > > | `optional` ~ >
-                                'definitions': < < < | `internal` 'Target Declarations' > < [] > > | `required` ~ >
-                                'context': < < < | `sibling` < 'schema' 'Value' > > < [] > > | `required` ~ >
-                                'target': < < < | `sibling` < 'schema' 'Value' > > < [] > > | `required` ~ >
-                                'source parameter': < < < | `internal` 'Transformer Value Definition Reference' > < [] > > | `optional` ~ >
-                                'target parameter': < < < | `internal` 'Transformer Value Definition Reference' > < [] > > | `optional` ~ >
+                                'dictionary to list': < < < | `sibling namespace` < 'schema' 'Value' > > < [] > > | `optional` ~ >
+                                'phase': < < < | `local` 'Phase' > < [] > > | `required` ~ >
+                                'source definitions': < < < | `local` 'Source Declarations' > < [] > > | `optional` ~ >
+                                'target definitions': < < < | `local` 'Target Declarations' > < [] > > | `optional` ~ >
+                                'definitions': < < < | `local` 'Target Declarations' > < [] > > | `required` ~ >
+                                'context': < < < | `sibling namespace` < 'schema' 'Value' > > < [] > > | `required` ~ >
+                                'target': < < < | `sibling namespace` < 'schema' 'Value' > > < [] > > | `required` ~ >
+                                'source parameter': < < < | `local` 'Transformer Value Definition Reference' > < [] > > | `optional` ~ >
+                                'target parameter': < < < | `local` 'Transformer Value Definition Reference' > < [] > > | `optional` ~ >
                             } {} > >
                             'Target Declarations': < | `local` < {
-                                'local types': < < < | `sibling` < 'schema' 'Types' > > < [] > > | `required` ~ >
-                                'types': < < < | `sibling` < 'schema' 'Types' > > < [] > > | `required` ~ >
-                                'error schema': < < < | `internal` 'Schema Reference' > < [] > > | `optional` ~ >
-                                'parameter schema': < < < | `internal` 'Schema Reference' > < [] > > | `optional` ~ >
+                                'local types': < < < | `sibling namespace` < 'schema' 'Types' > > < [] > > | `required` ~ >
+                                'types': < < < | `sibling namespace` < 'schema' 'Types' > > < [] > > | `required` ~ >
+                                'error schema': < < < | `local` 'Schema Reference' > < [] > > | `optional` ~ >
+                                'parameter schema': < < < | `local` 'Schema Reference' > < [] > > | `optional` ~ >
                             } {} > >
                             'Target Signature': < | `local` < {
-                                'phase': < < < | `internal` 'Phase' > < [] > > | `required` ~ >
-                                'local types': < < < | `sibling` < 'schema' 'Types' > > < [] > > | `required` ~ >
-                                'schemas': < < < | `sibling` < 'schema' 'Schemas' > > < [] > > | `required` ~ >
+                                'phase': < < < | `local` 'Phase' > < [] > > | `required` ~ >
+                                'local types': < < < | `sibling namespace` < 'schema' 'Types' > > < [] > > | `required` ~ >
+                                'schemas': < < < | `sibling namespace` < 'schema' 'Schemas' > > < [] > > | `required` ~ >
                             } {} > >
                             'Text Expression': < | `local` < {
-                                'phase': < < < | `internal` 'Phase' > < [] > > | `required` ~ >
+                                'phase': < < < | `local` 'Phase' > < [] > > | `required` ~ >
                             } {} > >
                             'Transformer': < | `local` < {
-                                'phase': < < < | `internal` 'Phase' > < [] > > | `required` ~ >
-                                'schemas': < < < | `sibling` < 'schema' 'Schemas' > > < [] > > | `required` ~ >
+                                'phase': < < < | `local` 'Phase' > < [] > > | `required` ~ >
+                                'schemas': < < < | `sibling namespace` < 'schema' 'Schemas' > > < [] > > | `required` ~ >
                             } {} > >
                             'Transformer Value Definition Reference': < | `local` < {
-                                'types': < < < | `sibling` < 'schema' 'Types' > > < [] > > | `required` ~ >
+                                'types': < < < | `sibling namespace` < 'schema' 'Types' > > < [] > > | `required` ~ >
                             } {} > >
                             'Transformer Value Definition Subselection': < | `local` < {
-                                'value': < < < | `sibling` < 'schema' 'Value' > > < [] > > | `required` ~ >
+                                'value': < < < | `sibling namespace` < 'schema' 'Value' > > < [] > > | `required` ~ >
                             } {} > >
                             'Transformers': < | `local` < {
-                                'phase': < < < | `internal` 'Phase' > < [] > > | `required` ~ >
-                                'schemas': < < < | `sibling` < 'schema' 'Schemas' > > < [] > > | `required` ~ >
+                                'phase': < < < | `local` 'Phase' > < [] > > | `required` ~ >
+                                'schemas': < < < | `sibling namespace` < 'schema' 'Schemas' > > < [] > > | `required` ~ >
                             } {} > >
                             'Value Expression': < | `local` < {
-                                'dictionary to list': < < < | `sibling` < 'schema' 'Value' > > < [] > > | `optional` ~ >
-                                'phase': < < < | `internal` 'Phase' > < [] > > | `required` ~ >
-                                'source definitions': < < < | `internal` 'Source Declarations' > < [] > > | `optional` ~ >
-                                'target definitions': < < < | `internal` 'Target Declarations' > < [] > > | `optional` ~ >
-                                'context': < < < | `sibling` < 'schema' 'Value' > > < [] > > | `required` ~ >
-                                'target': < < < | `sibling` < 'schema' 'Value' > > < [] > > | `required` ~ >
-                                'source parameter': < < < | `internal` 'Transformer Value Definition Reference' > < [] > > | `optional` ~ >
-                                'target parameter': < < < | `internal` 'Transformer Value Definition Reference' > < [] > > | `optional` ~ >
+                                'dictionary to list': < < < | `sibling namespace` < 'schema' 'Value' > > < [] > > | `optional` ~ >
+                                'phase': < < < | `local` 'Phase' > < [] > > | `required` ~ >
+                                'source definitions': < < < | `local` 'Source Declarations' > < [] > > | `optional` ~ >
+                                'target definitions': < < < | `local` 'Target Declarations' > < [] > > | `optional` ~ >
+                                'context': < < < | `sibling namespace` < 'schema' 'Value' > > < [] > > | `required` ~ >
+                                'target': < < < | `sibling namespace` < 'schema' 'Value' > > < [] > > | `required` ~ >
+                                'source parameter': < < < | `local` 'Transformer Value Definition Reference' > < [] > > | `optional` ~ >
+                                'target parameter': < < < | `local` 'Transformer Value Definition Reference' > < [] > > | `optional` ~ >
                             } {} > >
                             'Value Instance Selection': < | `local` < {
-                                'source definitions': < < < | `internal` 'Source Declarations' > < [] > > | `optional` ~ >
-                                'target definitions': < < < | `internal` 'Target Declarations' > < [] > > | `optional` ~ >
-                                'context': < < < | `sibling` < 'schema' 'Value' > > < [] > > | `required` ~ >
-                                'source parameter': < < < | `internal` 'Transformer Value Definition Reference' > < [] > > | `optional` ~ >
-                                'target parameter': < < < | `internal` 'Transformer Value Definition Reference' > < [] > > | `optional` ~ >
+                                'source definitions': < < < | `local` 'Source Declarations' > < [] > > | `optional` ~ >
+                                'target definitions': < < < | `local` 'Target Declarations' > < [] > > | `optional` ~ >
+                                'context': < < < | `sibling namespace` < 'schema' 'Value' > > < [] > > | `required` ~ >
+                                'source parameter': < < < | `local` 'Transformer Value Definition Reference' > < [] > > | `optional` ~ >
+                                'target parameter': < < < | `local` 'Transformer Value Definition Reference' > < [] > > | `optional` ~ >
                             } {} > >
                             'Value Instance Subselection': < | `local` < {
-                                'context': < < < | `sibling` < 'schema' 'Value' > > < [] > > | `required` ~ >
+                                'context': < < < | `sibling namespace` < 'schema' 'Value' > > < [] > > | `required` ~ >
                             } {} > >
                         }
                     )
@@ -622,13 +616,13 @@
                         `namespaces`: {}
                         `types`: {
                             'Schema': < | `group` {
-                                'types': < | `component` < | `internal` 'Types' * < * {} * {} > _ > >
+                                'types': < | `component` < | `local` 'Types' * < * {} * {} > _ > >
                             } >
-                            'Schemas': < | `dictionary` < | `component` < | `internal` 'Schema' * < * {} * {} > _ > _ > >
+                            'Schemas': < | `dictionary` < | `component` < | `local` 'Schema' * < * {} * {} > _ > _ > >
                             'Type': < | `group` {
-                                'root': < | `component` < | `internal` 'Value' * < _ _ > _ > >
+                                'root': < | `component` < | `local` 'Value' * < _ _ > _ > >
                             } >
-                            'Types': < | `dictionary` < | `component` < | `internal` 'Type' * < * {} * {
+                            'Types': < | `dictionary` < | `component` < | `local` 'Type' * < * {} * {
                                 'cyclic types': | `selection` < | `cyclic` | `siblings` ~ >
                                 'acyclic types': | `selection` < | `acyclic` | `siblings` ~ >
                             } > _ > _ > >
@@ -638,11 +632,11 @@
                                     'cyclic': < _ | `reference` < < < | `parameter` 'cyclic types' > _ > > _ >
                                     'acyclic': < _ | `reference` < < < | `parameter` 'acyclic types' > _ > > _ >
                                 } > _ >
-                                'dictionary': < _ | `component` < | `internal` 'Value' * < _ _ > _ > _ >
+                                'dictionary': < _ | `component` < | `local` 'Value' * < _ _ > _ > _ >
                                 'group': < _ | `group` {
-                                    'properties': < | `dictionary` < | `component` < | `internal` 'Value' * < _ _ > _ > _ > >
+                                    'properties': < | `dictionary` < | `component` < | `local` 'Value' * < _ _ > _ > _ > >
                                 } _ >
-                                'list': < _ | `component` < | `internal` 'Value' * < _ _ > _ > _ >
+                                'list': < _ | `component` < | `local` 'Value' * < _ _ > _ > _ >
                                 'nothing': < _ | `nothing` ~ _ >
                                 'number': < _ | `state` < {
                                     'approximation': < _ | `nothing` ~ _ >
@@ -651,10 +645,10 @@
                                         'natural': < _ | `nothing` ~ _ >
                                     } > _ >
                                 } > _ >
-                                'optional': < _ | `component` < | `internal` 'Value' * < _ _ > _ > _ >
+                                'optional': < _ | `component` < | `local` 'Value' * < _ _ > _ > _ >
                                 'reference': < _ | `group` {
                                     'type reference': < | `reference` < < < | `parameter` 'acyclic types' > _ > > >
-                                    'subselection': < | `component` < | `internal` 'Value Definition Subselection' * < * {
+                                    'subselection': < | `component` < | `local` 'Value Definition Subselection' * < * {
                                         'value': | `required` < | `sibling` 'type reference' < [
                                             | `reference` < >
                                             | `component` ~
@@ -665,13 +659,13 @@
                                     'cyclic': < | `simple` ~ >
                                 } _ >
                                 'state': < _ | `group` {
-                                    'options': < | `dictionary` < | `component` < | `internal` 'Value' * < _ _ > _ > _ > >
+                                    'options': < | `dictionary` < | `component` < | `local` 'Value' * < _ _ > _ > _ > >
                                 } _ >
                                 'text': < _ | `nothing` ~ _ >
                             } > >
                             'Value Definition Reference': < | `group` {
                                 'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'types' < [] > > > > _ > > >
-                                'subselection': < | `component` < | `internal` 'Value Definition Subselection' * < * {
+                                'subselection': < | `component` < | `local` 'Value Definition Subselection' * < * {
                                     'value': | `required` < | `sibling` 'type' < [
                                         | `reference` < >
                                         | `component` ~
@@ -724,7 +718,7 @@
                         `types`: {
                             'Error Definition Reference': < | `optional` < _ * {
                                 'error schema': | `assert is set` | `parameter` 'error schema'
-                            } | `component` < | `internal` 'Transformer Value Definition Reference' * < * {
+                            } | `component` < | `local` 'Transformer Value Definition Reference' * < * {
                                 'types': | `required` < | `parameter` 'error schema' < [
                                     | `reference` < >
                                     | `component` ~
@@ -741,7 +735,7 @@
                             } > >
                             'Parameter Definition Reference': < | `optional` < _ * {
                                 'parameter schema': | `assert is set` | `parameter` 'parameter schema'
-                            } | `component` < | `internal` 'Transformer Value Definition Reference' * < * {
+                            } | `component` < | `local` 'Transformer Value Definition Reference' * < * {
                                 'types': | `required` < | `parameter` 'parameter schema' < [
                                     | `reference` < >
                                     | `component` ~
@@ -767,7 +761,7 @@
                                             | `component` ~
                                         ] > >
                                     } | `group` {
-                                        'value': < | `component` < | `internal` 'Value Expression' * < * {
+                                        'value': < | `component` < | `local` 'Value Expression' * < * {
                                             'dictionary to list': | `parameter` 'dictionary to list'
                                             'phase': | `parameter` 'phase'
                                             'source definitions': | `parameter` 'source definitions'
@@ -790,27 +784,27 @@
                                     'transformer': < _ | `nothing` ~ _ >
                                     'consumer': < _ | `nothing` ~ _ >
                                 } > >
-                                'source': < | `component` < | `internal` 'Transformer Value Definition Reference' * < * {
+                                'source': < | `component` < | `local` 'Transformer Value Definition Reference' * < * {
                                     'types': | `parameter` 'types'
                                 } * {} > _ > >
-                                'error': < | `component` < | `internal` 'Error Definition Reference' * < _ _ > _ > >
-                                'parameter': < | `component` < | `internal` 'Parameter Definition Reference' * < _ _ > _ > >
+                                'error': < | `component` < | `local` 'Error Definition Reference' * < _ _ > _ > >
+                                'parameter': < | `component` < | `local` 'Parameter Definition Reference' * < _ _ > _ > >
                             } * < < | `parameter` 'local types' < [] > > | `sparse` ~ > > >
                             'Source Signature': < | `group` {
-                                'schema': < | `component` < | `internal` 'Schema Reference' * < * {
+                                'schema': < | `component` < | `local` 'Schema Reference' * < * {
                                     'schemas': | `parameter` 'schemas'
                                 } * {} > _ > >
-                                'error schema': < | `optional` < _ _ | `component` < | `internal` 'Schema Reference' * < * {
+                                'error schema': < | `optional` < _ _ | `component` < | `local` 'Schema Reference' * < * {
                                     'schemas': | `parameter` 'schemas'
                                 } * {} > _ > _ * | `value` < [
                                     | `component` ~
                                 ] > > >
-                                'parameter schema': < | `optional` < _ _ | `component` < | `internal` 'Schema Reference' * < * {
+                                'parameter schema': < | `optional` < _ _ | `component` < | `local` 'Schema Reference' * < * {
                                     'schemas': | `parameter` 'schemas'
                                 } * {} > _ > _ * | `value` < [
                                     | `component` ~
                                 ] > > >
-                                'declarations': < | `component` < | `internal` 'Source Declarations' * < * {
+                                'declarations': < | `component` < | `local` 'Source Declarations' * < * {
                                     'local types': | `parameter` 'local types'
                                     'types': | `required` < | `sibling` 'schema' < [
                                         | `component` ~
@@ -836,7 +830,7 @@
                                             | `component` ~
                                         ] > >
                                     } | `group` {
-                                        'value': < | `component` < | `internal` 'Value Expression' * < * {
+                                        'value': < | `component` < | `local` 'Value Expression' * < * {
                                             'dictionary to list': | `parameter` 'dictionary to list'
                                             'phase': | `parameter` 'phase'
                                             'source definitions': | `parameter` 'source definitions'
@@ -859,27 +853,27 @@
                                     'transformer': < _ | `nothing` ~ _ >
                                     'consumer': < _ | `nothing` ~ _ >
                                 } > >
-                                'target': < | `component` < | `internal` 'Transformer Value Definition Reference' * < * {
+                                'target': < | `component` < | `local` 'Transformer Value Definition Reference' * < * {
                                     'types': | `parameter` 'types'
                                 } * {} > _ > >
-                                'error': < | `component` < | `internal` 'Error Definition Reference' * < _ _ > _ > >
-                                'parameter': < | `component` < | `internal` 'Parameter Definition Reference' * < _ _ > _ > >
+                                'error': < | `component` < | `local` 'Error Definition Reference' * < _ _ > _ > >
+                                'parameter': < | `component` < | `local` 'Parameter Definition Reference' * < _ _ > _ > >
                             } * < < | `parameter` 'local types' < [] > > | `sparse` ~ > > >
                             'Target Signature': < | `group` {
-                                'schema': < | `component` < | `internal` 'Schema Reference' * < * {
+                                'schema': < | `component` < | `local` 'Schema Reference' * < * {
                                     'schemas': | `parameter` 'schemas'
                                 } * {} > _ > >
-                                'error schema': < | `optional` < _ _ | `component` < | `internal` 'Schema Reference' * < * {
+                                'error schema': < | `optional` < _ _ | `component` < | `local` 'Schema Reference' * < * {
                                     'schemas': | `parameter` 'schemas'
                                 } * {} > _ > _ * | `value` < [
                                     | `component` ~
                                 ] > > >
-                                'parameter schema': < | `optional` < _ _ | `component` < | `internal` 'Schema Reference' * < * {
+                                'parameter schema': < | `optional` < _ _ | `component` < | `local` 'Schema Reference' * < * {
                                     'schemas': | `parameter` 'schemas'
                                 } * {} > _ > _ * | `value` < [
                                     | `component` ~
                                 ] > > >
-                                'declarations': < | `component` < | `internal` 'Target Declarations' * < * {
+                                'declarations': < | `component` < | `local` 'Target Declarations' * < * {
                                     'local types': | `parameter` 'local types'
                                     'types': | `required` < | `sibling` 'schema' < [
                                         | `component` ~
@@ -893,7 +887,7 @@
                                 } * {} > _ > >
                             } >
                             'Text Expression': < | `state` < {
-                                'composed': < _ | `list` < | `component` < | `internal` 'Text Expression' * < * {
+                                'composed': < _ | `list` < | `component` < | `local` 'Text Expression' * < * {
                                     'phase': | `parameter` 'phase'
                                 } * {} > _ > _ > _ >
                                 'escape': < _ | `list` < | `group` {
@@ -908,11 +902,11 @@
                                 'literal': < _ | `simple` ~ _ >
                             } > >
                             'Transformer': < | `group` {
-                                'schema': < | `component` < | `internal` 'Schema Reference' * < * {
+                                'schema': < | `component` < | `local` 'Schema Reference' * < * {
                                     'schemas': | `parameter` 'schemas'
                                 } * {} > _ > >
                                 'sources': < | `dictionary` < | `group` {
-                                    'signature': < | `component` < | `internal` 'Source Signature' * < * {
+                                    'signature': < | `component` < | `local` 'Source Signature' * < * {
                                         'phase': | `parameter` 'phase'
                                         'local types': | `required` < | `parent sibling` 'schema' < [
                                             | `component` ~
@@ -924,7 +918,7 @@
                                         'schemas': | `parameter` 'schemas'
                                     } * {} > _ > >
                                     'implementations': < | `dictionary` < | `group` {
-                                        'expression': < | `component` < | `internal` 'Value Expression' * < * {
+                                        'expression': < | `component` < | `local` 'Value Expression' * < * {
                                             'dictionary to list': | `optional` | `not set` ~
                                             'phase': | `parameter` 'phase'
                                             'source definitions': | `optional` | `set` < | `parent sibling` 'signature' < [
@@ -942,7 +936,7 @@
                                                 | `list result` ~
                                             ] > >
                                             'target': | `required` < | `linked entry` ~ < [
-                                                | `benchmark link` < < | `sibling` < 'schema' 'Types' > > < [
+                                                | `benchmark link` < < | `sibling namespace` < 'schema' 'Types' > > < [
                                                     | `dictionary` ~
                                                 ] > >
                                                 | `component` ~
@@ -964,7 +958,7 @@
                                     ] > > | `dense` ~ > > >
                                 } _ > >
                                 'targets': < | `dictionary` < | `group` {
-                                    'signature': < | `component` < | `internal` 'Target Signature' * < * {
+                                    'signature': < | `component` < | `local` 'Target Signature' * < * {
                                         'phase': | `parameter` 'phase'
                                         'local types': | `required` < | `parent sibling` 'schema' < [
                                             | `component` ~
@@ -976,7 +970,7 @@
                                         'schemas': | `parameter` 'schemas'
                                     } * {} > _ > >
                                     'implementations': < | `dictionary` < | `group` {
-                                        'expression': < | `component` < | `internal` 'Value Expression' * < * {
+                                        'expression': < | `component` < | `local` 'Value Expression' * < * {
                                             'dictionary to list': | `optional` | `not set` ~
                                             'phase': | `parameter` 'phase'
                                             'target definitions': | `optional` | `set` < | `parent sibling` 'signature' < [
@@ -986,7 +980,7 @@
                                             ] > >
                                             'source definitions': | `optional` | `not set` ~
                                             'context': | `required` < | `linked entry` ~ < [
-                                                | `benchmark link` < < | `sibling` < 'schema' 'Types' > > < [
+                                                | `benchmark link` < < | `sibling namespace` < 'schema' 'Types' > > < [
                                                     | `dictionary` ~
                                                 ] > >
                                                 | `component` ~
@@ -1018,7 +1012,7 @@
                             } >
                             'Transformer Value Definition Reference': < | `group` {
                                 'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'types' < [] > > > > _ > > >
-                                'subselection': < | `component` < | `internal` 'Transformer Value Definition Subselection' * < * {
+                                'subselection': < | `component` < | `local` 'Transformer Value Definition Subselection' * < * {
                                     'value': | `required` < | `sibling` 'type' < [
                                         | `reference` < >
                                         | `component` ~
@@ -1064,7 +1058,7 @@
                                     | `state result` ~
                                 ] > > > >
                             } >
-                            'Transformers': < | `dictionary` < | `component` < | `internal` 'Transformer' * < * {
+                            'Transformers': < | `dictionary` < | `component` < | `local` 'Transformer' * < * {
                                 'phase': | `parameter` 'phase'
                                 'schemas': | `parameter` 'schemas'
                             } * {} > _ > _ > >
@@ -1099,7 +1093,7 @@
                                     } | `group` {
                                         'type': < | `state` < {
                                             'segmented': < _ | `group` {
-                                                'items': < | `list` < | `component` < | `internal` 'Value Expression' * < * {
+                                                'items': < | `list` < | `component` < | `local` 'Value Expression' * < * {
                                                     'dictionary to list': | `parameter` 'dictionary to list'
                                                     'phase': | `parameter` 'phase'
                                                     'source definitions': | `parameter` 'source definitions'
@@ -1131,7 +1125,7 @@
                                         'option': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'state' < [
                                             | `group` 'options'
                                         ] > > > > _ > > >
-                                        'value': < | `component` < | `internal` 'Value Expression' * < * {
+                                        'value': < | `component` < | `local` 'Value Expression' * < * {
                                             'dictionary to list': | `parameter` 'dictionary to list'
                                             'phase': | `parameter` 'phase'
                                             'source definitions': | `parameter` 'source definitions'
@@ -1150,7 +1144,7 @@
                                     } | `group` {
                                         'type': < | `state` < {
                                             'literal': < _ | `simple` ~ _ >
-                                            'composed': < _ | `list` < | `component` < | `internal` 'Value Expression' * < * {
+                                            'composed': < _ | `list` < | `component` < | `local` 'Value Expression' * < * {
                                                 'dictionary to list': | `parameter` 'dictionary to list'
                                                 'phase': | `parameter` 'phase'
                                                 'source definitions': | `parameter` 'source definitions'
@@ -1167,7 +1161,7 @@
                                     } _ >
                                 } > _ >
                                 'convert': < _ | `group` {
-                                    'selection': < | `component` < | `internal` 'Value Instance Selection' * < * {
+                                    'selection': < | `component` < | `local` 'Value Instance Selection' * < * {
                                         'source definitions': | `parameter` 'source definitions'
                                         'target definitions': | `parameter` 'target definitions'
                                         'context': | `parameter` 'context'
@@ -1188,7 +1182,7 @@
                                                 } | `nothing` ~ _ >
                                                 'serialize': < * {
                                                     'target': | `state` < < | `parameter` 'target' < [] > > 'text' >
-                                                } | `component` < | `internal` 'Text Expression' * < * {
+                                                } | `component` < | `local` 'Text Expression' * < * {
                                                     'phase': | `parameter` 'phase'
                                                 } * {} > _ > _ >
                                             } > >
@@ -1206,7 +1200,7 @@
                                                 } | `nothing` ~ _ >
                                                 'serialize': < * {
                                                     'target': | `state` < < | `parameter` 'target' < [] > > 'text' >
-                                                } | `component` < | `internal` 'Number Expression' * < * {
+                                                } | `component` < | `local` 'Number Expression' * < * {
                                                     'phase': | `parameter` 'phase'
                                                 } * {} > _ > _ >
                                             } > >
@@ -1223,7 +1217,7 @@
                                                     'target': | `state` < < | `parameter` 'target' < [] > > 'boolean' >
                                                 } | `nothing` ~ _ >
                                                 'decide': < _ | `group` {
-                                                    'if true': < | `component` < | `internal` 'Value Expression' * < * {
+                                                    'if true': < | `component` < | `local` 'Value Expression' * < * {
                                                         'dictionary to list': | `parameter` 'dictionary to list'
                                                         'phase': | `parameter` 'phase'
                                                         'source definitions': | `parameter` 'source definitions'
@@ -1233,7 +1227,7 @@
                                                         'source parameter': | `parameter` 'source parameter'
                                                         'target parameter': | `parameter` 'target parameter'
                                                     } * {} > _ > >
-                                                    'if false': < | `component` < | `internal` 'Value Expression' * < * {
+                                                    'if false': < | `component` < | `local` 'Value Expression' * < * {
                                                         'dictionary to list': | `parameter` 'dictionary to list'
                                                         'phase': | `parameter` 'phase'
                                                         'source definitions': | `parameter` 'source definitions'
@@ -1256,7 +1250,7 @@
                                             'operation': < | `state` < {
                                                 'source call': < * {
                                                     'definitions': | `assert is set` | `parameter` 'source definitions'
-                                                } | `component` < | `internal` 'Source Call' * < * {
+                                                } | `component` < | `local` 'Source Call' * < * {
                                                     'dictionary to list': | `parameter` 'dictionary to list'
                                                     'phase': | `parameter` 'phase'
                                                     'source definitions': | `parameter` 'source definitions'
@@ -1269,7 +1263,7 @@
                                                 } * {} > _ > _ >
                                                 'target call': < * {
                                                     'definitions': | `assert is set` | `parameter` 'target definitions'
-                                                } | `component` < | `internal` 'Target Call' * < * {
+                                                } | `component` < | `local` 'Target Call' * < * {
                                                     'dictionary to list': | `parameter` 'dictionary to list'
                                                     'phase': | `parameter` 'phase'
                                                     'source definitions': | `parameter` 'source definitions'
@@ -1300,7 +1294,7 @@
                                         } | `group` {
                                             'operation': < | `state` < {
                                                 'reduce': < _ | `group` {
-                                                    'initialize': < | `component` < | `internal` 'Value Expression' * < * {
+                                                    'initialize': < | `component` < | `local` 'Value Expression' * < * {
                                                         'dictionary to list': | `parameter` 'dictionary to list'
                                                         'phase': | `parameter` 'phase'
                                                         'source definitions': | `parameter` 'source definitions'
@@ -1310,7 +1304,7 @@
                                                         'source parameter': | `parameter` 'source parameter'
                                                         'target parameter': | `parameter` 'target parameter'
                                                     } * {} > _ > >
-                                                    'update': < | `component` < | `internal` 'Value Expression' * < * {
+                                                    'update': < | `component` < | `local` 'Value Expression' * < * {
                                                         'dictionary to list': | `parameter` 'dictionary to list'
                                                         'phase': | `parameter` 'phase'
                                                         'source definitions': | `parameter` 'source definitions'
@@ -1350,7 +1344,7 @@
                                     'source parameter value': < * {
                                         'parameter': | `assert is set` | `parameter` 'source parameter'
                                     } | `group` {
-                                        'subselection': < | `component` < | `internal` 'Value Instance Subselection' * < * {
+                                        'subselection': < | `component` < | `local` 'Value Instance Subselection' * < * {
                                             'context': | `required` < | `option constraint` 'parameter' < [
                                                 | `group` 'subselection'
                                                 | `component` ~
@@ -1367,7 +1361,7 @@
                                     'target parameter value': < * {
                                         'parameter': | `assert is set` | `parameter` 'target parameter'
                                     } | `group` {
-                                        'subselection': < | `component` < | `internal` 'Value Instance Subselection' * < * {
+                                        'subselection': < | `component` < | `local` 'Value Instance Subselection' * < * {
                                             'context': | `required` < | `option constraint` 'parameter' < [
                                                 | `group` 'subselection'
                                                 | `component` ~
@@ -1381,7 +1375,7 @@
                                         | `group` 'steps'
                                         | `list result` ~
                                     ] > >
-                                    'subselection': < _ | `component` < | `internal` 'Value Instance Subselection' * < * {
+                                    'subselection': < _ | `component` < | `local` 'Value Instance Subselection' * < * {
                                         'context': | `parameter` 'context'
                                     } * {} > _ > * | `value` < [
                                         | `component` ~
@@ -1409,8 +1403,8 @@
                 }
                 `types`: {
                     'Module': < | `group` {
-                        'schemas': < | `component` < | `child` < 'schema' 'Schemas' > * < * {} * {} > _ > >
-                        'transformers': < | `component` < | `child` < 'transformer' 'Transformers' > * < * {
+                        'schemas': < | `component` < | `child namespace` < 'schema' 'Schemas' > * < * {} * {} > _ > >
+                        'transformers': < | `component` < | `child namespace` < 'transformer' 'Transformers' > * < * {
                             'schemas': | `required` < | `sibling` 'schemas' < [
                                 | `component` ~
                             ] > >
@@ -1418,7 +1412,7 @@
                                 | `component` ~
                             ] > >
                         } * {} > _ > >
-                        'phase': < | `component` < | `child` < 'transformer' 'Phase' > * < * {} * {} > _ > >
+                        'phase': < | `component` < | `child namespace` < 'transformer' 'Phase' > * < * {} * {} > _ > >
                     } >
                 }
             )

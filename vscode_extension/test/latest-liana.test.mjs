@@ -67,7 +67,7 @@ const specification = (directory = tree) => `(
     \`directory\`: ${directory}
 )`
 const signature_value = (type, presence) =>
-    `(\`value\`: (\`type\`: (\`location\`: | \`internal\` '${type}') \`subselection\`: (\`tail\`: [])) \`presence\`: | \`${presence}\` ~)`
+    `(\`value\`: (\`type\`: (\`location\`: | \`local\` '${type}') \`subselection\`: (\`tail\`: [])) \`presence\`: | \`${presence}\` ~)`
 const selected = (schema, directories, file) => file_type(schema, {
     directories: p.literal.list(directories), 'file name': file,
 }, message => { throw new Error(message) })
@@ -352,16 +352,16 @@ test('optional fallback branches must resolve to the exact same structural targe
             'input': ${signature_value('Nothing', 'optional')}
             'fallback': ${signature_value('Nothing', 'required')}
         }))`)
-    const component = `| \`component\` (\`location\`: | \`internal\` 'Nothing' \`arguments\`: * (\`lookups\`: * {} \`types\`: * {
+    const component = `| \`component\` (\`location\`: | \`local\` 'Nothing' \`arguments\`: * (\`lookups\`: * {} \`types\`: * {
         'input': | \`optional\` | \`set\` ${selection}
         'fallback': | \`parameter\` 'fallback'
     }) \`constraints\`: _)`
     // A call is placed under a component so the selected parameter target and callee match.
     const full = source
-        .replace("'Nothing': (`root value`: | `nothing` ~)", "'Nothing': (`root value`: | `component` (`constraints`: _ `type`: | `internal cyclic` 'Nothing'))")
+        .replace("'Nothing': (`root value`: | `nothing` ~)", "'Nothing': (`root value`: | `component` (`constraints`: _ `type`: | `local cyclic` 'Nothing'))")
         .replace("'Nothing': (`root value resolver`: | `nothing` ~)", `'Nothing': (\`root value resolver\`: ${component})`)
     assert.doesNotThrow(() => parse(full))
-    assert.throws(() => parse(full.replace("'fallback': (`value`: (`type`: (`location`: | `internal` 'Nothing')", "'fallback': (`value`: (`type`: (`location`: | `internal` 'Text')")))
+    assert.throws(() => parse(full.replace("'fallback': (`value`: (`type`: (`location`: | `local` 'Nothing')", "'fallback': (`value`: (`type`: (`location`: | `local` 'Text')")))
 })
 
 test('current generated schema diagnostics describe invalid token syntax explicitly', () => {
@@ -379,11 +379,11 @@ test('current generated schema diagnostics describe invalid token syntax explici
 test('optional producer results select the declared payload and remain absent when not set', async () => {
     const source = specification(dictionary('', 'Nothing'))
         .replace("'Nothing': (`root value`: | `nothing` ~)", `'Nothing': (\`root value\`: | \`optional\` (
-            \`constraints\`: _ \`value\`: | \`component\` (\`type\`: | \`internal\` 'Text' \`constraints\`: _)
-            \`result\`: * (\`type\`: (\`location\`: | \`internal\` 'Text') \`path\`: (\`tail\`: []))))`)
+            \`constraints\`: _ \`value\`: | \`component\` (\`type\`: | \`local\` 'Text' \`constraints\`: _)
+            \`result\`: * (\`type\`: (\`location\`: | \`local\` 'Text') \`path\`: (\`tail\`: []))))`)
         .replace("'Nothing': (`root value resolver`: | `nothing` ~)", `'Nothing': (\`root value resolver\`: | \`optional\` (
             \`presence\`: _ \`constraints\`: _ \`not set constraints\`: _
-            \`resolver\`: | \`component\` (\`location\`: | \`internal\` 'Text' \`arguments\`: _ \`constraints\`: _)
+            \`resolver\`: | \`component\` (\`location\`: | \`local\` 'Text' \`arguments\`: _ \`constraints\`: _)
             \`result\`: * | \`value\` (\`path\`: [| \`component\` ~])))`)
     const dir = mkdtempSync(join(tmpdir(), 'liana-optional-result-'))
     try {

@@ -275,37 +275,37 @@ export namespace namespaces {
                 
                 export namespace location {
                     
-                    export type internal = string
+                    export type local = string
                     
-                    export namespace child {
+                    export namespace child_namespace {
                         
                         export type namespace = string
                         
                         export type type_ = string
                     }
                     
-                    export type child = {
-                        readonly 'namespace': child.namespace
-                        readonly 'type': child.type_
+                    export type child_namespace = {
+                        readonly 'namespace': child_namespace.namespace
+                        readonly 'type': child_namespace.type_
                     }
                     
-                    export namespace sibling {
+                    export namespace sibling_namespace {
                         
                         export type namespace = string
                         
                         export type type_ = string
                     }
                     
-                    export type sibling = {
-                        readonly 'namespace': sibling.namespace
-                        readonly 'type': sibling.type_
+                    export type sibling_namespace = {
+                        readonly 'namespace': sibling_namespace.namespace
+                        readonly 'type': sibling_namespace.type_
                     }
                 }
                 
                 export type location = 
-                    | readonly ['internal', location.internal]
-                    | readonly ['child', location.child]
-                    | readonly ['sibling', location.sibling]
+                    | readonly ['local', location.local]
+                    | readonly ['child namespace', location.child_namespace]
+                    | readonly ['sibling namespace', location.sibling_namespace]
             }
             
             export type Type_Reference = {
@@ -318,27 +318,40 @@ export namespace namespaces {
                     
                     export namespace type_ {
                         
-                        export type internal = string
+                        export type local = string
                         
-                        export namespace child {
+                        export namespace child_namespace {
                             
                             export type namespace = string
                             
                             export type type_ = string
                         }
                         
-                        export type child = {
-                            readonly 'namespace': child.namespace
-                            readonly 'type': child.type_
+                        export type child_namespace = {
+                            readonly 'namespace': child_namespace.namespace
+                            readonly 'type': child_namespace.type_
                         }
                         
-                        export type internal_cyclic = string
+                        export type local_cyclic = string
+                        
+                        export namespace sibling_namespace {
+                            
+                            export type namespace = string
+                            
+                            export type type_ = string
+                        }
+                        
+                        export type sibling_namespace = {
+                            readonly 'namespace': sibling_namespace.namespace
+                            readonly 'type': sibling_namespace.type_
+                        }
                     }
                     
                     export type type_ = 
-                        | readonly ['internal', type_.internal]
-                        | readonly ['child', type_.child]
-                        | readonly ['internal cyclic', type_.internal_cyclic]
+                        | readonly ['local', type_.local]
+                        | readonly ['child namespace', type_.child_namespace]
+                        | readonly ['local cyclic', type_.local_cyclic]
+                        | readonly ['sibling namespace', type_.sibling_namespace]
                     
                     export type constraints = __schema.namespaces.structure.types.Reference_Constraints
                 }
@@ -589,37 +602,37 @@ export namespace namespaces {
                 
                 export namespace location {
                     
-                    export type internal = string
+                    export type local = string
                     
-                    export namespace child {
+                    export namespace child_namespace {
                         
                         export type namespace = string
                         
                         export type type_ = string
                     }
                     
-                    export type child = {
-                        readonly 'namespace': child.namespace
-                        readonly 'type': child.type_
+                    export type child_namespace = {
+                        readonly 'namespace': child_namespace.namespace
+                        readonly 'type': child_namespace.type_
                     }
                     
-                    export namespace sibling {
+                    export namespace sibling_namespace {
                         
                         export type namespace = string
                         
                         export type type_ = string
                     }
                     
-                    export type sibling = {
-                        readonly 'namespace': sibling.namespace
-                        readonly 'type': sibling.type_
+                    export type sibling_namespace = {
+                        readonly 'namespace': sibling_namespace.namespace
+                        readonly 'type': sibling_namespace.type_
                     }
                 }
                 
                 export type location = 
-                    | readonly ['internal', location.internal]
-                    | readonly ['child', location.child]
-                    | readonly ['sibling', location.sibling]
+                    | readonly ['local', location.local]
+                    | readonly ['child namespace', location.child_namespace]
+                    | readonly ['sibling namespace', location.sibling_namespace]
             }
             
             export type Signature_Type_Reference = {
@@ -803,37 +816,37 @@ export namespace namespaces {
                 
                 export namespace location {
                     
-                    export type internal = string
+                    export type local = string
                     
-                    export namespace child {
+                    export namespace child_namespace {
                         
                         export type namespace = string
                         
                         export type type_ = string
                     }
                     
-                    export type child = {
-                        readonly 'namespace': child.namespace
-                        readonly 'type': child.type_
+                    export type child_namespace = {
+                        readonly 'namespace': child_namespace.namespace
+                        readonly 'type': child_namespace.type_
                     }
                     
-                    export namespace sibling {
+                    export namespace sibling_namespace {
                         
                         export type namespace = string
                         
                         export type type_ = string
                     }
                     
-                    export type sibling = {
-                        readonly 'namespace': sibling.namespace
-                        readonly 'type': sibling.type_
+                    export type sibling_namespace = {
+                        readonly 'namespace': sibling_namespace.namespace
+                        readonly 'type': sibling_namespace.type_
                     }
                 }
                 
                 export type location = 
-                    | readonly ['internal', location.internal]
-                    | readonly ['child', location.child]
-                    | readonly ['sibling', location.sibling]
+                    | readonly ['local', location.local]
+                    | readonly ['child namespace', location.child_namespace]
+                    | readonly ['sibling namespace', location.sibling_namespace]
             }
             
             export type Type_Reference = {
@@ -1348,24 +1361,37 @@ export namespace namespaces {
                     
                     export namespace location {
                         
-                        export type internal = string
+                        export type local = string
                         
-                        export namespace child {
+                        export namespace child_namespace {
                             
                             export type namespace = string
                             
                             export type resolver = string
                         }
                         
-                        export type child = {
-                            readonly 'namespace': child.namespace
-                            readonly 'resolver': child.resolver
+                        export type child_namespace = {
+                            readonly 'namespace': child_namespace.namespace
+                            readonly 'resolver': child_namespace.resolver
+                        }
+                        
+                        export namespace sibling_namespace {
+                            
+                            export type namespace = string
+                            
+                            export type resolver = string
+                        }
+                        
+                        export type sibling_namespace = {
+                            readonly 'namespace': sibling_namespace.namespace
+                            readonly 'resolver': sibling_namespace.resolver
                         }
                     }
                     
                     export type location = 
-                        | readonly ['internal', location.internal]
-                        | readonly ['child', location.child]
+                        | readonly ['local', location.local]
+                        | readonly ['child namespace', location.child_namespace]
+                        | readonly ['sibling namespace', location.sibling_namespace]
                     
                     export namespace arguments_ {
                         

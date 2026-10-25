@@ -728,11 +728,11 @@ export namespace namespaces {
                 ($) => abort(['value', $]),
             ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.structure.types.Type_Reference.location => {
                 switch ($text) {
-                    case "internal": return p_.change_context($['value'], ($) => ['internal', r_unmarshalled_from_parse_tree.Text(
+                    case "local": return p_.change_context($['value'], ($) => ['local', r_unmarshalled_from_parse_tree.Text(
                         $,
                         ($) => abort(['value', $]),
                     )])
-                    case "child": return p_.change_context($['value'], ($) => ['child', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                    case "child namespace": return p_.change_context($['value'], ($) => ['child namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
                         $,
                         ($) => abort(['value', $]),
                         {
@@ -763,7 +763,7 @@ export namespace namespaces {
                             ($) => abort(['value', $]),
                         )),
                     }))])
-                    case "sibling": return p_.change_context($['value'], ($) => ['sibling', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                    case "sibling namespace": return p_.change_context($['value'], ($) => ['sibling namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
                         $,
                         ($) => abort(['value', $]),
                         {
@@ -830,11 +830,11 @@ export namespace namespaces {
                         ($) => abort(['value', $]),
                     ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.structure.types.Value.component.type_ => {
                         switch ($text) {
-                            case "internal": return p_.change_context($['value'], ($) => ['internal', r_unmarshalled_from_parse_tree.Text(
+                            case "local": return p_.change_context($['value'], ($) => ['local', r_unmarshalled_from_parse_tree.Text(
                                 $,
                                 ($) => abort(['value', $]),
                             )])
-                            case "child": return p_.change_context($['value'], ($) => ['child', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                            case "child namespace": return p_.change_context($['value'], ($) => ['child namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
                                 $,
                                 ($) => abort(['value', $]),
                                 {
@@ -865,10 +865,41 @@ export namespace namespaces {
                                     ($) => abort(['value', $]),
                                 )),
                             }))])
-                            case "internal cyclic": return p_.change_context($['value'], ($) => ['internal cyclic', r_unmarshalled_from_parse_tree.Text(
+                            case "local cyclic": return p_.change_context($['value'], ($) => ['local cyclic', r_unmarshalled_from_parse_tree.Text(
                                 $,
                                 ($) => abort(['value', $]),
                             )])
+                            case "sibling namespace": return p_.change_context($['value'], ($) => ['sibling namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                                $,
+                                ($) => abort(['value', $]),
+                                {
+                                    'expected properties': p_.literal.dictionary({
+                                        "namespace": null,
+                                        "type": null,
+                                    }),
+                                },
+                            ), ($) => ({
+                                'namespace': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                    $,
+                                    ($) => abort(['value', $]),
+                                    {
+                                        'id': 'namespace',
+                                    },
+                                ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                    $,
+                                    ($) => abort(['value', $]),
+                                )),
+                                'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                    $,
+                                    ($) => abort(['value', $]),
+                                    {
+                                        'id': 'type',
+                                    },
+                                ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                    $,
+                                    ($) => abort(['value', $]),
+                                )),
+                            }))])
                             default: return abort(
                                 ['value', ['liana', {
                                     'type': ['state', ['unknown option', $['option']['token']['value']]],
@@ -1421,11 +1452,11 @@ export namespace namespaces {
                 ($) => abort(['value', $]),
             ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.declarations.types.Signature_Type_Reference.location => {
                 switch ($text) {
-                    case "internal": return p_.change_context($['value'], ($) => ['internal', r_unmarshalled_from_parse_tree.Text(
+                    case "local": return p_.change_context($['value'], ($) => ['local', r_unmarshalled_from_parse_tree.Text(
                         $,
                         ($) => abort(['value', $]),
                     )])
-                    case "child": return p_.change_context($['value'], ($) => ['child', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                    case "child namespace": return p_.change_context($['value'], ($) => ['child namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
                         $,
                         ($) => abort(['value', $]),
                         {
@@ -1456,7 +1487,7 @@ export namespace namespaces {
                             ($) => abort(['value', $]),
                         )),
                     }))])
-                    case "sibling": return p_.change_context($['value'], ($) => ['sibling', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                    case "sibling namespace": return p_.change_context($['value'], ($) => ['sibling namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
                         $,
                         ($) => abort(['value', $]),
                         {
@@ -1977,11 +2008,11 @@ export namespace namespaces {
                 ($) => abort(['value', $]),
             ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Type_Reference.location => {
                 switch ($text) {
-                    case "internal": return p_.change_context($['value'], ($) => ['internal', r_unmarshalled_from_parse_tree.Text(
+                    case "local": return p_.change_context($['value'], ($) => ['local', r_unmarshalled_from_parse_tree.Text(
                         $,
                         ($) => abort(['value', $]),
                     )])
-                    case "child": return p_.change_context($['value'], ($) => ['child', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                    case "child namespace": return p_.change_context($['value'], ($) => ['child namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
                         $,
                         ($) => abort(['value', $]),
                         {
@@ -2012,7 +2043,7 @@ export namespace namespaces {
                             ($) => abort(['value', $]),
                         )),
                     }))])
-                    case "sibling": return p_.change_context($['value'], ($) => ['sibling', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                    case "sibling namespace": return p_.change_context($['value'], ($) => ['sibling namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
                         $,
                         ($) => abort(['value', $]),
                         {
@@ -3087,11 +3118,42 @@ export namespace namespaces {
                         ($) => abort(['value', $]),
                     ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Value.component.location => {
                         switch ($text) {
-                            case "internal": return p_.change_context($['value'], ($) => ['internal', r_unmarshalled_from_parse_tree.Text(
+                            case "local": return p_.change_context($['value'], ($) => ['local', r_unmarshalled_from_parse_tree.Text(
                                 $,
                                 ($) => abort(['value', $]),
                             )])
-                            case "child": return p_.change_context($['value'], ($) => ['child', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                            case "child namespace": return p_.change_context($['value'], ($) => ['child namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                                $,
+                                ($) => abort(['value', $]),
+                                {
+                                    'expected properties': p_.literal.dictionary({
+                                        "namespace": null,
+                                        "resolver": null,
+                                    }),
+                                },
+                            ), ($) => ({
+                                'namespace': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                    $,
+                                    ($) => abort(['value', $]),
+                                    {
+                                        'id': 'namespace',
+                                    },
+                                ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                    $,
+                                    ($) => abort(['value', $]),
+                                )),
+                                'resolver': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                    $,
+                                    ($) => abort(['value', $]),
+                                    {
+                                        'id': 'resolver',
+                                    },
+                                ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                    $,
+                                    ($) => abort(['value', $]),
+                                )),
+                            }))])
+                            case "sibling namespace": return p_.change_context($['value'], ($) => ['sibling namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
                                 $,
                                 ($) => abort(['value', $]),
                                 {

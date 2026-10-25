@@ -336,14 +336,14 @@ export namespace namespaces {
         export const Type_Reference: declarations.Type_Reference = ($) => ['group', ['verbose', p_.literal.dictionary({
             "location": p_.change_context($['location'], ($) => ['state', p_.from.state($).decide(($): s_target.Value.state => {
                 switch ($[0]) {
-                    case 'internal': return p_.option($, ($): s_target.Value.state => ({
-                        'option': 'internal',
+                    case 'local': return p_.option($, ($): s_target.Value.state => ({
+                        'option': 'local',
                         'value': ['reference', {
                             'value': $,
                         }],
                     }))
-                    case 'child': return p_.option($, ($): s_target.Value.state => ({
-                        'option': 'child',
+                    case 'child namespace': return p_.option($, ($): s_target.Value.state => ({
+                        'option': 'child namespace',
                         'value': ['group', ['verbose', p_.literal.dictionary({
                             "namespace": p_.change_context($['namespace'], ($) => ['reference', {
                                 'value': $,
@@ -353,8 +353,8 @@ export namespace namespaces {
                             }]),
                         })]],
                     }))
-                    case 'sibling': return p_.option($, ($): s_target.Value.state => ({
-                        'option': 'sibling',
+                    case 'sibling namespace': return p_.option($, ($): s_target.Value.state => ({
+                        'option': 'sibling namespace',
                         'value': ['group', ['verbose', p_.literal.dictionary({
                             "namespace": p_.change_context($['namespace'], ($) => ['reference', {
                                 'value': $,
@@ -376,14 +376,14 @@ export namespace namespaces {
                     'value': ['group', ['verbose', p_.literal.dictionary({
                         "type": p_.change_context($['type'], ($) => ['state', p_.from.state($).decide(($): s_target.Value.state => {
                             switch ($[0]) {
-                                case 'internal': return p_.option($, ($): s_target.Value.state => ({
-                                    'option': 'internal',
+                                case 'local': return p_.option($, ($): s_target.Value.state => ({
+                                    'option': 'local',
                                     'value': ['reference', {
                                         'value': $,
                                     }],
                                 }))
-                                case 'child': return p_.option($, ($): s_target.Value.state => ({
-                                    'option': 'child',
+                                case 'child namespace': return p_.option($, ($): s_target.Value.state => ({
+                                    'option': 'child namespace',
                                     'value': ['group', ['verbose', p_.literal.dictionary({
                                         "namespace": p_.change_context($['namespace'], ($) => ['reference', {
                                             'value': $,
@@ -393,11 +393,22 @@ export namespace namespaces {
                                         }]),
                                     })]],
                                 }))
-                                case 'internal cyclic': return p_.option($, ($): s_target.Value.state => ({
-                                    'option': 'internal cyclic',
+                                case 'local cyclic': return p_.option($, ($): s_target.Value.state => ({
+                                    'option': 'local cyclic',
                                     'value': ['reference', {
                                         'value': $,
                                     }],
+                                }))
+                                case 'sibling namespace': return p_.option($, ($): s_target.Value.state => ({
+                                    'option': 'sibling namespace',
+                                    'value': ['group', ['verbose', p_.literal.dictionary({
+                                        "namespace": p_.change_context($['namespace'], ($) => ['reference', {
+                                            'value': $,
+                                        }]),
+                                        "type": p_.change_context($['type'], ($) => ['reference', {
+                                            'value': $,
+                                        }]),
+                                    })]],
                                 }))
                                 default: return p_.exhaustive($[0])
                             }
@@ -651,14 +662,14 @@ export namespace namespaces {
         export const Signature_Type_Reference: declarations.Signature_Type_Reference = ($) => ['group', ['verbose', p_.literal.dictionary({
             "location": p_.change_context($['location'], ($) => ['state', p_.from.state($).decide(($): s_target.Value.state => {
                 switch ($[0]) {
-                    case 'internal': return p_.option($, ($): s_target.Value.state => ({
-                        'option': 'internal',
+                    case 'local': return p_.option($, ($): s_target.Value.state => ({
+                        'option': 'local',
                         'value': ['reference', {
                             'value': $,
                         }],
                     }))
-                    case 'child': return p_.option($, ($): s_target.Value.state => ({
-                        'option': 'child',
+                    case 'child namespace': return p_.option($, ($): s_target.Value.state => ({
+                        'option': 'child namespace',
                         'value': ['group', ['verbose', p_.literal.dictionary({
                             "namespace": p_.change_context($['namespace'], ($) => ['reference', {
                                 'value': $,
@@ -668,8 +679,8 @@ export namespace namespaces {
                             }]),
                         })]],
                     }))
-                    case 'sibling': return p_.option($, ($): s_target.Value.state => ({
-                        'option': 'sibling',
+                    case 'sibling namespace': return p_.option($, ($): s_target.Value.state => ({
+                        'option': 'sibling namespace',
                         'value': ['group', ['verbose', p_.literal.dictionary({
                             "namespace": p_.change_context($['namespace'], ($) => ['reference', {
                                 'value': $,
@@ -936,14 +947,14 @@ export namespace namespaces {
         export const Type_Reference: declarations.Type_Reference = ($) => ['group', ['verbose', p_.literal.dictionary({
             "location": p_.change_context($['location'], ($) => ['state', p_.from.state($).decide(($): s_target.Value.state => {
                 switch ($[0]) {
-                    case 'internal': return p_.option($, ($): s_target.Value.state => ({
-                        'option': 'internal',
+                    case 'local': return p_.option($, ($): s_target.Value.state => ({
+                        'option': 'local',
                         'value': ['reference', {
                             'value': $,
                         }],
                     }))
-                    case 'child': return p_.option($, ($): s_target.Value.state => ({
-                        'option': 'child',
+                    case 'child namespace': return p_.option($, ($): s_target.Value.state => ({
+                        'option': 'child namespace',
                         'value': ['group', ['verbose', p_.literal.dictionary({
                             "namespace": p_.change_context($['namespace'], ($) => ['reference', {
                                 'value': $,
@@ -953,8 +964,8 @@ export namespace namespaces {
                             }]),
                         })]],
                     }))
-                    case 'sibling': return p_.option($, ($): s_target.Value.state => ({
-                        'option': 'sibling',
+                    case 'sibling namespace': return p_.option($, ($): s_target.Value.state => ({
+                        'option': 'sibling namespace',
                         'value': ['group', ['verbose', p_.literal.dictionary({
                             "namespace": p_.change_context($['namespace'], ($) => ['reference', {
                                 'value': $,
@@ -1454,14 +1465,25 @@ export namespace namespaces {
                     'value': ['group', ['verbose', p_.literal.dictionary({
                         "location": p_.change_context($['location'], ($) => ['state', p_.from.state($).decide(($): s_target.Value.state => {
                             switch ($[0]) {
-                                case 'internal': return p_.option($, ($): s_target.Value.state => ({
-                                    'option': 'internal',
+                                case 'local': return p_.option($, ($): s_target.Value.state => ({
+                                    'option': 'local',
                                     'value': ['reference', {
                                         'value': $,
                                     }],
                                 }))
-                                case 'child': return p_.option($, ($): s_target.Value.state => ({
-                                    'option': 'child',
+                                case 'child namespace': return p_.option($, ($): s_target.Value.state => ({
+                                    'option': 'child namespace',
+                                    'value': ['group', ['verbose', p_.literal.dictionary({
+                                        "namespace": p_.change_context($['namespace'], ($) => ['reference', {
+                                            'value': $,
+                                        }]),
+                                        "resolver": p_.change_context($['resolver'], ($) => ['reference', {
+                                            'value': $,
+                                        }]),
+                                    })]],
+                                }))
+                                case 'sibling namespace': return p_.option($, ($): s_target.Value.state => ({
+                                    'option': 'sibling namespace',
                                     'value': ['group', ['verbose', p_.literal.dictionary({
                                         "namespace": p_.change_context($['namespace'], ($) => ['reference', {
                                             'value': $,

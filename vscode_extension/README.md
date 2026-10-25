@@ -169,6 +169,14 @@ numbers can be modeled with token patterns; they are not built-in semantic value
 kinds. Resolver declarations describe value and lookup arguments, including
 their required or optional `presence`.
 
+Type and component locations use `local`, `child namespace`, and
+`sibling namespace`. Structural components additionally support `local cyclic`
+for recursion within a namespace. Sibling namespace dependencies are acyclic;
+there is no sibling namespace at the root. Component resolvers select matching
+declarations in the chosen namespace, keeping same-named types isolated.
+The old `internal`, `internal cyclic`, `child`, and namespace-location `sibling`
+tags are not supported. Property selections still use `sibling`.
+
 Structural list, optional and state values declare their result targets.
 Resolvers provide the corresponding result selections: a list supplies `initial`
 and `next`, an optional supplies one selection for its present payload, and a

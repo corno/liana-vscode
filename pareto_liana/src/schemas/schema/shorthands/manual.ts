@@ -47,16 +47,16 @@ export const toption_constrained = (
 export const toption_with_description = (description: string, value: s_target.namespaces.structure.types.Value): s_target.namespaces.structure.types.Value.state.options.D => ({
     description: sh.optional.set(description), constraints: sh.optional.not_set(), value,
 })
-export const type_reference = (type: string): s_target.namespaces.structure.types.Type_Reference => ({ location: ['internal', type] })
+export const type_reference = (type: string): s_target.namespaces.structure.types.Type_Reference => ({ location: ['local', type] })
 export const value_reference = (type: string, tail: s_target.namespaces.structure.types.Value_Subselection.tail.L[]): s_target.namespaces.structure.types.Value_Reference => ({
     type: type_reference(type), path: { tail: sh.list(tail) },
 })
 
 export namespace t {
-    export const component = (type: string): s_target.namespaces.structure.types.Value => ['component', { type: ['internal', type], constraints: sh.optional.not_set() }]
-    export const component_cyclic = (type: string): s_target.namespaces.structure.types.Value => ['component', { type: ['internal cyclic', type], constraints: sh.optional.not_set() }]
+    export const component = (type: string): s_target.namespaces.structure.types.Value => ['component', { type: ['local', type], constraints: sh.optional.not_set() }]
+    export const component_cyclic = (type: string): s_target.namespaces.structure.types.Value => ['component', { type: ['local cyclic', type], constraints: sh.optional.not_set() }]
     export const component_child = (namespace: string, type: string): s_target.namespaces.structure.types.Value =>
-        ['component', { type: ['child', { namespace, type }], constraints: sh.optional.not_set() }]
+        ['component', { type: ['child namespace', { namespace, type }], constraints: sh.optional.not_set() }]
     export const dictionary = (value: s_target.namespaces.structure.types.Value): s_target.namespaces.structure.types.Value => ['dictionary', { value }]
     export const group = (properties: sh.Raw_Or_Normal_Dictionary<s_target.namespaces.structure.types.Group.D>): s_target.namespaces.structure.types.Value => ['group', sh.dictionary(properties)]
     export const list = (value: s_target.namespaces.structure.types.Value, result: s_target.namespaces.structure.types.Value_Reference | null = null): s_target.namespaces.structure.types.Value =>

@@ -31,8 +31,13 @@ The schema has separate `structure` and `resolver` trees:
   Declarations contain signatures with `values` and `lookups`; value references
   include a structural `subselection`. Each tree contains `namespaces` and `types`.
 - Child namespaces retain their own type, signature, and resolver lookups; they
-  are not flattened. Component locations are `internal`, `internal cyclic`, or
-  `child`. Type references also support sibling namespaces.
+  are not flattened. Type and component locations are `local`, `child namespace`,
+  and `sibling namespace`; structural components also support `local cyclic`.
+  Sibling namespace dependencies remain acyclic. Component resolver declarations
+  must match the structural target. Sibling locations are unavailable at root.
+  Runtime implementation dispatch uses resolved declaration identity, with a
+  document-wide implementation index shared through nested contexts. Sibling
+  property selections retain their `sibling` tag. Old location tags are rejected.
 - Basic types describe `double quoted` or `undelimited` tokens with optional
   structural regular expressions and optional `hyperlink` metadata. They no longer imply numeric, boolean, date,
   text-link, or multiline-text semantics. Patterns match the entire token value.
@@ -69,7 +74,8 @@ before using this extension. Installing it does not promote the tools or
 authoring environments in `clean_start`.
 
 The regression suite covers namespace-isolated references, navigation, rename
-and completion; required resolver coverage; token patterns and quoting; schema
+and completion through both child and sibling components; invalid sibling targets,
+declaration mismatches and namespace cycles; required resolver coverage; token patterns and quoting; schema
 round-tripping; and existing benchmark, constraint, and result behavior.
 
 For packaging without committing or bumping the version automatically, run

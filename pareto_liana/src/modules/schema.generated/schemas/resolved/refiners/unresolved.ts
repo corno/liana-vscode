@@ -309,12 +309,12 @@ export namespace namespaces {
             'location': p_.change_context($['location'], ($) => ({
                 'value': p_.from.state($).decide(($): s_target.namespaces.structure.types.Type_Reference.location.value => {
                     switch ($[0]) {
-                        case 'internal': return p_.option($, ($): s_target.namespaces.structure.types.Type_Reference.location.value => p_.change_context($, ($) => ['internal', p_implement_me("SELECTED REF")]))
-                        case 'child': return p_.option($, ($): s_target.namespaces.structure.types.Type_Reference.location.value => p_.change_context($, ($) => ['child', {
+                        case 'local': return p_.option($, ($): s_target.namespaces.structure.types.Type_Reference.location.value => p_.change_context($, ($) => ['local', p_implement_me("SELECTED REF")]))
+                        case 'child namespace': return p_.option($, ($): s_target.namespaces.structure.types.Type_Reference.location.value => p_.change_context($, ($) => ['child namespace', {
                             'namespace': p_.change_context($['namespace'], ($) => p_implement_me("SELECTED REF")),
                             'type': p_.change_context($['type'], ($) => p_implement_me("SELECTED REF")),
                         }]))
-                        case 'sibling': return p_.option($, ($): s_target.namespaces.structure.types.Type_Reference.location.value => p_.change_context($, ($) => ['sibling', {
+                        case 'sibling namespace': return p_.option($, ($): s_target.namespaces.structure.types.Type_Reference.location.value => p_.change_context($, ($) => ['sibling namespace', {
                             'namespace': p_.change_context($['namespace'], ($) => p_implement_me("SELECTED REF")),
                             'type': p_.change_context($['type'], ($) => p_implement_me("SELECTED REF")),
                         }]))
@@ -331,12 +331,16 @@ export namespace namespaces {
                     'type': p_.change_context($['type'], ($) => ({
                         'value': p_.from.state($).decide(($): s_target.namespaces.structure.types.Value.component.type_.value => {
                             switch ($[0]) {
-                                case 'internal': return p_.option($, ($): s_target.namespaces.structure.types.Value.component.type_.value => p_.change_context($, ($) => ['internal', p_implement_me("SELECTED REF")]))
-                                case 'child': return p_.option($, ($): s_target.namespaces.structure.types.Value.component.type_.value => p_.change_context($, ($) => ['child', {
+                                case 'local': return p_.option($, ($): s_target.namespaces.structure.types.Value.component.type_.value => p_.change_context($, ($) => ['local', p_implement_me("SELECTED REF")]))
+                                case 'child namespace': return p_.option($, ($): s_target.namespaces.structure.types.Value.component.type_.value => p_.change_context($, ($) => ['child namespace', {
                                     'namespace': p_.change_context($['namespace'], ($) => p_implement_me("SELECTED REF")),
                                     'type': p_.change_context($['type'], ($) => p_implement_me("SELECTED REF")),
                                 }]))
-                                case 'internal cyclic': return p_.option($, ($): s_target.namespaces.structure.types.Value.component.type_.value => p_.change_context($, ($) => ['internal cyclic', p_implement_me("SELECTED REF")]))
+                                case 'local cyclic': return p_.option($, ($): s_target.namespaces.structure.types.Value.component.type_.value => p_.change_context($, ($) => ['local cyclic', p_implement_me("SELECTED REF")]))
+                                case 'sibling namespace': return p_.option($, ($): s_target.namespaces.structure.types.Value.component.type_.value => p_.change_context($, ($) => ['sibling namespace', {
+                                    'namespace': p_.change_context($['namespace'], ($) => p_implement_me("SELECTED REF")),
+                                    'type': p_.change_context($['type'], ($) => p_implement_me("SELECTED REF")),
+                                }]))
                                 default: return p_.exhaustive($[0])
                             }
                         }),
@@ -606,12 +610,12 @@ export namespace namespaces {
             'location': p_.change_context($['location'], ($) => ({
                 'value': p_.from.state($).decide(($): s_target.namespaces.declarations.types.Signature_Type_Reference.location.value => {
                     switch ($[0]) {
-                        case 'internal': return p_.option($, ($): s_target.namespaces.declarations.types.Signature_Type_Reference.location.value => p_.change_context($, ($) => ['internal', p_implement_me("SELECTED REF")]))
-                        case 'child': return p_.option($, ($): s_target.namespaces.declarations.types.Signature_Type_Reference.location.value => p_.change_context($, ($) => ['child', {
+                        case 'local': return p_.option($, ($): s_target.namespaces.declarations.types.Signature_Type_Reference.location.value => p_.change_context($, ($) => ['local', p_implement_me("SELECTED REF")]))
+                        case 'child namespace': return p_.option($, ($): s_target.namespaces.declarations.types.Signature_Type_Reference.location.value => p_.change_context($, ($) => ['child namespace', {
                             'namespace': p_.change_context($['namespace'], ($) => p_implement_me("SELECTED REF")),
                             'type': p_.change_context($['type'], ($) => p_implement_me("SELECTED REF")),
                         }]))
-                        case 'sibling': return p_.option($, ($): s_target.namespaces.declarations.types.Signature_Type_Reference.location.value => p_.change_context($, ($) => ['sibling', {
+                        case 'sibling namespace': return p_.option($, ($): s_target.namespaces.declarations.types.Signature_Type_Reference.location.value => p_.change_context($, ($) => ['sibling namespace', {
                             'namespace': p_.change_context($['namespace'], ($) => p_implement_me("SELECTED REF")),
                             'type': p_.change_context($['type'], ($) => p_implement_me("SELECTED REF")),
                         }]))
@@ -925,12 +929,12 @@ export namespace namespaces {
             'location': p_.change_context($['location'], ($) => ({
                 'value': p_.from.state($).decide(($): s_target.namespaces.resolver.types.Type_Reference.location.value => {
                     switch ($[0]) {
-                        case 'internal': return p_.option($, ($): s_target.namespaces.resolver.types.Type_Reference.location.value => p_.change_context($, ($) => ['internal', p_implement_me("SELECTED REF")]))
-                        case 'child': return p_.option($, ($): s_target.namespaces.resolver.types.Type_Reference.location.value => p_.change_context($, ($) => ['child', {
+                        case 'local': return p_.option($, ($): s_target.namespaces.resolver.types.Type_Reference.location.value => p_.change_context($, ($) => ['local', p_implement_me("SELECTED REF")]))
+                        case 'child namespace': return p_.option($, ($): s_target.namespaces.resolver.types.Type_Reference.location.value => p_.change_context($, ($) => ['child namespace', {
                             'namespace': p_.change_context($['namespace'], ($) => p_implement_me("SELECTED REF")),
                             'type': p_.change_context($['type'], ($) => p_implement_me("SELECTED REF")),
                         }]))
-                        case 'sibling': return p_.option($, ($): s_target.namespaces.resolver.types.Type_Reference.location.value => p_.change_context($, ($) => ['sibling', {
+                        case 'sibling namespace': return p_.option($, ($): s_target.namespaces.resolver.types.Type_Reference.location.value => p_.change_context($, ($) => ['sibling namespace', {
                             'namespace': p_.change_context($['namespace'], ($) => p_implement_me("SELECTED REF")),
                             'type': p_.change_context($['type'], ($) => p_implement_me("SELECTED REF")),
                         }]))
@@ -1485,10 +1489,19 @@ export namespace namespaces {
                         'location': p_.change_context($['location'], ($) => ({
                             'value': p_.from.state($).decide(($): s_target.namespaces.resolver.types.Value.component.value.location.value => {
                                 switch ($[0]) {
-                                    case 'internal': return p_.option($, ($): s_target.namespaces.resolver.types.Value.component.value.location.value => p_.change_context($, ($) => ['internal', p_implement_me("SELECTED REF")]))
-                                    case 'child': return p_.option($, ($): s_target.namespaces.resolver.types.Value.component.value.location.value => p_.change_context($, ($) => ['child', {
+                                    case 'local': return p_.option($, ($): s_target.namespaces.resolver.types.Value.component.value.location.value => p_.change_context($, ($) => ['local', p_implement_me("SELECTED REF")]))
+                                    case 'child namespace': return p_.option($, ($): s_target.namespaces.resolver.types.Value.component.value.location.value => p_.change_context($, ($) => ['child namespace', {
                                         'namespace': p_.change_context($['namespace'], ($) => p_implement_me("SELECTED REF")),
                                         'resolver': p_.change_context($['resolver'], ($) => p_implement_me("SELECTED REF")),
+                                    }]))
+                                    case 'sibling namespace': return p_.option($, ($): s_target.namespaces.resolver.types.Value.component.value.location.value => p_.change_context($, ($) => ['sibling namespace', {
+                                        'constraints': {
+                                            'declarations': p_implement_me("OPTION CONSTRAINT: declarations"),
+                                        },
+                                        'value': {
+                                            'namespace': p_.change_context($['namespace'], ($) => p_implement_me("SELECTED REF")),
+                                            'resolver': p_.change_context($['resolver'], ($) => p_implement_me("SELECTED REF")),
+                                        },
                                     }]))
                                     default: return p_.exhaustive($[0])
                                 }

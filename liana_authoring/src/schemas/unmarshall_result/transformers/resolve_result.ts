@@ -57,6 +57,7 @@ namespace temp {
     }
 
     export type Lookups = {
+        'implementations'?: p_di.List<Implementation>
         'parameters': Lookup_Parameters
         'siblings': {
             'acyclic': p_i.lookup.Acyclic<s_out.Entry>
@@ -94,6 +95,25 @@ namespace temp {
 
 }
 
+type Implementation = {
+    namespace: s_in_definition.namespaces.resolver.types.Resolver
+    definition: s_in_definition.namespaces.resolver.types.Types.D
+}
+
+const Implementations = (namespace: s_in_definition.namespaces.resolver.types.Resolver): p_di.List<Implementation> =>
+    p_.literal.segmented_list([
+        p_.from.dictionary(namespace.types).convert_to_list(definition => ({ namespace, definition })),
+        p_.from.dictionary(namespace.namespaces).flatten_to_list(child => Implementations(child.value)),
+    ])
+
+const Implementation_For = (
+    implementations: p_di.List<Implementation>,
+    declaration: s_in_definition.namespaces.declarations.types.Declaration,
+): Implementation => p_.from.optional(p_.from.list(implementations).reduce_to_any_value<p_di.Optional_Value<Implementation>>(
+    p_.literal.not_set(),
+    (entry, previous) => entry.definition.benchmark.value === declaration ? p_.literal.set(entry) : previous,
+)).decide($ => $, () => p_unreachable_code_path('missing implementation for selected resolver declaration'))
+
 export const Document: p_i_temp.Transformer_With_Lookups_And_Parameter<
     s_in.Document,
     s_out.Document,
@@ -107,7 +127,7 @@ export const Document: p_i_temp.Transformer_With_Lookups_And_Parameter<
     'unmarshalled': $,
     'content': Value(
         $.content,
-        $l,
+        { ...$l, implementations: Implementations($p.resolvers.resolver.implementations) },
         {
             'definition': $p.definition.value['root value resolver'],
             'resolver': $p.resolvers.resolver.implementations,
@@ -749,15 +769,10 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                             ($) => {
                                                 switch ($[0]) {
                                                     case 'component': return p_.option($, ($) => {
-                                                        const resolver_namespace = def.location.value[0] === 'child'
-                                                            ? p_.from.dictionary($p.resolver.namespaces).get_possible_entry(
-                                                                def.location.value[1].namespace['l id'], $ => $.value,
-                                                                () => p_unreachable_code_path('missing resolver namespace')) : $p.resolver
-                                                        const resolver_id = def.location.value[0] === 'child'
-                                                            ? def.location.value[1].resolver['l id'] : def.location.value[1]['l id']
-                                                        const def2 = p_.from.dictionary(resolver_namespace.types).get_possible_entry(
-                                                            resolver_id, $ => $,
-                                                            () => p_unreachable_code_path('missing implementation for resolver ' + resolver_id))
+                                                        const selected = Implementation_For(
+                                                            $l.implementations ?? Implementations($p.resolver), def.location.result)
+                                                        const resolver_namespace = selected.namespace
+                                                        const def2 = selected.definition
                                                         return Complete_Component({
                                                             'unmarshalled': $,
                                                             'constraints': p_.literal.dictionary({}),

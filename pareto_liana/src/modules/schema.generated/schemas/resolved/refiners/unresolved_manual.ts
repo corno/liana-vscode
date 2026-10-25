@@ -60,20 +60,20 @@ const Component_Type = ($: target.namespaces.structure.types.Value.component): t
 
 const Type_Reference = ($: source.Type_Reference, types: Type_Environment, abort: Abort): target.namespaces.structure.types.Type_Reference => {
     switch ($.location[0]) {
-        case 'internal': {
+        case 'local': {
             const type = Lookup(types.acyclic, $.location[1], abort)
-            return { location: { value: ['internal', type], result: type['l entry'] } }
+            return { location: { value: ['local', type], result: type['l entry'] } }
         }
-        case 'child':
-        case 'sibling': {
+        case 'child namespace':
+        case 'sibling namespace': {
             const selected = $.location[1]
-            const namespace = $.location[0] === 'child'
+            const namespace = $.location[0] === 'child namespace'
                 ? Entry(types.children, selected.namespace, abort)
                 : Lookup(types.siblings, selected.namespace, abort)
             const type = Entry(namespace['l entry'].types, selected.type, abort)
             const selection = { namespace, type }
             return {
-                location: { value: $.location[0] === 'child' ? ['child', selection] : ['sibling', selection],
+                location: { value: $.location[0] === 'child namespace' ? ['child namespace', selection] : ['sibling namespace', selection],
                     result: type['l entry'] },
             }
         }
@@ -166,21 +166,21 @@ const Signature_Type_Reference = (
 ): target.namespaces.declarations.types.Signature_Type_Reference => {
     const location = $.location
     switch (location[0]) {
-        case 'internal': {
+        case 'local': {
             const type = Lookup(types.acyclic, location[1], abort)
-            return { location: { value: ['internal', type], result: type['l entry'] } }
+            return { location: { value: ['local', type], result: type['l entry'] } }
         }
-        case 'child':
-        case 'sibling': {
+        case 'child namespace':
+        case 'sibling namespace': {
             const selected = location[1]
-            const namespace = location[0] === 'child'
+            const namespace = location[0] === 'child namespace'
                 ? Entry(types.children, selected.namespace, abort)
                 : Lookup(types.siblings, selected.namespace, abort)
             const type = Entry(namespace['l entry'].types, selected.type, abort)
             const selection = { namespace, type }
             return {
                 location: {
-                    value: location[0] === 'child' ? ['child', selection] : ['sibling', selection],
+                    value: location[0] === 'child namespace' ? ['child namespace', selection] : ['sibling namespace', selection],
                     result: type['l entry'],
                 },
             }
@@ -215,7 +215,7 @@ const Value = ($: source.Value, types: Types, abort: Abort): target.namespaces.s
             const selected = $[1].type
             let type: target.namespaces.structure.types.Value.component.type_.value
             switch (selected[0]) {
-                case 'internal cyclic': type = ['internal cyclic', {
+                case 'local cyclic': type = ['local cyclic', {
                     'l id': selected[1],
                     'l entry': types.cyclic.get_entry(selected[1], {
                         no_such_entry: () => abort({ type: ['lookup', ['no such entry', selected[1]]] }),
@@ -223,17 +223,21 @@ const Value = ($: source.Value, types: Types, abort: Abort): target.namespaces.s
                         accessing_cyclic_sibling_before_it_is_resolved: () => abort({ type: ['lookup', ['cycle detected', null]] }),
                     }),
                 }]; break
-                case 'internal': type = ['internal', Lookup(types.acyclic, selected[1], abort)]; break
-                case 'child': {
-                    const namespace = Entry(types.children, selected[1].namespace, abort)
-                    type = ['child', { namespace, type: Entry(namespace['l entry'].types, selected[1].type, abort) }]
+                case 'local': type = ['local', Lookup(types.acyclic, selected[1], abort)]; break
+                case 'child namespace':
+                case 'sibling namespace': {
+                    const namespace = selected[0] === 'child namespace'
+                        ? Entry(types.children, selected[1].namespace, abort)
+                        : Lookup(types.siblings, selected[1].namespace, abort)
+                    const selection = { namespace, type: Entry(namespace['l entry'].types, selected[1].type, abort) }
+                    type = selected[0] === 'child namespace' ? ['child namespace', selection] : ['sibling namespace', selection]
                     break
                 }
                 default: return p.exhaustive(selected[0])
             }
             return ['component', { type: { value: type, get result() {
-                return type[0] === 'child' ? type[1].type['l entry']
-                    : type[0] === 'internal' ? type[1]['l entry'] : type[1]['l entry'].get_circular_dependent()
+                return type[0] === 'child namespace' || type[0] === 'sibling namespace' ? type[1].type['l entry']
+                    : type[0] === 'local' ? type[1]['l entry'] : type[1]['l entry'].get_circular_dependent()
             } }, constraints: Constraints($[1].constraints, types, abort) }]
         }
         case 'dictionary': return ['dictionary', { value: Value($[1].value, types, abort) }]
@@ -283,7 +287,7 @@ export const Schema = ($: source.Schema, abort: Abort): target.types.Schema => {
     const links: Context['benchmark_links'] = { entries: undefined, checks: undefined, last_check: undefined }
     const declarations = Declaration_Tree($.resolver.declarations, structure, p.select_lookup.acyclic.not_set(), abort)
     const schema = { structure, resolver: { declarations, implementations: Resolver_Tree(
-        $.resolver.implementations, declarations, structure, p.select_lookup.acyclic.not_set(), links, abort,
+        $.resolver.implementations, declarations, structure, p.select_lookup.acyclic.not_set(), p.literal.not_set(), links, abort,
     ) } }
     Check_Benchmark_Links(links, abort)
     return schema
@@ -322,6 +326,7 @@ const Resolver_Tree = (
     declarations: target.namespaces.declarations.types.Declaration_Namespace,
     definition: target.namespaces.structure.types.Structure,
     siblings: Types['siblings'],
+    sibling_declarations: core.Optional_Value<target.namespaces.declarations.types.Namespaces>,
     links: Context['benchmark_links'],
     abort: Abort,
 ): target.namespaces.resolver.types.Resolver => {
@@ -329,14 +334,14 @@ const Resolver_Tree = (
     const namespaces = p.from.dictionary($.namespaces).map(($, id) => {
         const benchmark = Entry(declarations.namespaces, id, abort)['l entry']
         return { benchmark, value: Resolver_Tree($, benchmark.value, Entry(definition.namespaces, id, abort)['l entry'],
-            p.select_lookup.acyclic.from_resolved_dictionary(definition.namespaces), links, abort) }
+            p.select_lookup.acyclic.from_resolved_dictionary(definition.namespaces), p.literal.set(declarations.namespaces), links, abort) }
     })
     const environment = {
         acyclic: p.select_lookup.acyclic.from_resolved_dictionary(definition.types),
         children: definition.namespaces,
         siblings,
     }
-    return { namespaces, types: Resolvers($.types, definition.types, declarations.types, environment, declarations.namespaces, links, abort) }
+    return { namespaces, types: Resolvers($.types, definition.types, declarations.types, environment, declarations.namespaces, sibling_declarations, links, abort) }
 }
 
 export const Type_Specification = ($: source.Type_Specification, abort: Abort): target.types.Type_Specification => {
@@ -414,6 +419,7 @@ type Context = {
     signatures: target.namespaces.declarations.types.Declarations
     environment: Type_Environment
     children: target.namespaces.declarations.types.Namespaces
+    sibling_declarations: core.Optional_Value<target.namespaces.declarations.types.Namespaces>
     signature: target.namespaces.declarations.types.Signature
     siblings: p.lookup.Acyclic<target.namespaces.structure.types.Group.D>
     parent: p.lookup.Acyclic<target.namespaces.structure.types.Group.D>
@@ -434,13 +440,14 @@ const Resolvers = (
     signatures: target.namespaces.declarations.types.Declarations,
     environment: Type_Environment,
     children: target.namespaces.declarations.types.Namespaces,
+    sibling_declarations: Context['sibling_declarations'],
     benchmark_links: Context['benchmark_links'], abort: Abort): target.namespaces.resolver.types.Types => {
     Dense($, signatures, abort)
     const resolvers = p.from.dictionary($).map(($, id) => {
         const benchmark = Entry(signatures, id, abort)['l entry']
         const signature = benchmark.value.signature.result
         return { benchmark, value: { 'root value resolver': Resolver($['root value resolver'], benchmark.benchmark['root value'], {
-            types, signatures, signature, benchmark_links, environment, children,
+            types, signatures, signature, benchmark_links, environment, children, sibling_declarations,
             siblings: p.select_lookup.acyclic.not_set(),
             parent: p.select_lookup.acyclic.not_set(),
             options: p.literal.not_set(),
@@ -467,7 +474,8 @@ const Check_Benchmark_Links = (benchmark_links: Context['benchmark_links'], abor
         if (!found) {
             const owner = check.owner
             const name = owner[0] === 'component'
-                ? owner[1].type.value[0] === 'child' ? owner[1].type.value[1].type['l id'] : owner[1].type.value[1]['l id']
+                ? owner[1].type.value[0] === 'child namespace' || owner[1].type.value[0] === 'sibling namespace'
+                    ? owner[1].type.value[1].type['l id'] : owner[1].type.value[1]['l id']
                 : owner[0]
             return abort({ type: ['constraint', ['state', { expected: 'benchmarked dictionary entry', found: name }]] })
         }
@@ -871,16 +879,20 @@ const Resolver = ($: source.Resolver_Value, definition: target.namespaces.struct
             let declaration: target.namespaces.declarations.types.Declaration
             let signature: target.namespaces.declarations.types.Signature
             let selected_type: target.namespaces.structure.types.Type
-            if (selected[0] === 'internal') {
+            if (selected[0] === 'local') {
                 const entry = Entry(context.signatures, selected[1], abort)
-                location = ['internal', entry]
+                location = ['local', entry]
                 declaration = entry['l entry'].value
                 signature = declaration.signature.result
                 selected_type = entry['l entry'].benchmark
             } else {
-                const namespace = Entry(context.children, selected[1].namespace, abort)
+                const namespaces = selected[0] === 'sibling namespace'
+                    ? Required(context.sibling_declarations, abort) : context.children
+                const namespace = Entry(namespaces, selected[1].namespace, abort)
                 const resolver = Entry(namespace['l entry'].value.types, selected[1].resolver, abort)
-                location = ['child', { namespace, resolver }]
+                location = selected[0] === 'child namespace'
+                    ? ['child namespace', { namespace, resolver }]
+                    : ['sibling namespace', { constraints: { declarations: namespaces }, value: { namespace, resolver } }]
                 declaration = resolver['l entry'].value
                 signature = declaration.signature.result
                 selected_type = resolver['l entry'].benchmark

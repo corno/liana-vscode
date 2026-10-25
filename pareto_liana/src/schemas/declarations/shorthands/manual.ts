@@ -38,7 +38,7 @@ export namespace declaration {
 export const type_reference = (
     name: string,
 ): s_target.namespaces.declarations.types.Signature_Type_Reference => ({
-    location: sh.state(['internal', sh.reference(name)]),
+    location: sh.state(['local', sh.reference(name)]),
 })
 
 export const value_reference = (

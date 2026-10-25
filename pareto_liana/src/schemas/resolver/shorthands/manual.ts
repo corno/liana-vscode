@@ -486,7 +486,7 @@ export namespace r {
         lookups: null | sh.Raw_Or_Normal_Dictionary<s_target.namespaces.resolver.types.Value.component.arguments_.O.lookups.O.D>,
     ): s_target.namespaces.resolver.types.Value => {
         return sh.state(['component', {
-            'location': sh.state(['internal', sh.reference(type)]),
+            'location': sh.state(['local', sh.reference(type)]),
             'arguments': sh.optional.set({
                 'types': types === null
                     ? sh.optional.not_set()
@@ -506,7 +506,7 @@ export namespace r {
         constraints: sh.Raw_Or_Normal_Dictionary<s_target.namespaces.resolver.types.Value_Constraints.D>,
     ): s_target.namespaces.resolver.types.Value => {
         return sh.state(['component', {
-            'location': sh.state(['internal', sh.reference(type)]),
+            'location': sh.state(['local', sh.reference(type)]),
             'arguments': sh.optional.set({
                 'types': types === null ? sh.optional.not_set() : sh.optional.set(
                     sh.dictionary(types)),

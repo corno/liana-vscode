@@ -287,19 +287,19 @@ export namespace namespaces {
                     
                     export namespace value {
                         
-                        export namespace internal {
+                        export namespace local {
                             
                             export type l_entry = __schema.namespaces.structure.types.Types.D
                             
                             export type l_id = string
                         }
                         
-                        export type internal = {
-                            readonly 'l entry': internal.l_entry
-                            readonly 'l id': internal.l_id
+                        export type local = {
+                            readonly 'l entry': local.l_entry
+                            readonly 'l id': local.l_id
                         }
                         
-                        export namespace child {
+                        export namespace child_namespace {
                             
                             export namespace namespace {
                                 
@@ -326,12 +326,12 @@ export namespace namespaces {
                             }
                         }
                         
-                        export type child = {
-                            readonly 'namespace': child.namespace
-                            readonly 'type': child.type_
+                        export type child_namespace = {
+                            readonly 'namespace': child_namespace.namespace
+                            readonly 'type': child_namespace.type_
                         }
                         
-                        export namespace sibling {
+                        export namespace sibling_namespace {
                             
                             export namespace namespace {
                                 
@@ -358,16 +358,16 @@ export namespace namespaces {
                             }
                         }
                         
-                        export type sibling = {
-                            readonly 'namespace': sibling.namespace
-                            readonly 'type': sibling.type_
+                        export type sibling_namespace = {
+                            readonly 'namespace': sibling_namespace.namespace
+                            readonly 'type': sibling_namespace.type_
                         }
                     }
                     
                     export type value = 
-                        | readonly ['internal', value.internal]
-                        | readonly ['child', value.child]
-                        | readonly ['sibling', value.sibling]
+                        | readonly ['local', value.local]
+                        | readonly ['child namespace', value.child_namespace]
+                        | readonly ['sibling namespace', value.sibling_namespace]
                     
                     export type result = __schema.namespaces.structure.types.Type
                 }
@@ -390,19 +390,19 @@ export namespace namespaces {
                         
                         export namespace value {
                             
-                            export namespace internal {
+                            export namespace local {
                                 
                                 export type l_entry = __schema.namespaces.structure.types.Types.D
                                 
                                 export type l_id = string
                             }
                             
-                            export type internal = {
-                                readonly 'l entry': internal.l_entry
-                                readonly 'l id': internal.l_id
+                            export type local = {
+                                readonly 'l entry': local.l_entry
+                                readonly 'l id': local.l_id
                             }
                             
-                            export namespace child {
+                            export namespace child_namespace {
                                 
                                 export namespace namespace {
                                     
@@ -429,12 +429,12 @@ export namespace namespaces {
                                 }
                             }
                             
-                            export type child = {
-                                readonly 'namespace': child.namespace
-                                readonly 'type': child.type_
+                            export type child_namespace = {
+                                readonly 'namespace': child_namespace.namespace
+                                readonly 'type': child_namespace.type_
                             }
                             
-                            export namespace internal_cyclic {
+                            export namespace local_cyclic {
                                 
                                 export type l_entry = p_.Circular_Dependency<
                                     __schema.namespaces.structure.types.Types.D
@@ -443,16 +443,49 @@ export namespace namespaces {
                                 export type l_id = string
                             }
                             
-                            export type internal_cyclic = {
-                                readonly 'l entry': internal_cyclic.l_entry
-                                readonly 'l id': internal_cyclic.l_id
+                            export type local_cyclic = {
+                                readonly 'l entry': local_cyclic.l_entry
+                                readonly 'l id': local_cyclic.l_id
+                            }
+                            
+                            export namespace sibling_namespace {
+                                
+                                export namespace namespace {
+                                    
+                                    export type l_entry = __schema.namespaces.structure.types.Namespaces.D
+                                    
+                                    export type l_id = string
+                                }
+                                
+                                export type namespace = {
+                                    readonly 'l entry': namespace.l_entry
+                                    readonly 'l id': namespace.l_id
+                                }
+                                
+                                export namespace type_ {
+                                    
+                                    export type l_entry = __schema.namespaces.structure.types.Types.D
+                                    
+                                    export type l_id = string
+                                }
+                                
+                                export type type_ = {
+                                    readonly 'l entry': type_.l_entry
+                                    readonly 'l id': type_.l_id
+                                }
+                            }
+                            
+                            export type sibling_namespace = {
+                                readonly 'namespace': sibling_namespace.namespace
+                                readonly 'type': sibling_namespace.type_
                             }
                         }
                         
                         export type value = 
-                            | readonly ['internal', value.internal]
-                            | readonly ['child', value.child]
-                            | readonly ['internal cyclic', value.internal_cyclic]
+                            | readonly ['local', value.local]
+                            | readonly ['child namespace', value.child_namespace]
+                            | readonly ['local cyclic', value.local_cyclic]
+                            | readonly ['sibling namespace', value.sibling_namespace]
                         
                         export type result = __schema.namespaces.structure.types.Type
                     }
@@ -892,19 +925,19 @@ export namespace namespaces {
                     
                     export namespace value {
                         
-                        export namespace internal {
+                        export namespace local {
                             
                             export type l_entry = __schema.namespaces.structure.types.Types.D
                             
                             export type l_id = string
                         }
                         
-                        export type internal = {
-                            readonly 'l entry': internal.l_entry
-                            readonly 'l id': internal.l_id
+                        export type local = {
+                            readonly 'l entry': local.l_entry
+                            readonly 'l id': local.l_id
                         }
                         
-                        export namespace child {
+                        export namespace child_namespace {
                             
                             export namespace namespace {
                                 
@@ -931,12 +964,12 @@ export namespace namespaces {
                             }
                         }
                         
-                        export type child = {
-                            readonly 'namespace': child.namespace
-                            readonly 'type': child.type_
+                        export type child_namespace = {
+                            readonly 'namespace': child_namespace.namespace
+                            readonly 'type': child_namespace.type_
                         }
                         
-                        export namespace sibling {
+                        export namespace sibling_namespace {
                             
                             export namespace namespace {
                                 
@@ -963,16 +996,16 @@ export namespace namespaces {
                             }
                         }
                         
-                        export type sibling = {
-                            readonly 'namespace': sibling.namespace
-                            readonly 'type': sibling.type_
+                        export type sibling_namespace = {
+                            readonly 'namespace': sibling_namespace.namespace
+                            readonly 'type': sibling_namespace.type_
                         }
                     }
                     
                     export type value = 
-                        | readonly ['internal', value.internal]
-                        | readonly ['child', value.child]
-                        | readonly ['sibling', value.sibling]
+                        | readonly ['local', value.local]
+                        | readonly ['child namespace', value.child_namespace]
+                        | readonly ['sibling namespace', value.sibling_namespace]
                     
                     export type result = __schema.namespaces.structure.types.Type
                 }
@@ -1358,19 +1391,19 @@ export namespace namespaces {
                     
                     export namespace value {
                         
-                        export namespace internal {
+                        export namespace local {
                             
                             export type l_entry = __schema.namespaces.structure.types.Types.D
                             
                             export type l_id = string
                         }
                         
-                        export type internal = {
-                            readonly 'l entry': internal.l_entry
-                            readonly 'l id': internal.l_id
+                        export type local = {
+                            readonly 'l entry': local.l_entry
+                            readonly 'l id': local.l_id
                         }
                         
-                        export namespace child {
+                        export namespace child_namespace {
                             
                             export namespace namespace {
                                 
@@ -1397,12 +1430,12 @@ export namespace namespaces {
                             }
                         }
                         
-                        export type child = {
-                            readonly 'namespace': child.namespace
-                            readonly 'type': child.type_
+                        export type child_namespace = {
+                            readonly 'namespace': child_namespace.namespace
+                            readonly 'type': child_namespace.type_
                         }
                         
-                        export namespace sibling {
+                        export namespace sibling_namespace {
                             
                             export namespace namespace {
                                 
@@ -1429,16 +1462,16 @@ export namespace namespaces {
                             }
                         }
                         
-                        export type sibling = {
-                            readonly 'namespace': sibling.namespace
-                            readonly 'type': sibling.type_
+                        export type sibling_namespace = {
+                            readonly 'namespace': sibling_namespace.namespace
+                            readonly 'type': sibling_namespace.type_
                         }
                     }
                     
                     export type value = 
-                        | readonly ['internal', value.internal]
-                        | readonly ['child', value.child]
-                        | readonly ['sibling', value.sibling]
+                        | readonly ['local', value.local]
+                        | readonly ['child namespace', value.child_namespace]
+                        | readonly ['sibling namespace', value.sibling_namespace]
                     
                     export type result = __schema.namespaces.structure.types.Type
                 }
@@ -3034,19 +3067,19 @@ export namespace namespaces {
                             
                             export namespace value {
                                 
-                                export namespace internal {
+                                export namespace local {
                                     
                                     export type l_entry = __schema.namespaces.declarations.types.Declarations.D
                                     
                                     export type l_id = string
                                 }
                                 
-                                export type internal = {
-                                    readonly 'l entry': internal.l_entry
-                                    readonly 'l id': internal.l_id
+                                export type local = {
+                                    readonly 'l entry': local.l_entry
+                                    readonly 'l id': local.l_id
                                 }
                                 
-                                export namespace child {
+                                export namespace child_namespace {
                                     
                                     export namespace namespace {
                                         
@@ -3073,15 +3106,65 @@ export namespace namespaces {
                                     }
                                 }
                                 
-                                export type child = {
-                                    readonly 'namespace': child.namespace
-                                    readonly 'resolver': child.resolver
+                                export type child_namespace = {
+                                    readonly 'namespace': child_namespace.namespace
+                                    readonly 'resolver': child_namespace.resolver
+                                }
+                                
+                                export namespace sibling_namespace {
+                                    
+                                    export namespace constraints {
+                                        
+                                        export type declarations = __schema.namespaces.declarations.types.Namespaces
+                                    }
+                                    
+                                    export type constraints = {
+                                        readonly 'declarations': constraints.declarations
+                                    }
+                                    
+                                    export namespace value {
+                                        
+                                        export namespace namespace {
+                                            
+                                            export type l_entry = __schema.namespaces.declarations.types.Namespaces.D
+                                            
+                                            export type l_id = string
+                                        }
+                                        
+                                        export type namespace = {
+                                            readonly 'l entry': namespace.l_entry
+                                            readonly 'l id': namespace.l_id
+                                        }
+                                        
+                                        export namespace resolver {
+                                            
+                                            export type l_entry = __schema.namespaces.declarations.types.Declarations.D
+                                            
+                                            export type l_id = string
+                                        }
+                                        
+                                        export type resolver = {
+                                            readonly 'l entry': resolver.l_entry
+                                            readonly 'l id': resolver.l_id
+                                        }
+                                    }
+                                    
+                                    export type value = {
+                                        readonly 'namespace': value.namespace
+                                        readonly 'resolver': value.resolver
+                                    }
+                                }
+                                
+                                export type sibling_namespace = {
+                                    readonly 'constraints': sibling_namespace.constraints
+                                    readonly 'value': sibling_namespace.value
                                 }
                             }
                             
                             export type value = 
-                                | readonly ['internal', value.internal]
-                                | readonly ['child', value.child]
+                                | readonly ['local', value.local]
+                                | readonly ['child namespace', value.child_namespace]
+                                | readonly ['sibling namespace', value.sibling_namespace]
                             
                             export type result = __schema.namespaces.declarations.types.Declaration
                         }
