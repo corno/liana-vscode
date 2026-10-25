@@ -1591,6 +1591,44 @@ test('dense completion honors concise notation for generated entry payloads', as
     assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, template())).__get_raw(), [])
 })
 
+test('request-local notation overrides apply to skeletons and generated payloads without changing preferences', async () => {
+    const source = specification('| `group` { \'left\': (`description`: _ `value`: | `nothing` ~) }', '#')
+    for (const selected of ['concise', 'verbose']) {
+        const opposite = selected === 'concise' ? 'verbose' : 'concise'
+        await requestAt(source, template(), source.indexOf('#'), context => async params => {
+            const styles = context['document notation styles']
+            styles.set('__default__', opposite)
+            styles.set(params.textDocument.uri, selected)
+            const before = new Map(styles)
+            const handler = create_on_completion(context)
+            const normal = await handler(params)
+            const override = await handler({ ...params, notationStyle: opposite })
+            const subsequent = await handler(params)
+            assert.deepEqual(styles, before)
+            assert.deepEqual(subsequent, normal)
+            for (const [result, style] of [[normal, selected], [override, opposite]]) {
+                const edit = result.items[0].textEdit
+                assert.match(edit.newText, /^\$0\| `group` \{/)
+                assert.match(edit.newText, style === 'verbose' ? /'left': \(/ : /'left': </)
+                const updated = TextDocument.applyEdits(
+                    TextDocument.create('file:///override.lna', 'liana', 1, source),
+                    [{ ...edit, newText: snippetText(edit.newText) }])
+                assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, template())).__get_raw(), [])
+            }
+        })
+        await requestAt('#', template(), 0, context => async params => {
+            context['document notation styles'].set('__default__', selected)
+            const handler = create_on_completion(context)
+            const result = await handler({ ...params, notationStyle: opposite })
+            const text = result.items[0].textEdit.newText
+            assert.ok(text.startsWith(opposite === 'verbose' ? '$0(' : '$0<'))
+            if (opposite === 'verbose') assert.match(text, /`schema`:/)
+            else assert.doesNotMatch(text, /`schema`:/)
+            assert.equal(context['document notation styles'].get('__default__'), selected)
+        })
+    }
+})
+
 test('generated dense dictionary identifiers remain literal snippet text', async () => {
     const id = 'a$1}\\b'
     const source = `< # { ${JSON.stringify(id)}: ~ } >`

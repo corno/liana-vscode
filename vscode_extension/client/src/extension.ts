@@ -9,6 +9,7 @@ import { workspace, ExtensionContext } from 'vscode'
 import {
 	LanguageClient,
 	LanguageClientOptions,
+	CompletionRequest,
 	ServerOptions,
 	TransportKind
 } from 'vscode-languageclient/node'
@@ -16,6 +17,7 @@ import {
 import * as vscode from 'vscode'
 
 import { register_commands } from './register_commands'
+import { Completion_Style } from './helpers/completion_style'
 
 let client: LanguageClient
 
@@ -50,6 +52,7 @@ function update_status_bar(context: ExtensionContext, status_bar_item: vscode.St
 }
 
 export function activate(context: ExtensionContext) {
+	const completion_style = new Completion_Style()
 	// Register file decoration provider for .liana folders
 
 
@@ -173,6 +176,17 @@ export function activate(context: ExtensionContext) {
 		context,
 		status_bar_item,
 		update_status_bar: (editor) => update_status_bar(context, status_bar_item, editor),
+		trigger_missing_data_completion: async (editor, opposite_style) => {
+			const style = get_notation_style(context, editor.document.uri.toString())
+			completion_style.set(editor.document, editor.selection.active,
+				opposite_style ? (style === 'verbose' ? 'concise' : 'verbose') : undefined)
+			try {
+				await vscode.commands.executeCommand('editor.action.triggerSuggest')
+			} catch (error) {
+				completion_style.set(editor.document, editor.selection.active)
+				throw error
+			}
+		},
 	})
 
 
@@ -198,6 +212,24 @@ export function activate(context: ExtensionContext) {
 	const client_options: LanguageClientOptions = {
 		// Register the server for plain text documents
 		documentSelector: [{ scheme: 'file', language: 'liana' }],
+		middleware: {
+			provideCompletionItem: async (document, position, completion_context, token, next) => {
+				const notationStyle = completion_style.take(document, position)
+				if (notationStyle === undefined) {
+					return next(document, position, completion_context, token)
+				}
+				const params = {
+					...client.code2ProtocolConverter.asCompletionParams(document, position, completion_context),
+					notationStyle,
+				}
+				try {
+					const result = await client.sendRequest(CompletionRequest.type, params, token)
+					return await client.protocol2CodeConverter.asCompletionResult(result, undefined, token)
+				} catch (error) {
+					return client.handleFailedRequest(CompletionRequest.type, token, error, undefined)
+				}
+			},
+		},
 		synchronize: {
 			// Notify the server about file changes to '.clientrc' and schema files
 			fileEvents: [

@@ -130,6 +130,11 @@
 				"title": "jump to next missing_data (#)"
 			},
 			{
+				"command": "liana.jump_to_next_missing_data_opposite_style",
+				"category": "Liana",
+				"title": "jump to next missing_data (#) in opposite notation style"
+			},
+			{
 				"command": "liana.collapse_all_entries",
 				"category": "Liana",
 				"title": "collapse all entries"
@@ -194,6 +199,11 @@
 			{
 				"command": "liana.jump_to_next_missing_data",
 				"key": "ctrl+d",
+				"when": "editorTextFocus && editorLangId == liana"
+			},
+			{
+				"command": "liana.jump_to_next_missing_data_opposite_style",
+				"key": "ctrl+shift+d",
 				"when": "editorTextFocus && editorLangId == liana"
 			},
 			{

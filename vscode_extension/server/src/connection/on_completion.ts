@@ -11,9 +11,11 @@ import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
 import { Connection_Context } from '../connection_context'
 
+type Completion_Parameters = vscode_node.CompletionParams & { notationStyle?: 'verbose' | 'concise' }
+
 export const create_on_completion: (
 	connection_context: Connection_Context,
-) => vscode_node.ServerRequestHandler<vscode_node.CompletionParams, vscode_node.CompletionList | null, vscode_node.CompletionItem[], void> = (connection_context) => {
+) => vscode_node.ServerRequestHandler<Completion_Parameters, vscode_node.CompletionList | null, vscode_node.CompletionItem[], void> = (connection_context) => {
 	return (params) => {
 		// The pass parameter contains the position of the text document in
 		// which code complete got requested. For the example we ignore this
@@ -23,6 +25,9 @@ export const create_on_completion: (
 		if (doc === undefined) {
 			return null
 		}
+		const style = params.notationStyle
+			?? connection_context['document notation styles'].get(doc.uri)
+			?? connection_context['document notation styles'].get('__default__') ?? 'verbose'
 
 		return new Promise<vscode_node.CompletionList>((resolve, reject) => {
 			// Check if user typed filter letters before the cursor
@@ -52,7 +57,7 @@ export const create_on_completion: (
 					} = {
 							'indent': "    ",
 							'position': params.position,
-							'style': (connection_context['document notation styles'].get(params.textDocument.uri) || connection_context['document notation styles'].get('__default__') || 'verbose') === 'verbose' ? ['verbose', null] : ['concise', null],
+							'style': style === 'verbose' ? ['verbose', null] : ['concise', null],
 					}
 					const completion_suggestions_raw = (instance[0] === 'constrained'
 						? t_resolved_completion.Document(instance[1], completionParameters)
@@ -182,8 +187,7 @@ export const create_on_completion: (
 							if (edit !== undefined && 'range' in edit && edit.newText.startsWith('$0')) {
 								const refined = await generated_snippet(connection_context, doc,
 									{ ...edit, newText: edit.newText.slice(2) },
-									connection_context['document notation styles'].get(doc.uri)
-										?? connection_context['document notation styles'].get('__default__') ?? 'verbose')
+									style)
 								item.textEdit = { ...refined, newText: '$0' + refined.newText.replace(/([\\$}])/g, '\\$1') }
 							}
 						}

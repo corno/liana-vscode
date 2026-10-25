@@ -27,6 +27,7 @@ export function register_commands(deps: types.Command_Dependencies): void {
 		vscode.commands.registerCommand('liana.initialize_liana_schema_authoring_environment', initialize_liana_schema_authoring_environment(deps)),
 		vscode.commands.registerCommand('liana.initialize_or_update_authoring_environment_with_this_schema', initialize_or_update_authoring_environment_with_this_schema(deps)),
 		vscode.commands.registerCommand('liana.jump_to_next_missing_data', jump_to_next_missing_data(deps)),
+		vscode.commands.registerCommand('liana.jump_to_next_missing_data_opposite_style', jump_to_next_missing_data(deps, true)),
 		vscode.commands.registerCommand('liana.save_as_json_disabled', save_as_json_disabled(deps)),
 		vscode.commands.registerCommand('liana.save_as_json', save_as_json(deps)),
 		vscode.commands.registerCommand('liana.seal_disabled', seal_disabled(deps)),

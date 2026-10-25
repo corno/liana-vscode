@@ -2,7 +2,7 @@ import * as vscode from 'vscode'
 
 import * as types from "../types"
 
-export default ((deps) => () => {
+export default ((deps, opposite_style = false) => async () => {
 		const editor = vscode.window.activeTextEditor
 		if (!editor) {
 			vscode.window.showInformationMessage('No active editor')
@@ -25,5 +25,5 @@ export default ((deps) => () => {
 		const position = document.positionAt(target_index)
 		editor.selection = new vscode.Selection(position, position)
 		editor.revealRange(new vscode.Range(position, position))
-		 vscode.commands.executeCommand('editor.action.triggerSuggest')
+		await deps!.trigger_missing_data_completion(editor, opposite_style)
 }) satisfies types.Register_Command

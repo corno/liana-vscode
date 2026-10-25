@@ -32,7 +32,8 @@ Install the extension from the VS Code Marketplace or install manually from VSIX
 
 | Command | Shortcut | Description |
 |---------|----------|-------------|
-| Jump to next missing data | `Ctrl+D` or `Ctrl+3` | Navigate to the next `#` marker |
+| Jump to next missing data | `Ctrl+D` or `Ctrl+3` | Navigate to the next `#` marker and suggest completions in the selected style |
+| Complete missing data in opposite style | `Ctrl+Shift+D` | Navigate to the next `#` marker and suggest completions in the opposite style, without changing the document's default |
 | Toggle notation style | `Ctrl+Alt+N` | Set the default notation style for all values that will be code completed |
 
 ### Commands
@@ -58,6 +59,11 @@ Liana uses ASTN as its notation language. ASTN supports two notation styles:
 - **Concise** - Relies on value order like programming languages: `< "value", 42 >`
 
 Toggle the document's default style with `Ctrl+Alt+N`; all values that will be code-completed will use the selected verbose or concise notation. Use code actions (right-click → Refactor) for selective conversion of existing values.
+
+For a one-off exception, use `Ctrl+Shift+D` instead of `Ctrl+D`: it follows the
+same next-`#` navigation but requests verbose completions when concise is selected,
+or concise completions when verbose is selected. Your selected style and status
+bar stay unchanged; subsequent completions use the selected style again.
 
 Hovering over a property's value, including an explicit not-set optional (`_`),
 shows its schema description in both verbose and concise notation.
