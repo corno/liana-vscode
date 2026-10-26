@@ -15,6 +15,8 @@ export type Reference = {
     name: string
     range: s_location.Range
     target: p_di.Optional_Value<s_in.Value>
+    /** cyclic references may point to entries that (indirectly) depend on the referencing entry */
+    cyclic: boolean
 }
 
 export type Index = {
@@ -60,6 +62,7 @@ export const Document = ($: s_in.Document): Index => {
                 name: reference.unmarshalled.intermediate.instance.token.value,
                 range: reference.unmarshalled.intermediate.instance.range,
                 target: selected[0] === 'resolved' ? p_.literal.set(selected[1]) : p_.literal.not_set(),
+                cyclic: status[0] === 'cyclic',
             }])
         }),
     }

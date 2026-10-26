@@ -120,9 +120,9 @@
 				"title": "initialize Liana schema authoring environment"
 			},
 			{
-				"command": "liana.sort_alphabetically",
+				"command": "liana.sort_dictionary",
 				"category": "Liana",
-				"title": "sort dictionary alphabetically"
+				"title": "sort dictionary"
 			},
 			{
 				"command": "liana.jump_to_next_missing_data",
@@ -220,7 +220,7 @@
 					"group": "1_liana"
 				},
 				{
-					"command": "liana.sort_alphabetically",
+					"command": "liana.sort_dictionary",
 					"when": "editorLangId == liana",
 					"group": "1_liana"
 				},

@@ -6,6 +6,7 @@ import { create_on_initialize } from './connection/on_initialize'
 import { create_on_diagnostics } from './connection/on_diagnostics'
 import { create_on_did_change_watched_files } from './connection/on_did_change_watched_files'
 import { create_on_update_notation_style } from './connection/on_update_notation_style'
+import { create_on_sort_dictionary } from './connection/on_sort_dictionary'
 import { create_on_completion } from './connection/on_completion'
 import { create_on_completion_resolve } from './connection/on_completion_resolve'
 import { create_on_hover } from './connection/on_hover'
@@ -52,6 +53,10 @@ export const create_connection = (
 
 	connection.onRequest('liana/update_notation_style',
 		create_on_update_notation_style(connection_context)
+	)
+
+	connection.onRequest('liana/sort_dictionary',
+		create_on_sort_dictionary(connection_context)
 	)
 
 	connection.onCompletion(

@@ -22,6 +22,21 @@
   per-option payload/context selections; typed consumers verify producer types.
 
 ### Fixed
+- "Sort dictionary alphabetically" was not implemented and only showed an error.
+  It is now "Sort dictionary" (`liana.sort_dictionary`) and sorts the entries of
+  the innermost dictionary around the cursor. Without dependencies between the
+  entries it sorts by id. When entries contain acyclic references to siblings it
+  asks for alphabetical, topological then alphabetical, or topological only
+  (dependencies first, otherwise the current order). Cyclic references are
+  ignored. If the document cannot be resolved, it sorts alphabetically and says
+  so. Comments on the lines above an entry and behind it on its last line move
+  with the entry; the whitespace between entries stays in place.
+  The refactor code actions (`Ctrl+.`) offer "Sort dictionary (shallow)" and
+  "Sort dictionaries (deep)". Deep also sorts the dictionaries nested in it, or
+  every dictionary of the document when the cursor is not in a dictionary. It
+  asks for the order once; the topological choices apply to the dictionaries
+  with dependencies, the others are sorted alphabetically. Undo reverts the
+  whole sort at once.
 - Formatting a document keeps its comments, including comments before the first
   token, after entry ids, `:`, state options and include paths. A `//` comment
   ends its line; the tokens after it continue on the next line.

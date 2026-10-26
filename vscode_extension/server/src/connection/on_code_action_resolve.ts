@@ -43,7 +43,7 @@ export const create_on_code_action_resolve: (
 	connection_context: Connection_Context,
 ) => (action: vscode_node.CodeAction) => Thenable<vscode_node.CodeAction> = (connection_context) => {
 	return (action: vscode_node.CodeAction) => {
-		if (action.edit !== undefined) return Promise.resolve(action)
+		if (action.edit !== undefined || action.command !== undefined) return Promise.resolve(action)
 		return new Promise<vscode_node.CodeAction>((resolve) => {
 			if (!action.data) {
 				connection_context.connection.console.log('Code action resolve called without data')

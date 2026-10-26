@@ -7,25 +7,47 @@ import { missing_reference_actions } from '../helpers/missing_reference_actions'
 export const create_on_code_action: (
 	connection_context: Connection_Context,
 ) => vscode_node.ServerRequestHandler<vscode_node.CodeActionParams, (vscode_node.Command | vscode_node.CodeAction)[] | null | undefined, (vscode_node.Command | vscode_node.CodeAction)[], void> = (connection_context) => {
-	return async (params: vscode_node.CodeActionParams) => [
-		...await missing_entry_actions(connection_context, params),
-		...await missing_reference_actions(connection_context, params), ...(
-		[
-			['Convert to verbose notation (shallow)', 'verbose', true],
-			['Convert to verbose notation (deep)', 'verbose', false],
-			['Convert to concise notation (shallow)', 'concise', true],
-			['Convert to concise notation (deep)', 'concise', false],
-		] as const
-	).map(([action_title, style, shallow]) => ({
-		title: action_title,
-		kind: vscode_node.CodeActionKind.Refactor,
-		data: {
-			uri: params.textDocument.uri,
-			position: params.range.start,
-			style: style,
-			shallow: shallow
-		}
-	})).filter(() => !params.context.only || params.context.only.some((kind) =>
-		vscode_node.CodeActionKind.Refactor === kind || vscode_node.CodeActionKind.Refactor.startsWith(kind + '.')))]
+	return async (params: vscode_node.CodeActionParams) => {
+		const refactorings: vscode_node.CodeAction[] = [
+			...(
+				[
+					['Convert to verbose notation (shallow)', 'verbose', true],
+					['Convert to verbose notation (deep)', 'verbose', false],
+					['Convert to concise notation (shallow)', 'concise', true],
+					['Convert to concise notation (deep)', 'concise', false],
+				] as const
+			).map(([action_title, style, shallow]) => ({
+				title: action_title,
+				kind: vscode_node.CodeActionKind.Refactor,
+				data: {
+					uri: params.textDocument.uri,
+					position: params.range.start,
+					style: style,
+					shallow: shallow
+				}
+			})),
+			...(
+				[
+					['Sort dictionary (shallow)', 'shallow'],
+					['Sort dictionaries (deep)', 'deep'],
+				] as const
+			).map(([action_title, scope]) => ({
+				title: action_title,
+				kind: vscode_node.CodeActionKind.Refactor,
+				// the client asks for the order, so the sorting runs as a client command
+				command: vscode_node.Command.create(action_title, 'liana.sort_dictionary', {
+					uri: params.textDocument.uri,
+					position: params.range.start,
+					scope: scope,
+				}),
+			})),
+		]
+		return [
+			...await missing_entry_actions(connection_context, params),
+			...await missing_reference_actions(connection_context, params),
+			...refactorings.filter(() => !params.context.only || params.context.only.some((kind) =>
+				vscode_node.CodeActionKind.Refactor === kind || vscode_node.CodeActionKind.Refactor.startsWith(kind + '.'))),
+		]
+	}
 }
 

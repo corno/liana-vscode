@@ -456,6 +456,89 @@ test('formatting keeps line comments from swallowing the tokens after them', () 
     assert.equal(format_text(source, { tabSize: 4, insertSpaces: false }).replaceAll('\t', '    '), expected)
 })
 
+test('sorting a dictionary alphabetically keeps comments with their entries', () => {
+    const { find_dictionary_at, alphabetical_order, arrange } = require('../server/out/helpers/sort_dictionary.js')
+    const sort = (source) => {
+        const offset = source.indexOf('^')
+        const text = source.slice(0, offset) + source.slice(offset + 1)
+        const found = find_dictionary_at(text, offset)
+        if (found[0] !== 'found') return found[0]
+        const replacement = arrange(text, found[1], alphabetical_order(found[1]))
+        return replacement === undefined ? 'already sorted' : text.slice(0, replacement.start) + replacement.text + text.slice(replacement.end)
+    }
+    assert.equal(sort(`( \`x\`: "😀" \`d\`: { // after brace
+\t// about c
+\t'c': "1" // c trailing
+\t'b': {
+\t\t'z': ~
+\t\t'y': ~
+\t}
+\t/* a */ 'a': * "2" /* a2 */
+\t// dangling
+}^ )`), `( \`x\`: "😀" \`d\`: { // after brace
+\t/* a */ 'a': * "2" /* a2 */
+\t'b': {
+\t\t'z': ~
+\t\t'y': ~
+\t}
+\t// about c
+\t'c': "1" // c trailing
+\t// dangling
+} )`)
+    assert.equal(sort(`{ 'b': ~ 'a': { 'q': ~ 'p'^ } }`), `{ 'b': ~ 'a': { 'p' 'q': ~ } }`)
+    assert.equal(sort(`{ 'b': ~ // x\n 'a': ~ }^`), `{ 'a': ~\n 'b': ~ // x\n }`)
+    assert.equal(sort(`{ 'a': ~ 'b': ~^ }`), 'already sorted')
+    assert.equal(sort(`( \`x\`: ~^ )`), 'no dictionary')
+    assert.equal(sort(`{ 'b': ~ 'a': ^`), 'parse error')
+})
+
+test('sorting dictionaries deep sorts the nested dictionaries as well', () => {
+    const { find_dictionaries, alphabetical_order, arrange, arrange_deep } = require('../server/out/helpers/sort_dictionary.js')
+    const sort = (source, scope) => {
+        const offset = source.indexOf('^')
+        const text = source.slice(0, offset) + source.slice(offset + 1)
+        const found = find_dictionaries(text, offset, scope)
+        if (found[0] !== 'found') return found[0]
+        const replacements = found[1]
+            .map(($) => scope === 'deep' ? arrange_deep(text, $, alphabetical_order) : arrange(text, $, alphabetical_order($)))
+            .filter(($) => $ !== undefined)
+        if (replacements.length === 0) return 'already sorted'
+        return replacements.reduceRight((result, $) => result.slice(0, $.start) + $.text + result.slice($.end), text)
+    }
+    const nested = `{
+\t'b': ( \`x\`: { 'z': ~ 'y': [ { 'n': ~ 'm': ~ } ] } )
+\t'a': {
+\t\t'd': ~
+\t\t'c': ~ // c
+\t}
+}`
+    assert.equal(sort(`^${nested}`, 'deep'), `{
+\t'a': {
+\t\t'c': ~ // c
+\t\t'd': ~
+\t}
+\t'b': ( \`x\`: { 'y': [ { 'm': ~ 'n': ~ } ] 'z': ~ } )
+}`)
+    // only the dictionary around the cursor and the dictionaries in it
+    assert.equal(sort(nested.replace("'d'", "^'d'"), 'deep'), nested.replace(`'d': ~
+\t\t'c': ~ // c`, `'c': ~ // c
+\t\t'd': ~`))
+    assert.equal(sort(nested.replace("'b'", "^'b'"), 'shallow'), `{
+\t'a': {
+\t\t'd': ~
+\t\t'c': ~ // c
+\t}
+\t'b': ( \`x\`: { 'z': ~ 'y': [ { 'n': ~ 'm': ~ } ] } )
+}`)
+    // all dictionaries of the document when the cursor is not in a dictionary
+    assert.equal(sort(`( ^\`p\`: { 'b': ~ 'a': ~ } \`q\`: { 'd': ~ 'c': ~ } )`, 'deep'), `( \`p\`: { 'a': ~ 'b': ~ } \`q\`: { 'c': ~ 'd': ~ } )`)
+    assert.equal(sort(`( ^\`p\`: { 'b': ~ 'a': ~ } )`, 'shallow'), 'no dictionary')
+    assert.equal(sort(`( ^\`p\`: ~ )`, 'deep'), 'no dictionary')
+    // a nested dictionary that changes while its own dictionary keeps its order
+    assert.equal(sort(`^{ 'a': { 'd': ~ 'c': ~ } 'b': ~ }`, 'deep'), `{ 'a': { 'c': ~ 'd': ~ } 'b': ~ }`)
+    assert.equal(sort(`^{ 'a': { 'c': ~ } 'b': ~ }`, 'deep'), 'already sorted')
+})
+
 test('optional fallback branches must resolve to the exact same structural target', () => {
     const selection = "(`start`: | `optional fallback` (`selection`: | `parameter` 'input' `fallback`: (`start`: | `parameter` 'fallback' `tail`: (`path`: []))) `tail`: (`path`: []))"
     const source = specification(dictionary('', 'Nothing'))

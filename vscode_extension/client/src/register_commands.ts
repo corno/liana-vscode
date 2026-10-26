@@ -11,7 +11,7 @@ import save_as_json from './commands/save_as_json'
 import save_as_json_disabled from './commands/save_as_json_disabled'
 import seal from './commands/seal'
 import seal_disabled from './commands/seal_disabled'
-import sort_alphabetically from './commands/sort_alphabetically'
+import sort_dictionary from './commands/sort_dictionary'
 import toggle_notation_style from './commands/toggle_notation_style'
 
 import * as types from './types'
@@ -30,7 +30,7 @@ export function register_commands(deps: types.Command_Dependencies): void {
 		vscode.commands.registerCommand('liana.save_as_json', save_as_json(deps)),
 		vscode.commands.registerCommand('liana.seal_disabled', seal_disabled(deps)),
 		vscode.commands.registerCommand('liana.seal', seal(deps)),
-		vscode.commands.registerCommand('liana.sort_alphabetically', sort_alphabetically(deps)),
+		vscode.commands.registerCommand('liana.sort_dictionary', sort_dictionary(deps)),
 		vscode.commands.registerCommand('liana.toggle_notation_style', toggle_notation_style(deps)),
 	)
 }

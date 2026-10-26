@@ -643,6 +643,59 @@ test('rename renames benchmark-linked entries in dense and sparse dependents fro
         /benchmark-linked dictionary/)
 })
 
+test('sort offers topological orders only when entries depend on each other, ignoring cyclic references', async () => {
+    const { create_on_sort_dictionary } = require('../server/out/connection/on_sort_dictionary.js')
+    const type = (name, value) => `'${name}': (\`visibility\`: | \`public\` ~ \`root value\`: ${value})`
+    const withTypes = (types) => specification().replace(`\`types\`: { ${type('Root', '| `nothing` ~')} }`, `\`types\`: { ${types.join(' ')} }`)
+    const sortAt = async (source, scope = 'shallow', offset = source.indexOf("'", source.indexOf('`types`')) + 1) =>
+        requestAt(source, template(), offset, (context) => (params) => create_on_sort_dictionary(context)({
+            uri: params.textDocument.uri, position: params.position, scope,
+        }))
+    const typeOrder = (source, edits) => {
+        const sorted = TextDocument.applyEdits(TextDocument.create('file:///x.lna', 'liana', 1, source), edits)
+        const types = sorted.slice(sorted.indexOf('`types`'), sorted.indexOf('`resolver`'))
+        return [...types.matchAll(/'(\w+)': \(`visibility`/g)].map(($) => $[1])
+    }
+
+    const independent = withTypes([type('Root', '| `nothing` ~'), type('Other', '| `nothing` ~')])
+    assert.notEqual(independent, specification())
+    const plain = await sortAt(independent)
+    assert.equal(plain.dependencies, 'none')
+    assert.deepEqual(Object.keys(plain.orders), ['alphabetical'])
+    assert.deepEqual(typeOrder(independent, plain.orders.alphabetical), ['Other', 'Root'])
+
+    const dependent = withTypes([
+        type('Root', typeReference('Middle')),
+        type('Middle', typeReference('Zeta')),
+        type('Zeta', '| `nothing` ~'),
+        type('Alpha', typeReference('Root', 'local cyclic')),
+    ])
+    const response = await sortAt(dependent)
+    assert.equal(response.dependencies, 'present')
+    assert.deepEqual(typeOrder(dependent, response.orders.alphabetical), ['Alpha', 'Middle', 'Root', 'Zeta'])
+    assert.deepEqual(typeOrder(dependent, response.orders.topological), ['Alpha', 'Zeta', 'Middle', 'Root'])
+    assert.deepEqual(typeOrder(dependent, response.orders['topological only']), ['Zeta', 'Middle', 'Root', 'Alpha'])
+    assert.equal(response.dictionaries, 1)
+
+    // the whole document: only the types depend on each other, the other dictionaries are sorted alphabetically
+    const whole = await sortAt(dependent, 'deep', 0)
+    assert.equal(whole.dependencies, 'present')
+    assert.equal(whole['with dependencies'], 1)
+    assert.ok(whole.dictionaries > 1)
+    assert.deepEqual(typeOrder(dependent, whole.orders.topological), ['Alpha', 'Zeta', 'Middle', 'Root'])
+    assert.deepEqual(typeOrder(dependent, whole.orders['topological only']), ['Zeta', 'Middle', 'Root', 'Alpha'])
+
+    const ordered = withTypes([
+        type('Zeta', '| `nothing` ~'),
+        type('Root', typeReference('Zeta')),
+        type('Alpha', '| `nothing` ~'),
+    ])
+    const already = await sortAt(ordered)
+    assert.equal(already.dependencies, 'present')
+    assert.equal(already.orders['topological only'], null)
+    assert.deepEqual(typeOrder(ordered, already.orders.topological), ['Alpha', 'Zeta', 'Root'])
+})
+
 test('references and highlights follow cyclic and acyclic targets without traversing reference cycles', async () => {
     for (const mode of ['local cyclic', 'local']) {
         const root = typeReference(mode === 'local cyclic' ? 'Root' : 'Other', mode)
@@ -1495,7 +1548,7 @@ test('code actions skip structural fixes for source parse errors while diagnosti
     for (const source of ['"unterminated', "'unterminated", '`unterminated', '< {']) {
         const schema = benchmarkSchema(true)
         assert.deepEqual(await actionsAt(source, schema, 0, ['quickfix']), [])
-        assert.equal((await actionsAt(source, schema, 0)).length, 4)
+        assert.equal((await actionsAt(source, schema, 0)).length, 6)
         await requestAt(source, schema, 0, context => async params => {
             const actions = {
                 ...params, range: { start: params.position, end: params.position },
@@ -1588,7 +1641,7 @@ test('one quick fix inserts every missing dense entry without rewriting supplied
     assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, benchmarkSchema(true))).__get_raw(), [])
     assert.deepEqual(await create_on_code_action_resolve({})(actions[0]), actions[0])
     assert.deepEqual(await actionsAt(updated, benchmarkSchema(true), updated.indexOf('{'), ['quickfix']), [])
-    assert.equal((await actionsAt(source, benchmarkSchema(true), source.indexOf('{'), ['refactor'])).length, 4)
+    assert.equal((await actionsAt(source, benchmarkSchema(true), source.indexOf('{'), ['refactor'])).length, 6)
 })
 
 test('missing-entry fixes ignore sparse, unavailable, and duplicate benchmark keys', async () => {
@@ -1824,7 +1877,7 @@ test('benchmark creation fixes require an unexpected nonduplicate key and an ava
     }
     const source = "< { 'foo': ~ } {} >"
     assert.deepEqual(await actionsAt(source, benchmarkSchema(false), source.lastIndexOf('}'), ['quickfix']), [])
-    assert.equal((await actionsAt(source, benchmarkSchema(false), source.indexOf("'foo'") + 2, ['refactor'])).length, 4)
+    assert.equal((await actionsAt(source, benchmarkSchema(false), source.indexOf("'foo'") + 2, ['refactor'])).length, 6)
 })
 
 test('generated dictionary identifiers always use escaped single quotes', () => {
