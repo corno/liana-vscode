@@ -37,6 +37,23 @@ export const create_on_document_formatting: (
 			)
 		).__extract_data(
 			($) => {
+				const formatted = serialize.Paragraph(
+					sh.pg.sentences(p.literal.segmented_list([
+						p.from.optional($.header).decide(header => p.literal.list([
+							sh.sentence(p.literal.segmented_list([
+								p.literal.list([sh.ph.text("! ")]),
+								paragraph.Token_Trivia({ comments: header['!']['trailing trivia'].comments }),
+								paragraph.Value(target.Value(header.value), { 'write delimiters': true }),
+							])),
+						]), () => p.literal.list([])),
+						p.literal.list([sh.sentence(paragraph.Value(target.Value($.content), { 'write delimiters': true }))]),
+					])),
+					{
+						'indentation': params.options.insertSpaces === false ? '\t' : ' '.repeat(params.options.tabSize || 4),
+					}
+				).__get_raw().join("\n")
+				// An unchanged document needs no edit; replacing it anyway would mark it dirty and add an undo step.
+				if (formatted === document.getText()) return
 				result.push(
 					vscode_node.TextEdit.replace(
 						p_variables(() => {
@@ -50,21 +67,7 @@ export const create_on_document_formatting: (
 								last_line_length
 							)
 						}),
-						serialize.Paragraph(
-							sh.pg.sentences(p.literal.segmented_list([
-								p.from.optional($.header).decide(header => p.literal.list([
-									sh.sentence(p.literal.segmented_list([
-										p.literal.list([sh.ph.text("! ")]),
-										paragraph.Token_Trivia({ comments: header['!']['trailing trivia'].comments }),
-										paragraph.Value(target.Value(header.value), { 'write delimiters': true }),
-									])),
-								]), () => p.literal.list([])),
-								p.literal.list([sh.sentence(paragraph.Value(target.Value($.content), { 'write delimiters': true }))]),
-							])),
-							{
-								'indentation': ' '.repeat(params.options.tabSize || 4),
-							}
-						).__get_raw().join("\n")
+						formatted
 					)
 				)
 			},

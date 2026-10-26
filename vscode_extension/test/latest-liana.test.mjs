@@ -363,6 +363,18 @@ test('formatting and JSON conversion consume the current header without losing t
     assert.equal(edits.length, 1)
     const formatted = TextDocument.applyEdits(document, edits)
     assert.match(formatted, /^!/)
+    const reformatted = TextDocument.create(document.uri, 'liana', 2, formatted)
+    assert.deepEqual(create_on_document_formatting({
+        documents: { get: () => reformatted },
+        connection: { console: { log: assert.fail }, window: { showInformationMessage: assert.fail } },
+    })({ textDocument: { uri: document.uri }, options: { tabSize: 4, insertSpaces: true } }), [])
+    const tabbed = TextDocument.applyEdits(reformatted, create_on_document_formatting({
+        documents: { get: () => reformatted },
+        connection: { console: { log: assert.fail }, window: { showInformationMessage: assert.fail } },
+    })({ textDocument: { uri: document.uri }, options: { tabSize: 4, insertSpaces: false } }))
+    assert.match(tabbed, /\n\t\S/)
+    assert.doesNotMatch(tabbed, /\n /)
+    assert.equal(tabbed.replaceAll('\t', '    '), formatted)
     const loaded = await load('/tmp/liana-format-header.slna', formatted)
     assert.equal(loaded[0], 'success', JSON.stringify(loaded))
     assert.equal(loaded[1][1].content['unmarshall result'][1][1].instance.token.value, 'hello')

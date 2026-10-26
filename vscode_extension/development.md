@@ -73,6 +73,8 @@ the latest inlined schema. The maintained semantic reader was
 migrated from `clean_start/meta/tools/liana_to_pareto/src/schema/resolve.ts`. Keep those contracts
 aligned when updating the tools and the extension. The extension's maintained
 reader additionally validates dense explicit argument dictionaries.
+
+The ASTN Core to ASTN Runtime dependency migration is still a separate follow-up.
 Both client commands and the server load the template through the local
 `pareto-liana` reader. The maintained resolving reader lives in
 `pareto_liana/src/modules/schema.generated/schemas/resolved/refiners/unresolved_manual.ts`;

@@ -1,6 +1,9 @@
 # Liana VS Code Extension
 
-Complete language support for Liana and ASTN (Asynchronous Syntax Tree Notation) in Visual Studio Code.
+Language support for Liana in Visual Studio Code. Liana documents are written in
+ASTN (Abstract Syntax Tree Notation) syntax; syntax highlighting, formatting and
+JSON conversion work on that ASTN syntax, while validation, completion and the
+other schema-aware features come from Liana.
 
 ## What is Liana?
 
@@ -20,7 +23,7 @@ Liana is a tool to create textual languages. If you feel that editing data for y
 **Document Outline** - Navigate large files with document symbols
 **Quick Actions** - Convert between verbose and concise notation styles
 **Smart Navigation** - Jump to missing data, collapse entries, and more
-**Schema Support** - Full schema authoring and TypeScript code generation
+**Schema Support** - Full schema authoring
 
 ## Quick Start
 
@@ -48,12 +51,12 @@ The following commands are also available in context menu's
 - **Save as JSON file** - Save a JSON version alongside your .liana file
 - **Sort dictionary alphabetically** - Organize dictionary entries
 - **Toggle notation style** - Switch between verbose/concise notation
-- **Generate TypeScript code from this schema** - Generate type-safe TypeScript
-- **Seal document** - Mark document as finalized
+- **Publish this Liana schema to an authoring environment...** - Write the schema as a read-only `.liana/schema.slna` into a chosen directory; the directory is remembered per schema for later updates (only offered when the document has no errors)
+- **Seal document** - Mark document as finalized (only offered when the document has no errors)
 
 ## Notation Styles
 
-Liana uses ASTN as its notation language. ASTN supports two notation styles:
+Liana documents are written in ASTN, which has two notation styles:
 
 - **Verbose** - Explicitly names all properties for clarity: `( `name`: "value" `age`: 42 )`
 - **Concise** - Relies on value order like programming languages: `< "value", 42 >`
@@ -218,13 +221,17 @@ Within the current document:
 - **Shift+F12** finds references from either a dictionary entry or one of its
   resolved references.
 - Placing the cursor on either highlights the declaration and related references.
-- **F2** renames an entry and its resolved references together. Identical names in
-  other dictionaries are not changed. Rename checks for collisions, reparses the
+- **F2** renames an entry and its resolved references together. Entries with the
+  same name in dictionaries that are benchmarked (densely or sparsely) against the
+  entry's dictionary, or that its dictionary is benchmarked against, are renamed
+  too, transitively, together with their references; this works from either side
+  of the benchmark link. Identical names in other, unlinked dictionaries are not
+  changed. Rename checks for collisions in all linked dictionaries, reparses the
   proposed document, and verifies diagnostics and reference bindings before
-  returning versioned edits. Names are inserted as safely double-quoted identifiers.
+  returning versioned edits. Names are inserted as escaped single-quoted identifiers.
 
 Rename reports an error rather than making a partial change if it would break
-implicit name or benchmark dependencies that are not explicit references.
+implicit name dependencies that are not explicit references or benchmark links.
 Missing/unresolved references cannot be renamed. These features do not search or
 edit other files.
 
@@ -283,7 +290,6 @@ from `pareto-liana`. Existing authoring environments must migrate their schema
 sources and regenerate `.liana/schema.slna`; old formats are rejected rather
 than silently reinterpreted. The bundled template initializes new environments
 with the matching Next self-schema.
-The ASTN Core to ASTN Runtime dependency migration is still a separate follow-up.
 
 Validate with `npm run compile` and `node --test test/*.test.mjs`.
 
@@ -377,37 +383,22 @@ If all went well, you ended up with a file that looks like this
 )
 ````
 
-## create an language authoring environment for this schema.
+## publish this schema to an authoring environment
 - save the file
-- right click on the content and select `Initialize or update authoring environment with this Liana schema`.
+- right click on the content and select `Publish this Liana schema to an authoring environment...` and choose the directory of the authoring environment. Run it again after changing the schema to publish the update.
 - Now you can create your first file that conforms to the language you just created; right-click on the folder, select 'New Liana file'. Give a name that ends with .lna. My advise would be to add the language name in the file, according to this format; .my_lang.lna
 - Again, you should see a '#'. ctrl-d should suggest the `message` property and
   a quoted text value.
 
 Congratulations, you have just finished creating your first language.
 
-
-
-
-
-
-<!-- # ASTN (Abstract Syntax Tree Notation)
-
-ASTN is designed with the ambition to make editing data files a pleasure. Proper and thourough error reporting. Syntax highlighting. Code completion. All the things you are accustomed to when writing code for a programming language. Without having to develop a language. Write (or find) a schema and you're good to go.
-
-
-ASTN is a **human-editable data format** designed to represent abstract syntax trees in a clear, concise, and structured way. It extends JSON’s capabilities by introducing additional notation features to better express complex data structures. ASTN is a superset of JSON, meaning that every JSON file is a valid ASTN file.
-ASTN files can easily be converted back to JSON files
-
-
-For a detailed explanation, head over to the project site [project site](https://github.com/corno/astn) for more details. -->
 ## Understanding Missing Data (`#`)
 
 The `#` character represents "missing data" - a placeholder that distinguishes between intentional 'null'/empty values and data that still needs to be filled in. Use `Ctrl+D` to jump to the next missing data marker and get contextual code completion.
 
 ## Resources
 
-- 📖 [ASTN Project](https://github.com/corno/astn) - Learn more about the ASTN data format (Abstract Syntax Tree Notation)
+- 📖 [ASTN Project](https://github.com/corno/astn) - ASTN (Abstract Syntax Tree Notation), the syntax Liana documents are written in
 - 🐛 [Report Issues](https://github.com/corno/liana-vscode/issues) - Bug reports and feature requests
 - 📝 [Source Code](https://github.com/corno/liana-vscode) - Contribute to the extension
 

@@ -534,11 +534,8 @@ test('definition navigation does not guess targets for missing, invalid, derived
 })
 
 test('the language server advertises definition navigation', () => {
-    const noop = () => {}
     const result = create_on_initialize({
-        'set has configuration capability': noop,
-        'set has workspace folder capability': noop,
-        'set has diagnostic related information capability': noop,
+        'document notation styles': new Map(),
     })({ capabilities: {} })
     assert.equal(result.capabilities.definitionProvider, true)
     assert.equal(result.capabilities.referencesProvider, true)
@@ -616,15 +613,34 @@ test('safe rename rejects dictionary collisions and newly captured references', 
     await assert.rejects(renameAt(source, schema, source.indexOf("'alpha':") + 2, 'missing'), /reference binding/)
 })
 
-test('safe rename rejects implicit dependencies and invalid rename positions explicitly', async () => {
+test('safe rename follows benchmark links and rejects invalid rename positions explicitly', async () => {
     const source = specification()
-    await assert.rejects(renameAt(source, template(), source.indexOf("'Root':") + 2, 'Renamed'), /new diagnostic/)
+    const renamed = applyRename(source, await renameAt(source, template(), source.indexOf("'Root':") + 2, 'Renamed'))
+    assert.equal(renamed, specification(undefined, undefined, undefined, 'Renamed').replaceAll("'Root'", "'Renamed'"))
+    assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(renamed, template())).__get_raw(), [])
     await assert.rejects(renameAt(source, template(), source.indexOf('`nothing`') + 2, 'Renamed'), /requires a dictionary entry/)
     await assert.rejects(requestAt(source, template(), source.indexOf('`nothing`') + 2, create_on_prepare_rename), /requires a dictionary entry/)
     const invalid = identitySource.replace("'alpha' `chosen`", "'missing' `chosen`")
     assert.deepEqual(await referencesAt(invalid, dependentReferenceSchema(), invalid.indexOf("'missing'") + 2), [])
     assert.deepEqual(await requestAt(invalid, dependentReferenceSchema(), invalid.indexOf("'missing'") + 2, create_on_document_highlight), [])
     await assert.rejects(renameAt(invalid, dependentReferenceSchema(), invalid.indexOf("'missing'") + 2, 'valid'), /requires a dictionary entry/)
+})
+
+test('rename renames benchmark-linked entries in dense and sparse dependents from either side', async () => {
+    for (const dense of [true, false]) {
+        const schema = benchmarkSchema(dense)
+        const source = dense ? "< { 'a': ~ 'b': ~ } { 'a': ~ 'b': ~ } >" : "< { 'a': ~ } { 'a': ~ 'b': ~ } >"
+        const expected = dense ? "< { 'c': ~ 'b': ~ } { 'c': ~ 'b': ~ } >" : "< { 'c': ~ } { 'c': ~ 'b': ~ } >"
+        for (const offset of [source.indexOf("'a'"), source.lastIndexOf("'a'")]) {
+            const result = await renameAt(source, schema, offset + 1, 'c')
+            assert.equal(applyRename(source, result), expected)
+            assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(expected, schema)).__get_raw(), [])
+        }
+        await assert.rejects(renameAt(source, schema, source.lastIndexOf("'a'") + 1, 'b'), /already exists/)
+    }
+    const conflicting = "< { 'a': ~ 'x': ~ } { 'a': ~ } >"
+    await assert.rejects(renameAt(conflicting, benchmarkSchema(false), conflicting.lastIndexOf("'a'") + 1, 'x'),
+        /benchmark-linked dictionary/)
 })
 
 test('references and highlights follow cyclic and acyclic targets without traversing reference cycles', async () => {
@@ -1499,6 +1515,42 @@ test('code actions skip structural fixes for source parse errors while diagnosti
 test('code actions still report schema loading failures rather than suppressing them', async () => {
     await assert.rejects(actionsAt('#', 'invalid schema', 0, ['quickfix']),
         error => error.code === -32603 && error.message.startsWith('Cannot load document for missing-entry fixes:'))
+})
+
+test('schema parse errors point at LSP character columns, counting a tab as one character', async () => {
+    const { create_on_diagnostics } = require('../server/out/connection/on_diagnostics.js')
+    const report = await requestAt('~', '\t\t)', 0, context => () => create_on_diagnostics(context)({ textDocument: { uri: context.documents.get().uri } }))
+    assert.equal(report.items.length, 1)
+    assert.deepEqual(report.items[0].relatedInformation[0].location.range, {
+        start: { line: 0, character: 2 }, end: { line: 0, character: 3 },
+    })
+})
+
+test('code actions skip structural fixes when no .liana schema directory is found', async () => {
+    const { missing_entry_actions } = require('../server/out/helpers/missing_entry_actions.js')
+    const { missing_reference_actions } = require('../server/out/helpers/missing_reference_actions.js')
+    const dir = mkdtempSync(join(tmpdir(), 'liana-no-schema-'))
+    try {
+        const doc = TextDocument.create(pathToFileURL(join(dir, 'document.liana.lna')).href, 'liana', 1, '< {} >')
+        const context = {
+            documents: { get: () => doc },
+            cache: { schemas: create_cache(), documents: create_cache() },
+            'document notation styles': new Map(),
+        }
+        const params = {
+            textDocument: { uri: doc.uri },
+            range: { start: doc.positionAt(0), end: doc.positionAt(0) },
+            context: { diagnostics: [] },
+        }
+        assert.deepEqual(await missing_entry_actions(context, params), [])
+        assert.deepEqual(await missing_reference_actions(context, params), [])
+        // Not a parse error: JSON conversion (which needs no schema) must stay enabled in the client.
+        const { create_on_diagnostics } = require('../server/out/connection/on_diagnostics.js')
+        const report = await create_on_diagnostics(context)({ textDocument: { uri: doc.uri } })
+        assert.deepEqual(report.items.map(item => item.source), ['schema'])
+    } finally {
+        rmSync(dir, { recursive: true, force: true })
+    }
 })
 
 test('missing dense-entry diagnostics highlight only the opening dictionary brace', async () => {

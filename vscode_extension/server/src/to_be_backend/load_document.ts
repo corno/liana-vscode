@@ -55,7 +55,7 @@ export const load_document = <T>(
 										(on_cache_success, on_cache_error) => {
 											q_get_schema(
 												{
-													'tab size': 4 //FIXME not hardcoded
+													'tab size': 1, // schema error locations become LSP ranges, which count a tab as 1 character
 												},
 												{
 													'read file': qr_read_file

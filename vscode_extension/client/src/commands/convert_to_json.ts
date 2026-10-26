@@ -10,14 +10,14 @@ import * as types from "../types"
 export default ((deps) => () => {
 	const editor = vscode.window.activeTextEditor
 	if (!editor) {
-		vscode.window.showInformationMessage('Open a Liana file first to save as JSON')
+		vscode.window.showInformationMessage('Open a Liana file first to convert to JSON')
 		return
 	}
 
 	create_refinement_context<p_schema.List<string>, string>(
 		(abort) => ttt_convert_to_json(
 			editor.document.getText(),
-			($) => abort('Safe as JSON failed because the file is not valid ASTN.'),
+			($) => abort('Converting to JSON failed because the file is not valid ASTN.'),
 			{
 				'source': {
 					'document resource identifier': editor.document.uri.toString(),

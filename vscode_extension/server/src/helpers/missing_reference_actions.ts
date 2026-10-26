@@ -18,8 +18,9 @@ export const missing_reference_actions = async (
     const loaded = await new Promise<resolved.Document | null>((resolve, reject) => load_document(
         document, context.cache,
         (error) => {
-            // Source syntax errors are reported by diagnostics, not failed code-action requests.
-            if (error[0] === 'deserialize parse tree') return null
+            // Source syntax errors and missing `.liana` schema directories are reported by diagnostics,
+            // not failed code-action requests.
+            if (error[0] === 'deserialize parse tree' || error[0] === 'schema path') return null
             reject(new vscode.ResponseError(vscode.ErrorCodes.InternalError,
                 'Cannot load document for reference creation: ' + JSON.stringify(error)))
             return null

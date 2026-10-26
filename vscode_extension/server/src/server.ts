@@ -4,7 +4,7 @@ import { create_cache } from './core/cache'
 
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
-import { Cache_Context, Settings } from './connection_context'
+import { Cache_Context } from './connection_context'
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -17,9 +17,7 @@ const cache_context: Cache_Context = {
 	'documents': create_cache(),
 }
 
-// Only keep settings for open documents
 documents.onDidClose(e => {
-	document_settings.delete(e.document.uri)
 	// Clear all document cache entries for this URI (across all versions)
 	const uri = e.document.uri
 	const keys_to_delete: string[] = []
@@ -44,16 +42,11 @@ documents.onDidChangeContent(change => {
 		}
 	})
 	keys_to_delete.forEach(key => cache_context.documents.map.delete(key))
-	
-	// Trigger a diagnostic refresh to update the diagnostics
-	connection.languages.diagnostics.refresh()
+	// No diagnostics refresh here: the client pulls diagnostics for the changed document itself,
+	// and documents do not depend on each other (`interFileDependencies: false`).
 })
 
-// Cache the settings of all open documents
-const document_settings: Map<string, Thenable<Settings>> = new Map()
-
-const connection = create_connection(
-	document_settings,
+create_connection(
 	documents,
 	cache_context,
 )

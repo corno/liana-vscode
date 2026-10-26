@@ -1,10 +1,8 @@
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
-import { Connection_Context, Settings } from './connection_context'
+import { Connection_Context } from './connection_context'
 
 import { create_on_initialize } from './connection/on_initialize'
-import { create_on_initialized } from './connection/on_initialized'
-import { create_on_did_change_configuration } from './connection/on_did_change_configuration'
 import { create_on_diagnostics } from './connection/on_diagnostics'
 import { create_on_did_change_watched_files } from './connection/on_did_change_watched_files'
 import { create_on_update_notation_style } from './connection/on_update_notation_style'
@@ -24,25 +22,12 @@ import { create_on_document_link } from './connection/on_document_link'
 import { Cache_Context } from './connection_context'
 
 export const create_connection = (
-	document_settings: Map<string, Thenable<Settings>>,
 	documents: vscode_node.TextDocuments<vscode_textdocument.TextDocument>,
 	cache_context: Cache_Context,
 ) => {
 
-	// The global settings, used when the `workspace/configuration` request is not supported by the client.
-	// Please note that this is not the case when using this server with the client provided in this example
-	// but could happen with other clients.
-	const default_settings: Settings = { max_number_of_problems: 1000 }
-
-
-	let global_settings: Settings = default_settings
-
 	// Store the notation style preference per document
 	const document_notation_styles: Map<string, 'verbose' | 'concise'> = new Map()
-
-	let has_configuration_capability = false
-	let has_workspace_folder_capability = false
-	let has_diagnostic_related_information_capability = false
 
 	const connection = vscode_node.createConnection(vscode_node.ProposedFeatures.all)
 
@@ -50,28 +35,11 @@ export const create_connection = (
 		'documents': documents,
 		'connection': connection,
 		'document notation styles': document_notation_styles,
-		'document settings': document_settings,
-		'default settings': default_settings,
 		'cache': cache_context,
-		'set has configuration capability': (value) => { has_configuration_capability = value },
-		'set has workspace folder capability': (value) => { has_workspace_folder_capability = value },
-		'set has diagnostic related information capability': (value) => { has_diagnostic_related_information_capability = value },
-		'has configuration capability': () => has_configuration_capability,
-		'has workspace folder capability': () => has_workspace_folder_capability,
-		'has diagnostic related information capability': () => has_diagnostic_related_information_capability,
-		'set global settings': (settings) => { global_settings = settings },
 	}
 
 	connection.onInitialize(
 		create_on_initialize(connection_context)
-	)
-
-	connection.onInitialized(
-		create_on_initialized(connection_context)
-	)
-
-	connection.onDidChangeConfiguration(
-		create_on_did_change_configuration(connection_context)
 	)
 
 	connection.languages.diagnostics.on(

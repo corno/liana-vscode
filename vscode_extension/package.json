@@ -1,9 +1,9 @@
 {
 	"name": "liana",
 	"displayName": "Liana",
-	"version": "0.1.77",
+	"version": "0.1.78",
 	"publisher": "corno",
-	"description": "Complete language support for Liana/ASTN: syntax highlighting, intelligent code completion, schema-based validation, formatting, and JSON conversion.",
+	"description": "Language support for Liana, whose documents are written in ASTN syntax: syntax highlighting, intelligent code completion, schema-based validation, formatting, and JSON conversion.",
 	"author": "Corno",
 	"license": "Apache-2.0",
 	"icon": "images/liana.png",
@@ -170,14 +170,9 @@
 				"title": "seal document (n/a due to errors)"
 			},
 			{
-				"command": "liana.initialize_or_update_authoring_environment_with_this_schema",
+				"command": "liana.publish_schema_to_authoring_environment",
 				"category": "Liana",
-				"title": "Initialize or update authoring environment with this Liana schema"
-			},
-			{
-				"command": "liana.generate_typescript_code_from_this_schema",
-				"category": "Liana",
-				"title": "Generate TypeScript code from this Liana schema"
+				"title": "Publish this Liana schema to an authoring environment..."
 			},
 			{
 				"command": "liana.create_liana_file",
@@ -246,22 +241,17 @@
 				},
 				{
 					"command": "liana.seal",
-					"when": "editorLangId == liana && !liana.has_parse_errors",
+					"when": "editorLangId == liana && !liana.has_errors",
 					"group": "1_liana"
 				},
 				{
 					"command": "liana.seal_disabled",
-					"when": "editorLangId == liana && liana.has_parse_errors",
+					"when": "editorLangId == liana && liana.has_errors",
 					"group": "1_liana"
 				},
 				{
-					"command": "liana.initialize_or_update_authoring_environment_with_this_schema",
-					"when": "editorLangId == liana && !liana.has_parse_errors && resourceFilename =~ /\\.liana\\.lna$/",
-					"group": "1_liana"
-				},
-				{
-					"command": "liana.generate_typescript_code_from_this_schema",
-					"when": "editorLangId == liana && !liana.has_parse_errors && resourceFilename =~ /\\.liana\\.lna$/",
+					"command": "liana.publish_schema_to_authoring_environment",
+					"when": "editorLangId == liana && !liana.has_errors && resourceFilename =~ /\\.liana\\.lna$/",
 					"group": "1_liana"
 				}
 			],
@@ -272,12 +262,7 @@
 					"group": "navigation@1"
 				},
 				{
-					"command": "liana.initialize_or_update_authoring_environment_with_this_schema",
-					"when": "resourceExtname == .lna && resourceFilename =~ /\\.liana\\.lna$/",
-					"group": "liana@1"
-				},
-				{
-					"command": "liana.generate_typescript_code_from_this_schema",
+					"command": "liana.publish_schema_to_authoring_environment",
 					"when": "resourceExtname == .lna && resourceFilename =~ /\\.liana\\.lna$/",
 					"group": "liana@1"
 				}

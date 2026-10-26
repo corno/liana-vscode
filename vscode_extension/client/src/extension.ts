@@ -4,7 +4,7 @@
  * ------------------------------------------------------------------------------------------ */
 
 import * as path from 'path'
-import { workspace, ExtensionContext } from 'vscode'
+import { ExtensionContext } from 'vscode'
 
 import {
 	LanguageClient,
@@ -118,7 +118,7 @@ export function activate(context: ExtensionContext) {
 		)
 		const has_parse_errors = diagnostics.some(diagnostic =>
 			diagnostic.severity === vscode.DiagnosticSeverity.Error &&
-			diagnostic.source === 'liana-parser'
+			diagnostic.source === 'liana-deserialize'
 		)
 		vscode.commands.executeCommand('setContext', 'liana.has_errors', has_errors)
 		vscode.commands.executeCommand('setContext', 'liana.has_parse_errors', has_parse_errors)
@@ -145,6 +145,7 @@ export function activate(context: ExtensionContext) {
 			if (editor && editor.document.languageId === 'liana') {
 				update_error_context(editor.document.uri)
 			} else {
+				vscode.commands.executeCommand('setContext', 'liana.has_errors', false)
 				vscode.commands.executeCommand('setContext', 'liana.has_parse_errors', false)
 			}
 		})
@@ -231,9 +232,8 @@ export function activate(context: ExtensionContext) {
 			},
 		},
 		synchronize: {
-			// Notify the server about file changes to '.clientrc' and schema files
+			// Notify the server about schema file changes
 			fileEvents: [
-				workspace.createFileSystemWatcher('**/.clientrc'),
 				schema_watcher
 			]
 		},

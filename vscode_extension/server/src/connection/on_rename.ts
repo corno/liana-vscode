@@ -10,6 +10,7 @@ import { create_range_from_range, create_range_from_possible_range } from '../he
 import { create_cache } from '../core/cache'
 import { load_document } from '../to_be_backend/load_document'
 import { quote_identifier } from '../helpers/quote_identifier'
+import { benchmark_linked_entries } from '../helpers/benchmark_links'
 
 const refuse = (message: string): never => {
     throw new vscode.ResponseError(vscode.LSPErrorCodes.RequestFailed, message)
@@ -33,12 +34,16 @@ export const create_on_rename = (
     if (target === undefined) return refuse('Rename requires a dictionary entry or a resolved reference in this document.')
     const { symbol } = target
     if (symbol.declaration.name === params.newName) return { documentChanges: [] }
-    if (symbol.declaration.dictionary.unmarshalled.derived.entries.__get_raw().some(([name]) => name === params.newName)) {
-        return refuse(`Cannot rename: entry '${params.newName}' already exists in this dictionary.`)
+    const linked = benchmark_linked_entries(loaded.resolved, loaded.index, symbol)
+    if (linked.some(({ dictionary }) => dictionary.unmarshalled.derived.entries.__get_raw().some(([name]) => name === params.newName))) {
+        return refuse(`Cannot rename: entry '${params.newName}' already exists in this dictionary or a benchmark-linked dictionary.`)
     }
-    const ranges = [symbol.declaration.range, ...symbol.references.map((reference) => reference.range)]
     const newText = quote_identifier(params.newName)
-    const edits = ranges.map((range) => vscode.TextEdit.replace(create_range_from_range(range), newText))
+    const unique_ranges = new Map(linked.flatMap(({ ranges }) => ranges).map((range) => {
+        const converted = create_range_from_range(range)
+        return [loaded.document.offsetAt(converted.start), converted] as const
+    }))
+    const edits = [...unique_ranges.values()].map((range) => vscode.TextEdit.replace(range, newText))
     const offsets = edits.map((edit) => ({
         start: loaded.document.offsetAt(edit.range.start),
         end: loaded.document.offsetAt(edit.range.end),

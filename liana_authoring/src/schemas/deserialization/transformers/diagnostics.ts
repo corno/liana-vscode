@@ -42,7 +42,7 @@ export const Error: declarations_.Error = ($) => p_.from.state($).decide(
 				'message': $[0] === 'invalid schema path' ? "The nearest .liana schema context is not a directory" : "Cannot find or inspect a .liana schema context",
 				'range': p_.literal.not_set(),
 				'related information': p_.literal.not_set(),
-				'type': ['deserialize', null]
+				'type': ['schema', null]
 			}))
 			case 'schema': return p_.option($, ($) => t_get_schema.Error($.error, { 'schema path': $['schema path'] }))
 			case 'deserialize parse tree': return p_.option($, ($) => ({

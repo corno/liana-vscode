@@ -48,6 +48,19 @@
 - Component resolution preserves parameter status through whole/category
   pass-through without inventing defaults for omitted explicit entries.
 
+### Changed
+- Renamed "Initialize or update authoring environment with this Liana schema"
+  to "Publish this Liana schema to an authoring environment..." (command id
+  `liana.publish_schema_to_authoring_environment`) and removed the prompt to
+  open the authoring environment afterwards.
+- Publishing a schema is refused, and hidden from the editor context menu,
+  when the document has errors.
+
+### Removed
+- The unfinished "Generate TypeScript code from this Liana schema" command.
+  Code generation produces intermediate Pareto code that needs external tooling
+  anyway, so it belongs outside the extension.
+
 ## [0.1.57]
 
 ### Changed
