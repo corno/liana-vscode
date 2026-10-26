@@ -27,5 +27,8 @@ mkdir -p "$OUTPUT_DIR"
 # Package with full output path
 npx @vscode/vsce package --no-dependencies -o "$OUTPUT_DIR/${NAME}-${VERSION}.vsix" || exit 1
 
+# Install the packaged extension in VS Code
+code --install-extension "$OUTPUT_DIR/${NAME}-${VERSION}.vsix" || exit 1
+
 git add -A || exit 1
 git commit -m "created version ${VERSION}"

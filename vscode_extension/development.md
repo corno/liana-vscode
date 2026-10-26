@@ -95,5 +95,7 @@ the promoted Liana, accounting, and Pareto fixtures.
 
 For packaging without committing or bumping the version automatically, run
 `vsce package --no-dependencies -o ../out/liana-<version>.vsix` after the build.
-The top-level `build_package.sh` commits all open changes, so it is not appropriate
-when unrelated work is present.
+The top-level `build_package.sh` bumps the patch version, packages the extension,
+and installs the generated VSIX using the `code` CLI. It commits all open changes,
+so it is not appropriate when unrelated work is present. Ensure the VS Code
+command-line launcher is available on `PATH` before running it.
