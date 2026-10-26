@@ -3,11 +3,7 @@ import p_variables from "pareto-core/transformer/specials/variables"
 import create_refinement_context from "pareto-core/__internal/sync/create_refinement_context"
 
 import * as r_parse_tree_from_loc from "pareto-liana/temp/astn_document"
-import * as p from "pareto-core/transformer"
-import * as target from "astn/modules/parse_tree/schemas/parse_tree/transformers/authoring_target"
-import * as paragraph from "astn/modules/authoring_target/schemas/authoring_target/transformers/paragraph"
-import * as serialize from "pareto-fountain-pen/modules/paragraph/schemas/paragraph/transformers/serialized"
-import * as sh from "pareto-fountain-pen/modules/paragraph/schemas/paragraph/shorthands/deprecated"
+import { format_document } from '../helpers/format_parse_tree'
 
 import * as vscode_node from 'vscode-languageserver/node'
 import { Connection_Context } from '../connection_context'
@@ -37,21 +33,11 @@ export const create_on_document_formatting: (
 			)
 		).__extract_data(
 			($) => {
-				const formatted = serialize.Paragraph(
-					sh.pg.sentences(p.literal.segmented_list([
-						p.from.optional($.header).decide(header => p.literal.list([
-							sh.sentence(p.literal.segmented_list([
-								p.literal.list([sh.ph.text("! ")]),
-								paragraph.Token_Trivia({ comments: header['!']['trailing trivia'].comments }),
-								paragraph.Value(target.Value(header.value), { 'write delimiters': true }),
-							])),
-						]), () => p.literal.list([])),
-						p.literal.list([sh.sentence(paragraph.Value(target.Value($.content), { 'write delimiters': true }))]),
-					])),
-					{
-						'indentation': params.options.insertSpaces === false ? '\t' : ' '.repeat(params.options.tabSize || 4),
-					}
-				).__get_raw().join("\n")
+				const formatted = format_document(
+					$,
+					document.getText(),
+					params.options.insertSpaces === false ? '\t' : ' '.repeat(params.options.tabSize || 4),
+				)
 				// An unchanged document needs no edit; replacing it anyway would mark it dirty and add an undo step.
 				if (formatted === document.getText()) return
 				result.push(

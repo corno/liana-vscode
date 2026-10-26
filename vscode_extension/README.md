@@ -18,7 +18,7 @@ Liana is a tool to create textual languages. If you feel that editing data for y
 -**Syntax Highlighting** - Rich colorization for ASTN syntax elements
 **IntelliSense** - Schema-based code completion with contextual suggestions
 **Real-time Validation** - Immediate feedback on syntax and semantic errors
-**Auto-formatting** - Consistent code formatting at the press of a key
+**Auto-formatting** - Consistent code formatting at the press of a key; comments are preserved
 **JSON Conversion** - Convert between Liana and JSON formats
 **Document Outline** - Navigate large files with document symbols
 **Quick Actions** - Convert between verbose and concise notation styles

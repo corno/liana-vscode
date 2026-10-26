@@ -22,6 +22,11 @@
   per-option payload/context selections; typed consumers verify producer types.
 
 ### Fixed
+- Formatting a document keeps its comments, including comments before the first
+  token, after entry ids, `:`, state options and include paths. A `//` comment
+  ends its line; the tokens after it continue on the next line.
+- Formatting no longer adds `:` to an entry that has none, which turned the next
+  entry into its value.
 - Editing or closing a document during validation no longer strands pending
   diagnostic requests. Invalidated cache loads still notify their original
   callers without restoring stale results or settling a replacement request.

@@ -385,6 +385,77 @@ test('formatting and JSON conversion consume the current header without losing t
     assert.equal(JSON.parse(json), 'hello')
 })
 
+const format_text = (source, options = { tabSize: 4, insertSpaces: true }) => {
+    const document = TextDocument.create('file:///comments.lna', 'liana', 1, source)
+    const edits = create_on_document_formatting({
+        documents: { get: () => document },
+        connection: { console: { log: assert.fail }, window: { showInformationMessage: assert.fail } },
+    })({ textDocument: { uri: document.uri }, options })
+    return TextDocument.applyEdits(document, edits)
+}
+
+test('formatting keeps comments at every token position', () => {
+    const source = `/*c1*/ ! /*c2*/ "hdr" /*c3*/
+/*c4*/ ( /*c5*/
+    'a' /*c6*/ : /*c7*/ "x" /*c8*/
+    'b' /*c9*/ : /*c10*/ | /*c11*/ 'opt' /*c12*/ ~ /*c13*/
+    'c': < /*c14*/ "p" /*c15*/ > /*c16*/
+    'd': [ /*c17*/ "i" /*c18*/ ] /*c19*/
+    'e': { /*c20*/ 'k' /*c21*/ : /*c22*/ * /*c23*/ "v" /*c24*/ } /*c25*/
+    'f': _ /*c26*/
+    'g': # /*c27*/
+    'h': @ /*c28*/ "p.lna" /*c29*/
+    'i' /*c30*/
+    'j': | /*c31*/ # /*c32*/
+) /*c33*/
+// c34
+`
+    const formatted = format_text(source)
+    for (let i = 1; i <= 34; i++) {
+        assert.match(formatted, new RegExp(`c${i}\\b`), `comment c${i} was lost:\n${formatted}`)
+    }
+    assert.equal(format_text(formatted), formatted)
+})
+
+test('formatting keeps line comments from swallowing the tokens after them', () => {
+    const source = `// file header
+/* block
+   header */
+
+(
+    // before a
+    'a': "x" // after a
+    // between
+    'b': { // after brace
+    }
+    'c': [
+        // only comment
+    ]
+    'd': | 'o' // after option
+        "v"
+)
+// end`
+    const expected = `// file header
+/* block
+   header */
+(
+    // before a
+    \`a\`: "x" // after a
+    // between
+    \`b\`: { // after brace
+    }
+    \`c\`: [
+        // only comment
+    ]
+    \`d\`: | \`o\` // after option
+        "v"
+)
+// end`
+    assert.equal(format_text(source), expected)
+    assert.equal(format_text(expected), expected)
+    assert.equal(format_text(source, { tabSize: 4, insertSpaces: false }).replaceAll('\t', '    '), expected)
+})
+
 test('optional fallback branches must resolve to the exact same structural target', () => {
     const selection = "(`start`: | `optional fallback` (`selection`: | `parameter` 'input' `fallback`: (`start`: | `parameter` 'fallback' `tail`: (`path`: []))) `tail`: (`path`: []))"
     const source = specification(dictionary('', 'Nothing'))
