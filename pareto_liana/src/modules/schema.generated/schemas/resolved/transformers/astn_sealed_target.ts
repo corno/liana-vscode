@@ -67,9 +67,9 @@ export const Node: declarations.Node = ($) => ['state', p_.from.state($).decide(
                     'delimiter': ['quote', null],
                     'value': $,
                 }]),
-                "type": p_.change_context($['type'], ($) => ['reference', {
+                "type": p_.change_context($['type'], ($) => p_.change_context($['value'], ($) => ['reference', {
                     'value': $['l id'],
-                }]),
+                }])),
             })]],
         }))
         case 'directory': return p_.option($, ($): s_target.Value.state => ({
@@ -328,6 +328,23 @@ export namespace namespaces {
         )]
         
         export const Type: declarations.Type = ($) => ['group', ['verbose', p_.literal.dictionary({
+            "visibility": p_.change_context($['visibility'], ($) => ['state', p_.from.state($).decide(($): s_target.Value.state => {
+                switch ($[0]) {
+                    case 'private': return p_.option($, ($): s_target.Value.state => ({
+                        'option': 'private',
+                        'value': ['nothing', null],
+                    }))
+                    case 'private single use': return p_.option($, ($): s_target.Value.state => ({
+                        'option': 'private single use',
+                        'value': ['nothing', null],
+                    }))
+                    case 'public': return p_.option($, ($): s_target.Value.state => ({
+                        'option': 'public',
+                        'value': ['nothing', null],
+                    }))
+                    default: return p_.exhaustive($[0])
+                }
+            })]),
             "root value": p_.change_context($['root value'], ($) => __operations.namespaces.structure.Value(
                 $,
             )),
@@ -388,9 +405,9 @@ export namespace namespaces {
                                         "namespace": p_.change_context($['namespace'], ($) => ['reference', {
                                             'value': $['l id'],
                                         }]),
-                                        "type": p_.change_context($['type'], ($) => ['reference', {
+                                        "type": p_.change_context($['type'], ($) => p_.change_context($['value'], ($) => ['reference', {
                                             'value': $['l id'],
-                                        }]),
+                                        }])),
                                     })]],
                                 }))
                                 case 'local cyclic': return p_.option($, ($): s_target.Value.state => ({
@@ -405,9 +422,9 @@ export namespace namespaces {
                                         "namespace": p_.change_context($['namespace'], ($) => ['reference', {
                                             'value': $['l id'],
                                         }]),
-                                        "type": p_.change_context($['type'], ($) => ['reference', {
+                                        "type": p_.change_context($['type'], ($) => p_.change_context($['value'], ($) => ['reference', {
                                             'value': $['l id'],
-                                        }]),
+                                        }])),
                                     })]],
                                 }))
                                 default: return p_.exhaustive($[0])
@@ -1477,9 +1494,9 @@ export namespace namespaces {
                                         "namespace": p_.change_context($['namespace'], ($) => ['reference', {
                                             'value': $['l id'],
                                         }]),
-                                        "resolver": p_.change_context($['resolver'], ($) => ['reference', {
+                                        "resolver": p_.change_context($['resolver'], ($) => p_.change_context($['value'], ($) => ['reference', {
                                             'value': $['l id'],
-                                        }]),
+                                        }])),
                                     })]],
                                 }))
                                 case 'sibling namespace': return p_.option($, ($): s_target.Value.state => ({
@@ -1488,9 +1505,9 @@ export namespace namespaces {
                                         "namespace": p_.change_context($['namespace'], ($) => ['reference', {
                                             'value': $['l id'],
                                         }]),
-                                        "resolver": p_.change_context($['resolver'], ($) => ['reference', {
+                                        "resolver": p_.change_context($['resolver'], ($) => p_.change_context($['value'], ($) => ['reference', {
                                             'value': $['l id'],
-                                        }]),
+                                        }])),
                                     })]]),
                                 }))
                                 default: return p_.exhaustive($[0])

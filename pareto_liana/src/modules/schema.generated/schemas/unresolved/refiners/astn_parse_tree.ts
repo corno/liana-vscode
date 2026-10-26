@@ -692,10 +692,42 @@ export namespace namespaces {
             ($) => abort(['value', $]),
             {
                 'expected properties': p_.literal.dictionary({
+                    "visibility": null,
                     "root value": null,
                 }),
             },
         ), ($) => ({
+            'visibility': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                $,
+                ($) => abort(['value', $]),
+                {
+                    'id': 'visibility',
+                },
+            ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
+                $,
+                ($) => abort(['value', $]),
+            ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.structure.types.Type.visibility => {
+                switch ($text) {
+                    case "private": return p_.change_context($['value'], ($) => ['private', r_unmarshalled_from_parse_tree.Nothing(
+                        $,
+                        ($) => abort(['value', $]),
+                    )])
+                    case "private single use": return p_.change_context($['value'], ($) => ['private single use', r_unmarshalled_from_parse_tree.Nothing(
+                        $,
+                        ($) => abort(['value', $]),
+                    )])
+                    case "public": return p_.change_context($['value'], ($) => ['public', r_unmarshalled_from_parse_tree.Nothing(
+                        $,
+                        ($) => abort(['value', $]),
+                    )])
+                    default: return abort(
+                        ['value', ['liana', {
+                            'type': ['state', ['unknown option', $['option']['token']['value']]],
+                            'range': $['option']['range'],
+                        }]],
+                    )
+                }
+            }))),
             'root value': p_.change_context(r_unmarshalled_from_parse_tree.Property(
                 $,
                 ($) => abort(['value', $]),

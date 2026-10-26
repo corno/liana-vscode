@@ -328,6 +328,23 @@ export namespace namespaces {
         )]
         
         export const Type: declarations.Type = ($) => ['group', ['verbose', p_.literal.dictionary({
+            "visibility": p_.change_context($['visibility'], ($) => ['state', p_.from.state($).decide(($): s_target.Value.state => {
+                switch ($[0]) {
+                    case 'private': return p_.option($, ($): s_target.Value.state => ({
+                        'option': 'private',
+                        'value': ['nothing', null],
+                    }))
+                    case 'private single use': return p_.option($, ($): s_target.Value.state => ({
+                        'option': 'private single use',
+                        'value': ['nothing', null],
+                    }))
+                    case 'public': return p_.option($, ($): s_target.Value.state => ({
+                        'option': 'public',
+                        'value': ['nothing', null],
+                    }))
+                    default: return p_.exhaustive($[0])
+                }
+            })]),
             "root value": p_.change_context($['root value'], ($) => __operations.namespaces.structure.Value(
                 $,
             )),

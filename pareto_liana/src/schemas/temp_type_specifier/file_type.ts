@@ -51,7 +51,7 @@ export const file_directory = (specification: schema.types.Type_Specification, d
     return directory
 }
 
-export const file_type = (specification: schema.types.Type_Specification, path: File_Path, abort: Abort): schema.types.Node.file.type_ => {
+export const file_type = (specification: schema.types.Type_Specification, path: File_Path, abort: Abort): schema.types.Node.file.type_.value => {
     const directory = file_directory(specification, path.directories, abort)
     valid_segment(path['file name'], abort)
     const file_name = path['file name']
@@ -65,5 +65,5 @@ export const file_type = (specification: schema.types.Type_Specification, path: 
         )
     if (file[0] !== 'file') return abort(`Expected file node: ${file_name}`)
     if (!matches_extension(file_name, file[1]['file extension'])) return abort(`File extension mismatch: ${file_name}`)
-    return file[1].type
+    return file[1].type.value
 }

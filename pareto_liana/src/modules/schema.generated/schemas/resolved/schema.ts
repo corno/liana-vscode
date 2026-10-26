@@ -42,14 +42,31 @@ export namespace types {
             
             export namespace type_ {
                 
-                export type l_entry = __schema.namespaces.structure.types.Types.D
+                export namespace constraints {
+                    
+                    export type public_ = __schema.namespaces.structure.types.Type.visibility.public_
+                }
                 
-                export type l_id = string
+                export type constraints = {
+                    readonly 'public': constraints.public_
+                }
+                
+                export namespace value {
+                    
+                    export type l_entry = __schema.namespaces.structure.types.Types.D
+                    
+                    export type l_id = string
+                }
+                
+                export type value = {
+                    readonly 'l entry': value.l_entry
+                    readonly 'l id': value.l_id
+                }
             }
             
             export type type_ = {
-                readonly 'l entry': type_.l_entry
-                readonly 'l id': type_.l_id
+                readonly 'constraints': type_.constraints
+                readonly 'value': type_.value
             }
         }
         
@@ -274,10 +291,25 @@ export namespace namespaces {
             
             export namespace Type {
                 
+                export namespace visibility {
+                    
+                    export type private_ = null
+                    
+                    export type private_single_use = null
+                    
+                    export type public_ = null
+                }
+                
+                export type visibility = 
+                    | readonly ['private', visibility.private_]
+                    | readonly ['private single use', visibility.private_single_use]
+                    | readonly ['public', visibility.public_]
+                
                 export type root_value = __schema.namespaces.structure.types.Value
             }
             
             export type Type = {
+                readonly 'visibility': Type.visibility
                 readonly 'root value': Type.root_value
             }
             
@@ -418,14 +450,31 @@ export namespace namespaces {
                                 
                                 export namespace type_ {
                                     
-                                    export type l_entry = __schema.namespaces.structure.types.Types.D
+                                    export namespace constraints {
+                                        
+                                        export type public_ = __schema.namespaces.structure.types.Type.visibility.public_
+                                    }
                                     
-                                    export type l_id = string
+                                    export type constraints = {
+                                        readonly 'public': constraints.public_
+                                    }
+                                    
+                                    export namespace value {
+                                        
+                                        export type l_entry = __schema.namespaces.structure.types.Types.D
+                                        
+                                        export type l_id = string
+                                    }
+                                    
+                                    export type value = {
+                                        readonly 'l entry': value.l_entry
+                                        readonly 'l id': value.l_id
+                                    }
                                 }
                                 
                                 export type type_ = {
-                                    readonly 'l entry': type_.l_entry
-                                    readonly 'l id': type_.l_id
+                                    readonly 'constraints': type_.constraints
+                                    readonly 'value': type_.value
                                 }
                             }
                             
@@ -464,14 +513,31 @@ export namespace namespaces {
                                 
                                 export namespace type_ {
                                     
-                                    export type l_entry = __schema.namespaces.structure.types.Types.D
+                                    export namespace constraints {
+                                        
+                                        export type public_ = __schema.namespaces.structure.types.Type.visibility.public_
+                                    }
                                     
-                                    export type l_id = string
+                                    export type constraints = {
+                                        readonly 'public': constraints.public_
+                                    }
+                                    
+                                    export namespace value {
+                                        
+                                        export type l_entry = __schema.namespaces.structure.types.Types.D
+                                        
+                                        export type l_id = string
+                                    }
+                                    
+                                    export type value = {
+                                        readonly 'l entry': value.l_entry
+                                        readonly 'l id': value.l_id
+                                    }
                                 }
                                 
                                 export type type_ = {
-                                    readonly 'l entry': type_.l_entry
-                                    readonly 'l id': type_.l_id
+                                    readonly 'constraints': type_.constraints
+                                    readonly 'value': type_.value
                                 }
                             }
                             
@@ -3095,14 +3161,31 @@ export namespace namespaces {
                                     
                                     export namespace resolver {
                                         
-                                        export type l_entry = __schema.namespaces.declarations.types.Declarations.D
+                                        export namespace constraints {
+                                            
+                                            export type public_ = __schema.namespaces.structure.types.Type.visibility.public_
+                                        }
                                         
-                                        export type l_id = string
+                                        export type constraints = {
+                                            readonly 'public': constraints.public_
+                                        }
+                                        
+                                        export namespace value {
+                                            
+                                            export type l_entry = __schema.namespaces.declarations.types.Declarations.D
+                                            
+                                            export type l_id = string
+                                        }
+                                        
+                                        export type value = {
+                                            readonly 'l entry': value.l_entry
+                                            readonly 'l id': value.l_id
+                                        }
                                     }
                                     
                                     export type resolver = {
-                                        readonly 'l entry': resolver.l_entry
-                                        readonly 'l id': resolver.l_id
+                                        readonly 'constraints': resolver.constraints
+                                        readonly 'value': resolver.value
                                     }
                                 }
                                 
@@ -3138,14 +3221,31 @@ export namespace namespaces {
                                         
                                         export namespace resolver {
                                             
-                                            export type l_entry = __schema.namespaces.declarations.types.Declarations.D
+                                            export namespace constraints {
+                                                
+                                                export type public_ = __schema.namespaces.structure.types.Type.visibility.public_
+                                            }
                                             
-                                            export type l_id = string
+                                            export type constraints = {
+                                                readonly 'public': constraints.public_
+                                            }
+                                            
+                                            export namespace value {
+                                                
+                                                export type l_entry = __schema.namespaces.declarations.types.Declarations.D
+                                                
+                                                export type l_id = string
+                                            }
+                                            
+                                            export type value = {
+                                                readonly 'l entry': value.l_entry
+                                                readonly 'l id': value.l_id
+                                            }
                                         }
                                         
                                         export type resolver = {
-                                            readonly 'l entry': resolver.l_entry
-                                            readonly 'l id': resolver.l_id
+                                            readonly 'constraints': resolver.constraints
+                                            readonly 'value': resolver.value
                                         }
                                     }
                                     

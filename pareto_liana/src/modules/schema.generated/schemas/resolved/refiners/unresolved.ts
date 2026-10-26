@@ -60,7 +60,12 @@ export const Node: declarations.Node = ($, abort) => p_.from.state($).decide(($)
     switch ($[0]) {
         case 'file': return p_.option($, ($): s_target.types.Node => p_.change_context($, ($) => ['file', {
             'file extension': p_.change_context($['file extension'], ($) => $),
-            'type': p_.change_context($['type'], ($) => p_implement_me("SELECTED REF")),
+            'type': p_.change_context($['type'], ($) => ({
+                'constraints': {
+                    'public': p_implement_me("VALUE CONSTRAINT: public"),
+                },
+                'value': p_implement_me("SELECTED REF"),
+            })),
         }]))
         case 'directory': return p_.option($, ($): s_target.types.Node => p_.change_context($, ($) => ['directory', __operations.Directory(
             $,
@@ -299,6 +304,14 @@ export namespace namespaces {
         )
         
         export const Type: declarations.Type = ($, abort) => ({
+            'visibility': p_.change_context($['visibility'], ($) => p_.from.state($).decide(($): s_target.namespaces.structure.types.Type.visibility => {
+                switch ($[0]) {
+                    case 'private': return p_.option($, ($): s_target.namespaces.structure.types.Type.visibility => p_.change_context($, ($) => ['private', null]))
+                    case 'private single use': return p_.option($, ($): s_target.namespaces.structure.types.Type.visibility => p_.change_context($, ($) => ['private single use', null]))
+                    case 'public': return p_.option($, ($): s_target.namespaces.structure.types.Type.visibility => p_.change_context($, ($) => ['public', null]))
+                    default: return p_.exhaustive($[0])
+                }
+            })),
             'root value': p_.change_context($['root value'], ($) => __operations.namespaces.structure.Value(
                 $,
                 abort,
@@ -334,12 +347,22 @@ export namespace namespaces {
                                 case 'local': return p_.option($, ($): s_target.namespaces.structure.types.Value.component.type_.value => p_.change_context($, ($) => ['local', p_implement_me("SELECTED REF")]))
                                 case 'child namespace': return p_.option($, ($): s_target.namespaces.structure.types.Value.component.type_.value => p_.change_context($, ($) => ['child namespace', {
                                     'namespace': p_.change_context($['namespace'], ($) => p_implement_me("SELECTED REF")),
-                                    'type': p_.change_context($['type'], ($) => p_implement_me("SELECTED REF")),
+                                    'type': p_.change_context($['type'], ($) => ({
+                                        'constraints': {
+                                            'public': p_implement_me("VALUE CONSTRAINT: public"),
+                                        },
+                                        'value': p_implement_me("SELECTED REF"),
+                                    })),
                                 }]))
                                 case 'local cyclic': return p_.option($, ($): s_target.namespaces.structure.types.Value.component.type_.value => p_.change_context($, ($) => ['local cyclic', p_implement_me("SELECTED REF")]))
                                 case 'sibling namespace': return p_.option($, ($): s_target.namespaces.structure.types.Value.component.type_.value => p_.change_context($, ($) => ['sibling namespace', {
                                     'namespace': p_.change_context($['namespace'], ($) => p_implement_me("SELECTED REF")),
-                                    'type': p_.change_context($['type'], ($) => p_implement_me("SELECTED REF")),
+                                    'type': p_.change_context($['type'], ($) => ({
+                                        'constraints': {
+                                            'public': p_implement_me("VALUE CONSTRAINT: public"),
+                                        },
+                                        'value': p_implement_me("SELECTED REF"),
+                                    })),
                                 }]))
                                 default: return p_.exhaustive($[0])
                             }
@@ -1492,7 +1515,12 @@ export namespace namespaces {
                                     case 'local': return p_.option($, ($): s_target.namespaces.resolver.types.Value.component.value.location.value => p_.change_context($, ($) => ['local', p_implement_me("SELECTED REF")]))
                                     case 'child namespace': return p_.option($, ($): s_target.namespaces.resolver.types.Value.component.value.location.value => p_.change_context($, ($) => ['child namespace', {
                                         'namespace': p_.change_context($['namespace'], ($) => p_implement_me("SELECTED REF")),
-                                        'resolver': p_.change_context($['resolver'], ($) => p_implement_me("SELECTED REF")),
+                                        'resolver': p_.change_context($['resolver'], ($) => ({
+                                            'constraints': {
+                                                'public': p_implement_me("VALUE CONSTRAINT: public"),
+                                            },
+                                            'value': p_implement_me("SELECTED REF"),
+                                        })),
                                     }]))
                                     case 'sibling namespace': return p_.option($, ($): s_target.namespaces.resolver.types.Value.component.value.location.value => p_.change_context($, ($) => ['sibling namespace', {
                                         'constraints': {
@@ -1500,7 +1528,12 @@ export namespace namespaces {
                                         },
                                         'value': {
                                             'namespace': p_.change_context($['namespace'], ($) => p_implement_me("SELECTED REF")),
-                                            'resolver': p_.change_context($['resolver'], ($) => p_implement_me("SELECTED REF")),
+                                            'resolver': p_.change_context($['resolver'], ($) => ({
+                                                'constraints': {
+                                                    'public': p_implement_me("VALUE CONSTRAINT: public"),
+                                                },
+                                                'value': p_implement_me("SELECTED REF"),
+                                            })),
                                         },
                                     }]))
                                     default: return p_.exhaustive($[0])

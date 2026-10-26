@@ -264,10 +264,25 @@ export namespace namespaces {
             
             export namespace Type {
                 
+                export namespace visibility {
+                    
+                    export type private_ = null
+                    
+                    export type private_single_use = null
+                    
+                    export type public_ = null
+                }
+                
+                export type visibility = 
+                    | readonly ['private', visibility.private_]
+                    | readonly ['private single use', visibility.private_single_use]
+                    | readonly ['public', visibility.public_]
+                
                 export type root_value = __schema.namespaces.structure.types.Value
             }
             
             export type Type = {
+                readonly 'visibility': Type.visibility
                 readonly 'root value': Type.root_value
             }
             

@@ -58,6 +58,13 @@ const Component_Type = ($: target.namespaces.structure.types.Value.component): t
     return $.type.result
 }
 
+const require_public = (type: target.namespaces.structure.types.Type, abort: Abort): null => {
+    if (type.visibility[0] !== 'public') return abort({
+        type: ['constraint', ['state', { expected: 'public', found: type.visibility[0] }]],
+    })
+    return type.visibility[1]
+}
+
 const Type_Reference = ($: source.Type_Reference, types: Type_Environment, abort: Abort): target.namespaces.structure.types.Type_Reference => {
     switch ($.location[0]) {
         case 'local': {
@@ -229,14 +236,17 @@ const Value = ($: source.Value, types: Types, abort: Abort): target.namespaces.s
                     const namespace = selected[0] === 'child namespace'
                         ? Entry(types.children, selected[1].namespace, abort)
                         : Lookup(types.siblings, selected[1].namespace, abort)
-                    const selection = { namespace, type: Entry(namespace['l entry'].types, selected[1].type, abort) }
+                    const entry = Entry(namespace['l entry'].types, selected[1].type, abort)
+                    const selection = { namespace, type: {
+                        constraints: { public: require_public(entry['l entry'], abort) }, value: entry,
+                    } }
                     type = selected[0] === 'child namespace' ? ['child namespace', selection] : ['sibling namespace', selection]
                     break
                 }
                 default: return p.exhaustive(selected[0])
             }
             return ['component', { type: { value: type, get result() {
-                return type[0] === 'child namespace' || type[0] === 'sibling namespace' ? type[1].type['l entry']
+                return type[0] === 'child namespace' || type[0] === 'sibling namespace' ? type[1].type.value['l entry']
                     : type[0] === 'local' ? type[1]['l entry'] : type[1]['l entry'].get_circular_dependent()
             } }, constraints: Constraints($[1].constraints, types, abort) }]
         }
@@ -297,6 +307,7 @@ const Structure = ($: source.Structure, siblings: Types['siblings'], abort: Abor
     const namespaces = p.from.dictionary($.namespaces).resolve(($, id, siblings): target.namespaces.structure.types.Structure => Structure($, siblings, abort))
     const basic = $['basic types']
     const types = p.from.dictionary($.types).resolve(($, id, acyclic, cyclic): target.namespaces.structure.types.Type => ({
+        visibility: $.visibility,
         'root value': Value($['root value'], { basic: p.literal.set(basic), acyclic, cyclic, children: namespaces, siblings }, abort),
     }))
     return { namespaces, 'basic types': basic, types }
@@ -359,7 +370,12 @@ const Directory = ($: source.Directory, types: target.namespaces.structure.types
 
 const File_Tree_Node = ($: source.Node, types: target.namespaces.structure.types.Types, abort: Abort): target.types.Node => {
     switch ($[0]) {
-        case 'file': return ['file', { 'file extension': $[1]['file extension'], type: Entry(types, $[1].type, abort) }]
+        case 'file': {
+            const entry = Entry(types, $[1].type, abort)
+            return ['file', { 'file extension': $[1]['file extension'], type: {
+                constraints: { public: require_public(entry['l entry'], abort) }, value: entry,
+            } }]
+        }
         case 'directory': return ['directory', Directory($[1], types, abort)]
         default: return p.exhaustive($[0])
     }
@@ -475,7 +491,7 @@ const Check_Benchmark_Links = (benchmark_links: Context['benchmark_links'], abor
             const owner = check.owner
             const name = owner[0] === 'component'
                 ? owner[1].type.value[0] === 'child namespace' || owner[1].type.value[0] === 'sibling namespace'
-                    ? owner[1].type.value[1].type['l id'] : owner[1].type.value[1]['l id']
+                    ? owner[1].type.value[1].type.value['l id'] : owner[1].type.value[1]['l id']
                 : owner[0]
             return abort({ type: ['constraint', ['state', { expected: 'benchmarked dictionary entry', found: name }]] })
         }
@@ -890,9 +906,12 @@ const Resolver = ($: source.Resolver_Value, definition: target.namespaces.struct
                     ? Required(context.sibling_declarations, abort) : context.children
                 const namespace = Entry(namespaces, selected[1].namespace, abort)
                 const resolver = Entry(namespace['l entry'].value.types, selected[1].resolver, abort)
+                const public_resolver = { constraints: {
+                    public: require_public(resolver['l entry'].benchmark, abort),
+                }, value: resolver }
                 location = selected[0] === 'child namespace'
-                    ? ['child namespace', { namespace, resolver }]
-                    : ['sibling namespace', { constraints: { declarations: namespaces }, value: { namespace, resolver } }]
+                    ? ['child namespace', { namespace, resolver: public_resolver }]
+                    : ['sibling namespace', { constraints: { declarations: namespaces }, value: { namespace, resolver: public_resolver } }]
                 declaration = resolver['l entry'].value
                 signature = declaration.signature.result
                 selected_type = resolver['l entry'].benchmark

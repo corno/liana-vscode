@@ -122,7 +122,7 @@ trees, and a file tree selecting the root type for each document:
         `structure`: (
             `namespaces`: {}
             `basic types`: {}
-            `types`: { 'Root': (`root value`: | `nothing` ~) }
+            `types`: { 'Root': (`visibility`: | `public` ~ `root value`: | `nothing` ~) }
         )
         `resolver`: (
             `declarations`: (
@@ -176,6 +176,17 @@ there is no sibling namespace at the root. Component resolvers select matching
 declarations in the chosen namespace, keeping same-named types isolated.
 The old `internal`, `internal cyclic`, `child`, and namespace-location `sibling`
 tags are not supported. Property selections still use `sibling`.
+
+Every structural type requires `visibility`: `public`, `private`, or
+`private single use`. File roots and cross-namespace component targets must be
+public, as must the structural benchmark of a selected cross-namespace component
+resolver declaration. Both private states allow local and local-cyclic
+components. Type references, including resolver signature and result references,
+may select private types across namespaces. `private single use` marks an
+intentional reuse exception; the extension does not enforce usage counts.
+Schemas without explicit visibility must be migrated; the older format is not
+supported. The bundled authoring context includes the latest inlined
+self-description and offers all three visibility states in completion.
 
 Structural list, optional and state values declare their result targets.
 Resolvers provide the corresponding result selections: a list supplies `initial`

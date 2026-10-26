@@ -19,7 +19,10 @@ export const structure = (
 
 export const basic_types = (types: sh.Raw_Or_Normal_Dictionary<s_target.namespaces.structure.types.Basic_Types.D>): s_target.namespaces.structure.types.Basic_Types => sh.dictionary(types)
 export const types = (types: sh.Raw_Or_Normal_Dictionary<s_target.namespaces.structure.types.Types.D>): s_target.namespaces.structure.types.Types => sh.dictionary(types)
-export const type_ = (value: s_target.namespaces.structure.types.Value): s_target.namespaces.structure.types.Type => ({ 'root value': value })
+export const type_ = (
+    value: s_target.namespaces.structure.types.Value,
+    visibility: s_target.namespaces.structure.types.Type.visibility,
+): s_target.namespaces.structure.types.Type => ({ visibility, 'root value': value })
 export const token = (
     type: 'double quoted' | 'undelimited',
     regular_expression: s_target.namespaces.structure.types.Regular_Expression | null = null,

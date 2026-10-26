@@ -52,7 +52,7 @@ const signature_lookup = (type, mode, presence = 'required') =>
 const basic = (type, resolver = '| `simple` ~', expression = '_') => specification(`| \`simple\` 'Basic'`, resolver, `{ 'Basic': (\`type\`: ${type} \`regular expression\`: ${expression} \`hyperlink\`: _) }`)
 const specification = (value = '| `nothing` ~', resolver = '| `nothing` ~', basicTypes = '{}', root = 'Root') =>
     `(\`schema\`: (\`structure\`: (\`namespaces\`: {} \`basic types\`: ${basicTypes}
-        \`types\`: { 'Root': (\`root value\`: ${value}) }
+        \`types\`: { 'Root': (\`visibility\`: | \`public\` ~ \`root value\`: ${value}) }
         ) \`resolver\`: (\`declarations\`: (\`namespaces\`: {} \`types\`: { 'Root': ${signature()} }) \`implementations\`: (\`namespaces\`: {} \`types\`: { 'Root': (\`root value resolver\`: ${resolver}) })
     )) \`directory\`: | \`dictionary\` (\`node\`: | \`file\` (\`file extension\`: "" \`type\`: '${root}')))`
 const selectedType = specification => file_type(specification, { directories: p.literal.list([]), 'file name': 'document.liana.lna' }, fail)
@@ -218,7 +218,7 @@ test('the bundled template exposes the namespace-aware schema and root type', ()
     const loaded = parse(readFileSync(new URL('../liana_authoring_environment_template/.liana/schema.slna', import.meta.url), 'utf8'))
     assert.equal(selectedType(loaded[1])['l id'], 'Type Specification')
     const properties = selectedType(loaded[1])['l entry']['root value'][1]
-    assert.equal(entry(properties, 'schema').value[0], 'component')
+    assert.equal(entry(properties, 'schema').value[0], 'group')
     assert.equal(entry(properties, 'directory').value[0], 'component')
     assert.deepEqual(properties.__get_raw().map(([id]) => id), ['schema', 'directory'])
     assert.equal(entry(loaded[1].schema.structure['basic types'], 'text').type[0], 'double quoted')
@@ -236,6 +236,32 @@ test('latest references and resolvers round-trip without old wrapper fields', ()
     assert.doesNotMatch(serialized, /`(?:schema path|complexity|globals|schema imports|resolver imports|type resolver)`:/)
     assert.equal(selectedType(parse(serialized)[1])['l id'], 'Type Specification')
 })
+
+test('the bundled template completes all three visibility states', async () => {
+    const schema = readFileSync(new URL('../liana_authoring_environment_template/.liana/schema.slna', import.meta.url), 'utf8')
+    const source = specification().replace('| `public` ~', '| #')
+    const result = await complete(source, schema, source.indexOf('#'))
+    assert.deepEqual(result.items.map(item => item.label).sort(), ['private', 'private single use', 'public'])
+})
+
+test('visibility is required and private file roots are rejected', () => {
+    for (const visibility of ['private', 'private single use', 'protected']) {
+        assert.throws(() => parse(specification().replace('| `public` ~', `| \`${visibility}\` ~`)))
+    }
+    assert.throws(() => parse(specification().replace('`visibility`: | `public` ~ ', '')))
+})
+
+for (const visibility of ['private', 'private single use']) {
+    for (const sibling of [false, true]) {
+        test(`${visibility} ${sibling ? 'sibling' : 'child'} component targets are rejected`, () => {
+            const schema = namespaced_schema(sibling).replace('| `public` ~', `| \`${visibility}\` ~`)
+            assert.throws(() => parse(schema), error => {
+                assert.match(JSON.stringify(error), /"expected":"public"/)
+                return true
+            })
+        })
+    }
+}
 
 test('double quoted tokens complete with quotes and seal punctuation safely', () => {
     const schema = basic('| `double quoted` ~')
@@ -278,9 +304,9 @@ test('nested components pass through whole categories or explicitly bind every t
             const schema = `(
                 \`schema\`: (\`structure\`: (\`namespaces\`: {} \`basic types\`: {}
                     \`types\`: {
-                        'Root': (\`root value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`local\` 'Middle'))
-                        'Middle': (\`root value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`local\` 'Leaf'))
-                        'Leaf': (\`root value\`: | \`nothing\` ~)
+                        'Root': (\`visibility\`: | \`public\` ~ \`root value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`local\` 'Middle'))
+                        'Middle': (\`visibility\`: | \`public\` ~ \`root value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`local\` 'Leaf'))
+                        'Leaf': (\`visibility\`: | \`public\` ~ \`root value\`: | \`nothing\` ~)
                     }
                     ) \`resolver\`: (\`declarations\`: (\`namespaces\`: {} \`types\`: {
                         'Root': ${signature(`{ 'child namespaces': ${parameter('optional')} 'basic types': ${parameter('optional')} 'inherited': ${parameter('required')} }`)}
@@ -370,8 +396,8 @@ test('selected references report missing dictionary entries at the identifier to
 test('acyclic references reject cycles while cyclic references allow mutual dependencies', async () => {
     for (const mode of ['local', 'local cyclic']) {
         const source = specification(typeReference('Other', mode)).replace(
-            "'Root': (`root value`: ",
-            `'Other': (\`root value\`: ${typeReference('Root', mode)}) 'Root': (\`root value\`: `,
+            "'Root': (`visibility`: | `public` ~ `root value`: ",
+            `'Other': (\`visibility\`: | \`public\` ~ \`root value\`: ${typeReference('Root', mode)}) 'Root': (\`visibility\`: | \`public\` ~ \`root value\`: `,
         )
         const diagnostics = resolveDiagnostics.Document(await loadWithSchema(source, template())).__get_raw()
             .filter(d => d.message.startsWith('Reference \'') || d.message === 'Cyclic reference dependency.')
@@ -398,15 +424,15 @@ const dependentReferenceSchema = () => {
     ).join('')
     return `(\`schema\`: (\`structure\`: (\`namespaces\`: {} \`basic types\`: {}
         \`types\`: {
-            'Root': (\`root value\`: | \`group\` {
+            'Root': (\`visibility\`: | \`public\` ~ \`root value\`: | \`group\` {
                 'member': (\`description\`: _ \`value\`: ${reference('Members')})
                 'chosen': (\`description\`: _ \`value\`: ${reference('Nodes')})
                 'entries': (\`description\`: _ \`value\`: ${component('Nodes')})
             })
-            'Nodes': (\`root value\`: | \`dictionary\` (\`value\`: | \`group\` {
+            'Nodes': (\`visibility\`: | \`public\` ~ \`root value\`: | \`dictionary\` (\`value\`: | \`group\` {
                 'members': (\`description\`: _ \`value\`: ${component('Members')})
             }))
-            'Members': (\`root value\`: | \`dictionary\` (\`value\`: | \`nothing\` ~))
+            'Members': (\`visibility\`: | \`public\` ~ \`root value\`: | \`dictionary\` (\`value\`: | \`nothing\` ~))
         }
         ) \`resolver\`: (\`declarations\`: (\`namespaces\`: {} \`types\`: {${declarations}}) \`implementations\`: (\`namespaces\`: {} \`types\`: {
             'Root': (\`root value resolver\`: | \`group\` {
@@ -473,8 +499,8 @@ test('definition navigation supports forwarded acyclic and cyclic lookups, inclu
             "'Root': (`signature`: | `local` (`values`: {} `lookups`: {})) }",
             "'Root': (`signature`: | `local` (`values`: {} `lookups`: {})) 'Other': (`signature`: | `local` (`values`: {} `lookups`: {})) }",
         ).replace(
-            `\`types\`: { 'Root': (\`root value\`: ${root}) }`,
-            `\`types\`: { 'Root': (\`root value\`: ${root}) 'Other': (\`root value\`: | \`nothing\` ~) }`,
+            `\`types\`: { 'Root': (\`visibility\`: | \`public\` ~ \`root value\`: ${root}) }`,
+            `\`types\`: { 'Root': (\`visibility\`: | \`public\` ~ \`root value\`: ${root}) 'Other': (\`visibility\`: | \`public\` ~ \`root value\`: | \`nothing\` ~) }`,
         )
         const links = await definitionAt(source, template(), source.indexOf("'Other'") + 2)
         // The declaration dictionary is a separate lookup from the types dictionary.
@@ -605,8 +631,8 @@ test('references and highlights follow cyclic and acyclic targets without traver
     for (const mode of ['local cyclic', 'local']) {
         const root = typeReference(mode === 'local cyclic' ? 'Root' : 'Other', mode)
         const source = mode === 'local cyclic' ? specification(root) : specification(root).replace(
-            `\`types\`: { 'Root': (\`root value\`: ${root}) }`,
-            `\`types\`: { 'Root': (\`root value\`: ${root}) 'Other': (\`root value\`: | \`nothing\` ~) }`,
+            `\`types\`: { 'Root': (\`visibility\`: | \`public\` ~ \`root value\`: ${root}) }`,
+            `\`types\`: { 'Root': (\`visibility\`: | \`public\` ~ \`root value\`: ${root}) 'Other': (\`visibility\`: | \`public\` ~ \`root value\`: | \`nothing\` ~) }`,
         )
         const name = mode === 'local cyclic' ? "'Root'" : "'Other'"
         const offset = source.indexOf(name, source.indexOf(`\`${mode}\``))
@@ -623,7 +649,7 @@ test('rename refuses partial edits to mutually cyclic symbols with implicit benc
     const schema = template()
     const source = specification(typeReference('Other', 'local')).replace(
         '`types`: {',
-        `\`types\`: { 'Other': (\`root value\`: ${typeReference('Root', 'local cyclic')})`,
+        `\`types\`: { 'Other': (\`visibility\`: | \`public\` ~ \`root value\`: ${typeReference('Root', 'local cyclic')})`,
     )
     const refs = await referencesAt(source, schema, source.indexOf("'Other':") + 2)
     assert.equal(refs.length, 1)
@@ -768,8 +794,8 @@ const argumentBindingSchema = args => {
     const parameter = signature_value('Leaf', 'optional')
     return `(\`schema\`: (\`structure\`: (\`namespaces\`: {} \`basic types\`: {}
         \`types\`: {
-            'Root': (\`root value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`local\` 'Leaf'))
-            'Leaf': (\`root value\`: | \`nothing\` ~)
+            'Root': (\`visibility\`: | \`public\` ~ \`root value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`local\` 'Leaf'))
+            'Leaf': (\`visibility\`: | \`public\` ~ \`root value\`: | \`nothing\` ~)
         }
         ) \`resolver\`: (\`declarations\`: (\`namespaces\`: {} \`types\`: {
             'Root': ${signature(`{ 'input': ${parameter} }`)}
@@ -808,7 +834,7 @@ test('explicit type dictionaries cannot omit even optional callee arguments', as
 
 test('runtime type initialization inherits only at whole/category boundaries, never per explicit entry', () => {
     const schema = argumentBindingSchema('* (`types`: * { \'child\': | `parameter` \'input\' } `lookups`: * {})')
-        .replace("'Leaf': (`root value`: | `nothing` ~)", "'Leaf': (`root value`: | `optional` (`result`: _ `constraints`: _ `value`: | `nothing` ~))")
+        .replace("'Leaf': (`visibility`: | `public` ~ `root value`: | `nothing` ~)", "'Leaf': (`visibility`: | `public` ~ `root value`: | `optional` (`result`: _ `constraints`: _ `value`: | `nothing` ~))")
         .replace("'Leaf': (`root value resolver`: | `nothing` ~)",
             "'Leaf': (`root value resolver`: | `optional` (`presence`: _ `result`: _ `not set constraints`: _ `constraints`: _ `resolver`: | `nothing` ~))")
     const resolved = parse(schema)[1].schema
@@ -851,15 +877,15 @@ const lookupBindingSchema = (mode, args) => {
     const parameter = signature_lookup('Nodes', mode, 'optional')
     return `(\`schema\`: (\`structure\`: (\`namespaces\`: {} \`basic types\`: {}
         \`types\`: {
-            'Root': (\`root value\`: | \`group\` {
+            'Root': (\`visibility\`: | \`public\` ~ \`root value\`: | \`group\` {
                 'entries': (\`description\`: _ \`value\`: ${component('Nodes')})
                 'value': (\`description\`: _ \`value\`: ${component('Middle')})
             })
-            'Middle': (\`root value\`: ${component('Leaf')})
-            'Leaf': (\`root value\`: | \`reference\` (
+            'Middle': (\`visibility\`: | \`public\` ~ \`root value\`: ${component('Leaf')})
+            'Leaf': (\`visibility\`: | \`public\` ~ \`root value\`: | \`reference\` (
                 \`referent\`: (\`type\`: (\`location\`: | \`local\` 'Nodes' ) \`path\`: (\`tail\`: [] ))
                 \`type\`: (\`dependency\`: | \`${mode}\` ~ \`constraints\`: _)))
-            'Nodes': (\`root value\`: | \`dictionary\` (\`value\`: | \`nothing\` ~))
+            'Nodes': (\`visibility\`: | \`public\` ~ \`root value\`: | \`dictionary\` (\`value\`: | \`nothing\` ~))
         }
         ) \`resolver\`: (\`declarations\`: (\`namespaces\`: {} \`types\`: {
             'Root': ${signature()} 'Nodes': ${signature()}
@@ -1120,7 +1146,7 @@ test('optional value constraints require optional nodes, matching the handwritte
     const invalid = argumentBindingSchema('_').replace('`constraints`: _', declaration)
         .replace('`arguments`: _ `constraints`: _', `\`arguments\`: _ ${constraint}`)
     const valid = invalid
-        .replace("'Leaf': (`root value`: | `nothing` ~)", "'Leaf': (`root value`: | `optional` (`result`: _ `constraints`: _ `value`: | `nothing` ~))")
+        .replace("'Leaf': (`visibility`: | `public` ~ `root value`: | `nothing` ~)", "'Leaf': (`visibility`: | `public` ~ `root value`: | `optional` (`result`: _ `constraints`: _ `value`: | `nothing` ~))")
         .replace("'Leaf': (`root value resolver`: | `nothing` ~)",
             "'Leaf': (`root value resolver`: | `optional` (`presence`: _ `result`: _ `not set constraints`: _ `constraints`: _ `resolver`: | `nothing` ~))")
     assert.doesNotThrow(() => parse(valid))
@@ -1215,7 +1241,7 @@ test('state result declarations reject missing, unexpected and wrongly typed opt
     const schema = (parent, option) => specification(stateValueType.replaceAll('`value`: | `nothing` ~', `\`value\`: ${component}`)
         .replace('`result`: _', `\`result\`: ${parent}`), stateResolverText
         .replaceAll('`resolver`: | `nothing` ~ `result`: _', `\`resolver\`: ${componentResolver} \`result\`: ${option}`))
-        .replace('`types`: {', '`types`: { \'Nothing\': (`root value`: | `nothing` ~)')
+        .replace('`types`: {', '`types`: { \'Nothing\': (`visibility`: | `public` ~ `root value`: | `nothing` ~)')
         .replace('`declarations`: (`namespaces`: {} `types`: {', '`declarations`: (`namespaces`: {} `types`: { \'Nothing\': ' + signature())
         .replace("`types`: { 'Root': (`root value resolver`:", "`types`: { 'Nothing': (`root value resolver`: | `nothing` ~) 'Root': (`root value resolver`:")
     assert.doesNotThrow(() => parse(schema(type, selection)))
@@ -1383,7 +1409,7 @@ test('production loading enforces optional presence against a sibling in both st
 
 test('declaration parameters resolve and execute against nonempty structural subselections', () => {
     const schema = argumentBindingSchema('* (`types`: * { \'child\': | `parameter` \'input\' } `lookups`: * {})')
-        .replace("'Leaf': (`root value`: | `nothing` ~)", "'Leaf': (`root value`: | `optional` (`result`: _ `constraints`: _ `value`: | `nothing` ~))")
+        .replace("'Leaf': (`visibility`: | `public` ~ `root value`: | `nothing` ~)", "'Leaf': (`visibility`: | `public` ~ `root value`: | `optional` (`result`: _ `constraints`: _ `value`: | `nothing` ~))")
         .replace("'Leaf': (`root value resolver`: | `nothing` ~)",
             "'Leaf': (`root value resolver`: | `optional` (`presence`: * | `parameter` 'child' `result`: _ `not set constraints`: _ `constraints`: _ `resolver`: | `nothing` ~))")
         .replaceAll('`subselection`: (`tail`: [])', '`subselection`: (`tail`: [| `optional` ~])')
@@ -1759,13 +1785,13 @@ test('generated dictionary identifiers always use escaped single quotes', () => 
 const namespaced_schema = (throughSibling = false) => {
     const structure = `(
         \`namespaces\`: {} \`basic types\`: {} \`types\`: {
-            'Root': (\`root value\`: | \`group\` {
+            'Root': (\`visibility\`: | \`public\` ~ \`root value\`: | \`group\` {
                 'selected': (\`description\`: _ \`value\`: | \`reference\` (
                     \`referent\`: (\`type\`: (\`location\`: | \`local\` 'Nodes') \`path\`: (\`tail\`: []))
                     \`type\`: (\`dependency\`: | \`acyclic\` ~ \`constraints\`: _)))
                 'entries': (\`description\`: _ \`value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`local\` 'Nodes'))
             })
-            'Nodes': (\`root value\`: | \`dictionary\` (\`value\`: | \`nothing\` ~))
+            'Nodes': (\`visibility\`: | \`public\` ~ \`root value\`: | \`dictionary\` (\`value\`: | \`nothing\` ~))
         })`
     const declarations = `{
         'Root': ${signature()}
@@ -1800,11 +1826,11 @@ const namespaced_schema = (throughSibling = false) => {
             \`structure\`: (
                 \`namespaces\`: { 'left': ${structure} 'right': ${structure}
                     ${throughSibling ? `'bridge': (\`namespaces\`: {} \`basic types\`: {} \`types\`: {
-                        'Root': (\`root value\`: ${root('sibling namespace')})
+                        'Root': (\`visibility\`: | \`public\` ~ \`root value\`: ${root('sibling namespace')})
                     })` : ''}
                 }
                 \`basic types\`: {}
-                \`types\`: { 'Root': (\`root value\`: ${throughSibling ? child('bridge') : root('child namespace')}) })
+                \`types\`: { 'Root': (\`visibility\`: | \`public\` ~ \`root value\`: ${throughSibling ? child('bridge') : root('child namespace')}) })
             \`resolver\`: (
                 \`declarations\`: (
                     \`namespaces\`: {
