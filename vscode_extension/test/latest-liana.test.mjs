@@ -552,7 +552,7 @@ test('optional fallback branches must resolve to the exact same structural targe
     }) \`constraints\`: _)`
     // A call is placed under a component so the selected parameter target and callee match.
     const full = source
-        .replace("'Nothing': (`visibility`: | `public` ~ `root value`: | `nothing` ~)", "'Nothing': (`visibility`: | `public` ~ `root value`: | `component` (`constraints`: _ `type`: | `local cyclic` 'Nothing'))")
+        .replace("'Nothing': (`visibility`: | `public` ~ `root value`: | `nothing` ~)", "'Nothing': (`visibility`: | `public` ~ `root value`: | `component` (`constraints`: _ `type`: | `simple` | `local` 'Nothing'))")
         .replace("'Nothing': (`root value resolver`: | `nothing` ~)", `'Nothing': (\`root value resolver\`: ${component})`)
     assert.doesNotThrow(() => parse(full))
     assert.throws(() => parse(full.replace("'fallback': (`value`: (`type`: (`location`: | `local` 'Nothing')", "'fallback': (`value`: (`type`: (`location`: | `local` 'Text')")))
@@ -573,12 +573,12 @@ test('current generated schema diagnostics describe invalid token syntax explici
 test('optional producer results select the declared payload and remain absent when not set', async () => {
     const source = specification(dictionary('', 'Nothing'))
         .replace("'Nothing': (`visibility`: | `public` ~ `root value`: | `nothing` ~)", `'Nothing': (\`visibility\`: | \`public\` ~ \`root value\`: | \`optional\` (
-            \`constraints\`: _ \`value\`: | \`component\` (\`type\`: | \`local\` 'Text' \`constraints\`: _)
+            \`constraints\`: _ \`value\`: | \`component\` (\`type\`: | \`simple\` | \`local\` 'Text' \`constraints\`: _)
             \`result\`: * (\`type\`: (\`location\`: | \`local\` 'Text') \`path\`: (\`tail\`: []))))`)
         .replace("'Nothing': (`root value resolver`: | `nothing` ~)", `'Nothing': (\`root value resolver\`: | \`optional\` (
             \`presence\`: _ \`constraints\`: _ \`not set constraints\`: _
             \`resolver\`: | \`component\` (\`location\`: | \`local\` 'Text' \`arguments\`: _ \`constraints\`: _)
-            \`result\`: * | \`value\` (\`path\`: [| \`component\` ~])))`)
+            \`result\`: * | \`value\` (\`path\`: [| \`simple component\` | \`local\` 'Text'])))`)
     const dir = mkdtempSync(join(tmpdir(), 'liana-optional-result-'))
     try {
         for (const [body, status] of [['* "hello"', 'resolved'], ['_', 'not set'], ['* #', 'unavailable']]) {
@@ -594,11 +594,11 @@ test('optional producer results select the declared payload and remain absent wh
     }
 })
 
-for (const name of ['liana', 'boekhouding', 'pareto_next']) {
-    test(`maintained ${name} authoring fixture parses, resolves, seals and round-trips`, async () => {
+for (const name of ['astn_schema', 'boekhouding', 'liana', 'pareto_next']) {
+    test(`promoted ${name} authoring fixture parses, resolves, seals and round-trips`, async () => {
         const dir = mkdtempSync(join(tmpdir(), `liana-maintained-${name}-`))
         try {
-            const context = readFileSync(new URL('../liana_authoring_environment_template/.liana/schema.slna', import.meta.url), 'utf8')
+            const context = readFileSync(new URL('./fixtures/latest_liana/.liana/schema.slna', import.meta.url), 'utf8')
             const source = readFileSync(new URL(`./fixtures/latest_liana/${name}.liana.lna`, import.meta.url), 'utf8')
             mkdirSync(join(dir, '.liana'))
             writeFileSync(join(dir, '.liana', 'schema.slna'), context)

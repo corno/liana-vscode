@@ -48,7 +48,7 @@
             }
             `types`: {
                 'Beheer': < | `private` ~ | `group` {
-                    'BTW-categorieen': < _ | `dictionary` < | `group` {
+                    'BTW-categorieen': < _ | `dictionary` < _ | `group` {
                         'BTW-heffing': < _ | `state` < {
                             'Ja': < _ _ | `group` {
                                 'BTW-promillage': < _ | `simple` 'Promillage' >
@@ -57,7 +57,7 @@
                         } _ > >
                     } > >
                     'Grootboekrekeningen': < _ | `group` {
-                        'Balans': < _ | `dictionary` < | `group` {
+                        'Balans': < _ | `dictionary` < _ | `group` {
                             'Hoofdcategorie': < _ | `reference` < < < | `local` 'Grootboek Categorieen' > < [
                                 | `group` 'Balans'
                             ] > > < | `acyclic` ~ _ > > >
@@ -71,7 +71,7 @@
                                 'Passiva': < _ _ | `nothing` ~ >
                             } _ > >
                         } > >
-                        'Resultaat': < _ | `dictionary` < | `group` {
+                        'Resultaat': < _ | `dictionary` < _ | `group` {
                             'Hoofdcategorie': < _ | `reference` < < < | `local` 'Grootboek Categorieen' > < [
                                 | `group` 'Resultaat'
                             ] > > < | `acyclic` ~ _ > > >
@@ -96,16 +96,16 @@
                         } > >
                     } >
                     'Rekeningen': < _ | `group` {
-                        'Bank': < _ | `dictionary` < | `nothing` ~ > >
-                        'Informeel': < _ | `dictionary` < | `nothing` ~ > >
+                        'Bank': < _ | `dictionary` < _ | `nothing` ~ > >
+                        'Informeel': < _ | `dictionary` < _ | `nothing` ~ > >
                     } >
-                    'Gebruikers': < _ | `dictionary` < | `group` {
+                    'Gebruikers': < _ | `dictionary` < _ | `group` {
                         'Volledige naam': < _ | `simple` 'Benaming' >
                         'Wachtwoord': < _ | `simple` 'Wachtwoord' >
                     } > >
-                    'Klanten': < _ | `dictionary` < | `component` < | `local` 'Klant' _ > > >
-                    'Leveranciers': < _ | `dictionary` < | `nothing` ~ > >
-                    'Medewerkers': < _ | `dictionary` < | `nothing` ~ > >
+                    'Klanten': < _ | `dictionary` < _ | `component` < | `navigable` | `local` 'Klant' _ > > >
+                    'Leveranciers': < _ | `dictionary` < _ | `nothing` ~ > >
+                    'Medewerkers': < _ | `dictionary` < _ | `nothing` ~ > >
                 } >
                 'Eerste boekjaar': < | `private` ~ | `state` < {
                     'Ja': < _ _ | `nothing` ~ >
@@ -114,31 +114,31 @@
                     } >
                 } _ > >
                 'Fiscaal': < | `private` ~ | `group` {
-                    'Balans Hoofdcategorieen': < _ | `dictionary` < | `group` {
+                    'Balans Hoofdcategorieen': < _ | `dictionary` < _ | `group` {
                         'Zijde': < _ | `state` < {
                             'Activa': < _ _ | `nothing` ~ >
                             'Passiva': < _ _ | `nothing` ~ >
                         } _ > >
-                        'Subcategorieen': < _ | `dictionary` < | `nothing` ~ > >
+                        'Subcategorieen': < _ | `dictionary` < _ | `nothing` ~ > >
                     } > >
-                    'Resultaat Hoofdcategorieen': < _ | `dictionary` < | `group` {
+                    'Resultaat Hoofdcategorieen': < _ | `dictionary` < _ | `group` {
                         'Zijde': < _ | `state` < {
                             'Kosten': < _ _ | `nothing` ~ >
                             'Opbrengsten': < _ _ | `nothing` ~ >
                         } _ > >
-                        'Subcategorieen': < _ | `dictionary` < | `nothing` ~ > >
+                        'Subcategorieen': < _ | `dictionary` < _ | `nothing` ~ > >
                     } > >
                 } >
                 'Grootboek Categorieen': < | `private` ~ | `group` {
-                    'Correctietypes vennootschapsbelasting': < _ | `dictionary` < | `group` {
+                    'Correctietypes vennootschapsbelasting': < _ | `dictionary` < _ | `group` {
                         'Te corrigeren promillage': < _ | `simple` 'Promillage' >
                     } > >
-                    'Balans': < _ | `dictionary` < | `group` {
+                    'Balans': < _ | `dictionary` < _ | `group` {
                         'Zijde': < _ | `state` < {
                             'Activa': < _ _ | `nothing` ~ >
                             'Passiva': < _ _ | `nothing` ~ >
                         } _ > >
-                        'Subcategorieen': < _ | `dictionary` < | `group` {
+                        'Subcategorieen': < _ | `dictionary` < _ | `group` {
                             'Hoofdcategorie fiscus': < _ | `reference` < < < | `local` 'Fiscaal' > < [
                                 | `group` 'Balans Hoofdcategorieen'
                             ] > > < | `acyclic` ~ _ > > >
@@ -149,12 +149,12 @@
                             ] > > < | `acyclic` ~ _ > > >
                         } > >
                     } > >
-                    'Resultaat': < _ | `dictionary` < | `group` {
+                    'Resultaat': < _ | `dictionary` < _ | `group` {
                         'Zijde': < _ | `state` < {
                             'Kosten': < _ _ | `nothing` ~ >
                             'Opbrengsten': < _ _ | `nothing` ~ >
                         } _ > >
-                        'Subcategorieen': < _ | `dictionary` < | `group` {
+                        'Subcategorieen': < _ | `dictionary` < _ | `group` {
                             'Hoofdcategorie fiscus': < _ | `reference` < < < | `local` 'Fiscaal' > < [
                                 | `group` 'Resultaat Hoofdcategorieen'
                             ] > > < | `acyclic` ~ _ > > >
@@ -167,11 +167,11 @@
                     } > >
                 } >
                 'Grootboekrekeningen': < | `private` ~ | `group` {
-                    'Balans': < _ | `dictionary` < | `group` {} > >
-                    'Resultaat': < _ | `dictionary` < | `group` {} > >
+                    'Balans': < _ | `dictionary` < * < < | `local` 'Beheer' > < [ | `group` 'Grootboekrekeningen' | `group` 'Balans' ] > > | `group` {} > >
+                    'Resultaat': < _ | `dictionary` < * < < | `local` 'Beheer' > < [ | `group` 'Grootboekrekeningen' | `group` 'Resultaat' ] > > | `group` {} > >
                 } >
                 'Handelstransacties': < | `private` ~ | `group` {
-                    'Inkopen': < _ | `dictionary` < | `group` {
+                    'Inkopen': < _ | `dictionary` < _ | `group` {
                         'Afhandeling': < _ | `state` < {
                             'Mutaties': < _ _ | `nothing` ~ >
                             'Nog te betalen': < _ _ | `group` {
@@ -196,7 +196,7 @@
                             'Ontbreekt': < _ _ | `nothing` ~ >
                         } _ > >
                         'Datum': < _ | `simple` 'Datum' >
-                        'Regels': < _ | `dictionary` < | `group` {
+                        'Regels': < _ | `dictionary` < _ | `group` {
                             'Bedrag': < _ | `state` < {
                                 'Bekend': < _ _ | `group` {
                                     'BTW-bedrag': < _ | `simple` 'Bedrag' >
@@ -206,7 +206,7 @@
                             'Omschrijving': < _ | `simple` 'Omschrijving' >
                             'Type': < _ | `state` < {
                                 'Balans': < _ _ | `group` {
-                                    'Balans item': < _ | `component` < | `local cyclic` 'Verwijzing naar Overig balans item' _ > >
+                                    'Balans item': < _ | `component` < | `simple` | `local` 'Verwijzing naar Overig balans item' _ > >
                                 } >
                                 'Kosten': < _ _ | `group` {
                                     'Grootboekrekening': < _ | `reference` < < < | `local` 'Grootboekrekeningen' > < [
@@ -240,7 +240,7 @@
                             } >
                         } _ > >
                     } > >
-                    'Verkopen': < _ | `dictionary` < | `group` {
+                    'Verkopen': < _ | `dictionary` < _ | `group` {
                         'Afhandeling': < _ | `state` < {
                             'Mutaties': < _ _ | `nothing` ~ >
                             'Rekening courant': < _ _ | `group` {
@@ -263,9 +263,9 @@
                         'Debiteur': < _ | `reference` < < < | `local` 'Beheer' > < [
                             | `group` 'Klanten'
                         ] > > < | `acyclic` ~ _ > > >
-                        'Contracttype': < _ | `component` < | `local` 'Verkoopcontract' _ > >
+                        'Contracttype': < _ | `component` < | `navigable` | `local` 'Verkoopcontract' _ > >
                         'Datum': < _ | `simple` 'Datum' >
-                        'Regels': < _ | `dictionary` < | `group` {
+                        'Regels': < _ | `dictionary` < _ | `group` {
                             'BTW-regime': < _ | `state` < {
                                 'Intracommunautair': < _ _ | `nothing` ~ >
                                 'Standaard': < _ _ | `group` {
@@ -311,7 +311,7 @@
                                     ] > > < | `acyclic` ~ _ > > >
                                 } >
                                 'Balans': < _ _ | `group` {
-                                    'Balans item': < _ | `component` < | `local cyclic` 'Verwijzing naar Overig balans item' _ > >
+                                    'Balans item': < _ | `component` < | `simple` | `local` 'Verwijzing naar Overig balans item' _ > >
                                 } >
                             } _ > >
                         } > >
@@ -322,10 +322,10 @@
                         'Grootboekrekening voor BTW afrondingen': < _ | `reference` < < < | `local` 'Grootboekrekeningen' > < [
                             | `group` 'Resultaat'
                         ] > > < | `acyclic` ~ _ > > >
-                        'Salarisrondes': < _ | `dictionary` < | `nothing` ~ > >
-                        'BTW periodes': < _ | `dictionary` < | `group` {
-                            '1. BTW-categorieen': < _ | `dictionary` < | `nothing` ~ > >
-                            'Documenten': < _ | `dictionary` < | `group` {
+                        'Salarisrondes': < _ | `dictionary` < _ | `nothing` ~ > >
+                        'BTW periodes': < _ | `dictionary` < _ | `group` {
+                            '1. BTW-categorieen': < _ | `dictionary` < _ | `nothing` ~ > >
+                            'Documenten': < _ | `dictionary` < _ | `group` {
                                 'Bestand': < _ | `simple` 'Bestandsnaam' >
                             } > >
                             'Omschrijving': < _ | `simple` 'Omschrijving' >
@@ -357,7 +357,7 @@
                         ] > > < | `acyclic` ~ _ > > >
                         'Beginsaldo nog aan te geven BTW': < _ | `simple` 'Bedrag' >
                         'Beginsaldo winstreserve': < _ | `simple` 'Bedrag' >
-                        'Bankrekeningen': < _ | `dictionary` < | `group` {
+                        'Bankrekeningen': < _ | `dictionary` < _ | `group` {
                             'Beginsaldo': < _ | `simple` 'Bedrag' >
                             'Grootboekrekening': < _ | `reference` < < < | `local` 'Grootboekrekeningen' > < [
                                 | `group` 'Balans'
@@ -369,16 +369,16 @@
                                         | `state` 'Nee'
                                     ] > >
                                 } | `group` {
-                                    'Rekening': < _ | `component` < | `local cyclic` 'Verwijzing naar Bankrekening' _ > >
+                                    'Rekening': < _ | `component` < | `simple` | `local` 'Verwijzing naar Bankrekening' _ > >
                                 } >
                             } _ > >
-                            'Mutaties': < _ | `dictionary` < | `group` {
+                            'Mutaties': < _ | `dictionary` < _ | `group` {
                                 'Bedrag': < _ | `simple` 'Bedrag' >
                                 'Datum': < _ | `simple` 'Datum' >
                                 'Omschrijving': < _ | `simple` 'Omschrijving' >
                             } > >
                         } > >
-                        'Informele rekeningen': < * "rekening met tegenpartij" | `dictionary` < | `group` {
+                        'Informele rekeningen': < * "rekening met tegenpartij" | `dictionary` < _ | `group` {
                             'Beginsaldo': < _ | `simple` 'Bedrag' >
                             'Grootboekrekening': < _ | `reference` < < < | `local` 'Grootboekrekeningen' > < [
                                 | `group` 'Balans'
@@ -390,11 +390,11 @@
                                         | `state` 'Nee'
                                     ] > >
                                 } | `group` {
-                                    'Rekening': < _ | `component` < | `local cyclic` 'Verwijzing naar Informele rekening' _ > >
+                                    'Rekening': < _ | `component` < | `simple` | `local` 'Verwijzing naar Informele rekening' _ > >
                                 } >
                             } _ > >
                         } > >
-                        'Overige balans items': < * "items die geen bankrekening of informele rekening zijn, denk aan voorraad, reservering e.d." | `dictionary` < | `group` {
+                        'Overige balans items': < * "items die geen bankrekening of informele rekening zijn, denk aan voorraad, reservering e.d." | `dictionary` < _ | `group` {
                             'Beginsaldo': < _ | `simple` 'Bedrag' >
                             'Grootboekrekening': < _ | `reference` < < < | `local` 'Grootboekrekeningen' > < [
                                 | `group` 'Balans'
@@ -406,34 +406,34 @@
                                         | `state` 'Nee'
                                     ] > >
                                 } | `group` {
-                                    'Balans item': < _ | `component` < | `local cyclic` 'Verwijzing naar Overig balans item' _ > >
+                                    'Balans item': < _ | `component` < | `simple` | `local` 'Verwijzing naar Overig balans item' _ > >
                                 } >
                             } _ > >
                         } > >
-                        'Verrekenposten': < _ | `dictionary` < | `nothing` ~ > >
+                        'Verrekenposten': < _ | `dictionary` < _ | `nothing` ~ > >
                     } >
                 } >
-                'Jaren': < | `private` ~ | `dictionary` < | `group` {
+                'Jaren': < | `private` ~ | `dictionary` < _ | `group` {
                     'Afgesloten': < _ | `state` < {
                         'Ja': < _ _ | `nothing` ~ >
                         'Nee': < _ _ | `nothing` ~ >
                     } _ > >
                     'Startdatum boekjaar': < _ | `simple` 'Datum' >
-                    'Grootboekrekeningen': < _ | `component` < | `local` 'Grootboekrekeningen' _ > >
-                    'Eerste boekjaar': < _ | `component` < | `local cyclic` 'Eerste boekjaar' _ > >
-                    'Jaarbeheer': < _ | `component` < | `local cyclic` 'Jaarbeheer' _ > >
-                    'Handelstransacties': < _ | `component` < | `local cyclic` 'Handelstransacties' _ > >
-                    'Mutaties': < _ | `component` < | `local cyclic` 'Mutaties' _ > >
+                    'Grootboekrekeningen': < _ | `component` < | `simple` | `local` 'Grootboekrekeningen' _ > >
+                    'Eerste boekjaar': < _ | `component` < | `simple` | `local` 'Eerste boekjaar' _ > >
+                    'Jaarbeheer': < _ | `component` < | `simple` | `local` 'Jaarbeheer' _ > >
+                    'Handelstransacties': < _ | `component` < | `simple` | `local` 'Handelstransacties' _ > >
+                    'Mutaties': < _ | `component` < | `simple` | `local` 'Mutaties' _ > >
                 } > >
                 'Klant': < | `private` ~ | `group` {
-                    'Licentieovereenkomsten': < _ | `dictionary` < | `group` {
-                        'Periodes': < _ | `dictionary` < | `group` {
+                    'Licentieovereenkomsten': < _ | `dictionary` < _ | `group` {
+                        'Periodes': < _ | `dictionary` < _ | `group` {
                             'Bedrag': < _ | `simple` 'Bedrag' >
                         } > >
                     } > >
-                    'Projecten': < _ | `dictionary` < | `group` {
-                        'Offertes': < _ | `dictionary` < | `group` {
-                            'Opbrengsten': < _ | `dictionary` < | `group` {
+                    'Projecten': < _ | `dictionary` < _ | `group` {
+                        'Offertes': < _ | `dictionary` < _ | `group` {
+                            'Opbrengsten': < _ | `dictionary` < _ | `group` {
                                 'Type': < _ | `state` < {
                                     'Project': < _ _ | `group` {
                                         'Bedrag': < _ | `simple` 'Bedrag' >
@@ -445,26 +445,26 @@
                     } > >
                 } >
                 'Mutaties': < | `private single use` ~ | `group` {
-                    'Verrekenposten': < _ | `dictionary` < | `group` {
-                        'Mutaties': < _ | `dictionary` < | `group` {
+                    'Verrekenposten': < _ | `dictionary` < * < < | `local` 'Jaarbeheer' > < [ | `group` 'Balans' | `group` 'Verrekenposten' ] > > | `group` {
+                        'Mutaties': < _ | `dictionary` < _ | `group` {
                             'Bedrag': < _ | `simple` 'Bedrag' >
                             'Afhandeling': < _ | `state` < {
-                                'Resultaat': < _ _ | `component` < | `local cyclic` 'Rekening Mutatie' _ > >
+                                'Resultaat': < _ _ | `component` < | `simple` | `local` 'Rekening Mutatie' _ > >
                                 'Balans': < _ _ | `state` < {
                                     'Informele rekening': < _ _ | `group` {
-                                        'Informele rekening': < _ | `component` < | `local` 'Verwijzing naar Informele rekening' _ > >
+                                        'Informele rekening': < _ | `component` < | `simple` | `local` 'Verwijzing naar Informele rekening' _ > >
                                     } >
                                 } _ > >
                             } _ > >
                         } > >
                     } > >
-                    'Bankrekeningen': < _ | `dictionary` < | `group` {
-                        'Mutatie Verwerkingen': < _ | `dictionary` < | `group` {
+                    'Bankrekeningen': < _ | `dictionary` < * < < | `local` 'Jaarbeheer' > < [ | `group` 'Balans' | `group` 'Bankrekeningen' ] > > | `group` {
+                        'Mutatie Verwerkingen': < _ | `dictionary` < * < < | `local` 'Jaarbeheer' > < [ | `group` 'Balans' | `group` 'Bankrekeningen' | `dictionary` ~ | `group` 'Mutaties' ] > > | `group` {
                             'type': < _ | `state` < {
-                                'Resultaat': < _ _ | `component` < | `local cyclic` 'Rekening Mutatie' _ > >
+                                'Resultaat': < _ _ | `component` < | `simple` | `local` 'Rekening Mutatie' _ > >
                                 'Balans': < _ _ | `state` < {
                                     'Informele rekening': < _ _ | `group` {
-                                        'Informele rekening': < _ | `component` < | `local` 'Verwijzing naar Informele rekening' _ > >
+                                        'Informele rekening': < _ | `component` < | `simple` | `local` 'Verwijzing naar Informele rekening' _ > >
                                     } >
                                     'Verrekenpost': < _ _ | `group` {
                                         'Verrekenpost': < _ | `reference` < < < | `local` 'Jaarbeheer' > < [
@@ -476,8 +476,8 @@
                             } _ > >
                         } > >
                     } > >
-                    'Overige Balans Items': < _ | `dictionary` < | `group` {
-                        'Memoriaal Boekingen': < _ | `dictionary` < | `group` {
+                    'Overige Balans Items': < _ | `dictionary` < * < < | `local` 'Jaarbeheer' > < [ | `group` 'Balans' | `group` 'Overige balans items' ] > > | `group` {
+                        'Memoriaal Boekingen': < _ | `dictionary` < _ | `group` {
                             'Bedrag': < _ | `simple` 'Bedrag' >
                             'Datum': < _ | `simple` 'Datum' >
                             'Omschrijving': < _ | `simple` 'Omschrijving' >
@@ -503,10 +503,10 @@
                     } _ > >
                 } >
                 'Root': < | `public` ~ | `group` {
-                    'Fiscaal': < _ | `component` < | `local` 'Fiscaal' _ > >
-                    'Categorieen': < _ | `component` < | `local` 'Grootboek Categorieen' _ > >
-                    'Beheer': < _ | `component` < | `local` 'Beheer' _ > >
-                    'Jaren': < _ | `component` < | `local` 'Jaren' _ > >
+                    'Fiscaal': < _ | `component` < | `simple` | `local` 'Fiscaal' _ > >
+                    'Categorieen': < _ | `component` < | `simple` | `local` 'Grootboek Categorieen' _ > >
+                    'Beheer': < _ | `component` < | `simple` | `local` 'Beheer' _ > >
+                    'Jaren': < _ | `component` < | `simple` | `local` 'Jaren' _ > >
                 } >
                 'Verkoopcontract': < | `private` ~ | `state` < {
                     'Project': < _ _ | `group` {
@@ -608,7 +608,7 @@
                                 'Hoofdcategorie': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'Grootboek Categorieen' < [
                                     | `group` 'Balans'
                                 ] > > > > _ > > >
-                                'Subcategorie': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling` 'Hoofdcategorie' < [
+                                'Subcategorie': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'Hoofdcategorie' < [
                                     | `reference` < >
                                     | `group` 'Subcategorieen'
                                 ] > > > > _ > > >
@@ -621,7 +621,7 @@
                                 'Hoofdcategorie': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'Grootboek Categorieen' < [
                                     | `group` 'Resultaat'
                                 ] > > > > _ > > >
-                                'Subcategorie': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling` 'Hoofdcategorie' < [
+                                'Subcategorie': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'Hoofdcategorie' < [
                                     | `reference` < >
                                     | `group` 'Subcategorieen'
                                 ] > > > > _ > > >
@@ -687,7 +687,7 @@
                                 'Hoofdcategorie fiscus': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'Fiscaal' < [
                                     | `group` 'Balans Hoofdcategorieen'
                                 ] > > > > _ > > >
-                                'Subcategorie fiscus': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling` 'Hoofdcategorie fiscus' < [
+                                'Subcategorie fiscus': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'Hoofdcategorie fiscus' < [
                                     | `reference` < >
                                     | `group` 'Subcategorieen'
                                 ] > > > > _ > > >
@@ -702,7 +702,7 @@
                                 'Hoofdcategorie fiscus': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'Fiscaal' < [
                                     | `group` 'Resultaat Hoofdcategorieen'
                                 ] > > > > _ > > >
-                                'Subcategorie fiscus': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling` 'Hoofdcategorie fiscus' < [
+                                'Subcategorie fiscus': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'Hoofdcategorie fiscus' < [
                                     | `reference` < >
                                     | `group` 'Subcategorieen'
                                 ] > > > > _ > > >
@@ -807,9 +807,9 @@
                                 | `group` 'Klanten'
                             ] > > > > _ > > >
                             'Contracttype': < | `component` < | `local` 'Verkoopcontract' * < * {
-                                'klant': | `required` < | `sibling` 'Debiteur' < [
+                                'klant': | `required` < | `sibling property` 'Debiteur' < [
                                     | `reference` < >
-                                    | `component` ~
+                                    | `navigable component` ~
                                 ] > >
                             } * {} > _ > >
                             'Afhandeling': < | `state` < {
@@ -835,7 +835,7 @@
                                 'Contracttype': < | `state` < {
                                     'Project': < * {
                                         'Definitie': | `state` < < | `parent sibling` 'Contracttype' < [
-                                            | `component` ~
+                                            | `navigable component` ~
                                         ] > > 'Project' >
                                     } | `group` {
                                         'Opbrengst': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'Definitie' < [
@@ -847,7 +847,7 @@
                                     'Los': < _ | `nothing` ~ _ >
                                     'Licentieovereenkomst': < * {
                                         'Definitie': | `state` < < | `parent sibling` 'Contracttype' < [
-                                            | `component` ~
+                                            | `navigable component` ~
                                         ] > > 'Licentieovereenkomst' >
                                     } | `group` {
                                         'Periode': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'Definitie' < [
@@ -928,7 +928,7 @@
                                                 | `group` 'Vorig boekjaar'
                                                 | `reference` < >
                                                 | `group` 'Jaarbeheer'
-                                                | `component` ~
+                                                | `simple component` | `local` 'Jaarbeheer'
                                             ] > >
                                         } * {} > _ > >
                                     } _ >
@@ -949,7 +949,7 @@
                                                 | `group` 'Vorig boekjaar'
                                                 | `reference` < >
                                                 | `group` 'Jaarbeheer'
-                                                | `component` ~
+                                                | `simple component` | `local` 'Jaarbeheer'
                                             ] > >
                                         } * {} > _ > >
                                     } _ >
@@ -975,7 +975,7 @@
                                                 | `group` 'Vorig boekjaar'
                                                 | `reference` < >
                                                 | `group` 'Jaarbeheer'
-                                                | `component` ~
+                                                | `simple component` | `local` 'Jaarbeheer'
                                             ] > >
                                         } * {} > _ > >
                                     } _ >
@@ -997,21 +997,21 @@
                             'Jaren': | `selection` < | `acyclic` | `siblings` ~ >
                         } > _ > >
                         'Jaarbeheer': < | `component` < | `local` 'Jaarbeheer' * < * {
-                            'Grootboekrekeningen': | `required` < | `sibling` 'Grootboekrekeningen' < [] > >
-                            'Eerste boekjaar': | `required` < | `sibling` 'Eerste boekjaar' < [] > >
+                            'Grootboekrekeningen': | `required` < | `sibling property` 'Grootboekrekeningen' < [] > >
+                            'Eerste boekjaar': | `required` < | `sibling property` 'Eerste boekjaar' < [] > >
                         } * {
                             'Jaren': | `selection` < | `acyclic` | `siblings` ~ >
                         } > _ > >
                         'Handelstransacties': < | `component` < | `local` 'Handelstransacties' * < * {
                             'Beheer': | `parameter` 'Beheer'
-                            'Grootboekrekeningen': | `required` < | `sibling` 'Grootboekrekeningen' < [] > >
-                            'Jaarbeheer': | `required` < | `sibling` 'Jaarbeheer' < [] > >
+                            'Grootboekrekeningen': | `required` < | `sibling property` 'Grootboekrekeningen' < [] > >
+                            'Jaarbeheer': | `required` < | `sibling property` 'Jaarbeheer' < [] > >
                         } * {} > _ > >
                         'Mutaties': < | `component` < | `local` 'Mutaties' * < * {
                             'Beheer': | `parameter` 'Beheer'
-                            'Grootboekrekeningen': | `required` < | `sibling` 'Grootboekrekeningen' < [] > >
-                            'Jaarbeheer': | `required` < | `sibling` 'Jaarbeheer' < [] > >
-                            'Handelstransacties': | `required` < | `sibling` 'Handelstransacties' < [] > >
+                            'Grootboekrekeningen': | `required` < | `sibling property` 'Grootboekrekeningen' < [] > >
+                            'Jaarbeheer': | `required` < | `sibling property` 'Jaarbeheer' < [] > >
+                            'Handelstransacties': | `required` < | `sibling property` 'Handelstransacties' < [] > >
                         } * {
                             'Jaren': | `selection` < | `acyclic` | `siblings` ~ >
                         } > _ > >
@@ -1096,26 +1096,26 @@
                     'Rekening Mutatie': < | `group` {
                         'Jaar': < | `optional` < _ _ | `reference` < < < | `parameter` 'Jaren' > _ > > _ _ > >
                         'type': < | `state` < {
-                            'Inkoop': < _ | `reference` < < < | `acyclic` | `resolved dictionary` < < | `optional fallback` < | `optional value` < < | `sibling` 'Jaar' < [] > > < [
+                            'Inkoop': < _ | `reference` < < < | `acyclic` | `resolved dictionary` < < | `optional fallback` < | `optional value` < < | `sibling property` 'Jaar' < [] > > < [
                                 | `reference` < >
                                 | `group` 'Handelstransacties'
-                                | `component` ~
+                                | `simple component` | `local` 'Handelstransacties'
                                 | `group` 'Inkopen'
                             ] > > < | `parameter` 'Handelstransacties' < [
                                 | `group` 'Inkopen'
                             ] > > > < [] > > > > _ > > _ >
-                            'Verkoop': < _ | `reference` < < < | `acyclic` | `resolved dictionary` < < | `optional fallback` < | `optional value` < < | `sibling` 'Jaar' < [] > > < [
+                            'Verkoop': < _ | `reference` < < < | `acyclic` | `resolved dictionary` < < | `optional fallback` < | `optional value` < < | `sibling property` 'Jaar' < [] > > < [
                                 | `reference` < >
                                 | `group` 'Handelstransacties'
-                                | `component` ~
+                                | `simple component` | `local` 'Handelstransacties'
                                 | `group` 'Verkopen'
                             ] > > < | `parameter` 'Handelstransacties' < [
                                 | `group` 'Verkopen'
                             ] > > > < [] > > > > _ > > _ >
-                            'BTW-periode': < _ | `reference` < < < | `acyclic` | `resolved dictionary` < < | `optional fallback` < | `optional value` < < | `sibling` 'Jaar' < [] > > < [
+                            'BTW-periode': < _ | `reference` < < < | `acyclic` | `resolved dictionary` < < | `optional fallback` < | `optional value` < < | `sibling property` 'Jaar' < [] > > < [
                                 | `reference` < >
                                 | `group` 'Jaarbeheer'
-                                | `component` ~
+                                | `simple component` | `local` 'Jaarbeheer'
                                 | `group` 'Resultaat'
                                 | `group` 'BTW periodes'
                             ] > > < | `parameter` 'Jaarbeheer' < [
@@ -1127,13 +1127,13 @@
                     'Root': < | `group` {
                         'Fiscaal': < | `component` < | `local` 'Fiscaal' * < * {} * {} > _ > >
                         'Categorieen': < | `component` < | `local` 'Grootboek Categorieen' * < * {
-                            'Fiscaal': | `required` < | `sibling` 'Fiscaal' < [] > >
+                            'Fiscaal': | `required` < | `sibling property` 'Fiscaal' < [] > >
                         } * {} > _ > >
                         'Beheer': < | `component` < | `local` 'Beheer' * < * {
-                            'Grootboek Categorieen': | `required` < | `sibling` 'Categorieen' < [] > >
+                            'Grootboek Categorieen': | `required` < | `sibling property` 'Categorieen' < [] > >
                         } * {} > _ > >
                         'Jaren': < | `component` < | `local` 'Jaren' * < * {
-                            'Beheer': | `required` < | `sibling` 'Beheer' < [] > >
+                            'Beheer': | `required` < | `sibling property` 'Beheer' < [] > >
                         } * {} > _ > >
                     } >
                     'Verkoopcontract': < | `state` < {
@@ -1141,7 +1141,7 @@
                             'Project': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'klant' < [
                                 | `group` 'Projecten'
                             ] > > > > _ > > >
-                            'Offerte': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling` 'Project' < [
+                            'Offerte': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'Project' < [
                                 | `reference` < >
                                 | `group` 'Offertes'
                             ] > > > > _ > > >

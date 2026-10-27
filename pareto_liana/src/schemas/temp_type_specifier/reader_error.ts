@@ -6,7 +6,7 @@ import * as parser from 'astn-runtime/modules/deserialization/schemas/parse_tree
 import * as parser_location from 'astn-runtime/modules/deserialization/schemas/parse_tree_deserialization/transformers/location'
 import * as value from 'liana-runtime/modules/value_unmarshalling/schemas/unmarshalling/serializers'
 import * as value_location from 'liana-runtime/modules/value_unmarshalling/schemas/unmarshalling/transformers/location'
-import * as resolving from 'liana-runtime/modules/resolved_document_deserialization/schemas/resolving/serializers'
+import { Error as resolving_error } from '../liana_next_schema/resolving_error.js'
 
 const names = <T extends core.Value>(dictionary: core.Dictionary<T>): string => {
     let result = ''
@@ -18,7 +18,7 @@ const names = <T extends core.Value>(dictionary: core.Dictionary<T>): string => 
 }
 
 export const error_message = ($: errors.types.Resolved_Error): string => {
-    if ($[0] === 'resolving') return resolving.Error($[1])
+    if ($[0] === 'resolving') return resolving_error($[1])
     const error = $[1]
     if (error[0] === 'parse tree deserialization') return parser.Error(error[1])
     const unmarshalling = error[1]

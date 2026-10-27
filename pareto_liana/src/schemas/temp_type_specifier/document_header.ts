@@ -6,7 +6,7 @@ import type * as errors from '../../modules/schema.generated/schemas/reader_erro
 import { Header } from './header.js'
 import type { File_Path } from './file_type.js'
 import * as read from '../../modules/schema.generated/schemas/unresolved/refiners/astn_parse_tree.js'
-import * as resolve from '../../modules/schema.generated/schemas/resolved/refiners/unresolved_manual.js'
+import * as resolve from '../liana_next_schema/resolve.js'
 import * as location from 'astn-runtime/modules/deserialization/schemas/parse_tree/transformers/start_token_range'
 
 export type Document_Header = { path: File_Path, specification: schema.types.Type_Specification }

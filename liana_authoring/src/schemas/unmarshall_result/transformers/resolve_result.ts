@@ -68,6 +68,7 @@ namespace temp {
         'properties'?: p_i.lookup.Acyclic<s_out.Property> | undefined
         'parent properties'?: p_i.lookup.Acyclic<s_out.Property> | undefined
         'option constraints'?: p_di.Dictionary<s_out.Selection>
+        'sibling option constraints'?: p_i.lookup.Acyclic<s_out.Selection>
         'list cursor'?: s_out.Selection
         'linked entry'?: s_out.Selection
     }
@@ -97,7 +98,7 @@ namespace temp {
 
 type Implementation = {
     namespace: s_in_definition.namespaces.resolver.types.Resolver
-    definition: s_in_definition.namespaces.resolver.types.Types.D
+    definition: s_in_definition.namespaces.resolver.types.Resolver.types.D
 }
 
 const Implementations = (namespace: s_in_definition.namespaces.resolver.types.Resolver): p_di.List<Implementation> =>
@@ -119,8 +120,8 @@ export const Document: p_i_temp.Transformer_With_Lookups_And_Parameter<
     s_out.Document,
     temp.Lookups,
     {
-        'definition': s_in_definition.namespaces.resolver.types.Types.D
-        'resolvers': s_in_definition.types.Schema
+        'definition': s_in_definition.namespaces.resolver.types.Resolver.types.D
+        'resolvers': s_in_definition.types.Type_Specification.schema
         'type parameters': p_di.Dictionary<temp.Type_Parameter_Resolve_Status>
     }
 > = ($, $l, $p) => ({
@@ -280,7 +281,8 @@ const Relative = (
                 ? current[0] === 'resolved' ? State_Result(current[1], step[1].constraints.definition) : Select(current, Unavailable)
                 : Select(current, ($) => {
                 switch (step[0]) {
-                    case 'component': return $[0] === 'component' ? ['resolved', $[1].value] : Unavailable()
+                    case 'simple component':
+                    case 'navigable component': return $[0] === 'component' ? ['resolved', $[1].value] : Unavailable()
                     case 'group': return $[0] === 'group' ? Property(step[1].value['l id'], p_lookup.acyclic.from_resolved_dictionary($[1].properties)) : Unavailable()
                     case 'optional': return $[0] === 'optional'
                         ? $[1].status[0] === 'set' ? ['resolved', $[1].status[1]['child value']] : $[1].status : Unavailable()
@@ -305,7 +307,7 @@ const Relative = (
                         // Derived selections can already expose the declared component payload.
                         if (next[1].unmarshalled.definition === root) {
                             return p_.from.list(rest).on_has_first_item(
-                                (following, tail) => following.value.value[0] === 'component' ? path(tail, next) : path(rest, next),
+                                (following, tail) => following.value.value[0] === 'simple component' || following.value.value[0] === 'navigable component' ? path(tail, next) : path(rest, next),
                                 () => next,
                             )
                         }
@@ -356,7 +358,7 @@ const Select_Constraint = (
 )
 
 const Constraint = (
-    $: s_in_definition.namespaces.resolver.types.Constraint,
+    $: s_in_definition.namespaces.resolver.types.Reference_Constraints.O.value.D.value.constraint,
     start: s_out.Selection
 ): s_out.Selection => {
     const constraint = $.type.value
@@ -403,7 +405,13 @@ const Guaranteed = (
                 const selection = Possible(source[1].selection, context)
                 return selection[0] === 'not set' ? Guaranteed(source[1].fallback, context) : selection
             }
-            case 'sibling': return Property(source[1]['l id'], context.lookups.properties)
+            case 'sibling property': return Property(source[1]['l id'], context.lookups.properties)
+            case 'sibling option constraint': return p_.from.optional(
+                context.lookups['sibling option constraints']?.get_entry(source[1]['l id'], {
+                    no_context_lookup: () => p_.literal.not_set<s_out.Selection>(),
+                    cycle_detected: ($) => p_.literal.set<s_out.Selection>(['cycle', $]),
+                }) ?? p_.literal.not_set<s_out.Selection>(),
+            ).decide(($) => $, Unavailable)
             case 'parent sibling': return Property(source[1]['l id'], context.lookups['parent properties'])
             case 'parameter': return p_.from.dictionary(context.types).get_possible_entry(source[1]['l id'], Parameter, Unavailable)
             case 'list cursor': return context.lookups['list cursor'] ?? ['constraint failed', 'no list cursor is available in this context']
@@ -566,15 +574,16 @@ const Complete_Reference = (
 const Option_Constraints = (
     $: s_in_definition.namespaces.resolver.types.Option_Constraints,
     context: temp.Context
-): p_di.Dictionary<s_out.Selection> => p_.from.optional($).decide($ => p_.from.dictionary($.value).map(({ value: { value: $ } }) => {
+): p_di.Dictionary<s_out.Selection> => p_.from.optional($).decide($ => p_.from.dictionary($.value).resolve(({ value: { value: $ } }, _, siblings) => {
+    const sibling_context: temp.Context = { ...context, lookups: { ...context.lookups, 'sibling option constraints': siblings } }
     switch ($[0]) {
         case 'assert is set': {
-            const selection = Possible($[1], context)
+            const selection = Possible($[1], sibling_context)
             return selection[0] === 'not set' ? ['constraint failed', 'expected an optional value to be set'] : selection
         }
         case 'state': {
             const constraint = $[1]
-            return Select_Constraint(Guaranteed(constraint.selection.value, context), (value) => value[0] === 'state'
+            return Select_Constraint(Guaranteed(constraint.selection.value, sibling_context), (value) => value[0] === 'state'
                 ? p_.from.optional(value[1].option).decide(
                     (option) => value[1].unmarshalled.derived['option status'][0] === 'set'
                         && value[1].unmarshalled.derived['option status'][1].option === constraint.option['l id']
@@ -621,7 +630,7 @@ const Linked_Entry = (
 )
 
 export const Resolver_Optional_Value_Initialization = (
-    $: s_in_definition.namespaces.resolver.types.Optional_Value_Initialization,
+    $: s_in_definition.namespaces.resolver.types.Value.component.value.arguments_.O.types.O.D.value.optional,
     context: temp.Context
 ): temp.Type_Parameter_Resolve_Status => {
     switch ($[0]) {
@@ -770,7 +779,7 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                                 switch ($[0]) {
                                                     case 'component': return p_.option($, ($) => {
                                                         const selected = Implementation_For(
-                                                            $l.implementations ?? Implementations($p.resolver), def.location.result)
+                                                            $l.implementations ?? Implementations($p.resolver), def.location.result.value)
                                                         const resolver_namespace = selected.namespace
                                                         const def2 = selected.definition
                                                         return Complete_Component({
@@ -809,8 +818,8 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                             ? p_.from.dictionary(unmarshalled_value[1].derived.entries).convert_to_list((_, id) => id)
                                             : p_.literal.list<string>([])
                                         const benchmark = p_.from.optional(def.benchmark).map(($) => ({
-                                            selection: Referenced_Value(Guaranteed($.selection.value, context), ['dictionary', $.selection.constraints.dictionary]),
-                                            dense: $.coverage[0] === 'dense',
+                                            selection: Referenced_Value(Guaranteed($.value.selection.value, context), ['dictionary', $.value.selection.constraints.dictionary]),
+                                            dense: $.value.coverage[0] === 'dense',
                                         }))
                                         return ['dictionary', p_.from.state(unmarshalled_value).decide(
                                             ($): s_out.Dictionary => {

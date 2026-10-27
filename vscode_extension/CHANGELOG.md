@@ -23,20 +23,21 @@
 
 ### Fixed
 - "Sort dictionary alphabetically" was not implemented and only showed an error.
-  It is now "Sort dictionary" (`liana.sort_dictionary`) and sorts the entries of
-  the innermost dictionary around the cursor. Without dependencies between the
-  entries it sorts by id. When entries contain acyclic references to siblings it
-  asks for alphabetical, topological then alphabetical, or topological only
-  (dependencies first, otherwise the current order). Cyclic references are
-  ignored. If the document cannot be resolved, it sorts alphabetically and says
-  so. Comments on the lines above an entry and behind it on its last line move
-  with the entry; the whitespace between entries stays in place.
-  The refactor code actions (`Ctrl+.`) offer "Sort dictionary (shallow)" and
-  "Sort dictionaries (deep)". Deep also sorts the dictionaries nested in it, or
-  every dictionary of the document when the cursor is not in a dictionary. It
-  asks for the order once; the topological choices apply to the dictionaries
-  with dependencies, the others are sorted alphabetically. Undo reverts the
-  whole sort at once.
+  It is replaced by the refactor code actions (`Ctrl+.`) "Sort dictionary
+  (shallow)", for the innermost dictionary around the cursor, and "Sort
+  dictionaries (deep)", which also sorts the dictionaries nested in it, or every
+  dictionary of the document when the cursor is not in a dictionary. The command
+  is no longer in the editor context menu or the Command Palette.
+  Without dependencies between the entries it sorts by id. When entries contain
+  acyclic references to siblings it asks once for alphabetical, topological then
+  alphabetical, or topological only (dependencies first, otherwise the current
+  order); dictionaries without dependencies are sorted alphabetically. A
+  reference to an entry of the dictionary's benchmark counts as a reference to
+  the sibling with the same id, so a resolver's `sibling` references are
+  dependencies too. Cyclic references are ignored. If the document cannot be resolved, it sorts
+  alphabetically and says so. Comments on the lines above an entry and behind it
+  on its last line move with the entry; the whitespace between entries stays in
+  place. Undo reverts the whole sort at once.
 - Formatting a document keeps its comments, including comments before the first
   token, after entry ids, `:`, state options and include paths. A `//` comment
   ends its line; the tokens after it continue on the next line.
@@ -69,6 +70,10 @@
   pass-through without inventing defaults for omitted explicit entries.
 
 ### Changed
+- Updated the schema loader, resolver, and bundled authoring schema to the
+  promoted Liana Next Type Specification. Only this schema version is
+  supported; existing authoring environments must migrate their schema sources
+  and regenerate `.liana/schema.slna`.
 - Renamed "Initialize or update authoring environment with this Liana schema"
   to "Publish this Liana schema to an authoring environment..." (command id
   `liana.publish_schema_to_authoring_environment`) and removed the prompt to

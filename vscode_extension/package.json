@@ -208,6 +208,12 @@
 			}
 		],
 		"menus": {
+			"commandPalette": [
+				{
+					"command": "liana.sort_dictionary",
+					"when": "false"
+				}
+			],
 			"editor/context": [
 				{
 					"command": "liana.convert_to_json",
@@ -217,11 +223,6 @@
 				{
 					"command": "liana.convert_to_json_disabled",
 					"when": "editorLangId == liana && liana.has_parse_errors",
-					"group": "1_liana"
-				},
-				{
-					"command": "liana.sort_dictionary",
-					"when": "editorLangId == liana",
 					"group": "1_liana"
 				},
 				{

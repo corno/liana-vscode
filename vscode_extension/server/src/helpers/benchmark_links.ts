@@ -13,7 +13,7 @@ const as_dictionary = (value: resolved.Value): resolved.Dictionary | undefined =
     return result[0] === 'success' && result[1][0] === 'dictionary' ? result[1][1] : undefined
 }
 
-const benchmark_of = (dictionary: resolved.Dictionary): resolved.Dictionary | undefined => {
+export const benchmark_of = (dictionary: resolved.Dictionary): resolved.Dictionary | undefined => {
     const benchmark = dictionary.benchmark.__get_raw()
     if (benchmark === null) return undefined
     const selection = benchmark[0].selection

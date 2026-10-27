@@ -65,7 +65,9 @@ export namespace types {
         | readonly ['parse tree deserialization', Unresolved_Error.parse_tree_deserialization]
         | readonly ['unmarshalling', Unresolved_Error.unmarshalling]
     
-    export type Resolving_Error = s_resolver.Error
+    export type Resolving_Error = import('../../../../schemas/liana_next_schema/resolving_error.js').Resolving_Error & {
+        readonly location: s_location.Range
+    }
     
     export namespace Resolved_Error {
         

@@ -1,1 +1,1 @@
-export * from "../../../../schema.generated/schemas/resolved/refiners/unresolved_manual.js"
+export * from "../../../../../schemas/liana_next_schema/resolve.js"

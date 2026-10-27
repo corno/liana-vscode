@@ -300,7 +300,7 @@ export type Nothing = {
 }
 
 export type Text = {
-    'definition': s_schema.namespaces.structure.types.Basic_Type
+    'definition': s_schema.namespaces.structure.types.Basic_Types.D
     'instance': s_astn_parse_tree.Value.type_.concrete.text
 }
 

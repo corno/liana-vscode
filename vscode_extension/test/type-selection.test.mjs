@@ -65,6 +65,7 @@ const sealed = (source, schema) => seal(source, fail, {
     target: { indentation: '', newline: '' },
 }).__get_raw().join('')
 const entry = (dictionary, name) => p.from.dictionary(dictionary).get_possible_entry(name, value => value, () => assert.fail(name))
+const componentKind = mode => mode === 'local cyclic' ? 'simple' : 'navigable'
 
 const loadWithSchema = async (source, schema) => {
     const dir = mkdtempSync(join(tmpdir(), 'liana-server-references-'))
@@ -191,7 +192,7 @@ test('missing file-tree root type returns a structured schema diagnostic', () =>
     const source = specification(undefined, undefined, undefined, 'missing')
     assert.throws(() => parse(source), error => {
         assert.equal(error[0], 'resolving')
-        assert.deepEqual(error[1].type, ['lookup', ['no such entry', 'missing']])
+        assert.deepEqual(error[1].type, ['missing reference', { identifier: 'missing' }])
         assert.equal(error[1].location.start.absolute, 0)
         return true
     })
@@ -209,7 +210,7 @@ test('old type resolver, schema path, globals and text-value schemas are rejecte
 test('basic type lookup failures are reported instead of defaulting', () => {
     assert.throws(() => parse(specification('| `simple` \'missing\'')), error => {
         assert.equal(error[0], 'resolving')
-        assert.deepEqual(error[1].type, ['lookup', ['no such entry', 'missing']])
+        assert.deepEqual(error[1].type, ['missing reference', { identifier: 'missing' }])
         return true
     })
 })
@@ -256,7 +257,7 @@ for (const visibility of ['private', 'private single use']) {
         test(`${visibility} ${sibling ? 'sibling' : 'child'} component targets are rejected`, () => {
             const schema = namespaced_schema(sibling).replace('| `public` ~', `| \`${visibility}\` ~`)
             assert.throws(() => parse(schema), error => {
-                assert.match(JSON.stringify(error), /"expected":"public"/)
+                assert.match(JSON.stringify(error), /"constraint":"public"/)
                 return true
             })
         })
@@ -304,8 +305,8 @@ test('nested components pass through whole categories or explicitly bind every t
             const schema = `(
                 \`schema\`: (\`structure\`: (\`namespaces\`: {} \`basic types\`: {}
                     \`types\`: {
-                        'Root': (\`visibility\`: | \`public\` ~ \`root value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`local\` 'Middle'))
-                        'Middle': (\`visibility\`: | \`public\` ~ \`root value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`local\` 'Leaf'))
+                        'Root': (\`visibility\`: | \`public\` ~ \`root value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`navigable\` | \`local\` 'Middle'))
+                        'Middle': (\`visibility\`: | \`public\` ~ \`root value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`navigable\` | \`local\` 'Leaf'))
                         'Leaf': (\`visibility\`: | \`public\` ~ \`root value\`: | \`nothing\` ~)
                     }
                     ) \`resolver\`: (\`declarations\`: (\`namespaces\`: {} \`types\`: {
@@ -340,8 +341,9 @@ test('nested components pass through whole categories or explicitly bind every t
     }
 })
 
-const template = () => readFileSync(new URL('../liana_authoring_environment_template/.liana/schema.slna', import.meta.url), 'utf8')
-const typeReference = (name, mode = 'local') => `| \`component\` (\`constraints\`: _ \`type\`: | \`${mode}\` '${name}')`
+const template = () => readFileSync(new URL('./fixtures/latest_liana/.liana/schema.slna', import.meta.url), 'utf8')
+const typeReference = (name, mode = 'local') =>
+    `| \`component\` (\`constraints\`: _ \`type\`: | \`${componentKind(mode)}\` | \`local\` '${name}')`
 
 test('state resolver results belong to options rather than the resolver itself', () => {
     const schema = parse(template())[1].schema
@@ -370,7 +372,7 @@ test('the self-schema binds local constraints when entering optional values and 
         assert.equal(binding[1][0], 'set')
         assert.equal(binding[1][1].start.value[0], start)
         if (start === 'option constraint') assert.equal(binding[1][1].start.value[1].value['l id'], 'definition')
-        assert.deepEqual(binding[1][1].tail.path.value.__get_raw().map(item => item.value.value[0]), ['group', 'component'])
+        assert.deepEqual(binding[1][1].tail.path.value.__get_raw().map(item => item.value.value[0]), ['group', 'simple component'])
     }
     const diagnostics = resolveDiagnostics.Document(await loadWithSchema(template(), template())).__get_raw()
     assert.deepEqual(diagnostics, [])
@@ -388,7 +390,7 @@ test('selected references report missing dictionary entries at the identifier to
         assert.equal(range[1].start.absolute, source.indexOf("'Text Tsypes'"))
         assert.equal(range[1].end.absolute, source.indexOf("'Text Tsypes'") + "'Text Tsypes'".length)
         assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(
-            source.replace("'Text Tsypes'", "'Root'").replace('`local`', '`local cyclic`'), template()
+            source.replace("'Text Tsypes'", "'Root'").replace('`navigable`', '`simple`'), template()
         )).__get_raw().filter(d => d.message.startsWith('Reference \'')), [])
     }
 })
@@ -410,14 +412,15 @@ test('acyclic references reject cycles while cyclic references allow mutual depe
 })
 
 const dependentReferenceSchema = () => {
-    const component = name => `| \`component\` (\`constraints\`: _ \`type\`: | \`local\` '${name}')`
+    const component = name =>
+        `| \`component\` (\`constraints\`: _ \`type\`: | \`navigable\` | \`local\` '${name}')`
     const resolverComponent = name => `| \`component\` (\`location\`: | \`local\` '${name}' \`arguments\`: _ \`constraints\`: _)`
     const reference = name => `| \`reference\` (
         \`referent\`: (\`type\`: (\`location\`: | \`local\` '${name}' ) \`path\`: (\`tail\`: [] ))
         \`type\`: (\`dependency\`: | \`acyclic\` ~ \`constraints\`: _))`
     const resolverReference = (start, path) => `| \`reference\` (
         \`type\`: (\`lookup\`: (\`type\`: | \`acyclic\` | \`resolved dictionary\` (
-                \`selection\`: (\`start\`: | \`sibling\` '${start}' \`tail\`: (\`path\`: [${path}] ) )
+                \`selection\`: (\`start\`: | \`sibling property\` '${start}' \`tail\`: (\`path\`: [${path}] ) )
                 ) ) \`constraints\`: _))`
     const declarations = ['Root', 'Nodes', 'Members'].map(name =>
         `'${name}': ${signature()}`
@@ -429,15 +432,15 @@ const dependentReferenceSchema = () => {
                 'chosen': (\`description\`: _ \`value\`: ${reference('Nodes')})
                 'entries': (\`description\`: _ \`value\`: ${component('Nodes')})
             })
-            'Nodes': (\`visibility\`: | \`public\` ~ \`root value\`: | \`dictionary\` (\`value\`: | \`group\` {
+            'Nodes': (\`visibility\`: | \`public\` ~ \`root value\`: | \`dictionary\` (\`benchmark\`: _ \`value\`: | \`group\` {
                 'members': (\`description\`: _ \`value\`: ${component('Members')})
             }))
-            'Members': (\`visibility\`: | \`public\` ~ \`root value\`: | \`dictionary\` (\`value\`: | \`nothing\` ~))
+            'Members': (\`visibility\`: | \`public\` ~ \`root value\`: | \`dictionary\` (\`benchmark\`: _ \`value\`: | \`nothing\` ~))
         }
         ) \`resolver\`: (\`declarations\`: (\`namespaces\`: {} \`types\`: {${declarations}}) \`implementations\`: (\`namespaces\`: {} \`types\`: {
             'Root': (\`root value resolver\`: | \`group\` {
-                'member': (\`resolver\`: ${resolverReference('chosen', '| `reference` () | `group` \'members\' | `component` ~')})
-                'chosen': (\`resolver\`: ${resolverReference('entries', '| `component` ~')})
+                'member': (\`resolver\`: ${resolverReference('chosen', '| `reference` () | `group` \'members\' | `navigable component` ~')})
+                'chosen': (\`resolver\`: ${resolverReference('entries', '| `navigable component` ~')})
                 'entries': (\`resolver\`: ${resolverComponent('Nodes')})
             })
             'Nodes': (\`root value resolver\`: | \`dictionary\` (\`resolver\`: | \`group\` {
@@ -694,6 +697,25 @@ test('sort offers topological orders only when entries depend on each other, ign
     assert.equal(already.dependencies, 'present')
     assert.equal(already.orders['topological only'], null)
     assert.deepEqual(typeOrder(ordered, already.orders.topological), ['Alpha', 'Zeta', 'Root'])
+
+    // a resolver refers to its siblings through the dictionary it is keyed by (its benchmark)
+    const optional = '| `optional` (`result`: _ `constraints`: _ `value`: | `nothing` ~)'
+    const optionalResolver = (presence) => `| \`optional\` (\`presence\`: ${presence} \`result\`: _ \`constraints\`: _ \`not set constraints\`: _ \`resolver\`: | \`nothing\` ~)`
+    const sibling = "* | `optional value` (`selection`: (`start`: | `sibling property` 'b' `tail`: (`path`: [])) `tail`: (`path`: []))"
+    const group = specification(
+        `| \`group\` { 'a': (\`description\`: _ \`value\`: ${optional}) 'b': (\`description\`: _ \`value\`: ${optional}) }`,
+        `| \`group\` { 'a': (\`resolver\`: ${optionalResolver(sibling)}) 'b': (\`resolver\`: ${optionalResolver('_')}) }`,
+    )
+    const resolverOrder = (edits) => {
+        const sorted = edits === null ? group : TextDocument.applyEdits(TextDocument.create('file:///x.lna', 'liana', 1, group), edits)
+        return [...sorted.slice(sorted.indexOf('`root value resolver`')).matchAll(/'(\w+)': \(`resolver`/g)].map(($) => $[1])
+    }
+    const resolverSort = await sortAt(group, 'shallow', group.indexOf("'a': (`resolver`") + 1)
+    assert.equal(resolverSort.dependencies, 'present')
+    assert.deepEqual(resolverOrder(resolverSort.orders.alphabetical), ['a', 'b'])
+    assert.deepEqual(resolverOrder(resolverSort.orders.topological), ['b', 'a'])
+    // the structure is not affected by the resolver's dependencies
+    assert.equal((await sortAt(group, 'shallow', group.indexOf("'a': (`description`") + 1)).dependencies, 'none')
 })
 
 test('references and highlights follow cyclic and acyclic targets without traversing reference cycles', async () => {
@@ -704,7 +726,7 @@ test('references and highlights follow cyclic and acyclic targets without traver
             `\`types\`: { 'Root': (\`visibility\`: | \`public\` ~ \`root value\`: ${root}) 'Other': (\`visibility\`: | \`public\` ~ \`root value\`: | \`nothing\` ~) }`,
         )
         const name = mode === 'local cyclic' ? "'Root'" : "'Other'"
-        const offset = source.indexOf(name, source.indexOf(`\`${mode}\``))
+        const offset = source.indexOf(name, source.indexOf(`\`${componentKind(mode)}\``))
         const refs = await referencesAt(source, template(), offset + 2)
         assert.equal(refs.length, mode === 'local cyclic' ? 2 : 1)
         const doc = TextDocument.create('file:///test.lna', 'liana', 1, source)
@@ -821,7 +843,7 @@ test('reference completion quotes empty and special identifiers without snippet 
 
 test('reference completion supports forwarded lookups and offers an empty identifier without candidates', async () => {
     for (const mode of ['local cyclic', 'local']) {
-        const source = specification(`| \`component\` (\`constraints\`: _ \`type\`: | \`${mode}\` # \`result\`: _)`)
+        const source = specification(typeReference('#', mode))
         const result = await complete(source, template(), source.indexOf('#'))
         assert.ok(result.items.some(item => item.label === 'Root'))
     }
@@ -847,23 +869,43 @@ test('reference completion supports forwarded lookups and offers an empty identi
     }
 })
 
-const benchmarkSchema = dense => specification(`| \`group\` {
-    'supplied': (\`description\`: _ \`value\`: | \`dictionary\` (\`value\`: | \`nothing\` ~))
-    'expected': (\`description\`: _ \`value\`: | \`dictionary\` (\`value\`: | \`nothing\` ~))
-}`, `| \`group\` {
-    'supplied': (\`resolver\`: | \`dictionary\` (
-        \`resolver\`: | \`nothing\` ~
-        \`benchmark\`: * (
-            \`selection\`: (\`start\`: | \`sibling\` 'expected' \`tail\`: (\`path\`: [] ) )
-            \`coverage\`: | \`${dense ? "dense" : "sparse"}\` ~)))
-    'expected': (\`resolver\`: | \`dictionary\` (\`resolver\`: | \`nothing\` ~ \`benchmark\`: _))
-}`)
+const benchmarkSchema = dense => `(
+    \`schema\`: (
+        \`structure\`: (\`namespaces\`: {} \`basic types\`: {} \`types\`: {
+            'Root': (\`visibility\`: | \`public\` ~ \`root value\`: | \`group\` {
+                'supplied': (\`description\`: _ \`value\`: | \`dictionary\` (
+                    \`benchmark\`: * (\`type\`: (\`location\`: | \`local\` 'Expected') \`path\`: (\`tail\`: []))
+                    \`value\`: | \`nothing\` ~))
+                'expected': (\`description\`: _ \`value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`navigable\` | \`local\` 'Expected'))
+            })
+            'Expected': (\`visibility\`: | \`public\` ~ \`root value\`: | \`dictionary\` (\`benchmark\`: _ \`value\`: | \`nothing\` ~))
+        })
+        \`resolver\`: (
+            \`declarations\`: (\`namespaces\`: {} \`types\`: {
+                'Root': ${signature()}
+                'Expected': ${signature()}
+            })
+            \`implementations\`: (\`namespaces\`: {} \`types\`: {
+                'Root': (\`root value resolver\`: | \`group\` {
+                    'supplied': (\`resolver\`: | \`dictionary\` (
+                        \`resolver\`: | \`nothing\` ~
+                        \`benchmark\`: * (
+                            \`selection\`: (\`start\`: | \`sibling property\` 'expected' \`tail\`: (\`path\`: [| \`navigable component\` ~]))
+                            \`coverage\`: | \`${dense ? 'dense' : 'sparse'}\` ~)))
+                    'expected': (\`resolver\`: | \`component\` (\`location\`: | \`local\` 'Expected' \`arguments\`: _ \`constraints\`: _))
+                })
+                'Expected': (\`root value resolver\`: | \`dictionary\` (\`resolver\`: | \`nothing\` ~ \`benchmark\`: _))
+            })
+        )
+    )
+    \`directory\`: | \`dictionary\` (\`node\`: | \`file\` (\`file extension\`: "" \`type\`: 'Root'))
+)`
 
 const argumentBindingSchema = args => {
     const parameter = signature_value('Leaf', 'optional')
     return `(\`schema\`: (\`structure\`: (\`namespaces\`: {} \`basic types\`: {}
         \`types\`: {
-            'Root': (\`visibility\`: | \`public\` ~ \`root value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`local\` 'Leaf'))
+            'Root': (\`visibility\`: | \`public\` ~ \`root value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`simple\` | \`local\` 'Leaf'))
             'Leaf': (\`visibility\`: | \`public\` ~ \`root value\`: | \`nothing\` ~)
         }
         ) \`resolver\`: (\`declarations\`: (\`namespaces\`: {} \`types\`: {
@@ -894,7 +936,7 @@ test('explicit type dictionaries cannot omit even optional callee arguments', as
     const source = argumentBindingSchema('* (`types`: * {} `lookups`: * {})')
     assert.throws(() => parse(source), error => {
         assert.equal(error[0], 'resolving')
-        assert.equal(error[1].type[0], 'missing required entries')
+        assert.equal(error[1].type[0], 'missing dense dictionary entry')
         return true
     })
     const diagnostics = resolveDiagnostics.Document(await loadWithSchema(source, template())).__get_raw()
@@ -941,7 +983,7 @@ test('runtime type initialization inherits only at whole/category boundaries, ne
 })
 
 const lookupBindingSchema = (mode, args) => {
-    const component = name => `| \`component\` (\`constraints\`: _ \`type\`: | \`local\` '${name}')`
+    const component = name => `| \`component\` (\`constraints\`: _ \`type\`: | \`navigable\` | \`local\` '${name}')`
     const call = (name, args = '_') => `| \`component\` (\`location\`: | \`local\` '${name}' \`arguments\`: ${args} \`constraints\`: _)`
     const parameter = signature_lookup('Nodes', mode, 'optional')
     return `(\`schema\`: (\`structure\`: (\`namespaces\`: {} \`basic types\`: {}
@@ -954,7 +996,7 @@ const lookupBindingSchema = (mode, args) => {
             'Leaf': (\`visibility\`: | \`public\` ~ \`root value\`: | \`reference\` (
                 \`referent\`: (\`type\`: (\`location\`: | \`local\` 'Nodes' ) \`path\`: (\`tail\`: [] ))
                 \`type\`: (\`dependency\`: | \`${mode}\` ~ \`constraints\`: _)))
-            'Nodes': (\`visibility\`: | \`public\` ~ \`root value\`: | \`dictionary\` (\`value\`: | \`nothing\` ~))
+            'Nodes': (\`visibility\`: | \`public\` ~ \`root value\`: | \`dictionary\` (\`benchmark\`: _ \`value\`: | \`nothing\` ~))
         }
         ) \`resolver\`: (\`declarations\`: (\`namespaces\`: {} \`types\`: {
             'Root': ${signature()} 'Nodes': ${signature()}
@@ -965,7 +1007,7 @@ const lookupBindingSchema = (mode, args) => {
                 'entries': (\`resolver\`: ${call('Nodes')})
                 'value': (\`resolver\`: ${call('Middle', `* (\`types\`: * {} \`lookups\`: * {
                     'source': | \`selection\` (\`type\`: | \`acyclic\` | \`resolved dictionary\` (
-                        \`selection\`: (\`start\`: | \`sibling\` 'entries' \`tail\`: (\`path\`: [| \`component\` ~] ) )
+                        \`selection\`: (\`start\`: | \`sibling property\` 'entries' \`tail\`: (\`path\`: [| \`navigable component\` ~] ) )
                         ) )
                     'unused': | \`${mode}\` ~
                 })`)})
@@ -1000,7 +1042,7 @@ test('lookup arguments pass through only at category boundaries and explicit dic
             [`* (\`types\`: _ \`lookups\`: * { 'source': | \`${mode}\` ~ })`, ['unused']],
         ]) {
             const invalid = lookupBindingSchema(mode, args)
-            assert.throws(() => parse(invalid), error => error[0] === 'resolving' && error[1].type[0] === 'missing required entries')
+            assert.throws(() => parse(invalid), error => error[0] === 'resolving' && error[1].type[0] === 'missing dense dictionary entry')
             const messages = resolveDiagnostics.Document(await loadWithSchema(invalid, template())).__get_raw().map(d => d.message)
             assert.deepEqual(messages.filter(message => message.startsWith('Missing required')).sort(),
                 missing.map(id => `Missing required benchmark entry '${id}'.`))
@@ -1303,9 +1345,9 @@ test('list results use the initial cursor for empty lists and advance it after e
 })
 
 test('state result declarations reject missing, unexpected and wrongly typed option selections', () => {
-    const selection = '* | `value` (`path`: [| `component` ~] )'
+    const selection = '* | `value` (`path`: [| `simple component` | `local` \'Nothing\'] )'
     const type = '* (`type`: (`location`: | `local` \'Nothing\') `path`: (`tail`: []))'
-    const component = '| `component` (`constraints`: _ `type`: | `local` \'Nothing\')'
+    const component = '| `component` (`constraints`: _ `type`: | `simple` | `local` \'Nothing\')'
     const componentResolver = '| `component` (`location`: | `local` \'Nothing\' `arguments`: _ `constraints`: _)'
     const schema = (parent, option) => specification(stateValueType.replaceAll('`value`: | `nothing` ~', `\`value\`: ${component}`)
         .replace('`result`: _', `\`result\`: ${parent}`), stateResolverText
@@ -1460,7 +1502,7 @@ test('hyperlink metadata creates links without changing authored values and pres
 
 test('production loading enforces optional presence against a sibling in both states', async () => {
     const optional = '| `optional` (`result`: _ `constraints`: _ `value`: | `nothing` ~)'
-    const selection = "| `optional value` (`selection`: (`start`: | `sibling` 'first' `tail`: (`path`: [])) `tail`: (`path`: []))"
+    const selection = "| `optional value` (`selection`: (`start`: | `sibling property` 'first' `tail`: (`path`: [])) `tail`: (`path`: []))"
     const optionalResolver = presence => `| \`optional\` (\`presence\`: ${presence} \`result\`: _ \`constraints\`: _ \`not set constraints\`: _ \`resolver\`: | \`nothing\` ~)`
     const schema = specification(
         `| \`group\` { 'first': (\`description\`: _ \`value\`: ${optional}) 'second': (\`description\`: _ \`value\`: ${optional}) }`,
@@ -1525,7 +1567,7 @@ test('document loading uses Next root selection, preserves caching and reports s
         const error = await load(3, { schemas: create_cache(), documents: create_cache() })
         assert.equal(error[0], 'error')
         assert.equal(error[1][0], 'schema')
-        assert.deepEqual(error[1][1].error.type[1][1].type, ['lookup', ['no such entry', 'missing']])
+        assert.deepEqual(error[1][1].error.type[1][1].type, ['missing reference', { identifier: 'missing' }])
     } finally {
         rmSync(dir, { recursive: true, force: true })
     }
@@ -1690,8 +1732,9 @@ test('bulk fixes preserve multiline closing indentation and empty identifiers', 
 
 test('recursive singleton states stop at a placeholder instead of expanding forever', async () => {
     const schema = specification(
-        '| `state` (`options`: { \'next\': (`description`: _ `constraints`: _ `value`: | `component` (`constraints`: _ `type`: | `local cyclic` \'Root\')) } `result`: _)',
+        '| `state` (`options`: { \'next\': (`description`: _ `constraints`: _ `value`: | `component` (`constraints`: _ `type`: | `simple` | `local` \'Root\')) } `result`: _)',
         '| `state` (`options`: { \'next\': (`constraints`: _ `resolver`: | `component` (`location`: | `local` \'Root\' `arguments`: _ `constraints`: _) `result`: _) })')
+    assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema('~', schema, template())).__get_raw(), [])
     const result = await complete('#', schema, 0)
     assert.equal(result.items[0].textEdit.newText, '$0| `next` | #')
 })
@@ -1887,34 +1930,38 @@ test('generated dictionary identifiers always use escaped single quotes', () => 
     ]) assert.equal(quote_identifier(id), expected)
 })
 
-const namespaced_schema = (throughSibling = false) => {
+const namespaced_schema = (throughSibling = false, componentType = 'navigable') => {
     const structure = `(
         \`namespaces\`: {} \`basic types\`: {} \`types\`: {
             'Root': (\`visibility\`: | \`public\` ~ \`root value\`: | \`group\` {
                 'selected': (\`description\`: _ \`value\`: | \`reference\` (
                     \`referent\`: (\`type\`: (\`location\`: | \`local\` 'Nodes') \`path\`: (\`tail\`: []))
                     \`type\`: (\`dependency\`: | \`acyclic\` ~ \`constraints\`: _)))
-                'entries': (\`description\`: _ \`value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`local\` 'Nodes'))
+                'entries': (\`description\`: _ \`value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`${componentType}\` | \`local\` 'Nodes'))
             })
-            'Nodes': (\`visibility\`: | \`public\` ~ \`root value\`: | \`dictionary\` (\`value\`: | \`nothing\` ~))
+            'Nodes': (\`visibility\`: | \`public\` ~ \`root value\`: | \`dictionary\` (\`benchmark\`: _ \`value\`: | \`nothing\` ~))
         })`
     const declarations = `{
         'Root': ${signature()}
         'Nodes': ${signature()}
     }`
+    const componentSelection = componentType === 'navigable'
+        ? '| \`navigable component\` ~'
+        : '| \`simple component\` | \`local\` \'Nodes\''
     const implementation = `(
         \`namespaces\`: {} \`types\`: {
             'Root': (\`root value resolver\`: | \`group\` {
                 'selected': (\`resolver\`: | \`reference\` (\`type\`: (
                     \`lookup\`: (\`type\`: | \`acyclic\` | \`resolved dictionary\` (
-                        \`selection\`: (\`start\`: | \`sibling\` 'entries' \`tail\`: (\`path\`: [| \`component\` ~]))))
+                        \`selection\`: (\`start\`: | \`sibling property\` 'entries' \`tail\`: (\`path\`: [${componentSelection}]))))
                     \`constraints\`: _)))
                 'entries': (\`resolver\`: | \`component\` (
                     \`location\`: | \`local\` 'Nodes' \`arguments\`: _ \`constraints\`: _))
             })
             'Nodes': (\`root value resolver\`: | \`dictionary\` (\`resolver\`: | \`nothing\` ~ \`benchmark\`: _))
         })`
-    const child = (name, location = 'child namespace') => `| \`component\` (\`constraints\`: _ \`type\`: | \`${location}\` (\`namespace\`: '${name}' \`type\`: 'Root'))`
+    const child = (name, location = 'child namespace', kind = componentType) =>
+        `| \`component\` (\`constraints\`: _ \`type\`: | \`${kind}\` | \`${location}\` (\`namespace\`: '${name}' \`type\`: 'Root'))`
     const call = (name, location = 'child namespace') => `| \`component\` (
         \`location\`: | \`${location}\` (\`namespace\`: '${name}' \`resolver\`: 'Root')
         \`arguments\`: _ \`constraints\`: _)`
@@ -1954,9 +2001,10 @@ const namespaced_schema = (throughSibling = false) => {
         \`directory\`: | \`dictionary\` (\`node\`: | \`file\` (\`file extension\`: "" \`type\`: 'Root')))`
 }
 
+for (const componentType of ['simple', 'navigable']) {
 for (const sibling of [false, true]) {
-test(`same-named types in ${sibling ? 'sibling' : 'child'} namespaces keep resolution, completion and navigation isolated`, async () => {
-    const schema = namespaced_schema(sibling)
+test(`${componentType} components in ${sibling ? 'sibling' : 'child'} namespaces keep resolution, completion and navigation isolated`, async () => {
+    const schema = namespaced_schema(sibling, componentType)
     const source = "< < 'shared' { 'shared': ~ 'left-only': ~ } > < 'shared' { 'shared': ~ 'right-only': ~ } > >"
     const loaded = await loadWithSchema(source, schema)
     assert.deepEqual(unmarshal_diagnostics.Document(loaded.unmarshalled).__get_raw(), [])
@@ -1977,32 +2025,41 @@ test(`same-named types in ${sibling ? 'sibling' : 'child'} namespaces keep resol
     assert.equal((renamed.match(/'shared'/g) ?? []).length, 2)
 })
 }
+}
 
 test('sibling component locations reject missing targets, mismatched declarations and namespace cycles', () => {
     const schema = namespaced_schema(true)
     for (const [original, replacement] of [
-        ["`type`: | `sibling namespace` (`namespace`: 'left'", "`type`: | `sibling namespace` (`namespace`: 'missing'"],
-        ["`type`: | `sibling namespace` (`namespace`: 'left' `type`: 'Root')", "`type`: | `sibling namespace` (`namespace`: 'left' `type`: 'missing')"],
+        ["`type`: | `navigable` | `sibling namespace` (`namespace`: 'left'", "`type`: | `navigable` | `sibling namespace` (`namespace`: 'missing'"],
+        ["`type`: | `navigable` | `sibling namespace` (`namespace`: 'left' `type`: 'Root')", "`type`: | `navigable` | `sibling namespace` (`namespace`: 'left' `type`: 'missing')"],
         ["`location`: | `sibling namespace` (`namespace`: 'left'", "`location`: | `sibling namespace` (`namespace`: 'missing'"],
         ["`location`: | `sibling namespace` (`namespace`: 'left' `resolver`: 'Root')", "`location`: | `sibling namespace` (`namespace`: 'left' `resolver`: 'missing')"],
         ["`location`: | `sibling namespace` (`namespace`: 'left'", "`location`: | `sibling namespace` (`namespace`: 'right'"],
-        ["`type`: | `sibling namespace` (`namespace`: 'left'", "`type`: | `sibling namespace` (`namespace`: 'bridge'"],
+        ["`type`: | `navigable` | `sibling namespace` (`namespace`: 'left'", "`type`: | `navigable` | `sibling namespace` (`namespace`: 'bridge'"],
     ]) {
         assert.ok(schema.includes(original), original)
         assert.throws(() => parse(schema.replace(original, replacement)))
     }
 })
 
-test('old namespace location tags are rejected without changing sibling property selections', () => {
+test('old component location tags are rejected without changing sibling property selections', () => {
     for (const [current, obsolete] of [
-        ['local', 'internal'], ['local cyclic', 'internal cyclic'],
+        ['local', 'internal'],
         ['child namespace', 'child'], ['sibling namespace', 'sibling'],
     ]) {
-        const schema = current === 'local cyclic' ? specification(typeReference('Root', current)) : namespaced_schema(true)
+        const schema = namespaced_schema(true)
         const changed = schema.replace(`| \`${current}\``, `| \`${obsolete}\``)
         assert.notEqual(changed, schema)
         assert.throws(() => parse(changed))
     }
+})
+
+test('legacy structural component types and selection steps are rejected', () => {
+    const typed = specification(typeReference('Root'))
+    assert.throws(() => parse(typed.replace('| \`navigable\` | \`local\`', '| \`local\`')))
+
+    const selected = namespaced_schema()
+    assert.throws(() => parse(selected.replace('| \`navigable component\` ~', '| \`component\` ~')))
 })
 
 test('missing resolver coverage is reported instead of synthesizing a resolver', () => {
@@ -2010,8 +2067,8 @@ test('missing resolver coverage is reported instead of synthesizing a resolver',
         .replace(`'Root': ${signature()}`, '')
     assert.throws(() => parse(schema), error => {
         assert.equal(error[0], 'resolving')
-        assert.equal(error[1].type[0], 'missing required entries')
-        assert.deepEqual(error[1].type[1].__get_raw().map(([id]) => id), ['Root'])
+        assert.equal(error[1].type[0], 'missing dense dictionary entry')
+        assert.equal(error[1].type[1], null)
         return true
     })
 })

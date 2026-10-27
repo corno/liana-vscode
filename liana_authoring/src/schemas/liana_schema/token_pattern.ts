@@ -39,7 +39,7 @@ const pattern = (expression: schema.namespaces.structure.types.Regular_Expressio
     }
 }
 
-export const matches_token = (type: schema.namespaces.structure.types.Basic_Type, value: string): boolean =>
+export const matches_token = (type: schema.namespaces.structure.types.Basic_Types.D, value: string): boolean =>
     p.from.optional(type['regular expression']).decide(
         expression => new RegExp('^(?:' + pattern(expression) + ')(?![\\s\\S])', 'u').test(value),
         () => true)

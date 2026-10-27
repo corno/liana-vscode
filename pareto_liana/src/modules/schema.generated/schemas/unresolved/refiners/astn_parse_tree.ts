@@ -24,12 +24,6 @@ export namespace declarations {
         s_source.Value
     >
     
-    export type Schema = p_.Refiner<
-        s_target.types.Schema,
-        s_error.types.Unmarshalling_Error,
-        s_source.Value
-    >
-    
     export type Type_Specification = p_.Refiner<
         s_target.types.Type_Specification,
         s_error.types.Unmarshalling_Error,
@@ -157,65 +151,6 @@ export const Node: declarations.Node = ($, abort) => p_.change_context(r_unmarsh
     }
 }))
 
-export const Schema: declarations.Schema = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-    $,
-    ($) => abort(['value', $]),
-    {
-        'expected properties': p_.literal.dictionary({
-            "structure": null,
-            "resolver": null,
-        }),
-    },
-), ($) => ({
-    'structure': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-        $,
-        ($) => abort(['value', $]),
-        {
-            'id': 'structure',
-        },
-    ), ($) => __operations.namespaces.structure.Structure(
-        $,
-        abort,
-    )),
-    'resolver': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-        $,
-        ($) => abort(['value', $]),
-        {
-            'id': 'resolver',
-        },
-    ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-        $,
-        ($) => abort(['value', $]),
-        {
-            'expected properties': p_.literal.dictionary({
-                "declarations": null,
-                "implementations": null,
-            }),
-        },
-    ), ($) => ({
-        'declarations': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-            $,
-            ($) => abort(['value', $]),
-            {
-                'id': 'declarations',
-            },
-        ), ($) => __operations.namespaces.declarations.Declaration_Namespace(
-            $,
-            abort,
-        )),
-        'implementations': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-            $,
-            ($) => abort(['value', $]),
-            {
-                'id': 'implementations',
-            },
-        ), ($) => __operations.namespaces.resolver.Resolver(
-            $,
-            abort,
-        )),
-    }))),
-}))
-
 export const Type_Specification: declarations.Type_Specification = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
     $,
     ($) => abort(['value', $]),
@@ -232,10 +167,64 @@ export const Type_Specification: declarations.Type_Specification = ($, abort) =>
         {
             'id': 'schema',
         },
-    ), ($) => __operations.Schema(
+    ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
         $,
-        abort,
-    )),
+        ($) => abort(['value', $]),
+        {
+            'expected properties': p_.literal.dictionary({
+                "structure": null,
+                "resolver": null,
+            }),
+        },
+    ), ($) => ({
+        'structure': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+            $,
+            ($) => abort(['value', $]),
+            {
+                'id': 'structure',
+            },
+        ), ($) => __operations.namespaces.structure.Structure(
+            $,
+            abort,
+        )),
+        'resolver': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+            $,
+            ($) => abort(['value', $]),
+            {
+                'id': 'resolver',
+            },
+        ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+            $,
+            ($) => abort(['value', $]),
+            {
+                'expected properties': p_.literal.dictionary({
+                    "declarations": null,
+                    "implementations": null,
+                }),
+            },
+        ), ($) => ({
+            'declarations': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                $,
+                ($) => abort(['value', $]),
+                {
+                    'id': 'declarations',
+                },
+            ), ($) => __operations.namespaces.declarations.Declaration_Namespace(
+                $,
+                abort,
+            )),
+            'implementations': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                $,
+                ($) => abort(['value', $]),
+                {
+                    'id': 'implementations',
+                },
+            ), ($) => __operations.namespaces.resolver.Resolver(
+                $,
+                abort,
+            )),
+        }))),
+    }))),
     'directory': p_.change_context(r_unmarshalled_from_parse_tree.Property(
         $,
         ($) => abort(['value', $]),
@@ -258,32 +247,8 @@ export namespace namespaces {
                 s_source.Value
             >
             
-            export type Basic_Type = p_.Refiner<
-                s_target.namespaces.structure.types.Basic_Type,
-                s_error.types.Unmarshalling_Error,
-                s_source.Value
-            >
-            
             export type Basic_Types = p_.Refiner<
                 s_target.namespaces.structure.types.Basic_Types,
-                s_error.types.Unmarshalling_Error,
-                s_source.Value
-            >
-            
-            export type Dictionary = p_.Refiner<
-                s_target.namespaces.structure.types.Dictionary,
-                s_error.types.Unmarshalling_Error,
-                s_source.Value
-            >
-            
-            export type Group = p_.Refiner<
-                s_target.namespaces.structure.types.Group,
-                s_error.types.Unmarshalling_Error,
-                s_source.Value
-            >
-            
-            export type Namespaces = p_.Refiner<
-                s_target.namespaces.structure.types.Namespaces,
                 s_error.types.Unmarshalling_Error,
                 s_source.Value
             >
@@ -294,14 +259,20 @@ export namespace namespaces {
                 s_source.Value
             >
             
+            export type Namespaces = p_.Refiner<
+                s_target.namespaces.structure.types.Namespaces,
+                s_error.types.Unmarshalling_Error,
+                s_source.Value
+            >
+            
             export type Type = p_.Refiner<
                 s_target.namespaces.structure.types.Type,
                 s_error.types.Unmarshalling_Error,
                 s_source.Value
             >
             
-            export type Type_Reference = p_.Refiner<
-                s_target.namespaces.structure.types.Type_Reference,
+            export type Group = p_.Refiner<
+                s_target.namespaces.structure.types.Group,
                 s_error.types.Unmarshalling_Error,
                 s_source.Value
             >
@@ -312,8 +283,8 @@ export namespace namespaces {
                 s_source.Value
             >
             
-            export type Value_Subselection = p_.Refiner<
-                s_target.namespaces.structure.types.Value_Subselection,
+            export type Dictionary = p_.Refiner<
+                s_target.namespaces.structure.types.Dictionary,
                 s_error.types.Unmarshalling_Error,
                 s_source.Value
             >
@@ -473,33 +444,174 @@ export namespace namespaces {
             }
         }))
         
-        export const Basic_Type: declarations.Basic_Type = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+        export const Basic_Types: declarations.Basic_Types = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Dictionary(
+            $,
+            ($) => abort(['value', $]),
+        ), ($) => p_.from.dictionary($['entries']).map(
+            ($, id) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                $,
+                ($) => abort(['value', $]),
+                {
+                    'expected properties': p_.literal.dictionary({
+                        "type": null,
+                        "regular expression": null,
+                        "hyperlink": null,
+                    }),
+                },
+            ), ($) => ({
+                'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                    $,
+                    ($) => abort(['value', $]),
+                    {
+                        'id': 'type',
+                    },
+                ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
+                    $,
+                    ($) => abort(['value', $]),
+                ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.structure.types.Basic_Types.D.type_ => {
+                    switch ($text) {
+                        case "double quoted": return p_.change_context($['value'], ($) => ['double quoted', r_unmarshalled_from_parse_tree.Nothing(
+                            $,
+                            ($) => abort(['value', $]),
+                        )])
+                        case "undelimited": return p_.change_context($['value'], ($) => ['undelimited', r_unmarshalled_from_parse_tree.Nothing(
+                            $,
+                            ($) => abort(['value', $]),
+                        )])
+                        default: return abort(
+                            ['value', ['liana', {
+                                'type': ['state', ['unknown option', $['option']['token']['value']]],
+                                'range': $['option']['range'],
+                            }]],
+                        )
+                    }
+                }))),
+                'regular expression': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                    $,
+                    ($) => abort(['value', $]),
+                    {
+                        'id': 'regular expression',
+                    },
+                ), ($) => p_.from.optional(r_unmarshalled_from_parse_tree.Optional(
+                    $,
+                    ($) => abort(['value', $]),
+                )['optional']).map(($) => __operations.namespaces.structure.Regular_Expression(
+                    $,
+                    abort,
+                ))),
+                'hyperlink': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                    $,
+                    ($) => abort(['value', $]),
+                    {
+                        'id': 'hyperlink',
+                    },
+                ), ($) => p_.from.optional(r_unmarshalled_from_parse_tree.Optional(
+                    $,
+                    ($) => abort(['value', $]),
+                )['optional']).map(($) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                    $,
+                    ($) => abort(['value', $]),
+                    {
+                        'expected properties': p_.literal.dictionary({
+                            "prefix": null,
+                            "suffix": null,
+                        }),
+                    },
+                ), ($) => ({
+                    'prefix': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                        $,
+                        ($) => abort(['value', $]),
+                        {
+                            'id': 'prefix',
+                        },
+                    ), ($) => p_.change_context(r_token_from_parse_tree.Text(
+                        $,
+                        ($) => abort(['value', ['astn value unmarshalling', $]]),
+                    ), ($) => (() => (($['token']['type'][0]) === ("quoted"))
+                        ? $['token']['value']
+                        : abort(
+                            ['token syntax', {
+                                'type': "text",
+                                'expected': "double quoted",
+                                'found': $['token']['type'][0],
+                                'range': $['range'],
+                            }],
+                        )
+                    )())),
+                    'suffix': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                        $,
+                        ($) => abort(['value', $]),
+                        {
+                            'id': 'suffix',
+                        },
+                    ), ($) => p_.change_context(r_token_from_parse_tree.Text(
+                        $,
+                        ($) => abort(['value', ['astn value unmarshalling', $]]),
+                    ), ($) => (() => (($['token']['type'][0]) === ("quoted"))
+                        ? $['token']['value']
+                        : abort(
+                            ['token syntax', {
+                                'type': "text",
+                                'expected': "double quoted",
+                                'found': $['token']['type'][0],
+                                'range': $['range'],
+                            }],
+                        )
+                    )())),
+                })))),
+            })),
+        ))
+        
+        export const Types: declarations.Types = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Dictionary(
+            $,
+            ($) => abort(['value', $]),
+        ), ($) => p_.from.dictionary($['entries']).map(
+            ($, id) => __operations.namespaces.structure.Type(
+                $,
+                abort,
+            ),
+        ))
+        
+        export const Namespaces: declarations.Namespaces = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Dictionary(
+            $,
+            ($) => abort(['value', $]),
+        ), ($) => p_.from.dictionary($['entries']).map(
+            ($, id) => __operations.namespaces.structure.Structure(
+                $,
+                abort,
+            ),
+        ))
+
+        export const Type: declarations.Type = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
             $,
             ($) => abort(['value', $]),
             {
                 'expected properties': p_.literal.dictionary({
-                    "type": null,
-                    "regular expression": null,
-                    "hyperlink": null,
+                    "visibility": null,
+                    "root value": null,
                 }),
             },
         ), ($) => ({
-            'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+            'visibility': p_.change_context(r_unmarshalled_from_parse_tree.Property(
                 $,
                 ($) => abort(['value', $]),
                 {
-                    'id': 'type',
+                    'id': 'visibility',
                 },
             ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
                 $,
                 ($) => abort(['value', $]),
-            ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.structure.types.Basic_Type.type_ => {
+            ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.structure.types.Type.visibility => {
                 switch ($text) {
-                    case "double quoted": return p_.change_context($['value'], ($) => ['double quoted', r_unmarshalled_from_parse_tree.Nothing(
+                    case "private": return p_.change_context($['value'], ($) => ['private', r_unmarshalled_from_parse_tree.Nothing(
                         $,
                         ($) => abort(['value', $]),
                     )])
-                    case "undelimited": return p_.change_context($['value'], ($) => ['undelimited', r_unmarshalled_from_parse_tree.Nothing(
+                    case "private single use": return p_.change_context($['value'], ($) => ['private single use', r_unmarshalled_from_parse_tree.Nothing(
+                        $,
+                        ($) => abort(['value', $]),
+                    )])
+                    case "public": return p_.change_context($['value'], ($) => ['public', r_unmarshalled_from_parse_tree.Nothing(
                         $,
                         ($) => abort(['value', $]),
                     )])
@@ -511,105 +623,11 @@ export namespace namespaces {
                     )
                 }
             }))),
-            'regular expression': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+            'root value': p_.change_context(r_unmarshalled_from_parse_tree.Property(
                 $,
                 ($) => abort(['value', $]),
                 {
-                    'id': 'regular expression',
-                },
-            ), ($) => p_.from.optional(r_unmarshalled_from_parse_tree.Optional(
-                $,
-                ($) => abort(['value', $]),
-            )['optional']).map(($) => __operations.namespaces.structure.Regular_Expression(
-                $,
-                abort,
-            ))),
-            'hyperlink': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                $,
-                ($) => abort(['value', $]),
-                {
-                    'id': 'hyperlink',
-                },
-            ), ($) => p_.from.optional(r_unmarshalled_from_parse_tree.Optional(
-                $,
-                ($) => abort(['value', $]),
-            )['optional']).map(($) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-                $,
-                ($) => abort(['value', $]),
-                {
-                    'expected properties': p_.literal.dictionary({
-                        "prefix": null,
-                        "suffix": null,
-                    }),
-                },
-            ), ($) => ({
-                'prefix': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                    $,
-                    ($) => abort(['value', $]),
-                    {
-                        'id': 'prefix',
-                    },
-                ), ($) => p_.change_context(r_token_from_parse_tree.Text(
-                    $,
-                    ($) => abort(['value', ['astn value unmarshalling', $]]),
-                ), ($) => (() => (($['token']['type'][0]) === ("quoted"))
-                    ? $['token']['value']
-                    : abort(
-                        ['token syntax', {
-                            'type': "text",
-                            'expected': "double quoted",
-                            'found': $['token']['type'][0],
-                            'range': $['range'],
-                        }],
-                    )
-                )())),
-                'suffix': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                    $,
-                    ($) => abort(['value', $]),
-                    {
-                        'id': 'suffix',
-                    },
-                ), ($) => p_.change_context(r_token_from_parse_tree.Text(
-                    $,
-                    ($) => abort(['value', ['astn value unmarshalling', $]]),
-                ), ($) => (() => (($['token']['type'][0]) === ("quoted"))
-                    ? $['token']['value']
-                    : abort(
-                        ['token syntax', {
-                            'type': "text",
-                            'expected': "double quoted",
-                            'found': $['token']['type'][0],
-                            'range': $['range'],
-                        }],
-                    )
-                )())),
-            })))),
-        }))
-        
-        export const Basic_Types: declarations.Basic_Types = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Dictionary(
-            $,
-            ($) => abort(['value', $]),
-        ), ($) => p_.from.dictionary($['entries']).map(
-            ($, id) => __operations.namespaces.structure.Basic_Type(
-                $,
-                abort,
-            ),
-        ))
-        
-        export const Dictionary: declarations.Dictionary = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-            $,
-            ($) => abort(['value', $]),
-            {
-                'expected properties': p_.literal.dictionary({
-                    "value": null,
-                }),
-            },
-        ), ($) => ({
-            'value': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                $,
-                ($) => abort(['value', $]),
-                {
-                    'id': 'value',
+                    'id': 'root value',
                 },
             ), ($) => __operations.namespaces.structure.Value(
                 $,
@@ -667,175 +685,6 @@ export namespace namespaces {
             })),
         ))
         
-        export const Namespaces: declarations.Namespaces = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Dictionary(
-            $,
-            ($) => abort(['value', $]),
-        ), ($) => p_.from.dictionary($['entries']).map(
-            ($, id) => __operations.namespaces.structure.Structure(
-                $,
-                abort,
-            ),
-        ))
-        
-        export const Types: declarations.Types = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Dictionary(
-            $,
-            ($) => abort(['value', $]),
-        ), ($) => p_.from.dictionary($['entries']).map(
-            ($, id) => __operations.namespaces.structure.Type(
-                $,
-                abort,
-            ),
-        ))
-        
-        export const Type: declarations.Type = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-            $,
-            ($) => abort(['value', $]),
-            {
-                'expected properties': p_.literal.dictionary({
-                    "visibility": null,
-                    "root value": null,
-                }),
-            },
-        ), ($) => ({
-            'visibility': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                $,
-                ($) => abort(['value', $]),
-                {
-                    'id': 'visibility',
-                },
-            ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
-                $,
-                ($) => abort(['value', $]),
-            ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.structure.types.Type.visibility => {
-                switch ($text) {
-                    case "private": return p_.change_context($['value'], ($) => ['private', r_unmarshalled_from_parse_tree.Nothing(
-                        $,
-                        ($) => abort(['value', $]),
-                    )])
-                    case "private single use": return p_.change_context($['value'], ($) => ['private single use', r_unmarshalled_from_parse_tree.Nothing(
-                        $,
-                        ($) => abort(['value', $]),
-                    )])
-                    case "public": return p_.change_context($['value'], ($) => ['public', r_unmarshalled_from_parse_tree.Nothing(
-                        $,
-                        ($) => abort(['value', $]),
-                    )])
-                    default: return abort(
-                        ['value', ['liana', {
-                            'type': ['state', ['unknown option', $['option']['token']['value']]],
-                            'range': $['option']['range'],
-                        }]],
-                    )
-                }
-            }))),
-            'root value': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                $,
-                ($) => abort(['value', $]),
-                {
-                    'id': 'root value',
-                },
-            ), ($) => __operations.namespaces.structure.Value(
-                $,
-                abort,
-            )),
-        }))
-        
-        export const Type_Reference: declarations.Type_Reference = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-            $,
-            ($) => abort(['value', $]),
-            {
-                'expected properties': p_.literal.dictionary({
-                    "location": null,
-                }),
-            },
-        ), ($) => ({
-            'location': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                $,
-                ($) => abort(['value', $]),
-                {
-                    'id': 'location',
-                },
-            ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
-                $,
-                ($) => abort(['value', $]),
-            ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.structure.types.Type_Reference.location => {
-                switch ($text) {
-                    case "local": return p_.change_context($['value'], ($) => ['local', r_unmarshalled_from_parse_tree.Text(
-                        $,
-                        ($) => abort(['value', $]),
-                    )])
-                    case "child namespace": return p_.change_context($['value'], ($) => ['child namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-                        $,
-                        ($) => abort(['value', $]),
-                        {
-                            'expected properties': p_.literal.dictionary({
-                                "namespace": null,
-                                "type": null,
-                            }),
-                        },
-                    ), ($) => ({
-                        'namespace': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                            $,
-                            ($) => abort(['value', $]),
-                            {
-                                'id': 'namespace',
-                            },
-                        ), ($) => r_unmarshalled_from_parse_tree.Text(
-                            $,
-                            ($) => abort(['value', $]),
-                        )),
-                        'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                            $,
-                            ($) => abort(['value', $]),
-                            {
-                                'id': 'type',
-                            },
-                        ), ($) => r_unmarshalled_from_parse_tree.Text(
-                            $,
-                            ($) => abort(['value', $]),
-                        )),
-                    }))])
-                    case "sibling namespace": return p_.change_context($['value'], ($) => ['sibling namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-                        $,
-                        ($) => abort(['value', $]),
-                        {
-                            'expected properties': p_.literal.dictionary({
-                                "namespace": null,
-                                "type": null,
-                            }),
-                        },
-                    ), ($) => ({
-                        'namespace': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                            $,
-                            ($) => abort(['value', $]),
-                            {
-                                'id': 'namespace',
-                            },
-                        ), ($) => r_unmarshalled_from_parse_tree.Text(
-                            $,
-                            ($) => abort(['value', $]),
-                        )),
-                        'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                            $,
-                            ($) => abort(['value', $]),
-                            {
-                                'id': 'type',
-                            },
-                        ), ($) => r_unmarshalled_from_parse_tree.Text(
-                            $,
-                            ($) => abort(['value', $]),
-                        )),
-                    }))])
-                    default: return abort(
-                        ['value', ['liana', {
-                            'type': ['state', ['unknown option', $['option']['token']['value']]],
-                            'range': $['option']['range'],
-                        }]],
-                    )
-                }
-            }))),
-        }))
-        
         export const Value: declarations.Value = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.State(
             $,
             ($) => abort(['value', $]),
@@ -862,75 +711,163 @@ export namespace namespaces {
                         ($) => abort(['value', $]),
                     ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.structure.types.Value.component.type_ => {
                         switch ($text) {
-                            case "local": return p_.change_context($['value'], ($) => ['local', r_unmarshalled_from_parse_tree.Text(
+                            case "simple": return p_.change_context($['value'], ($) => ['simple', p_.change_context(r_unmarshalled_from_parse_tree.State(
                                 $,
                                 ($) => abort(['value', $]),
-                            )])
-                            case "child namespace": return p_.change_context($['value'], ($) => ['child namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-                                $,
-                                ($) => abort(['value', $]),
-                                {
-                                    'expected properties': p_.literal.dictionary({
-                                        "namespace": null,
-                                        "type": null,
-                                    }),
-                                },
-                            ), ($) => ({
-                                'namespace': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                                    $,
-                                    ($) => abort(['value', $]),
-                                    {
-                                        'id': 'namespace',
-                                    },
-                                ), ($) => r_unmarshalled_from_parse_tree.Text(
-                                    $,
-                                    ($) => abort(['value', $]),
-                                )),
-                                'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                                    $,
-                                    ($) => abort(['value', $]),
-                                    {
-                                        'id': 'type',
-                                    },
-                                ), ($) => r_unmarshalled_from_parse_tree.Text(
-                                    $,
-                                    ($) => abort(['value', $]),
-                                )),
+                            ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.structure.types.Value.component.type_.simple => {
+                                switch ($text) {
+                                    case "local": return p_.change_context($['value'], ($) => ['local', r_unmarshalled_from_parse_tree.Text(
+                                        $,
+                                        ($) => abort(['value', $]),
+                                    )])
+                                    case "child namespace": return p_.change_context($['value'], ($) => ['child namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                                        $,
+                                        ($) => abort(['value', $]),
+                                        {
+                                            'expected properties': p_.literal.dictionary({
+                                                "namespace": null,
+                                                "type": null,
+                                            }),
+                                        },
+                                    ), ($) => ({
+                                        'namespace': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                            $,
+                                            ($) => abort(['value', $]),
+                                            {
+                                                'id': 'namespace',
+                                            },
+                                        ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                            $,
+                                            ($) => abort(['value', $]),
+                                        )),
+                                        'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                            $,
+                                            ($) => abort(['value', $]),
+                                            {
+                                                'id': 'type',
+                                            },
+                                        ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                            $,
+                                            ($) => abort(['value', $]),
+                                        )),
+                                    }))])
+                                    case "sibling namespace": return p_.change_context($['value'], ($) => ['sibling namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                                        $,
+                                        ($) => abort(['value', $]),
+                                        {
+                                            'expected properties': p_.literal.dictionary({
+                                                "namespace": null,
+                                                "type": null,
+                                            }),
+                                        },
+                                    ), ($) => ({
+                                        'namespace': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                            $,
+                                            ($) => abort(['value', $]),
+                                            {
+                                                'id': 'namespace',
+                                            },
+                                        ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                            $,
+                                            ($) => abort(['value', $]),
+                                        )),
+                                        'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                            $,
+                                            ($) => abort(['value', $]),
+                                            {
+                                                'id': 'type',
+                                            },
+                                        ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                            $,
+                                            ($) => abort(['value', $]),
+                                        )),
+                                    }))])
+                                    default: return abort(
+                                        ['value', ['liana', {
+                                            'type': ['state', ['unknown option', $['option']['token']['value']]],
+                                            'range': $['option']['range'],
+                                        }]],
+                                    )
+                                }
                             }))])
-                            case "local cyclic": return p_.change_context($['value'], ($) => ['local cyclic', r_unmarshalled_from_parse_tree.Text(
+                            case "navigable": return p_.change_context($['value'], ($) => ['navigable', p_.change_context(r_unmarshalled_from_parse_tree.State(
                                 $,
                                 ($) => abort(['value', $]),
-                            )])
-                            case "sibling namespace": return p_.change_context($['value'], ($) => ['sibling namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-                                $,
-                                ($) => abort(['value', $]),
-                                {
-                                    'expected properties': p_.literal.dictionary({
-                                        "namespace": null,
-                                        "type": null,
-                                    }),
-                                },
-                            ), ($) => ({
-                                'namespace': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                                    $,
-                                    ($) => abort(['value', $]),
-                                    {
-                                        'id': 'namespace',
-                                    },
-                                ), ($) => r_unmarshalled_from_parse_tree.Text(
-                                    $,
-                                    ($) => abort(['value', $]),
-                                )),
-                                'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                                    $,
-                                    ($) => abort(['value', $]),
-                                    {
-                                        'id': 'type',
-                                    },
-                                ), ($) => r_unmarshalled_from_parse_tree.Text(
-                                    $,
-                                    ($) => abort(['value', $]),
-                                )),
+                            ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.structure.types.Value.component.type_.navigable => {
+                                switch ($text) {
+                                    case "local": return p_.change_context($['value'], ($) => ['local', r_unmarshalled_from_parse_tree.Text(
+                                        $,
+                                        ($) => abort(['value', $]),
+                                    )])
+                                    case "child namespace": return p_.change_context($['value'], ($) => ['child namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                                        $,
+                                        ($) => abort(['value', $]),
+                                        {
+                                            'expected properties': p_.literal.dictionary({
+                                                "namespace": null,
+                                                "type": null,
+                                            }),
+                                        },
+                                    ), ($) => ({
+                                        'namespace': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                            $,
+                                            ($) => abort(['value', $]),
+                                            {
+                                                'id': 'namespace',
+                                            },
+                                        ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                            $,
+                                            ($) => abort(['value', $]),
+                                        )),
+                                        'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                            $,
+                                            ($) => abort(['value', $]),
+                                            {
+                                                'id': 'type',
+                                            },
+                                        ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                            $,
+                                            ($) => abort(['value', $]),
+                                        )),
+                                    }))])
+                                    case "sibling namespace": return p_.change_context($['value'], ($) => ['sibling namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                                        $,
+                                        ($) => abort(['value', $]),
+                                        {
+                                            'expected properties': p_.literal.dictionary({
+                                                "namespace": null,
+                                                "type": null,
+                                            }),
+                                        },
+                                    ), ($) => ({
+                                        'namespace': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                            $,
+                                            ($) => abort(['value', $]),
+                                            {
+                                                'id': 'namespace',
+                                            },
+                                        ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                            $,
+                                            ($) => abort(['value', $]),
+                                        )),
+                                        'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                            $,
+                                            ($) => abort(['value', $]),
+                                            {
+                                                'id': 'type',
+                                            },
+                                        ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                            $,
+                                            ($) => abort(['value', $]),
+                                        )),
+                                    }))])
+                                    default: return abort(
+                                        ['value', ['liana', {
+                                            'type': ['state', ['unknown option', $['option']['token']['value']]],
+                                            'range': $['option']['range'],
+                                        }]],
+                                    )
+                                }
                             }))])
                             default: return abort(
                                 ['value', ['liana', {
@@ -1140,58 +1077,38 @@ export namespace namespaces {
             }
         }))
         
-        export const Value_Subselection: declarations.Value_Subselection = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+        export const Dictionary: declarations.Dictionary = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
             $,
             ($) => abort(['value', $]),
             {
                 'expected properties': p_.literal.dictionary({
-                    "tail": null,
+                    "benchmark": null,
+                    "value": null,
                 }),
             },
         ), ($) => ({
-            'tail': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+            'benchmark': p_.change_context(r_unmarshalled_from_parse_tree.Property(
                 $,
                 ($) => abort(['value', $]),
                 {
-                    'id': 'tail',
+                    'id': 'benchmark',
                 },
-            ), ($) => p_.from.list(r_unmarshalled_from_parse_tree.List(
+            ), ($) => p_.from.optional(r_unmarshalled_from_parse_tree.Optional(
                 $,
                 ($) => abort(['value', $]),
-            )['items']).map(
-                ($) => p_.change_context($['value'], ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
-                    $,
-                    ($) => abort(['value', $]),
-                ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.structure.types.Value_Subselection.tail.L => {
-                    switch ($text) {
-                        case "dictionary": return p_.change_context($['value'], ($) => ['dictionary', r_unmarshalled_from_parse_tree.Nothing(
-                            $,
-                            ($) => abort(['value', $]),
-                        )])
-                        case "group": return p_.change_context($['value'], ($) => ['group', r_unmarshalled_from_parse_tree.Text(
-                            $,
-                            ($) => abort(['value', $]),
-                        )])
-                        case "list": return p_.change_context($['value'], ($) => ['list', r_unmarshalled_from_parse_tree.Nothing(
-                            $,
-                            ($) => abort(['value', $]),
-                        )])
-                        case "optional": return p_.change_context($['value'], ($) => ['optional', r_unmarshalled_from_parse_tree.Nothing(
-                            $,
-                            ($) => abort(['value', $]),
-                        )])
-                        case "state": return p_.change_context($['value'], ($) => ['state', r_unmarshalled_from_parse_tree.Text(
-                            $,
-                            ($) => abort(['value', $]),
-                        )])
-                        default: return abort(
-                            ['value', ['liana', {
-                                'type': ['state', ['unknown option', $['option']['token']['value']]],
-                                'range': $['option']['range'],
-                            }]],
-                        )
-                    }
-                }))),
+            )['optional']).map(($) => __operations.namespaces.structure.Value_Reference(
+                $,
+                abort,
+            ))),
+            'value': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                $,
+                ($) => abort(['value', $]),
+                {
+                    'id': 'value',
+                },
+            ), ($) => __operations.namespaces.structure.Value(
+                $,
+                abort,
             )),
         }))
         
@@ -1211,20 +1128,165 @@ export namespace namespaces {
                 {
                     'id': 'type',
                 },
-            ), ($) => __operations.namespaces.structure.Type_Reference(
+            ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
                 $,
-                abort,
-            )),
+                ($) => abort(['value', $]),
+                {
+                    'expected properties': p_.literal.dictionary({
+                        "location": null,
+                    }),
+                },
+            ), ($) => ({
+                'location': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                    $,
+                    ($) => abort(['value', $]),
+                    {
+                        'id': 'location',
+                    },
+                ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
+                    $,
+                    ($) => abort(['value', $]),
+                ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.structure.types.Value_Reference.type_.location => {
+                    switch ($text) {
+                        case "local": return p_.change_context($['value'], ($) => ['local', r_unmarshalled_from_parse_tree.Text(
+                            $,
+                            ($) => abort(['value', $]),
+                        )])
+                        case "child namespace": return p_.change_context($['value'], ($) => ['child namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                            $,
+                            ($) => abort(['value', $]),
+                            {
+                                'expected properties': p_.literal.dictionary({
+                                    "namespace": null,
+                                    "type": null,
+                                }),
+                            },
+                        ), ($) => ({
+                            'namespace': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                $,
+                                ($) => abort(['value', $]),
+                                {
+                                    'id': 'namespace',
+                                },
+                            ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                $,
+                                ($) => abort(['value', $]),
+                            )),
+                            'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                $,
+                                ($) => abort(['value', $]),
+                                {
+                                    'id': 'type',
+                                },
+                            ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                $,
+                                ($) => abort(['value', $]),
+                            )),
+                        }))])
+                        case "sibling namespace": return p_.change_context($['value'], ($) => ['sibling namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                            $,
+                            ($) => abort(['value', $]),
+                            {
+                                'expected properties': p_.literal.dictionary({
+                                    "namespace": null,
+                                    "type": null,
+                                }),
+                            },
+                        ), ($) => ({
+                            'namespace': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                $,
+                                ($) => abort(['value', $]),
+                                {
+                                    'id': 'namespace',
+                                },
+                            ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                $,
+                                ($) => abort(['value', $]),
+                            )),
+                            'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                $,
+                                ($) => abort(['value', $]),
+                                {
+                                    'id': 'type',
+                                },
+                            ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                $,
+                                ($) => abort(['value', $]),
+                            )),
+                        }))])
+                        default: return abort(
+                            ['value', ['liana', {
+                                'type': ['state', ['unknown option', $['option']['token']['value']]],
+                                'range': $['option']['range'],
+                            }]],
+                        )
+                    }
+                }))),
+            }))),
             'path': p_.change_context(r_unmarshalled_from_parse_tree.Property(
                 $,
                 ($) => abort(['value', $]),
                 {
                     'id': 'path',
                 },
-            ), ($) => __operations.namespaces.structure.Value_Subselection(
+            ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
                 $,
-                abort,
-            )),
+                ($) => abort(['value', $]),
+                {
+                    'expected properties': p_.literal.dictionary({
+                        "tail": null,
+                    }),
+                },
+            ), ($) => ({
+                'tail': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                    $,
+                    ($) => abort(['value', $]),
+                    {
+                        'id': 'tail',
+                    },
+                ), ($) => p_.from.list(r_unmarshalled_from_parse_tree.List(
+                    $,
+                    ($) => abort(['value', $]),
+                )['items']).map(
+                    ($) => p_.change_context($['value'], ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
+                        $,
+                        ($) => abort(['value', $]),
+                    ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.structure.types.Value_Reference.path.tail.L => {
+                        switch ($text) {
+                            case "benchmark": return p_.change_context($['value'], ($) => ['benchmark', r_unmarshalled_from_parse_tree.Nothing(
+                                $,
+                                ($) => abort(['value', $]),
+                            )])
+                            case "dictionary": return p_.change_context($['value'], ($) => ['dictionary', r_unmarshalled_from_parse_tree.Nothing(
+                                $,
+                                ($) => abort(['value', $]),
+                            )])
+                            case "group": return p_.change_context($['value'], ($) => ['group', r_unmarshalled_from_parse_tree.Text(
+                                $,
+                                ($) => abort(['value', $]),
+                            )])
+                            case "list": return p_.change_context($['value'], ($) => ['list', r_unmarshalled_from_parse_tree.Nothing(
+                                $,
+                                ($) => abort(['value', $]),
+                            )])
+                            case "optional": return p_.change_context($['value'], ($) => ['optional', r_unmarshalled_from_parse_tree.Nothing(
+                                $,
+                                ($) => abort(['value', $]),
+                            )])
+                            case "state": return p_.change_context($['value'], ($) => ['state', r_unmarshalled_from_parse_tree.Text(
+                                $,
+                                ($) => abort(['value', $]),
+                            )])
+                            default: return abort(
+                                ['value', ['liana', {
+                                    'type': ['state', ['unknown option', $['option']['token']['value']]],
+                                    'range': $['option']['range'],
+                                }]],
+                            )
+                        }
+                    }))),
+                )),
+            }))),
         }))
         
         export const Option_Constraints: declarations.Option_Constraints = ($, abort) => p_.from.optional(r_unmarshalled_from_parse_tree.Optional(
@@ -1391,18 +1453,6 @@ export namespace namespaces {
                 s_source.Value
             >
             
-            export type Signature_Type_Reference = p_.Refiner<
-                s_target.namespaces.declarations.types.Signature_Type_Reference,
-                s_error.types.Unmarshalling_Error,
-                s_source.Value
-            >
-            
-            export type Signature_Value_Subselection = p_.Refiner<
-                s_target.namespaces.declarations.types.Signature_Value_Subselection,
-                s_error.types.Unmarshalling_Error,
-                s_source.Value
-            >
-            
             export type Signature_Value_Reference = p_.Refiner<
                 s_target.namespaces.declarations.types.Signature_Value_Reference,
                 s_error.types.Unmarshalling_Error,
@@ -1464,157 +1514,6 @@ export namespace namespaces {
             }
         }))
         
-        export const Signature_Type_Reference: declarations.Signature_Type_Reference = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-            $,
-            ($) => abort(['value', $]),
-            {
-                'expected properties': p_.literal.dictionary({
-                    "location": null,
-                }),
-            },
-        ), ($) => ({
-            'location': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                $,
-                ($) => abort(['value', $]),
-                {
-                    'id': 'location',
-                },
-            ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
-                $,
-                ($) => abort(['value', $]),
-            ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.declarations.types.Signature_Type_Reference.location => {
-                switch ($text) {
-                    case "local": return p_.change_context($['value'], ($) => ['local', r_unmarshalled_from_parse_tree.Text(
-                        $,
-                        ($) => abort(['value', $]),
-                    )])
-                    case "child namespace": return p_.change_context($['value'], ($) => ['child namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-                        $,
-                        ($) => abort(['value', $]),
-                        {
-                            'expected properties': p_.literal.dictionary({
-                                "namespace": null,
-                                "type": null,
-                            }),
-                        },
-                    ), ($) => ({
-                        'namespace': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                            $,
-                            ($) => abort(['value', $]),
-                            {
-                                'id': 'namespace',
-                            },
-                        ), ($) => r_unmarshalled_from_parse_tree.Text(
-                            $,
-                            ($) => abort(['value', $]),
-                        )),
-                        'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                            $,
-                            ($) => abort(['value', $]),
-                            {
-                                'id': 'type',
-                            },
-                        ), ($) => r_unmarshalled_from_parse_tree.Text(
-                            $,
-                            ($) => abort(['value', $]),
-                        )),
-                    }))])
-                    case "sibling namespace": return p_.change_context($['value'], ($) => ['sibling namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-                        $,
-                        ($) => abort(['value', $]),
-                        {
-                            'expected properties': p_.literal.dictionary({
-                                "namespace": null,
-                                "type": null,
-                            }),
-                        },
-                    ), ($) => ({
-                        'namespace': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                            $,
-                            ($) => abort(['value', $]),
-                            {
-                                'id': 'namespace',
-                            },
-                        ), ($) => r_unmarshalled_from_parse_tree.Text(
-                            $,
-                            ($) => abort(['value', $]),
-                        )),
-                        'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                            $,
-                            ($) => abort(['value', $]),
-                            {
-                                'id': 'type',
-                            },
-                        ), ($) => r_unmarshalled_from_parse_tree.Text(
-                            $,
-                            ($) => abort(['value', $]),
-                        )),
-                    }))])
-                    default: return abort(
-                        ['value', ['liana', {
-                            'type': ['state', ['unknown option', $['option']['token']['value']]],
-                            'range': $['option']['range'],
-                        }]],
-                    )
-                }
-            }))),
-        }))
-        
-        export const Signature_Value_Subselection: declarations.Signature_Value_Subselection = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-            $,
-            ($) => abort(['value', $]),
-            {
-                'expected properties': p_.literal.dictionary({
-                    "tail": null,
-                }),
-            },
-        ), ($) => ({
-            'tail': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                $,
-                ($) => abort(['value', $]),
-                {
-                    'id': 'tail',
-                },
-            ), ($) => p_.from.list(r_unmarshalled_from_parse_tree.List(
-                $,
-                ($) => abort(['value', $]),
-            )['items']).map(
-                ($) => p_.change_context($['value'], ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
-                    $,
-                    ($) => abort(['value', $]),
-                ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.declarations.types.Signature_Value_Subselection.tail.L => {
-                    switch ($text) {
-                        case "dictionary": return p_.change_context($['value'], ($) => ['dictionary', r_unmarshalled_from_parse_tree.Nothing(
-                            $,
-                            ($) => abort(['value', $]),
-                        )])
-                        case "group": return p_.change_context($['value'], ($) => ['group', r_unmarshalled_from_parse_tree.Text(
-                            $,
-                            ($) => abort(['value', $]),
-                        )])
-                        case "list": return p_.change_context($['value'], ($) => ['list', r_unmarshalled_from_parse_tree.Nothing(
-                            $,
-                            ($) => abort(['value', $]),
-                        )])
-                        case "optional": return p_.change_context($['value'], ($) => ['optional', r_unmarshalled_from_parse_tree.Nothing(
-                            $,
-                            ($) => abort(['value', $]),
-                        )])
-                        case "state": return p_.change_context($['value'], ($) => ['state', r_unmarshalled_from_parse_tree.Text(
-                            $,
-                            ($) => abort(['value', $]),
-                        )])
-                        default: return abort(
-                            ['value', ['liana', {
-                                'type': ['state', ['unknown option', $['option']['token']['value']]],
-                                'range': $['option']['range'],
-                            }]],
-                        )
-                    }
-                }))),
-            )),
-        }))
-        
         export const Signature_Value_Reference: declarations.Signature_Value_Reference = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
             $,
             ($) => abort(['value', $]),
@@ -1631,20 +1530,161 @@ export namespace namespaces {
                 {
                     'id': 'type',
                 },
-            ), ($) => __operations.namespaces.declarations.Signature_Type_Reference(
+            ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
                 $,
-                abort,
-            )),
+                ($) => abort(['value', $]),
+                {
+                    'expected properties': p_.literal.dictionary({
+                        "location": null,
+                    }),
+                },
+            ), ($) => ({
+                'location': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                    $,
+                    ($) => abort(['value', $]),
+                    {
+                        'id': 'location',
+                    },
+                ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
+                    $,
+                    ($) => abort(['value', $]),
+                ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.declarations.types.Signature_Value_Reference.type_.location => {
+                    switch ($text) {
+                        case "local": return p_.change_context($['value'], ($) => ['local', r_unmarshalled_from_parse_tree.Text(
+                            $,
+                            ($) => abort(['value', $]),
+                        )])
+                        case "child namespace": return p_.change_context($['value'], ($) => ['child namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                            $,
+                            ($) => abort(['value', $]),
+                            {
+                                'expected properties': p_.literal.dictionary({
+                                    "namespace": null,
+                                    "type": null,
+                                }),
+                            },
+                        ), ($) => ({
+                            'namespace': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                $,
+                                ($) => abort(['value', $]),
+                                {
+                                    'id': 'namespace',
+                                },
+                            ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                $,
+                                ($) => abort(['value', $]),
+                            )),
+                            'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                $,
+                                ($) => abort(['value', $]),
+                                {
+                                    'id': 'type',
+                                },
+                            ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                $,
+                                ($) => abort(['value', $]),
+                            )),
+                        }))])
+                        case "sibling namespace": return p_.change_context($['value'], ($) => ['sibling namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                            $,
+                            ($) => abort(['value', $]),
+                            {
+                                'expected properties': p_.literal.dictionary({
+                                    "namespace": null,
+                                    "type": null,
+                                }),
+                            },
+                        ), ($) => ({
+                            'namespace': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                $,
+                                ($) => abort(['value', $]),
+                                {
+                                    'id': 'namespace',
+                                },
+                            ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                $,
+                                ($) => abort(['value', $]),
+                            )),
+                            'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                $,
+                                ($) => abort(['value', $]),
+                                {
+                                    'id': 'type',
+                                },
+                            ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                $,
+                                ($) => abort(['value', $]),
+                            )),
+                        }))])
+                        default: return abort(
+                            ['value', ['liana', {
+                                'type': ['state', ['unknown option', $['option']['token']['value']]],
+                                'range': $['option']['range'],
+                            }]],
+                        )
+                    }
+                }))),
+            }))),
             'subselection': p_.change_context(r_unmarshalled_from_parse_tree.Property(
                 $,
                 ($) => abort(['value', $]),
                 {
                     'id': 'subselection',
                 },
-            ), ($) => __operations.namespaces.declarations.Signature_Value_Subselection(
+            ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
                 $,
-                abort,
-            )),
+                ($) => abort(['value', $]),
+                {
+                    'expected properties': p_.literal.dictionary({
+                        "tail": null,
+                    }),
+                },
+            ), ($) => ({
+                'tail': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                    $,
+                    ($) => abort(['value', $]),
+                    {
+                        'id': 'tail',
+                    },
+                ), ($) => p_.from.list(r_unmarshalled_from_parse_tree.List(
+                    $,
+                    ($) => abort(['value', $]),
+                )['items']).map(
+                    ($) => p_.change_context($['value'], ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
+                        $,
+                        ($) => abort(['value', $]),
+                    ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.declarations.types.Signature_Value_Reference.subselection.tail.L => {
+                        switch ($text) {
+                            case "dictionary": return p_.change_context($['value'], ($) => ['dictionary', r_unmarshalled_from_parse_tree.Nothing(
+                                $,
+                                ($) => abort(['value', $]),
+                            )])
+                            case "group": return p_.change_context($['value'], ($) => ['group', r_unmarshalled_from_parse_tree.Text(
+                                $,
+                                ($) => abort(['value', $]),
+                            )])
+                            case "list": return p_.change_context($['value'], ($) => ['list', r_unmarshalled_from_parse_tree.Nothing(
+                                $,
+                                ($) => abort(['value', $]),
+                            )])
+                            case "optional": return p_.change_context($['value'], ($) => ['optional', r_unmarshalled_from_parse_tree.Nothing(
+                                $,
+                                ($) => abort(['value', $]),
+                            )])
+                            case "state": return p_.change_context($['value'], ($) => ['state', r_unmarshalled_from_parse_tree.Text(
+                                $,
+                                ($) => abort(['value', $]),
+                            )])
+                            default: return abort(
+                                ['value', ['liana', {
+                                    'type': ['state', ['unknown option', $['option']['token']['value']]],
+                                    'range': $['option']['range'],
+                                }]],
+                            )
+                        }
+                    }))),
+                )),
+            }))),
         }))
         
         export const Signature: declarations.Signature = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
@@ -1866,62 +1906,20 @@ export namespace namespaces {
         
         export namespace declarations {
             
-            export type Absence_Constraints = p_.Refiner<
-                s_target.namespaces.resolver.types.Absence_Constraints,
-                s_error.types.Unmarshalling_Error,
-                s_source.Value
-            >
-            
-            export type Type_Reference = p_.Refiner<
-                s_target.namespaces.resolver.types.Type_Reference,
-                s_error.types.Unmarshalling_Error,
-                s_source.Value
-            >
-            
-            export type Value_Subselection = p_.Refiner<
-                s_target.namespaces.resolver.types.Value_Subselection,
-                s_error.types.Unmarshalling_Error,
-                s_source.Value
-            >
-            
             export type Value_Reference = p_.Refiner<
                 s_target.namespaces.resolver.types.Value_Reference,
                 s_error.types.Unmarshalling_Error,
                 s_source.Value
             >
             
+            export type Simple_Component_Selection = p_.Refiner<
+                s_target.namespaces.resolver.types.Simple_Component_Selection,
+                s_error.types.Unmarshalling_Error,
+                s_source.Value
+            >
+            
             export type Relative_Value_Selection = p_.Refiner<
                 s_target.namespaces.resolver.types.Relative_Value_Selection,
-                s_error.types.Unmarshalling_Error,
-                s_source.Value
-            >
-            
-            export type Guaranteed_Value_Selection = p_.Refiner<
-                s_target.namespaces.resolver.types.Guaranteed_Value_Selection,
-                s_error.types.Unmarshalling_Error,
-                s_source.Value
-            >
-            
-            export type Benchmark = p_.Refiner<
-                s_target.namespaces.resolver.types.Benchmark,
-                s_error.types.Unmarshalling_Error,
-                s_source.Value
-            >
-            
-            export type Constraint = p_.Refiner<
-                s_target.namespaces.resolver.types.Constraint,
-                s_error.types.Unmarshalling_Error,
-                s_source.Value
-            >
-            
-            export type Lookup_Selection = p_.Refiner<
-                s_target.namespaces.resolver.types.Lookup_Selection,
-                s_error.types.Unmarshalling_Error,
-                s_source.Value
-            >
-            
-            export type Namespaces = p_.Refiner<
-                s_target.namespaces.resolver.types.Namespaces,
                 s_error.types.Unmarshalling_Error,
                 s_source.Value
             >
@@ -1938,8 +1936,14 @@ export namespace namespaces {
                 s_source.Value
             >
             
-            export type Optional_Value_Initialization = p_.Refiner<
-                s_target.namespaces.resolver.types.Optional_Value_Initialization,
+            export type Guaranteed_Value_Selection = p_.Refiner<
+                s_target.namespaces.resolver.types.Guaranteed_Value_Selection,
+                s_error.types.Unmarshalling_Error,
+                s_source.Value
+            >
+            
+            export type Lookup_Selection = p_.Refiner<
+                s_target.namespaces.resolver.types.Lookup_Selection,
                 s_error.types.Unmarshalling_Error,
                 s_source.Value
             >
@@ -1950,32 +1954,8 @@ export namespace namespaces {
                 s_source.Value
             >
             
-            export type Reference_To_Value_Constraint = p_.Refiner<
-                s_target.namespaces.resolver.types.Reference_To_Value_Constraint,
-                s_error.types.Unmarshalling_Error,
-                s_source.Value
-            >
-            
-            export type Resolver = p_.Refiner<
-                s_target.namespaces.resolver.types.Resolver,
-                s_error.types.Unmarshalling_Error,
-                s_source.Value
-            >
-            
             export type Result_Selection = p_.Refiner<
                 s_target.namespaces.resolver.types.Result_Selection,
-                s_error.types.Unmarshalling_Error,
-                s_source.Value
-            >
-            
-            export type Value_Group = p_.Refiner<
-                s_target.namespaces.resolver.types.Value_Group,
-                s_error.types.Unmarshalling_Error,
-                s_source.Value
-            >
-            
-            export type Value_List_Result = p_.Refiner<
-                s_target.namespaces.resolver.types.Value_List_Result,
                 s_error.types.Unmarshalling_Error,
                 s_source.Value
             >
@@ -1986,190 +1966,14 @@ export namespace namespaces {
                 s_source.Value
             >
             
-            export type Types = p_.Refiner<
-                s_target.namespaces.resolver.types.Types,
-                s_error.types.Unmarshalling_Error,
-                s_source.Value
-            >
-            
-            export type Value_Constraint = p_.Refiner<
-                s_target.namespaces.resolver.types.Value_Constraint,
-                s_error.types.Unmarshalling_Error,
-                s_source.Value
-            >
-            
-            export type Value_Constraints = p_.Refiner<
-                s_target.namespaces.resolver.types.Value_Constraints,
+            export type Resolver = p_.Refiner<
+                s_target.namespaces.resolver.types.Resolver,
                 s_error.types.Unmarshalling_Error,
                 s_source.Value
             >
         }
         
         // implementations
-        
-        export const Absence_Constraints: declarations.Absence_Constraints = ($, abort) => p_.from.optional(r_unmarshalled_from_parse_tree.Optional(
-            $,
-            ($) => abort(['value', $]),
-        )['optional']).map(($) => p_.change_context(r_unmarshalled_from_parse_tree.Dictionary(
-            $,
-            ($) => abort(['value', $]),
-        ), ($) => p_.from.dictionary($['entries']).map(
-            ($, id) => __operations.namespaces.resolver.Possible_Value_Selection(
-                $,
-                abort,
-            ),
-        )))
-        
-        export const Type_Reference: declarations.Type_Reference = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-            $,
-            ($) => abort(['value', $]),
-            {
-                'expected properties': p_.literal.dictionary({
-                    "location": null,
-                }),
-            },
-        ), ($) => ({
-            'location': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                $,
-                ($) => abort(['value', $]),
-                {
-                    'id': 'location',
-                },
-            ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
-                $,
-                ($) => abort(['value', $]),
-            ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Type_Reference.location => {
-                switch ($text) {
-                    case "local": return p_.change_context($['value'], ($) => ['local', r_unmarshalled_from_parse_tree.Text(
-                        $,
-                        ($) => abort(['value', $]),
-                    )])
-                    case "child namespace": return p_.change_context($['value'], ($) => ['child namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-                        $,
-                        ($) => abort(['value', $]),
-                        {
-                            'expected properties': p_.literal.dictionary({
-                                "namespace": null,
-                                "type": null,
-                            }),
-                        },
-                    ), ($) => ({
-                        'namespace': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                            $,
-                            ($) => abort(['value', $]),
-                            {
-                                'id': 'namespace',
-                            },
-                        ), ($) => r_unmarshalled_from_parse_tree.Text(
-                            $,
-                            ($) => abort(['value', $]),
-                        )),
-                        'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                            $,
-                            ($) => abort(['value', $]),
-                            {
-                                'id': 'type',
-                            },
-                        ), ($) => r_unmarshalled_from_parse_tree.Text(
-                            $,
-                            ($) => abort(['value', $]),
-                        )),
-                    }))])
-                    case "sibling namespace": return p_.change_context($['value'], ($) => ['sibling namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-                        $,
-                        ($) => abort(['value', $]),
-                        {
-                            'expected properties': p_.literal.dictionary({
-                                "namespace": null,
-                                "type": null,
-                            }),
-                        },
-                    ), ($) => ({
-                        'namespace': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                            $,
-                            ($) => abort(['value', $]),
-                            {
-                                'id': 'namespace',
-                            },
-                        ), ($) => r_unmarshalled_from_parse_tree.Text(
-                            $,
-                            ($) => abort(['value', $]),
-                        )),
-                        'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                            $,
-                            ($) => abort(['value', $]),
-                            {
-                                'id': 'type',
-                            },
-                        ), ($) => r_unmarshalled_from_parse_tree.Text(
-                            $,
-                            ($) => abort(['value', $]),
-                        )),
-                    }))])
-                    default: return abort(
-                        ['value', ['liana', {
-                            'type': ['state', ['unknown option', $['option']['token']['value']]],
-                            'range': $['option']['range'],
-                        }]],
-                    )
-                }
-            }))),
-        }))
-        
-        export const Value_Subselection: declarations.Value_Subselection = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-            $,
-            ($) => abort(['value', $]),
-            {
-                'expected properties': p_.literal.dictionary({
-                    "tail": null,
-                }),
-            },
-        ), ($) => ({
-            'tail': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                $,
-                ($) => abort(['value', $]),
-                {
-                    'id': 'tail',
-                },
-            ), ($) => p_.from.list(r_unmarshalled_from_parse_tree.List(
-                $,
-                ($) => abort(['value', $]),
-            )['items']).map(
-                ($) => p_.change_context($['value'], ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
-                    $,
-                    ($) => abort(['value', $]),
-                ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Value_Subselection.tail.L => {
-                    switch ($text) {
-                        case "dictionary": return p_.change_context($['value'], ($) => ['dictionary', r_unmarshalled_from_parse_tree.Nothing(
-                            $,
-                            ($) => abort(['value', $]),
-                        )])
-                        case "group": return p_.change_context($['value'], ($) => ['group', r_unmarshalled_from_parse_tree.Text(
-                            $,
-                            ($) => abort(['value', $]),
-                        )])
-                        case "list": return p_.change_context($['value'], ($) => ['list', r_unmarshalled_from_parse_tree.Nothing(
-                            $,
-                            ($) => abort(['value', $]),
-                        )])
-                        case "optional": return p_.change_context($['value'], ($) => ['optional', r_unmarshalled_from_parse_tree.Nothing(
-                            $,
-                            ($) => abort(['value', $]),
-                        )])
-                        case "state": return p_.change_context($['value'], ($) => ['state', r_unmarshalled_from_parse_tree.Text(
-                            $,
-                            ($) => abort(['value', $]),
-                        )])
-                        default: return abort(
-                            ['value', ['liana', {
-                                'type': ['state', ['unknown option', $['option']['token']['value']]],
-                                'range': $['option']['range'],
-                            }]],
-                        )
-                    }
-                }))),
-            )),
-        }))
         
         export const Value_Reference: declarations.Value_Reference = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
             $,
@@ -2187,20 +1991,241 @@ export namespace namespaces {
                 {
                     'id': 'type',
                 },
-            ), ($) => __operations.namespaces.resolver.Type_Reference(
+            ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
                 $,
-                abort,
-            )),
+                ($) => abort(['value', $]),
+                {
+                    'expected properties': p_.literal.dictionary({
+                        "location": null,
+                    }),
+                },
+            ), ($) => ({
+                'location': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                    $,
+                    ($) => abort(['value', $]),
+                    {
+                        'id': 'location',
+                    },
+                ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
+                    $,
+                    ($) => abort(['value', $]),
+                ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Value_Reference.type_.location => {
+                    switch ($text) {
+                        case "local": return p_.change_context($['value'], ($) => ['local', r_unmarshalled_from_parse_tree.Text(
+                            $,
+                            ($) => abort(['value', $]),
+                        )])
+                        case "child namespace": return p_.change_context($['value'], ($) => ['child namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                            $,
+                            ($) => abort(['value', $]),
+                            {
+                                'expected properties': p_.literal.dictionary({
+                                    "namespace": null,
+                                    "type": null,
+                                }),
+                            },
+                        ), ($) => ({
+                            'namespace': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                $,
+                                ($) => abort(['value', $]),
+                                {
+                                    'id': 'namespace',
+                                },
+                            ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                $,
+                                ($) => abort(['value', $]),
+                            )),
+                            'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                $,
+                                ($) => abort(['value', $]),
+                                {
+                                    'id': 'type',
+                                },
+                            ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                $,
+                                ($) => abort(['value', $]),
+                            )),
+                        }))])
+                        case "sibling namespace": return p_.change_context($['value'], ($) => ['sibling namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                            $,
+                            ($) => abort(['value', $]),
+                            {
+                                'expected properties': p_.literal.dictionary({
+                                    "namespace": null,
+                                    "type": null,
+                                }),
+                            },
+                        ), ($) => ({
+                            'namespace': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                $,
+                                ($) => abort(['value', $]),
+                                {
+                                    'id': 'namespace',
+                                },
+                            ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                $,
+                                ($) => abort(['value', $]),
+                            )),
+                            'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                $,
+                                ($) => abort(['value', $]),
+                                {
+                                    'id': 'type',
+                                },
+                            ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                $,
+                                ($) => abort(['value', $]),
+                            )),
+                        }))])
+                        default: return abort(
+                            ['value', ['liana', {
+                                'type': ['state', ['unknown option', $['option']['token']['value']]],
+                                'range': $['option']['range'],
+                            }]],
+                        )
+                    }
+                }))),
+            }))),
             'path': p_.change_context(r_unmarshalled_from_parse_tree.Property(
                 $,
                 ($) => abort(['value', $]),
                 {
                     'id': 'path',
                 },
-            ), ($) => __operations.namespaces.resolver.Value_Subselection(
+            ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
                 $,
-                abort,
-            )),
+                ($) => abort(['value', $]),
+                {
+                    'expected properties': p_.literal.dictionary({
+                        "tail": null,
+                    }),
+                },
+            ), ($) => ({
+                'tail': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                    $,
+                    ($) => abort(['value', $]),
+                    {
+                        'id': 'tail',
+                    },
+                ), ($) => p_.from.list(r_unmarshalled_from_parse_tree.List(
+                    $,
+                    ($) => abort(['value', $]),
+                )['items']).map(
+                    ($) => p_.change_context($['value'], ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
+                        $,
+                        ($) => abort(['value', $]),
+                    ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Value_Reference.path.tail.L => {
+                        switch ($text) {
+                            case "dictionary": return p_.change_context($['value'], ($) => ['dictionary', r_unmarshalled_from_parse_tree.Nothing(
+                                $,
+                                ($) => abort(['value', $]),
+                            )])
+                            case "group": return p_.change_context($['value'], ($) => ['group', r_unmarshalled_from_parse_tree.Text(
+                                $,
+                                ($) => abort(['value', $]),
+                            )])
+                            case "list": return p_.change_context($['value'], ($) => ['list', r_unmarshalled_from_parse_tree.Nothing(
+                                $,
+                                ($) => abort(['value', $]),
+                            )])
+                            case "optional": return p_.change_context($['value'], ($) => ['optional', r_unmarshalled_from_parse_tree.Nothing(
+                                $,
+                                ($) => abort(['value', $]),
+                            )])
+                            case "state": return p_.change_context($['value'], ($) => ['state', r_unmarshalled_from_parse_tree.Text(
+                                $,
+                                ($) => abort(['value', $]),
+                            )])
+                            default: return abort(
+                                ['value', ['liana', {
+                                    'type': ['state', ['unknown option', $['option']['token']['value']]],
+                                    'range': $['option']['range'],
+                                }]],
+                            )
+                        }
+                    }))),
+                )),
+            }))),
+        }))
+
+        export const Simple_Component_Selection: declarations.Simple_Component_Selection = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.State(
+            $,
+            ($) => abort(['value', $]),
+        ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Simple_Component_Selection => {
+            switch ($text) {
+                case "local": return p_.change_context($['value'], ($) => ['local', r_unmarshalled_from_parse_tree.Text(
+                    $,
+                    ($) => abort(['value', $]),
+                )])
+                case "child namespace": return p_.change_context($['value'], ($) => ['child namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                    $,
+                    ($) => abort(['value', $]),
+                    {
+                        'expected properties': p_.literal.dictionary({
+                            "namespace": null,
+                            "type": null,
+                        }),
+                    },
+                ), ($) => ({
+                    'namespace': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                        $,
+                        ($) => abort(['value', $]),
+                        {
+                            'id': 'namespace',
+                        },
+                    ), ($) => r_unmarshalled_from_parse_tree.Text(
+                        $,
+                        ($) => abort(['value', $]),
+                    )),
+                    'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                        $,
+                        ($) => abort(['value', $]),
+                        {
+                            'id': 'type',
+                        },
+                    ), ($) => r_unmarshalled_from_parse_tree.Text(
+                        $,
+                        ($) => abort(['value', $]),
+                    )),
+                }))])
+                case "sibling namespace": return p_.change_context($['value'], ($) => ['sibling namespace', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                    $,
+                    ($) => abort(['value', $]),
+                    {
+                        'expected properties': p_.literal.dictionary({
+                            "namespace": null,
+                            "type": null,
+                        }),
+                    },
+                ), ($) => ({
+                    'namespace': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                        $,
+                        ($) => abort(['value', $]),
+                        {
+                            'id': 'namespace',
+                        },
+                    ), ($) => r_unmarshalled_from_parse_tree.Text(
+                        $,
+                        ($) => abort(['value', $]),
+                    )),
+                    'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                        $,
+                        ($) => abort(['value', $]),
+                        {
+                            'id': 'type',
+                        },
+                    ), ($) => r_unmarshalled_from_parse_tree.Text(
+                        $,
+                        ($) => abort(['value', $]),
+                    )),
+                }))])
+                default: return abort(
+                    ['value', ['liana', {
+                        'type': ['state', ['unknown option', $['option']['token']['value']]],
+                        'range': $['option']['range'],
+                    }]],
+                )
+            }
         }))
         
         export const Relative_Value_Selection: declarations.Relative_Value_Selection = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
@@ -2228,6 +2253,10 @@ export namespace namespaces {
                 ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Relative_Value_Selection.path.L => {
                     switch ($text) {
                         case "benchmark link": return p_.change_context($['value'], ($) => ['benchmark link', __operations.namespaces.resolver.Value_Reference(
+                            $,
+                            abort,
+                        )])
+                        case "simple component": return p_.change_context($['value'], ($) => ['simple component', __operations.namespaces.resolver.Simple_Component_Selection(
                             $,
                             abort,
                         )])
@@ -2272,7 +2301,7 @@ export namespace namespaces {
                                 abort,
                             )),
                         }))])
-                        case "component": return p_.change_context($['value'], ($) => ['component', r_unmarshalled_from_parse_tree.Nothing(
+                        case "navigable component": return p_.change_context($['value'], ($) => ['navigable component', r_unmarshalled_from_parse_tree.Nothing(
                             $,
                             ($) => abort(['value', $]),
                         )])
@@ -2333,7 +2362,7 @@ export namespace namespaces {
                             {
                                 'expected properties': p_.literal.dictionary({}),
                             },
-                        ), ($) => ({}))])
+                        ), ($) => null)])
                         case "state result": return p_.change_context($['value'], ($) => ['state result', r_unmarshalled_from_parse_tree.Nothing(
                             $,
                             ($) => abort(['value', $]),
@@ -2349,6 +2378,165 @@ export namespace namespaces {
             )),
         }))
         
+        export const Possible_Value_Selection: declarations.Possible_Value_Selection = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.State(
+            $,
+            ($) => abort(['value', $]),
+        ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Possible_Value_Selection => {
+            switch ($text) {
+                case "optional value": return p_.change_context($['value'], ($) => ['optional value', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                    $,
+                    ($) => abort(['value', $]),
+                    {
+                        'expected properties': p_.literal.dictionary({
+                            "selection": null,
+                            "tail": null,
+                        }),
+                    },
+                ), ($) => ({
+                    'selection': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                        $,
+                        ($) => abort(['value', $]),
+                        {
+                            'id': 'selection',
+                        },
+                    ), ($) => __operations.namespaces.resolver.Guaranteed_Value_Selection(
+                        $,
+                        abort,
+                    )),
+                    'tail': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                        $,
+                        ($) => abort(['value', $]),
+                        {
+                            'id': 'tail',
+                        },
+                    ), ($) => __operations.namespaces.resolver.Relative_Value_Selection(
+                        $,
+                        abort,
+                    )),
+                }))])
+                case "parameter": return p_.change_context($['value'], ($) => ['parameter', r_unmarshalled_from_parse_tree.Text(
+                    $,
+                    ($) => abort(['value', $]),
+                )])
+                case "result": return p_.change_context($['value'], ($) => ['result', p_.change_context(r_unmarshalled_from_parse_tree.State(
+                    $,
+                    ($) => abort(['value', $]),
+                ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Possible_Value_Selection.result => {
+                    switch ($text) {
+                        case "state": return p_.change_context($['value'], ($) => ['state', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                            $,
+                            ($) => abort(['value', $]),
+                            {
+                                'expected properties': p_.literal.dictionary({
+                                    "property": null,
+                                }),
+                            },
+                        ), ($) => ({
+                            'property': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                $,
+                                ($) => abort(['value', $]),
+                                {
+                                    'id': 'property',
+                                },
+                            ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                $,
+                                ($) => abort(['value', $]),
+                            )),
+                        }))])
+                        case "optional value": return p_.change_context($['value'], ($) => ['optional value', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                            $,
+                            ($) => abort(['value', $]),
+                            {
+                                'expected properties': p_.literal.dictionary({
+                                    "property": null,
+                                }),
+                            },
+                        ), ($) => ({
+                            'property': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                $,
+                                ($) => abort(['value', $]),
+                                {
+                                    'id': 'property',
+                                },
+                            ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                $,
+                                ($) => abort(['value', $]),
+                            )),
+                        }))])
+                        default: return abort(
+                            ['value', ['liana', {
+                                'type': ['state', ['unknown option', $['option']['token']['value']]],
+                                'range': $['option']['range'],
+                            }]],
+                        )
+                    }
+                }))])
+                default: return abort(
+                    ['value', ['liana', {
+                        'type': ['state', ['unknown option', $['option']['token']['value']]],
+                        'range': $['option']['range'],
+                    }]],
+                )
+            }
+        }))
+
+        export const Option_Constraints: declarations.Option_Constraints = ($, abort) => p_.from.optional(r_unmarshalled_from_parse_tree.Optional(
+            $,
+            ($) => abort(['value', $]),
+        )['optional']).map(($) => p_.change_context(r_unmarshalled_from_parse_tree.Dictionary(
+            $,
+            ($) => abort(['value', $]),
+        ), ($) => p_.from.dictionary($['entries']).map(
+            ($, id) => p_.change_context(r_unmarshalled_from_parse_tree.State(
+                $,
+                ($) => abort(['value', $]),
+            ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Option_Constraints.O.D => {
+                switch ($text) {
+                    case "state": return p_.change_context($['value'], ($) => ['state', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                        $,
+                        ($) => abort(['value', $]),
+                        {
+                            'expected properties': p_.literal.dictionary({
+                                "selection": null,
+                                "option": null,
+                            }),
+                        },
+                    ), ($) => ({
+                        'selection': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                            $,
+                            ($) => abort(['value', $]),
+                            {
+                                'id': 'selection',
+                            },
+                        ), ($) => __operations.namespaces.resolver.Guaranteed_Value_Selection(
+                            $,
+                            abort,
+                        )),
+                        'option': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                            $,
+                            ($) => abort(['value', $]),
+                            {
+                                'id': 'option',
+                            },
+                        ), ($) => r_unmarshalled_from_parse_tree.Text(
+                            $,
+                            ($) => abort(['value', $]),
+                        )),
+                    }))])
+                    case "assert is set": return p_.change_context($['value'], ($) => ['assert is set', __operations.namespaces.resolver.Possible_Value_Selection(
+                        $,
+                        abort,
+                    )])
+                    default: return abort(
+                        ['value', ['liana', {
+                            'type': ['state', ['unknown option', $['option']['token']['value']]],
+                            'range': $['option']['range'],
+                        }]],
+                    )
+                }
+            })),
+        )))
+
         export const Guaranteed_Value_Selection: declarations.Guaranteed_Value_Selection = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
             $,
             ($) => abort(['value', $]),
@@ -2401,7 +2589,7 @@ export namespace namespaces {
                             abort,
                         )),
                     }))])
-                    case "sibling": return p_.change_context($['value'], ($) => ['sibling', r_unmarshalled_from_parse_tree.Text(
+                    case "sibling property": return p_.change_context($['value'], ($) => ['sibling property', r_unmarshalled_from_parse_tree.Text(
                         $,
                         ($) => abort(['value', $]),
                     )])
@@ -2410,6 +2598,10 @@ export namespace namespaces {
                         ($) => abort(['value', $]),
                     )])
                     case "option constraint": return p_.change_context($['value'], ($) => ['option constraint', r_unmarshalled_from_parse_tree.Text(
+                        $,
+                        ($) => abort(['value', $]),
+                    )])
+                    case "sibling option constraint": return p_.change_context($['value'], ($) => ['sibling option constraint', r_unmarshalled_from_parse_tree.Text(
                         $,
                         ($) => abort(['value', $]),
                     )])
@@ -2593,123 +2785,6 @@ export namespace namespaces {
             )),
         }))
         
-        export const Benchmark: declarations.Benchmark = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-            $,
-            ($) => abort(['value', $]),
-            {
-                'expected properties': p_.literal.dictionary({
-                    "selection": null,
-                    "coverage": null,
-                }),
-            },
-        ), ($) => ({
-            'selection': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                $,
-                ($) => abort(['value', $]),
-                {
-                    'id': 'selection',
-                },
-            ), ($) => __operations.namespaces.resolver.Guaranteed_Value_Selection(
-                $,
-                abort,
-            )),
-            'coverage': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                $,
-                ($) => abort(['value', $]),
-                {
-                    'id': 'coverage',
-                },
-            ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
-                $,
-                ($) => abort(['value', $]),
-            ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Benchmark.coverage => {
-                switch ($text) {
-                    case "dense": return p_.change_context($['value'], ($) => ['dense', r_unmarshalled_from_parse_tree.Nothing(
-                        $,
-                        ($) => abort(['value', $]),
-                    )])
-                    case "sparse": return p_.change_context($['value'], ($) => ['sparse', r_unmarshalled_from_parse_tree.Nothing(
-                        $,
-                        ($) => abort(['value', $]),
-                    )])
-                    default: return abort(
-                        ['value', ['liana', {
-                            'type': ['state', ['unknown option', $['option']['token']['value']]],
-                            'range': $['option']['range'],
-                        }]],
-                    )
-                }
-            }))),
-        }))
-        
-        export const Constraint: declarations.Constraint = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-            $,
-            ($) => abort(['value', $]),
-            {
-                'expected properties': p_.literal.dictionary({
-                    "selection": null,
-                    "type": null,
-                }),
-            },
-        ), ($) => ({
-            'selection': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                $,
-                ($) => abort(['value', $]),
-                {
-                    'id': 'selection',
-                },
-            ), ($) => __operations.namespaces.resolver.Relative_Value_Selection(
-                $,
-                abort,
-            )),
-            'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                $,
-                ($) => abort(['value', $]),
-                {
-                    'id': 'type',
-                },
-            ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
-                $,
-                ($) => abort(['value', $]),
-            ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Constraint.type_ => {
-                switch ($text) {
-                    case "state": return p_.change_context($['value'], ($) => ['state', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-                        $,
-                        ($) => abort(['value', $]),
-                        {
-                            'expected properties': p_.literal.dictionary({
-                                "option": null,
-                            }),
-                        },
-                    ), ($) => ({
-                        'option': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                            $,
-                            ($) => abort(['value', $]),
-                            {
-                                'id': 'option',
-                            },
-                        ), ($) => r_unmarshalled_from_parse_tree.Text(
-                            $,
-                            ($) => abort(['value', $]),
-                        )),
-                    }))])
-                    case "optional value": return p_.change_context($['value'], ($) => ['optional value', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-                        $,
-                        ($) => abort(['value', $]),
-                        {
-                            'expected properties': p_.literal.dictionary({}),
-                        },
-                    ), ($) => ({}))])
-                    default: return abort(
-                        ['value', ['liana', {
-                            'type': ['state', ['unknown option', $['option']['token']['value']]],
-                            'range': $['option']['range'],
-                        }]],
-                    )
-                }
-            }))),
-        }))
-        
         export const Lookup_Selection: declarations.Lookup_Selection = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
             $,
             ($) => abort(['value', $]),
@@ -2798,28 +2873,63 @@ export namespace namespaces {
             }))),
         }))
         
-        export const Namespaces: declarations.Namespaces = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Dictionary(
+        export const Reference_Constraints: declarations.Reference_Constraints = ($, abort) => p_.from.optional(r_unmarshalled_from_parse_tree.Optional(
+            $,
+            ($) => abort(['value', $]),
+        )['optional']).map(($) => p_.change_context(r_unmarshalled_from_parse_tree.Dictionary(
             $,
             ($) => abort(['value', $]),
         ), ($) => p_.from.dictionary($['entries']).map(
-            ($, id) => __operations.namespaces.resolver.Resolver(
+            ($, id) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
                 $,
-                abort,
-            ),
-        ))
-        
-        export const Possible_Value_Selection: declarations.Possible_Value_Selection = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.State(
-            $,
-            ($) => abort(['value', $]),
-        ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Possible_Value_Selection => {
-            switch ($text) {
-                case "optional value": return p_.change_context($['value'], ($) => ['optional value', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                ($) => abort(['value', $]),
+                {
+                    'expected properties': p_.literal.dictionary({
+                        "start": null,
+                        "constraint": null,
+                    }),
+                },
+            ), ($) => ({
+                'start': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                    $,
+                    ($) => abort(['value', $]),
+                    {
+                        'id': 'start',
+                    },
+                ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
+                    $,
+                    ($) => abort(['value', $]),
+                ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Reference_Constraints.O.D.start => {
+                    switch ($text) {
+                        case "value": return p_.change_context($['value'], ($) => ['value', r_unmarshalled_from_parse_tree.Nothing(
+                            $,
+                            ($) => abort(['value', $]),
+                        )])
+                        case "sibling": return p_.change_context($['value'], ($) => ['sibling', r_unmarshalled_from_parse_tree.Text(
+                            $,
+                            ($) => abort(['value', $]),
+                        )])
+                        default: return abort(
+                            ['value', ['liana', {
+                                'type': ['state', ['unknown option', $['option']['token']['value']]],
+                                'range': $['option']['range'],
+                            }]],
+                        )
+                    }
+                }))),
+                'constraint': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                    $,
+                    ($) => abort(['value', $]),
+                    {
+                        'id': 'constraint',
+                    },
+                ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
                     $,
                     ($) => abort(['value', $]),
                     {
                         'expected properties': p_.literal.dictionary({
                             "selection": null,
-                            "tail": null,
+                            "type": null,
                         }),
                     },
                 ), ($) => ({
@@ -2829,219 +2939,59 @@ export namespace namespaces {
                         {
                             'id': 'selection',
                         },
-                    ), ($) => __operations.namespaces.resolver.Guaranteed_Value_Selection(
-                        $,
-                        abort,
-                    )),
-                    'tail': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                        $,
-                        ($) => abort(['value', $]),
-                        {
-                            'id': 'tail',
-                        },
                     ), ($) => __operations.namespaces.resolver.Relative_Value_Selection(
                         $,
                         abort,
                     )),
-                }))])
-                case "parameter": return p_.change_context($['value'], ($) => ['parameter', r_unmarshalled_from_parse_tree.Text(
-                    $,
-                    ($) => abort(['value', $]),
-                )])
-                case "result": return p_.change_context($['value'], ($) => ['result', p_.change_context(r_unmarshalled_from_parse_tree.State(
-                    $,
-                    ($) => abort(['value', $]),
-                ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Possible_Value_Selection.result => {
-                    switch ($text) {
-                        case "state": return p_.change_context($['value'], ($) => ['state', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-                            $,
-                            ($) => abort(['value', $]),
-                            {
-                                'expected properties': p_.literal.dictionary({
-                                    "property": null,
-                                }),
-                            },
-                        ), ($) => ({
-                            'property': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                                $,
-                                ($) => abort(['value', $]),
-                                {
-                                    'id': 'property',
-                                },
-                            ), ($) => r_unmarshalled_from_parse_tree.Text(
-                                $,
-                                ($) => abort(['value', $]),
-                            )),
-                        }))])
-                        case "optional value": return p_.change_context($['value'], ($) => ['optional value', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-                            $,
-                            ($) => abort(['value', $]),
-                            {
-                                'expected properties': p_.literal.dictionary({
-                                    "property": null,
-                                }),
-                            },
-                        ), ($) => ({
-                            'property': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                                $,
-                                ($) => abort(['value', $]),
-                                {
-                                    'id': 'property',
-                                },
-                            ), ($) => r_unmarshalled_from_parse_tree.Text(
-                                $,
-                                ($) => abort(['value', $]),
-                            )),
-                        }))])
-                        default: return abort(
-                            ['value', ['liana', {
-                                'type': ['state', ['unknown option', $['option']['token']['value']]],
-                                'range': $['option']['range'],
-                            }]],
-                        )
-                    }
-                }))])
-                default: return abort(
-                    ['value', ['liana', {
-                        'type': ['state', ['unknown option', $['option']['token']['value']]],
-                        'range': $['option']['range'],
-                    }]],
-                )
-            }
-        }))
-        
-        export const Option_Constraints: declarations.Option_Constraints = ($, abort) => p_.from.optional(r_unmarshalled_from_parse_tree.Optional(
-            $,
-            ($) => abort(['value', $]),
-        )['optional']).map(($) => p_.change_context(r_unmarshalled_from_parse_tree.Dictionary(
-            $,
-            ($) => abort(['value', $]),
-        ), ($) => p_.from.dictionary($['entries']).map(
-            ($, id) => p_.change_context(r_unmarshalled_from_parse_tree.State(
-                $,
-                ($) => abort(['value', $]),
-            ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Option_Constraints.O.D => {
-                switch ($text) {
-                    case "state": return p_.change_context($['value'], ($) => ['state', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                    'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
                         $,
                         ($) => abort(['value', $]),
                         {
-                            'expected properties': p_.literal.dictionary({
-                                "selection": null,
-                                "option": null,
-                            }),
+                            'id': 'type',
                         },
-                    ), ($) => ({
-                        'selection': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                            $,
-                            ($) => abort(['value', $]),
-                            {
-                                'id': 'selection',
-                            },
-                        ), ($) => __operations.namespaces.resolver.Guaranteed_Value_Selection(
-                            $,
-                            abort,
-                        )),
-                        'option': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                            $,
-                            ($) => abort(['value', $]),
-                            {
-                                'id': 'option',
-                            },
-                        ), ($) => r_unmarshalled_from_parse_tree.Text(
-                            $,
-                            ($) => abort(['value', $]),
-                        )),
-                    }))])
-                    case "assert is set": return p_.change_context($['value'], ($) => ['assert is set', __operations.namespaces.resolver.Possible_Value_Selection(
+                    ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
                         $,
-                        abort,
-                    )])
-                    default: return abort(
-                        ['value', ['liana', {
-                            'type': ['state', ['unknown option', $['option']['token']['value']]],
-                            'range': $['option']['range'],
-                        }]],
-                    )
-                }
+                        ($) => abort(['value', $]),
+                    ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Reference_Constraints.O.D.constraint.type_ => {
+                        switch ($text) {
+                            case "state": return p_.change_context($['value'], ($) => ['state', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                                $,
+                                ($) => abort(['value', $]),
+                                {
+                                    'expected properties': p_.literal.dictionary({
+                                        "option": null,
+                                    }),
+                                },
+                            ), ($) => ({
+                                'option': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                                    $,
+                                    ($) => abort(['value', $]),
+                                    {
+                                        'id': 'option',
+                                    },
+                                ), ($) => r_unmarshalled_from_parse_tree.Text(
+                                    $,
+                                    ($) => abort(['value', $]),
+                                )),
+                            }))])
+                            case "optional value": return p_.change_context($['value'], ($) => ['optional value', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                                $,
+                                ($) => abort(['value', $]),
+                                {
+                                    'expected properties': p_.literal.dictionary({}),
+                                },
+                            ), ($) => null)])
+                            default: return abort(
+                                ['value', ['liana', {
+                                    'type': ['state', ['unknown option', $['option']['token']['value']]],
+                                    'range': $['option']['range'],
+                                }]],
+                            )
+                        }
+                    }))),
+                }))),
             })),
         )))
-        
-        export const Optional_Value_Initialization: declarations.Optional_Value_Initialization = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.State(
-            $,
-            ($) => abort(['value', $]),
-        ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Optional_Value_Initialization => {
-            switch ($text) {
-                case "not set": return p_.change_context($['value'], ($) => ['not set', r_unmarshalled_from_parse_tree.Nothing(
-                    $,
-                    ($) => abort(['value', $]),
-                )])
-                case "set": return p_.change_context($['value'], ($) => ['set', __operations.namespaces.resolver.Guaranteed_Value_Selection(
-                    $,
-                    abort,
-                )])
-                case "selection": return p_.change_context($['value'], ($) => ['selection', __operations.namespaces.resolver.Possible_Value_Selection(
-                    $,
-                    abort,
-                )])
-                default: return abort(
-                    ['value', ['liana', {
-                        'type': ['state', ['unknown option', $['option']['token']['value']]],
-                        'range': $['option']['range'],
-                    }]],
-                )
-            }
-        }))
-        
-        export const Reference_Constraints: declarations.Reference_Constraints = ($, abort) => p_.from.optional(r_unmarshalled_from_parse_tree.Optional(
-            $,
-            ($) => abort(['value', $]),
-        )['optional']).map(($) => p_.change_context(r_unmarshalled_from_parse_tree.Dictionary(
-            $,
-            ($) => abort(['value', $]),
-        ), ($) => p_.from.dictionary($['entries']).map(
-            ($, id) => __operations.namespaces.resolver.Value_Constraint(
-                $,
-                abort,
-            ),
-        )))
-        
-        export const Reference_To_Value_Constraint: declarations.Reference_To_Value_Constraint = ($, abort) => r_unmarshalled_from_parse_tree.Text(
-            $,
-            ($) => abort(['value', $]),
-        )
-        
-        export const Resolver: declarations.Resolver = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-            $,
-            ($) => abort(['value', $]),
-            {
-                'expected properties': p_.literal.dictionary({
-                    "namespaces": null,
-                    "types": null,
-                }),
-            },
-        ), ($) => ({
-            'namespaces': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                $,
-                ($) => abort(['value', $]),
-                {
-                    'id': 'namespaces',
-                },
-            ), ($) => __operations.namespaces.resolver.Namespaces(
-                $,
-                abort,
-            )),
-            'types': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                $,
-                ($) => abort(['value', $]),
-                {
-                    'id': 'types',
-                },
-            ), ($) => __operations.namespaces.resolver.Types(
-                $,
-                abort,
-            )),
-        }))
         
         export const Result_Selection: declarations.Result_Selection = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.State(
             $,
@@ -3063,64 +3013,6 @@ export namespace namespaces {
                     }]],
                 )
             }
-        }))
-        
-        export const Value_Group: declarations.Value_Group = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Dictionary(
-            $,
-            ($) => abort(['value', $]),
-        ), ($) => p_.from.dictionary($['entries']).map(
-            ($, id) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-                $,
-                ($) => abort(['value', $]),
-                {
-                    'expected properties': p_.literal.dictionary({
-                        "resolver": null,
-                    }),
-                },
-            ), ($) => ({
-                'resolver': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                    $,
-                    ($) => abort(['value', $]),
-                    {
-                        'id': 'resolver',
-                    },
-                ), ($) => __operations.namespaces.resolver.Value(
-                    $,
-                    abort,
-                )),
-            })),
-        ))
-        
-        export const Value_List_Result: declarations.Value_List_Result = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-            $,
-            ($) => abort(['value', $]),
-            {
-                'expected properties': p_.literal.dictionary({
-                    "initial": null,
-                    "next": null,
-                }),
-            },
-        ), ($) => ({
-            'initial': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                $,
-                ($) => abort(['value', $]),
-                {
-                    'id': 'initial',
-                },
-            ), ($) => __operations.namespaces.resolver.Guaranteed_Value_Selection(
-                $,
-                abort,
-            )),
-            'next': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                $,
-                ($) => abort(['value', $]),
-                {
-                    'id': 'next',
-                },
-            ), ($) => __operations.namespaces.resolver.Result_Selection(
-                $,
-                abort,
-            )),
         }))
         
         export const Value: declarations.Value = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.State(
@@ -3261,10 +3153,31 @@ export namespace namespaces {
                                 ($) => abort(['value', $]),
                             ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Value.component.arguments_.O.types.O.D => {
                                 switch ($text) {
-                                    case "optional": return p_.change_context($['value'], ($) => ['optional', __operations.namespaces.resolver.Optional_Value_Initialization(
+                                    case "optional": return p_.change_context($['value'], ($) => ['optional', p_.change_context(r_unmarshalled_from_parse_tree.State(
                                         $,
-                                        abort,
-                                    )])
+                                        ($) => abort(['value', $]),
+                                    ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Value.component.arguments_.O.types.O.D.optional => {
+                                        switch ($text) {
+                                            case "not set": return p_.change_context($['value'], ($) => ['not set', r_unmarshalled_from_parse_tree.Nothing(
+                                                $,
+                                                ($) => abort(['value', $]),
+                                            )])
+                                            case "set": return p_.change_context($['value'], ($) => ['set', __operations.namespaces.resolver.Guaranteed_Value_Selection(
+                                                $,
+                                                abort,
+                                            )])
+                                            case "selection": return p_.change_context($['value'], ($) => ['selection', __operations.namespaces.resolver.Possible_Value_Selection(
+                                                $,
+                                                abort,
+                                            )])
+                                            default: return abort(
+                                                ['value', ['liana', {
+                                                    'type': ['state', ['unknown option', $['option']['token']['value']]],
+                                                    'range': $['option']['range'],
+                                                }]],
+                                            )
+                                        }
+                                    }))])
                                     case "required": return p_.change_context($['value'], ($) => ['required', __operations.namespaces.resolver.Guaranteed_Value_Selection(
                                         $,
                                         abort,
@@ -3362,15 +3275,80 @@ export namespace namespaces {
                     ), ($) => p_.from.optional(r_unmarshalled_from_parse_tree.Optional(
                         $,
                         ($) => abort(['value', $]),
-                    )['optional']).map(($) => __operations.namespaces.resolver.Benchmark(
+                    )['optional']).map(($) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
                         $,
-                        abort,
-                    ))),
+                        ($) => abort(['value', $]),
+                        {
+                            'expected properties': p_.literal.dictionary({
+                                "selection": null,
+                                "coverage": null,
+                            }),
+                        },
+                    ), ($) => ({
+                        'selection': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                            $,
+                            ($) => abort(['value', $]),
+                            {
+                                'id': 'selection',
+                            },
+                        ), ($) => __operations.namespaces.resolver.Guaranteed_Value_Selection(
+                            $,
+                            abort,
+                        )),
+                        'coverage': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                            $,
+                            ($) => abort(['value', $]),
+                            {
+                                'id': 'coverage',
+                            },
+                        ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
+                            $,
+                            ($) => abort(['value', $]),
+                        ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Value.dictionary.benchmark.O.coverage => {
+                            switch ($text) {
+                                case "dense": return p_.change_context($['value'], ($) => ['dense', r_unmarshalled_from_parse_tree.Nothing(
+                                    $,
+                                    ($) => abort(['value', $]),
+                                )])
+                                case "sparse": return p_.change_context($['value'], ($) => ['sparse', r_unmarshalled_from_parse_tree.Nothing(
+                                    $,
+                                    ($) => abort(['value', $]),
+                                )])
+                                default: return abort(
+                                    ['value', ['liana', {
+                                        'type': ['state', ['unknown option', $['option']['token']['value']]],
+                                        'range': $['option']['range'],
+                                    }]],
+                                )
+                            }
+                        }))),
+                    })))),
                 }))])
-                case "group": return p_.change_context($['value'], ($) => ['group', __operations.namespaces.resolver.Value_Group(
+                case "group": return p_.change_context($['value'], ($) => ['group', p_.change_context(r_unmarshalled_from_parse_tree.Dictionary(
                     $,
-                    abort,
-                )])
+                    ($) => abort(['value', $]),
+                ), ($) => p_.from.dictionary($['entries']).map(
+                    ($, id) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                        $,
+                        ($) => abort(['value', $]),
+                        {
+                            'expected properties': p_.literal.dictionary({
+                                "resolver": null,
+                            }),
+                        },
+                    ), ($) => ({
+                        'resolver': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                            $,
+                            ($) => abort(['value', $]),
+                            {
+                                'id': 'resolver',
+                            },
+                        ), ($) => __operations.namespaces.resolver.Value(
+                            $,
+                            abort,
+                        )),
+                    })),
+                ))])
                 case "list": return p_.change_context($['value'], ($) => ['list', p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
                     $,
                     ($) => abort(['value', $]),
@@ -3400,10 +3378,37 @@ export namespace namespaces {
                     ), ($) => p_.from.optional(r_unmarshalled_from_parse_tree.Optional(
                         $,
                         ($) => abort(['value', $]),
-                    )['optional']).map(($) => __operations.namespaces.resolver.Value_List_Result(
+                    )['optional']).map(($) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
                         $,
-                        abort,
-                    ))),
+                        ($) => abort(['value', $]),
+                        {
+                            'expected properties': p_.literal.dictionary({
+                                "initial": null,
+                                "next": null,
+                            }),
+                        },
+                    ), ($) => ({
+                        'initial': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                            $,
+                            ($) => abort(['value', $]),
+                            {
+                                'id': 'initial',
+                            },
+                        ), ($) => __operations.namespaces.resolver.Guaranteed_Value_Selection(
+                            $,
+                            abort,
+                        )),
+                        'next': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                            $,
+                            ($) => abort(['value', $]),
+                            {
+                                'id': 'next',
+                            },
+                        ), ($) => __operations.namespaces.resolver.Result_Selection(
+                            $,
+                            abort,
+                        )),
+                    })))),
                 }))])
                 case "nothing": return p_.change_context($['value'], ($) => ['nothing', r_unmarshalled_from_parse_tree.Nothing(
                     $,
@@ -3465,10 +3470,18 @@ export namespace namespaces {
                         {
                             'id': 'not set constraints',
                         },
-                    ), ($) => __operations.namespaces.resolver.Absence_Constraints(
+                    ), ($) => p_.from.optional(r_unmarshalled_from_parse_tree.Optional(
                         $,
-                        abort,
-                    )),
+                        ($) => abort(['value', $]),
+                    )['optional']).map(($) => p_.change_context(r_unmarshalled_from_parse_tree.Dictionary(
+                        $,
+                        ($) => abort(['value', $]),
+                    ), ($) => p_.from.dictionary($['entries']).map(
+                        ($, id) => __operations.namespaces.resolver.Possible_Value_Selection(
+                            $,
+                            abort,
+                        ),
+                    )))),
                     'result': p_.change_context(r_unmarshalled_from_parse_tree.Property(
                         $,
                         ($) => abort(['value', $]),
@@ -3605,90 +3618,63 @@ export namespace namespaces {
             }
         }))
         
-        export const Types: declarations.Types = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Dictionary(
-            $,
-            ($) => abort(['value', $]),
-        ), ($) => p_.from.dictionary($['entries']).map(
-            ($, id) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
-                $,
-                ($) => abort(['value', $]),
-                {
-                    'expected properties': p_.literal.dictionary({
-                        "root value resolver": null,
-                    }),
-                },
-            ), ($) => ({
-                'root value resolver': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                    $,
-                    ($) => abort(['value', $]),
-                    {
-                        'id': 'root value resolver',
-                    },
-                ), ($) => __operations.namespaces.resolver.Value(
-                    $,
-                    abort,
-                )),
-            })),
-        ))
-        
-        export const Value_Constraint: declarations.Value_Constraint = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+        export const Resolver: declarations.Resolver = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
             $,
             ($) => abort(['value', $]),
             {
                 'expected properties': p_.literal.dictionary({
-                    "start": null,
-                    "constraint": null,
+                    "namespaces": null,
+                    "types": null,
                 }),
             },
         ), ($) => ({
-            'start': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+            'namespaces': p_.change_context(r_unmarshalled_from_parse_tree.Property(
                 $,
                 ($) => abort(['value', $]),
                 {
-                    'id': 'start',
+                    'id': 'namespaces',
                 },
-            ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.State(
+            ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.Dictionary(
                 $,
                 ($) => abort(['value', $]),
-            ), ($) => p_.from.text($['option']['token']['value']).to_state(($text): s_target.namespaces.resolver.types.Value_Constraint.start => {
-                switch ($text) {
-                    case "value": return p_.change_context($['value'], ($) => ['value', r_unmarshalled_from_parse_tree.Nothing(
+            ), ($) => p_.from.dictionary($['entries']).map(
+                ($, id) => __operations.namespaces.resolver.Resolver(
+                    $,
+                    abort,
+                ),
+            ))),
+            'types': p_.change_context(r_unmarshalled_from_parse_tree.Property(
+                $,
+                ($) => abort(['value', $]),
+                {
+                    'id': 'types',
+                },
+            ), ($) => p_.change_context(r_unmarshalled_from_parse_tree.Dictionary(
+                $,
+                ($) => abort(['value', $]),
+            ), ($) => p_.from.dictionary($['entries']).map(
+                ($, id) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+                    $,
+                    ($) => abort(['value', $]),
+                    {
+                        'expected properties': p_.literal.dictionary({
+                            "root value resolver": null,
+                        }),
+                    },
+                ), ($) => ({
+                    'root value resolver': p_.change_context(r_unmarshalled_from_parse_tree.Property(
                         $,
                         ($) => abort(['value', $]),
-                    )])
-                    case "sibling": return p_.change_context($['value'], ($) => ['sibling', __operations.namespaces.resolver.Reference_To_Value_Constraint(
+                        {
+                            'id': 'root value resolver',
+                        },
+                    ), ($) => __operations.namespaces.resolver.Value(
                         $,
                         abort,
-                    )])
-                    default: return abort(
-                        ['value', ['liana', {
-                            'type': ['state', ['unknown option', $['option']['token']['value']]],
-                            'range': $['option']['range'],
-                        }]],
-                    )
-                }
-            }))),
-            'constraint': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                $,
-                ($) => abort(['value', $]),
-                {
-                    'id': 'constraint',
-                },
-            ), ($) => __operations.namespaces.resolver.Constraint(
-                $,
-                abort,
-            )),
+                    )),
+                })),
+            ))),
         }))
-        
-        export const Value_Constraints: declarations.Value_Constraints = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Dictionary(
-            $,
-            ($) => abort(['value', $]),
-        ), ($) => p_.from.dictionary($['entries']).map(
-            ($, id) => __operations.namespaces.resolver.Value_Constraint(
-                $,
-                abort,
-            ),
-        ))
         export namespace namespaces {}
     }
 }

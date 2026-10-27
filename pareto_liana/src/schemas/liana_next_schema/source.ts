@@ -1,31 +1,30 @@
-import type { types, namespaces } from "../../unresolved/schema.js"
+import type { types, namespaces } from "./generated/schemas/unresolved/schema.js"
 
-export type Schema = types.Schema
+export type Schema = types.Type_Specification.schema
 export type Type_Specification = types.Type_Specification
 export type Directory = types.Directory
 export type Node = types.Node
 export type Structure = namespaces.structure.types.Structure
-export type Type_Reference = namespaces.structure.types.Type_Reference
+export type Type_Reference = namespaces.structure.types.Value_Reference.type_
 export type Value_Reference = namespaces.structure.types.Value_Reference
-export type Value_Path = namespaces.structure.types.Value_Subselection
+export type Value_Path = namespaces.structure.types.Value_Reference.path
 export type Value = namespaces.structure.types.Value
 export type Option_Constraints = namespaces.structure.types.Option_Constraints
 export type Resolver = namespaces.resolver.types.Resolver
-export type Resolver_Types = namespaces.resolver.types.Types
+export type Resolver_Types = namespaces.resolver.types.Resolver.types
 export type Resolver_Signatures = namespaces.declarations.types.Declarations
 export type Signature_Namespace = namespaces.declarations.types.Declaration_Namespace
 export type Declaration = namespaces.declarations.types.Declaration
 export type Signature = namespaces.declarations.types.Signature
-export type Signature_Type_Reference = namespaces.declarations.types.Signature_Type_Reference
+export type Signature_Type_Reference = namespaces.declarations.types.Signature_Value_Reference.type_
 export type Signature_Value_Reference = namespaces.declarations.types.Signature_Value_Reference
-export type Signature_Value_Subselection = namespaces.declarations.types.Signature_Value_Subselection
 export type Resolver_Relative_Value_Selection = namespaces.resolver.types.Relative_Value_Selection
 export type Resolver_Guaranteed_Value_Selection = namespaces.resolver.types.Guaranteed_Value_Selection
 export type Resolver_Possible_Value_Selection = namespaces.resolver.types.Possible_Value_Selection
 export type Resolver_Option_Constraints = namespaces.resolver.types.Option_Constraints.O
-export type Resolver_Value_Constraints = namespaces.resolver.types.Value_Constraints
+export type Resolver_Value_Constraints = namespaces.resolver.types.Reference_Constraints.O
 export type Resolver_Result_Selection = namespaces.resolver.types.Result_Selection
-export type Resolver_Benchmark = namespaces.resolver.types.Benchmark
+export type Resolver_Benchmark = namespaces.resolver.types.Value.dictionary.benchmark.O
 export type Resolver_Lookup_Selection = namespaces.resolver.types.Lookup_Selection
-export type Resolver_Optional_Value_Initialization = namespaces.resolver.types.Optional_Value_Initialization
+export type Resolver_Optional_Value_Initialization = namespaces.resolver.types.Value.component.arguments_.O.types.O.D.optional
 export type Resolver_Value = namespaces.resolver.types.Value

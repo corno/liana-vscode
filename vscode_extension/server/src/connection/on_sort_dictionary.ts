@@ -1,6 +1,7 @@
 import * as vscode_node from 'vscode-languageserver/node'
 import { Connection_Context } from '../connection_context'
 import { reference_document } from '../helpers/reference_document'
+import { benchmark_of } from '../helpers/benchmark_links'
 import { alphabetical_order, all_dictionaries, arrange_deep, arrange, find_dictionaries, Located_Dictionary, Sort_Scope, topological_order } from '../helpers/sort_dictionary'
 
 export type Sort_Dictionary_Params = {
@@ -32,18 +33,20 @@ export type Sort_Dictionary_Response =
 type Loaded = NonNullable<Awaited<ReturnType<typeof reference_document>>>
 
 /**
- * An entry depends on a sibling when it contains an acyclic reference to it.
+ * An entry depends on a sibling when it contains an acyclic reference to it,
+ * or to the entry with the same id in the dictionary's benchmark (or the benchmark's benchmark, ...):
+ * a resolver refers to its siblings through the dictionary it is keyed by.
  * Cyclic references are ignored: they may point to entries that depend on the referencing entry.
  * A dictionary whose entries are not declarations in the resolved document cannot be referenced, so it has no dependencies.
  */
 const create_dependencies_of = (loaded: Loaded): ($: Located_Dictionary) => Set<number>[] => {
 	const declaration_by_start = new Map(loaded.index.symbols.map(($) => [$.declaration.range.start.absolute, $.declaration]))
-	const references_by_dictionary = new Map<unknown, { 'source': number, 'target': number }[]>()
+	const references_by_dictionary = new Map<unknown, { 'source': number, 'target start': number, 'target name': string }[]>()
 	loaded.index.references.forEach(({ reference, symbol }) => {
 		if (reference.cyclic || symbol === undefined) return
 		const dictionary = symbol.declaration.dictionary
 		const references = references_by_dictionary.get(dictionary) ?? []
-		references.push({ 'source': reference.range.start.absolute, 'target': symbol.declaration.range.start.absolute })
+		references.push({ 'source': reference.range.start.absolute, 'target start': symbol.declaration.range.start.absolute, 'target name': symbol.declaration.name })
 		references_by_dictionary.set(dictionary, references)
 	})
 	return ($) => {
@@ -51,11 +54,18 @@ const create_dependencies_of = (loaded: Loaded): ($: Located_Dictionary) => Set<
 		const declaration = $['entries'].map((entry) => declaration_by_start.get(entry['id start'])).find(($) => $ !== undefined)
 		if (declaration === undefined) return dependencies
 		const entry_by_id_start = new Map($['entries'].map((entry, index) => [entry['id start'], index]))
-		references_by_dictionary.get(declaration.dictionary)?.forEach(({ source: offset, target: target_start }) => {
-			const target = entry_by_id_start.get(target_start)
-			const source = $['entries'].findIndex((entry) => entry['id start'] <= offset && offset < entry['end'])
+		const entry_by_id = new Map<string, number>()
+		$['entries'].forEach((entry, index) => { if (!entry_by_id.has(entry['id'])) entry_by_id.set(entry['id'], index) })
+		const add = (source_offset: number, target: number | undefined) => {
+			const source = $['entries'].findIndex((entry) => entry['id start'] <= source_offset && source_offset < entry['end'])
 			if (target !== undefined && source !== -1 && source !== target) dependencies[source].add(target)
-		})
+		}
+		references_by_dictionary.get(declaration.dictionary)?.forEach(($) => add($['source'], entry_by_id_start.get($['target start'])))
+		const visited = new Set([declaration.dictionary])
+		for (let benchmark = benchmark_of(declaration.dictionary); benchmark !== undefined && !visited.has(benchmark); benchmark = benchmark_of(benchmark)) {
+			visited.add(benchmark)
+			references_by_dictionary.get(benchmark)?.forEach(($) => add($['source'], entry_by_id.get($['target name'])))
+		}
 		return dependencies
 	}
 }

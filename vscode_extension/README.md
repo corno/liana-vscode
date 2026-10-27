@@ -49,8 +49,7 @@ The following commands are also available in context menu's
 - **New Liana File...** - Create a new .liana file
 - **Convert to JSON** - Export current file to JSON
 - **Save as JSON file** - Save a JSON version alongside your .liana file
-- **Sort dictionary** - Sort the entries of the dictionary around the cursor; comments move with their entries. When entries depend on each other (acyclic references to siblings), choose between alphabetical, topological then alphabetical, or topological only (dependencies first, otherwise keep the current order). Liana itself does not require any order
-- **Sort dictionary (shallow) / Sort dictionaries (deep)** - Refactor code actions (`Ctrl+.`). Deep also sorts the nested dictionaries, or every dictionary in the document when the cursor is not in a dictionary; the order is asked once, and dictionaries without dependencies are sorted alphabetically
+- **Sort dictionary (shallow) / Sort dictionaries (deep)** - Refactor code actions (`Ctrl+.`). Shallow sorts the dictionary around the cursor; deep also sorts the dictionaries nested in it, or every dictionary in the document when the cursor is not in a dictionary. Comments move with their entries. When entries depend on each other (acyclic references to siblings), choose once between alphabetical, topological then alphabetical, or topological only (dependencies first, otherwise keep the current order); dictionaries without dependencies are sorted alphabetically. Liana itself does not require any order
 - **Toggle notation style** - Switch between verbose/concise notation
 - **Publish this Liana schema to an authoring environment...** - Write the schema as a read-only `.liana/schema.slna` into a chosen directory; the directory is remembered per schema for later updates (only offered when the document has no errors)
 - **Seal document** - Mark document as finalized (only offered when the document has no errors)

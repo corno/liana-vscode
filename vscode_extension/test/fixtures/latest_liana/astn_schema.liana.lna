@@ -1,0 +1,134 @@
+(
+    `schema`: (
+        `structure`: (
+            `namespaces`: {}
+            `basic types`: {
+                'multi line text': < | `double quoted` ~ _ _ >
+                'text': < | `double quoted` ~ _ _ >
+            }
+            `types`: {
+                'Schema': < | `public` ~ | `group` {
+                    'text types': < _ | `component` < | `navigable` | `local` 'Text Types' _ > >
+                    'types': < _ | `component` < | `navigable` | `local` 'Types' _ > >
+                    'root': < * "The type at the root of a document" | `reference` < < < | `local` 'Types' > < [] > > < | `acyclic` ~ _ > > >
+                } >
+                'Text Types': < | `private` ~ | `dictionary` < _ | `state` < {
+                    'double quoted': < * "Text enclosed in double quotes" _ | `nothing` ~ >
+                    'undelimited': < * "Undelimited text (for example; numbers, booleans, dates)" _ | `nothing` ~ >
+                } _ > > >
+                'Types': < | `private` ~ | `dictionary` < _ | `group` {
+                    'root value': < _ | `component` < | `simple` | `local` 'Value' _ > >
+                } > >
+                'Value': < | `private` ~ | `state` < {
+                    'component': < * "Reference to another named type" _ | `group` {
+                        'type': < _ | `state` < {
+                            'acyclic': < * "Reference a type within the same schema (no cycles)" _ | `reference` < < < | `local` 'Types' > < [] > > < | `acyclic` ~ _ > > >
+                            'cyclic': < * "Reference a type within the same schema (allows cycles)" _ | `reference` < < < | `local` 'Types' > < [] > > < | `cyclic` ~ _ > > >
+                        } _ > >
+                    } >
+                    'dictionary': < * "Indexed collection of named values (like a map or hash table)" _ | `component` < | `simple` | `local` 'Value' _ > >
+                    'group': < * "Collection of properties, each with a specific name and type" _ | `group` {
+                        'properties': < _ | `dictionary` < _ | `group` {
+                            'description': < * "Documentation shown in IDE for this property" | `optional` < _ | `simple` 'multi line text' _ > >
+                            'value': < * "The type of this property" | `component` < | `simple` | `local` 'Value' _ > >
+                        } > >
+                    } >
+                    'identifier': < * "A value that uniquely identifies an entity (denoted with single quotes)" _ | `reference` < < < | `local` 'Text Types' > < [] > > < | `acyclic` ~ _ > > >
+                    'list': < * "Ordered sequence of values of the same type" _ | `component` < | `simple` | `local` 'Value' _ > >
+                    'nothing': < * "Empty value (unit type, no data)" _ | `nothing` ~ >
+                    'optional': < * "Value that may or may not be present" _ | `component` < | `simple` | `local` 'Value' _ > >
+                    'state': < * "Tagged union: value is one of several named options (like a sum type or enum)" _ | `group` {
+                        'options': < * "The possible variants, each with its own name and associated data" | `dictionary` < _ | `group` {
+                            'description': < * "Documentation shown in IDE for this option" | `optional` < _ | `simple` 'multi line text' _ > >
+                            'value': < _ | `component` < | `simple` | `local` 'Value' _ > >
+                        } > >
+                    } >
+                    'text': < * "A text value (denoted with double quotes or no delimiter)" _ | `reference` < < < | `local` 'Text Types' > < [] > > < | `acyclic` ~ _ > > >
+                } _ > >
+            }
+        )
+        `resolver`: (
+            `declarations`: (
+                `namespaces`: {}
+                `types`: {
+                    'Schema': < | `local` < {} {} > >
+                    'Text Types': < | `local` < {} {} > >
+                    'Types': < | `local` < {
+                        'text types': < < < | `local` 'Text Types' > < [] > > | `required` ~ >
+                    } {} > >
+                    'Value': < | `local` < {
+                        'text types': < < < | `local` 'Text Types' > < [] > > | `required` ~ >
+                    } {
+                        'non-recursive sibling types': < < < | `local` 'Types' > < [] > > | `acyclic` ~ | `required` ~ >
+                        'recursive dependent sibling types': < < < | `local` 'Types' > < [] > > | `cyclic` ~ | `required` ~ >
+                    } > >
+                }
+            )
+            `implementations`: (
+                `namespaces`: {}
+                `types`: {
+                    'Schema': < | `group` {
+                        'text types': < | `component` < | `local` 'Text Types' * < * {} * {} > _ > >
+                        'types': < | `component` < | `local` 'Types' * < * {
+                            'text types': | `required` < | `sibling property` 'text types' < [
+                                | `navigable component` ~
+                            ] > >
+                        } * {} > _ > >
+                        'root': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'types' < [
+                            | `navigable component` ~
+                        ] > > > > _ > > >
+                    } >
+                    'Text Types': < | `dictionary` < | `state` < {
+                        'double quoted': < _ | `nothing` ~ _ >
+                        'undelimited': < _ | `nothing` ~ _ >
+                    } > _ > >
+                    'Types': < | `dictionary` < | `group` {
+                        'root value': < | `component` < | `local` 'Value' * < * {
+                            'text types': | `parameter` 'text types'
+                        } * {
+                            'non-recursive sibling types': | `selection` < | `acyclic` | `siblings` ~ >
+                            'recursive dependent sibling types': | `selection` < | `cyclic` | `siblings` ~ >
+                        } > _ > >
+                    } _ > >
+                    'Value': < | `state` < {
+                        'component': < _ | `group` {
+                            'type': < | `state` < {
+                                'acyclic': < _ | `reference` < < < | `parameter` 'non-recursive sibling types' > _ > > _ >
+                                'cyclic': < _ | `reference` < < < | `parameter` 'recursive dependent sibling types' > _ > > _ >
+                            } > >
+                        } _ >
+                        'dictionary': < _ | `component` < | `local` 'Value' * < * {
+                            'text types': | `parameter` 'text types'
+                        } * {
+                            'non-recursive sibling types': | `selection` < | `parameter` 'non-recursive sibling types' >
+                            'recursive dependent sibling types': | `selection` < | `parameter` 'recursive dependent sibling types' >
+                        } > _ > _ >
+                        'group': < _ | `group` {
+                            'properties': < | `dictionary` < | `group` {
+                                'description': < | `optional` < _ _ | `simple` ~ _ _ > >
+                                'value': < | `component` < | `local` 'Value' * < * {
+                                    'text types': | `parameter` 'text types'
+                                } * {
+                                    'non-recursive sibling types': | `selection` < | `parameter` 'non-recursive sibling types' >
+                                    'recursive dependent sibling types': | `selection` < | `parameter` 'recursive dependent sibling types' >
+                                } > _ > >
+                            } _ > >
+                        } _ >
+                        'identifier': < _ | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'text types' < [] > > > > _ > > _ >
+                        'list': < _ | `component` < | `local` 'Value' * < _ _ > _ > _ >
+                        'nothing': < _ | `nothing` ~ _ >
+                        'optional': < _ | `component` < | `local` 'Value' * < _ _ > _ > _ >
+                        'state': < _ | `group` {
+                            'options': < | `dictionary` < | `group` {
+                                'description': < | `optional` < _ _ | `simple` ~ _ _ > >
+                                'value': < | `component` < | `local` 'Value' * < _ _ > _ > >
+                            } _ > >
+                        } _ >
+                        'text': < _ | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'text types' < [] > > > > _ > > _ >
+                    } > >
+                }
+            )
+        )
+    )
+    `directory`: | `dictionary` < | `file` < "astn" 'Schema' > >
+)
