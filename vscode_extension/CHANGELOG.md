@@ -58,8 +58,10 @@
   refinement and self-schema diagnostics. Whole/category `_` passes through the
   existing environment; missing explicit entries no longer inherit caller values.
 - Reference skeleton completion inserts `#` instead of the placeholder `'...'`.
-- Dictionary benchmarks now reject unknown keys and enforce complete coverage
-  when their explicit `dense` flag is set, including resolver/signature matching.
+- Dictionary benchmarks now take their dense/sparse coverage from structural
+  declarations. Dense benchmarks enforce complete coverage; both kinds reject
+  unknown keys and use the declared target for resolver, completion and rename
+  behavior.
 - The authoring template binds local option constraints for state-option and
   present-optional payload resolvers instead of forwarding an absent outer parameter.
 - Constraint and result-selection failures are reported independently of
@@ -70,10 +72,25 @@
   pass-through without inventing defaults for omitted explicit entries.
 
 ### Changed
+- Added `upgrade_liana.sh` to replace the current generated Liana code verbatim
+  from reviewed `clean_start` output and refresh the bundled schema contexts.
+  Removed the superseded `generated` and `next_generated` schema trees; schema
+  consumers use the canonical result wrappers and component-constraint references.
 - Updated the schema loader, resolver, and bundled authoring schema to the
   promoted Liana Next Type Specification. Only this schema version is
   supported; existing authoring environments must migrate their schema sources
   and regenerate `.liana/schema.slna`.
+- Updated current-schema result selections to carry their computed structural
+  value, component-constraint names to reference the named component's
+  constraint dictionary, and validation-only optional `checks` dictionaries to
+  carry expected/actual Result Selection operands.
+  Handwritten schema validation checks result and component-constraint target
+  identity. Generated resolver identity validation remains incomplete for
+  benchmark ownership, explicit simple-component targets, and
+  component/resolver target matching; cyclic reference targets are not exposed
+  during resolution.
+- Moved Convert to JSON notation into the Refactor code actions. It changes the
+  whole document's notation while preserving its Liana content.
 - Renamed "Initialize or update authoring environment with this Liana schema"
   to "Publish this Liana schema to an authoring environment..." (command id
   `liana.publish_schema_to_authoring_environment`) and removed the prompt to

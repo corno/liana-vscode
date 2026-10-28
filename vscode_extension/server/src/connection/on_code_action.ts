@@ -9,6 +9,14 @@ export const create_on_code_action: (
 ) => vscode_node.ServerRequestHandler<vscode_node.CodeActionParams, (vscode_node.Command | vscode_node.CodeAction)[] | null | undefined, (vscode_node.Command | vscode_node.CodeAction)[], void> = (connection_context) => {
 	return async (params: vscode_node.CodeActionParams) => {
 		const refactorings: vscode_node.CodeAction[] = [
+			{
+				title: 'Convert document to JSON notation',
+				kind: vscode_node.CodeActionKind.Refactor,
+				command: vscode_node.Command.create(
+					'Convert document to JSON notation',
+					'liana.convert_to_json',
+				),
+			},
 			...(
 				[
 					['Convert to verbose notation (shallow)', 'verbose', true],
@@ -50,4 +58,3 @@ export const create_on_code_action: (
 		]
 	}
 }
-

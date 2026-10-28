@@ -1,1 +1,1 @@
-export * from "pareto-liana/modules/schema.generated/schemas/resolved/schema"
+export * from "pareto-liana/schemas/liana_next_schema/authoring_schema"

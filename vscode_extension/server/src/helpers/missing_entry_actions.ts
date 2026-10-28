@@ -39,7 +39,7 @@ export const missing_entry_actions = async (
         const edits: vscode.TextEdit[] = []
         let relevant = false
         const collect = (value: import('liana-authoring/schemas/resolve_result/schema').Value,
-            ancestors: readonly import('pareto-liana/modules/schema.generated/schemas/resolved/schema').namespaces.structure.types.Value[]) => {
+            ancestors: readonly import('pareto-liana/schemas/liana_next_schema/authoring_schema').namespaces.structure.types.Value[]) => {
             const result = value['unmarshall result']
             const definition = value.unmarshalled.definition
             if (result[0] === 'success' && result[1][0] === 'dictionary' && !ancestors.includes(definition)) {

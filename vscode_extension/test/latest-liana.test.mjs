@@ -559,8 +559,8 @@ test('optional fallback branches must resolve to the exact same structural targe
 })
 
 test('current generated schema diagnostics describe invalid token syntax explicitly', () => {
-    assert.throws(() => Type_Specifier(chars(specification().replace('"cfg"', 'cfg')), error => {
-        assert.match(error_message(error), /Invalid|expected/)
+    assert.throws(() => Type_Specifier(chars(specification().replace('"cfg"', "'cfg'")), error => {
+        assert.match(error_message(error), /Expected text, found reference/)
         throw error
     }, { 'tab size': 1 }))
     assert.throws(() => Type_Specifier(chars(specification().replace('`directory`:', '`root type`:')), error => {
@@ -576,7 +576,7 @@ test('optional producer results select the declared payload and remain absent wh
             \`constraints\`: _ \`value\`: | \`component\` (\`type\`: | \`simple\` | \`local\` 'Text' \`constraints\`: _)
             \`result\`: * (\`type\`: (\`location\`: | \`local\` 'Text') \`path\`: (\`tail\`: []))))`)
         .replace("'Nothing': (`root value resolver`: | `nothing` ~)", `'Nothing': (\`root value resolver\`: | \`optional\` (
-            \`presence\`: _ \`constraints\`: _ \`not set constraints\`: _
+            \`presence\`: _ \`constraints\`: _ \`checks\`: _ \`not set constraints\`: _
             \`resolver\`: | \`component\` (\`location\`: | \`local\` 'Text' \`arguments\`: _ \`constraints\`: _)
             \`result\`: * | \`value\` (\`path\`: [| \`simple component\` | \`local\` 'Text'])))`)
     const dir = mkdtempSync(join(tmpdir(), 'liana-optional-result-'))
@@ -594,7 +594,7 @@ test('optional producer results select the declared payload and remain absent wh
     }
 })
 
-for (const name of ['astn_schema', 'boekhouding', 'liana', 'pareto_next']) {
+for (const name of ['astn_schema', 'boekhouding', 'liana', 'pareto']) {
     test(`promoted ${name} authoring fixture parses, resolves, seals and round-trips`, async () => {
         const dir = mkdtempSync(join(tmpdir(), `liana-maintained-${name}-`))
         try {

@@ -2,7 +2,7 @@ import * as p_ from 'pareto-core/schema'
 
 import type * as s_unmarshall_result from "../unmarshall_result/schema.js"
 
-import type * as s_schema from "pareto-liana/modules/schema.generated/schemas/resolved/schema"
+import type * as s_schema from "pareto-liana/schemas/liana_next_schema/authoring_schema"
 
 export type Document = {
     'unmarshalled': s_unmarshall_result.Document

@@ -1,6 +1,6 @@
 import * as p from 'pareto-core/transformer'
 import type * as core from 'pareto-core/schema'
-import type * as s from './next_generated/structure/schemas/resolved.js'
+import type * as s from './current_generated/structure/schemas/resolved.js'
 import { Component_Type } from './component.js'
 
 type Abort = (message: string) => never
@@ -33,12 +33,7 @@ export const Validate = (schema: s.Type_Specification, abort: Abort): void => {
                 if (!found) abort('benchmark link requires a benchmarked dictionary entry')
             }
             if (step[0] === 'component constraint') {
-                p.from.optional(step[1].constraints.definition.constraints).decide(constraints =>
-                    p.from.dictionary(constraints).get_possible_entry(step[1].value.name, declaration => {
-                        same(step[1].value.target.path.tail.result, declaration.path.tail.result, 'component constraint target', abort)
-                        return null
-                    }, () => abort(`missing component constraint: ${step[1].value.name}`)),
-                () => abort('missing component constraint declarations'))
+                same(step[1].value.target.path.tail.result, step[1].value.name['l entry'].path.tail.result, 'component constraint target', abort)
             }
             current = item.result
             return null
@@ -89,13 +84,13 @@ export const Validate = (schema: s.Type_Specification, abort: Abort): void => {
     }
 
     const result = (selection: s.resolver.Result_Selection, expected: s.structure.Value, node: s.structure.Value, abort: Abort): void => {
-        if (selection[0] === 'context') {
-            guaranteed(selection[1], abort)
-            same(selection[1].tail.path.result, expected, 'result type', abort)
+        const expression = selection.value
+        if (expression[0] === 'context') {
+            guaranteed(expression[1], abort)
         } else {
-            relative(selection[1], node, abort)
-            same(selection[1].path.result, expected, 'result type', abort)
+            relative(expression[1], node, abort)
         }
+        same(selection.result, expected, 'result type', abort)
     }
 
     const presence = <T extends core.Value, U extends core.Value>(
@@ -186,7 +181,7 @@ export const Validate = (schema: s.Type_Specification, abort: Abort): void => {
                     value(option.value.resolver, abort)
                     p.from.optional(option.value.result).map(selection => {
                         p.from.optional(resolver[1].constraints.definition.result).map(expected => {
-                            result(selection, expected.path.tail.result, option.benchmark.value, abort)
+                            result(selection.value, expected.path.tail.result, option.benchmark.value, abort)
                             return null
                         })
                         return null

@@ -4,7 +4,7 @@ import test from 'node:test'
 
 const require = createRequire(import.meta.url)
 const p = require('pareto-core/transformer')
-const { Type_Specification: resolve } = require('pareto-liana/modules/schema.generated/schemas/resolved/refiners/unresolved_manual')
+const { Type_Specification: resolve } = require('pareto-liana/schemas/liana_next_schema/resolve')
 const dictionary = p.literal.dictionary
 const none = p.literal.not_set
 const entry = (values, name) => {
@@ -14,8 +14,8 @@ const entry = (values, name) => {
 }
 const fail = error => { throw new Error(JSON.stringify(error)) }
 const signature = () => ({ signature: ['local', { values: dictionary({}), lookups: dictionary({}) }] })
-const component = (location, namespace) => ['component', {
-    type: [location, namespace === undefined ? 'Hidden' : { namespace, type: 'Item' }], constraints: none(),
+const component = (location, namespace, kind = 'navigable') => ['component', {
+    type: [kind, [location, namespace === undefined ? 'Hidden' : { namespace, type: 'Item' }]], constraints: none(),
 }]
 const call = (location, namespace) => ['component', {
     location: [location, namespace === undefined ? 'Hidden' : { namespace, resolver: 'Item' }],
@@ -55,11 +55,11 @@ const fixture = () => ({
 })
 
 for (const visibility of ['private', 'private single use']) {
-    for (const location of ['local', 'local cyclic']) {
-        test(`${visibility} types allow ${location} components and preserve visibility`, () => {
+    for (const kind of ['simple', 'navigable']) {
+        test(`${visibility} types allow local ${kind} components and preserve visibility`, () => {
             const input = fixture()
             const namespace = entry(input.schema.structure.namespaces, 'A')
-            entry(namespace.types, 'Item')['root value'] = component(location)
+            entry(namespace.types, 'Item')['root value'] = component('local', undefined, kind)
             namespace.types.__get_raw().push(['Hidden', { visibility: [visibility, null], 'root value': ['nothing', null] }])
             entry(input.schema.resolver.declarations.namespaces, 'A').types.__get_raw().push(['Hidden', signature()])
             const types = entry(input.schema.resolver.implementations.namespaces, 'A').types
@@ -96,7 +96,7 @@ for (const visibility of ['private', 'private single use']) {
                 input: { value: { type, subselection: { tail: p.literal.list([]) } }, presence: ['required', null] },
             })
             implementation['root value resolver'] = ['optional', {
-                presence: none(), constraints: none(), 'not set constraints': none(), resolver: ['nothing', null],
+                presence: none(), constraints: none(), checks: none(), 'not set constraints': none(), resolver: ['nothing', null],
                 result: p.literal.set(['context', { start: ['parameter', 'input'], tail: { path: p.literal.list([]) } }]),
             }]
             assert.ok(resolve(input, fail))
@@ -115,7 +115,7 @@ for (const visibility of ['private', 'private single use']) {
             const resolver = location === 'child namespace' ? entry(input.schema.resolver.implementations.types, 'Root')
                 : entry(entry(input.schema.resolver.implementations.namespaces, 'B').types, 'Item')
             resolver['root value resolver'][1].location[1].resolver = 'Hidden'
-            assert.throws(() => resolve(input, fail), /"expected":"public"/)
+            assert.throws(() => resolve(input, fail), /"constraint":"public"/)
         })
     }
 }

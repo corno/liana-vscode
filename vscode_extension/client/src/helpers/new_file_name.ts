@@ -1,6 +1,6 @@
 import * as p from 'pareto-core/transformer'
 import type * as core from 'pareto-core/schema'
-import type * as schema from 'pareto-liana/modules/schema.generated/schemas/resolved/schema'
+import type * as schema from 'pareto-liana/schemas/liana_next_schema/authoring_schema'
 import { file_directory, file_type } from 'pareto-liana/schemas/temp_type_specifier/file_type'
 
 export type File_Choice = { name: string | null, extension: string }

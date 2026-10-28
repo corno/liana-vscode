@@ -79,8 +79,8 @@
                         ] > > > > _ > > >
                     } >
                     'Text Types': < | `dictionary` < | `state` < {
-                        'double quoted': < _ | `nothing` ~ _ >
-                        'undelimited': < _ | `nothing` ~ _ >
+                        'double quoted': < _ | `nothing` ~ _ _ >
+                        'undelimited': < _ | `nothing` ~ _ _ >
                     } > _ > >
                     'Types': < | `dictionary` < | `group` {
                         'root value': < | `component` < | `local` 'Value' * < * {
@@ -93,19 +93,19 @@
                     'Value': < | `state` < {
                         'component': < _ | `group` {
                             'type': < | `state` < {
-                                'acyclic': < _ | `reference` < < < | `parameter` 'non-recursive sibling types' > _ > > _ >
-                                'cyclic': < _ | `reference` < < < | `parameter` 'recursive dependent sibling types' > _ > > _ >
+                                'acyclic': < _ | `reference` < < < | `parameter` 'non-recursive sibling types' > _ > > _ _ >
+                                'cyclic': < _ | `reference` < < < | `parameter` 'recursive dependent sibling types' > _ > > _ _ >
                             } > >
-                        } _ >
+                        } _ _ >
                         'dictionary': < _ | `component` < | `local` 'Value' * < * {
                             'text types': | `parameter` 'text types'
                         } * {
                             'non-recursive sibling types': | `selection` < | `parameter` 'non-recursive sibling types' >
                             'recursive dependent sibling types': | `selection` < | `parameter` 'recursive dependent sibling types' >
-                        } > _ > _ >
+                        } > _ > _ _ >
                         'group': < _ | `group` {
                             'properties': < | `dictionary` < | `group` {
-                                'description': < | `optional` < _ _ | `simple` ~ _ _ > >
+                                'description': < | `optional` < _ _ | `simple` ~ _ _ _ > >
                                 'value': < | `component` < | `local` 'Value' * < * {
                                     'text types': | `parameter` 'text types'
                                 } * {
@@ -113,18 +113,18 @@
                                     'recursive dependent sibling types': | `selection` < | `parameter` 'recursive dependent sibling types' >
                                 } > _ > >
                             } _ > >
-                        } _ >
-                        'identifier': < _ | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'text types' < [] > > > > _ > > _ >
-                        'list': < _ | `component` < | `local` 'Value' * < _ _ > _ > _ >
-                        'nothing': < _ | `nothing` ~ _ >
-                        'optional': < _ | `component` < | `local` 'Value' * < _ _ > _ > _ >
+                        } _ _ >
+                        'identifier': < _ | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'text types' < [] > > > > _ > > _ _ >
+                        'list': < _ | `component` < | `local` 'Value' * < _ _ > _ > _ _ >
+                        'nothing': < _ | `nothing` ~ _ _ >
+                        'optional': < _ | `component` < | `local` 'Value' * < _ _ > _ > _ _ >
                         'state': < _ | `group` {
                             'options': < | `dictionary` < | `group` {
-                                'description': < | `optional` < _ _ | `simple` ~ _ _ > >
+                                'description': < | `optional` < _ _ | `simple` ~ _ _ _ > >
                                 'value': < | `component` < | `local` 'Value' * < _ _ > _ > >
                             } _ > >
-                        } _ >
-                        'text': < _ | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'text types' < [] > > > > _ > > _ >
+                        } _ _ >
+                        'text': < _ | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'text types' < [] > > > > _ > > _ _ >
                     } > >
                 }
             )

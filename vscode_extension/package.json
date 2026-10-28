@@ -142,12 +142,7 @@
 			{
 				"command": "liana.convert_to_json",
 				"category": "Liana",
-				"title": "convert to JSON"
-			},
-			{
-				"command": "liana.convert_to_json_disabled",
-				"category": "Liana",
-				"title": "convert to JSON (n/a due to errors)"
+				"title": "Convert document to JSON notation"
 			},
 			{
 				"command": "liana.save_as_json",
@@ -212,19 +207,13 @@
 				{
 					"command": "liana.sort_dictionary",
 					"when": "false"
+				},
+				{
+					"command": "liana.convert_to_json",
+					"when": "false"
 				}
 			],
 			"editor/context": [
-				{
-					"command": "liana.convert_to_json",
-					"when": "editorLangId == liana && !liana.has_parse_errors",
-					"group": "1_liana"
-				},
-				{
-					"command": "liana.convert_to_json_disabled",
-					"when": "editorLangId == liana && liana.has_parse_errors",
-					"group": "1_liana"
-				},
 				{
 					"command": "liana.save_as_json",
 					"when": "editorLangId == liana && !liana.has_parse_errors",

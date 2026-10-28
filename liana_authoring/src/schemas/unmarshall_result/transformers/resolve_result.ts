@@ -7,7 +7,7 @@ import * as p_temp_dictionary from 'pareto-core/temp/Generic_Dictionary'
 import * as p_lookup from 'pareto-core/transformer/specials/lookup'
 
 import type * as s_in from "../../../schemas/unmarshall_result/schema.js"
-import type * as s_in_definition from "pareto-liana/modules/schema.generated/schemas/resolved/schema"
+import type * as s_in_definition from "pareto-liana/schemas/liana_next_schema/authoring_schema"
 import type * as s_out from "../../../schemas/resolve_result/schema.js"
 import { component_type } from '../../liana_schema/select_component.js'
 
@@ -266,7 +266,7 @@ const Relative = (
                     : current
                 const next: s_out.Selection = step[0] === 'component constraint' ? Select(current, value =>
                     value[0] === 'component'
-                        ? p_.from.dictionary(value[1].constraints).get_possible_entry(step[1].value.name, $ => $, Unavailable) : Unavailable())
+                        ? p_.from.dictionary(value[1].constraints).get_possible_entry(step[1].value.name['l id'], $ => $, Unavailable) : Unavailable())
                 : step[0] === 'option constraint' ? Select(current, value =>
                     value[0] === 'state' && value[1].unmarshalled.derived['option status'][0] === 'set'
                     && value[1].unmarshalled.derived['option status'][1].option === step[1].value.option['l id']
@@ -602,10 +602,11 @@ const Result_Selection = (
     context: temp.Context,
 ): s_out.Selection => {
     if (value['unmarshall result'][0] === 'error') return Unavailable()
-    switch ($[0]) {
-        case 'value': return Relative($[1], ['resolved', value])
-        case 'context': return Guaranteed($[1], context)
-        default: return p_.exhaustive($[0])
+    const expression = $.value
+    switch (expression[0]) {
+        case 'value': return Relative(expression[1], ['resolved', value])
+        case 'context': return Guaranteed(expression[1], context)
+        default: return p_.exhaustive(expression[0])
     }
 }
 
@@ -817,10 +818,20 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                         const siblingKeys = unmarshalled_value[0] === 'dictionary'
                                             ? p_.from.dictionary(unmarshalled_value[1].derived.entries).convert_to_list((_, id) => id)
                                             : p_.literal.list<string>([])
-                                        const benchmark = p_.from.optional(def.benchmark).map(($) => ({
-                                            selection: Referenced_Value(Guaranteed($.value.selection.value, context), ['dictionary', $.value.selection.constraints.dictionary]),
-                                            dense: $.value.coverage[0] === 'dense',
-                                        }))
+                                        const benchmark = p_.from.optional(def.benchmark).map(($) => {
+                                            const coverage = p_.from.state(unmarshalled_value).decide(
+                                                value => value[0] === 'dictionary'
+                                                    ? p_.from.optional(value[1].definition.benchmark).decide(
+                                                        benchmark => benchmark.coverage,
+                                                        () => p_unreachable_code_path('resolver benchmark requires a structural benchmark declaration'),
+                                                    )
+                                                    : p_unreachable_code_path('resolver benchmark requires a dictionary value'),
+                                            )
+                                            return {
+                                                selection: Referenced_Value(Guaranteed($.value.selection.value, context), ['dictionary', $.value.selection.constraints.dictionary]),
+                                                dense: coverage[0] === 'dense',
+                                            }
+                                        })
                                         return ['dictionary', p_.from.state(unmarshalled_value).decide(
                                             ($): s_out.Dictionary => {
                                                 switch ($[0]) {
@@ -1073,7 +1084,7 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                                                                         ? p_.from.dictionary($v_def.options).get_possible_entry(
                                                                             unmarshalled.derived['option status'][1].option,
                                                                             (option) => p_.from.optional(option.value.result).decide(
-                                                                                (selection) => Result_Selection(selection, value, {
+                                                                                (selection) => Result_Selection(selection.value, value, {
                                                                                     ...context, lookups: { ...$l, 'option constraints': checks },
                                                                                 }),
                                                                                 () => p_unreachable_code_path("every state option must declare its result selection"),

@@ -28,11 +28,17 @@ TODO:
                             } _ > >
                         } > >
                         'Dictionary': < | `private` ~ | `group` {
-                            'benchmark': < * "Optional structural dictionary whose entries benchmark this dictionary's entries; the resolver selects the instance and coverage" | `optional` < _ | `component` < | `simple` | `local` 'Value Reference' * {
-                                'dictionary': < < | `local` 'Value' > < [
-                                    | `state` 'dictionary'
-                                ] > >
-                            } > _ > >
+                            'benchmark': < * "Optional benchmark target and coverage contract; the resolver selects its dictionary instance" | `optional` < _ | `group` {
+                                'selection': < _ | `component` < | `simple` | `local` 'Value Reference' * {
+                                    'dictionary': < < | `local` 'Value' > < [
+                                        | `state` 'dictionary'
+                                    ] > >
+                                } > >
+                                'coverage': < _ | `state` < {
+                                    'dense': < * "Every benchmark entry must be covered" _ | `nothing` ~ >
+                                    'sparse': < * "A subset of benchmark entries may be covered" _ | `nothing` ~ >
+                                } _ > >
+                            } _ > >
                             'value': < * "The type of each entry in this dictionary" | `component` < | `simple` | `local` 'Value' _ > >
                         } >
                         'Group': < | `private` ~ | `dictionary` < _ | `group` {
@@ -265,7 +271,7 @@ TODO:
                                 'presence': < _ | `component` < | `simple` | `local` 'Presence' _ > >
                             } > >
                         } >
-                        'Declarations': < | `private` ~ | `dictionary` < * < < | `sibling namespace` < 'structure' 'Types' > > < [  ] > > | `component` < | `simple` | `local` 'Declaration' _ > > >
+                        'Declarations': < | `private` ~ | `dictionary` < * < < < | `sibling namespace` < 'structure' 'Types' > > < [  ] > > | `dense` ~ > | `component` < | `simple` | `local` 'Declaration' _ > > >
                         'Signature Value Reference': < | `private` ~ | `group` {
                             'type': < _ | `group` {
                                 'location': < * "Where the referenced type is defined" | `state` < {
@@ -313,7 +319,7 @@ TODO:
                                 } * < < | `sibling namespace` < 'structure' 'Value' > > < [] > > > * < < | `sibling namespace` < 'structure' 'Value' > > < [] > > > >
                             } >
                         } >
-                        'Namespaces': < | `private` ~ | `dictionary` < * < < | `sibling namespace` < 'structure' 'Namespaces' > > < [  ] > > | `component` < | `simple` | `local` 'Declaration Namespace' _ > > >
+                        'Namespaces': < | `private` ~ | `dictionary` < * < < < | `sibling namespace` < 'structure' 'Namespaces' > > < [  ] > > | `dense` ~ > | `component` < | `simple` | `local` 'Declaration Namespace' _ > > >
                         'Declaration Namespace': < | `public` ~ | `group` {
                             'namespaces': < _ | `component` < | `navigable` | `local` 'Namespaces' _ > >
                             'types': < _ | `component` < | `navigable` | `local` 'Declarations' _ > >
@@ -449,7 +455,7 @@ TODO:
                             'declarations': < < | `sibling namespace` < 'structure' 'Option Constraints' > > < [
                                 | `optional` ~
                             ] > >
-                        } | `dictionary` < * < < | `sibling namespace` < 'structure' 'Option Constraints' > > < [ | `optional` ~ ] > > | `state` < {
+                        } | `dictionary` < * < < < | `sibling namespace` < 'structure' 'Option Constraints' > > < [ | `optional` ~ ] > > | `dense` ~ > | `state` < {
                             'state': < _ _ | `group` {
                                 'selection': < _ | `component` < | `simple` | `local` 'Guaranteed Value Selection' * {
                                     'state': (
@@ -522,7 +528,7 @@ TODO:
                             'declarations': < < | `sibling namespace` < 'structure' 'Reference Constraints' > > < [
                                 | `optional` ~
                             ] > >
-                        } | `dictionary` < * < < | `sibling namespace` < 'structure' 'Reference Constraints' > > < [ | `optional` ~ ] > > | `group` {
+                        } | `dictionary` < * < < < | `sibling namespace` < 'structure' 'Reference Constraints' > > < [ | `optional` ~ ] > > | `dense` ~ > | `group` {
                             'start': < _ | `state` < {
                                 'value': < _ _ | `nothing` ~ >
                                 'sibling': < _ _ | `reference` < < < | `sibling namespace` < 'structure' 'Reference Constraints' > > < [
@@ -564,7 +570,9 @@ TODO:
                         'Relative Value Selection': < | `private` ~ | `group` {
                             'path': < _ | `list` < | `state` < {
                                 'benchmark link': < _ _ | `component` < | `navigable` | `local` 'Value Reference' _ > >
+                                /* TODO: Identity constraint: a benchmark link's explicit target must be the benchmark dictionary declared by the current dictionary. */
                                 'simple component': < * "Select a simple component's payload using its explicitly named target type; the target must match the component's declared type" * {
+                                    /* TODO: Identity constraint: the explicitly selected Type must be the actual target of the current simple component, not a structurally equivalent Type. */
                                     'component': < < | `sibling namespace` < 'structure' 'Value' > > < [
                                         | `state` 'component'
                                     ] > >
@@ -578,8 +586,13 @@ TODO:
                                     'definition': < < | `sibling namespace` < 'structure' 'Value' > > < [
                                         | `state` 'component'
                                     ] > >
+                                    'constraints': < < | `sibling namespace` < 'structure' 'Reference Constraints' > > < [
+                                        | `optional` ~
+                                    ] > >
                                 } | `group` {
-                                    'name': < _ | `simple` 'text' >
+                                    'name': < _ | `reference` < < < | `sibling namespace` < 'structure' 'Reference Constraints' > > < [
+                                        | `optional` ~
+                                    ] > > < | `acyclic` ~ _ > > >
                                     'target': < _ | `component` < | `navigable` | `local` 'Value Reference' _ > >
                                 } >
                                 'navigable component': < _ * {
@@ -638,6 +651,11 @@ TODO:
                                     'definition': < < | `sibling namespace` < 'structure' 'Value' > > < [
                                         | `state` 'reference'
                                     ] > >
+                                    'acyclic': < < | `sibling namespace` < 'structure' 'Reference' > > < [
+                                        | `group` 'type'
+                                        | `group` 'dependency'
+                                        | `state` 'acyclic'
+                                    ] > >
                                 } | `group` {} >
                                 'state result': < _ * {
                                     'definition': < < | `sibling namespace` < 'structure' 'Value' > > < [
@@ -647,17 +665,22 @@ TODO:
                             } * < < | `sibling namespace` < 'structure' 'Value' > > < [] > > > * < < | `sibling namespace` < 'structure' 'Value' > > < [] > > > >
                         } >
                         'Resolver': < | `public` ~ | `group` {
-                            'namespaces': < _ | `dictionary` < * < < | `sibling namespace` < 'declarations' 'Namespaces' > > < [  ] > > | `component` < | `simple` | `local` 'Resolver' _ > > >
-                            'types': < _ | `dictionary` < * < < | `sibling namespace` < 'declarations' 'Declarations' > > < [  ] > > | `group` {
+                            'namespaces': < _ | `dictionary` < * < < < | `sibling namespace` < 'declarations' 'Namespaces' > > < [  ] > > | `dense` ~ > | `component` < | `simple` | `local` 'Resolver' _ > > >
+                            'types': < _ | `dictionary` < * < < < | `sibling namespace` < 'declarations' 'Declarations' > > < [  ] > > | `dense` ~ > | `group` {
                                 'root value resolver': < _ | `component` < | `simple` | `local` 'Value' _ > >
                             } > >
                         } >
                         'Result Selection': < | `private` ~ | `state` < {
                             'context': < _ _ | `component` < | `simple` | `local` 'Guaranteed Value Selection' _ > >
                             'value': < _ _ | `component` < | `simple` | `local` 'Relative Value Selection' _ > >
-                        } _ > >
+                        } * < < | `sibling namespace` < 'structure' 'Value' > > < [] > > > >
+                        'Checks': < | `private` ~ | `optional` < _ | `dictionary` < _ | `group` {
+                            'expected': < _ | `component` < | `simple` | `local` 'Result Selection' _ > >
+                            'actual': < _ | `component` < | `simple` | `local` 'Result Selection' _ > >
+                        } > _ > >
                         'Value': < | `private` ~ | `state` < {
                             'component': < _ * {
+                                /* TODO: Identity constraint: the selected resolver declaration's structural benchmark must be the current component's actual target Type. */
                                 'definition': < < | `sibling namespace` < 'structure' 'Value' > > < [
                                     | `state` 'component'
                                 ] > >
@@ -688,7 +711,7 @@ TODO:
                                     | `dictionary` ~
                                 ] > > > >
                                 'arguments': < _ | `optional` < _ | `group` {
-                                    'types': < _ | `optional` < _ | `dictionary` < * < < | `sibling namespace` < 'declarations' 'Signature' > > < [ | `group` 'values' ] > > | `state` < {
+                                    'types': < _ | `optional` < _ | `dictionary` < * < < < | `sibling namespace` < 'declarations' 'Signature' > > < [ | `group` 'values' ] > > | `dense` ~ > | `state` < {
                                         'optional': < _ _ | `state` < {
                                             'not set': < _ _ | `nothing` ~ >
                                             'set': < _ _ | `component` < | `simple` | `local` 'Guaranteed Value Selection' _ > >
@@ -699,9 +722,9 @@ TODO:
                                             | `group` 'values'
                                         ] > > < | `acyclic` ~ _ > > >
                                     } _ > > _ > >
-                                    'lookups': < _ | `optional` < _ | `dictionary` < * < < | `sibling namespace` < 'declarations' 'Signature' > > < [ | `group` 'lookups' ] > > | `state` < {
-                                        'acyclic': < _ _ | `nothing` ~ >
-                                        'cyclic': < _ _ | `nothing` ~ >
+                                    'lookups': < _ | `optional` < _ | `dictionary` < * < < < | `sibling namespace` < 'declarations' 'Signature' > > < [ | `group` 'lookups' ] > > | `dense` ~ > | `state` < {
+                                        'acyclic': < * "An unset lookup handle typed by the callee parameter; no dictionary instance is selected" _ | `nothing` ~ >
+                                        'cyclic': < * "An unset lookup handle typed by the callee parameter; no dictionary instance is selected" _ | `nothing` ~ >
                                         'selection': < _ _ | `component` < | `simple` | `local` 'Lookup Selection' _ > >
                                     } _ > > _ > >
                                 } _ > >
@@ -734,17 +757,13 @@ TODO:
                                             )
                                         )
                                     } > >
-                                    'coverage': < _ | `state` < {
-                                        'dense': < * "Every benchmark entry must be covered" _ | `nothing` ~ >
-                                        'sparse': < * "A subset of benchmark entries may be covered" _ | `nothing` ~ >
-                                    } _ > >
                                 } _ > >
                             } >
                             'group': < _ * {
                                 'definition': < < | `sibling namespace` < 'structure' 'Value' > > < [
                                     | `state` 'group'
                                 ] > >
-                            } | `dictionary` < * < < | `sibling namespace` < 'structure' 'Group' > > < [  ] > > | `group` {
+                            } | `dictionary` < * < < < | `sibling namespace` < 'structure' 'Group' > > < [  ] > > | `dense` ~ > | `group` {
                                 'resolver': < _ | `component` < | `simple` | `local` 'Value' _ > >
                             } > >
                             'list': < _ * {
@@ -792,6 +811,7 @@ TODO:
                                         | `optional` ~
                                     ] > >
                                 } | `component` < | `simple` | `local` 'Result Selection' _ > _ > >
+                                'checks': < * "Validation-only checks on the present branch, after its named constraints resolve" | `component` < | `simple` | `local` 'Checks' _ > >
                             } >
                             'reference': < _ * {
                                 'definition': < < | `sibling namespace` < 'structure' 'Value' > > < [
@@ -808,10 +828,15 @@ TODO:
                                     | `state` 'state'
                                 ] > >
                             } | `group` {
-                                'options': < _ | `dictionary` < * < < | `sibling namespace` < 'structure' 'Value' > > < [ | `state` 'state' | `group` 'options' ] > > | `group` {
+                                'options': < _ | `dictionary` < * < < < | `sibling namespace` < 'structure' 'Value' > > < [ | `state` 'state' | `group` 'options' ] > > | `dense` ~ > | `group` {
                                     'constraints': < _ | `component` < | `simple` | `local` 'Option Constraints' _ > >
                                     'resolver': < _ | `component` < | `simple` | `local` 'Value' _ > >
-                                    'result': < _ | `optional` < _ | `component` < | `simple` | `local` 'Result Selection' _ > _ > >
+                                    'result': < _ | `optional` < * {
+                                        'result': < < | `sibling namespace` < 'structure' 'Value Result' > > < [
+                                            | `optional` ~
+                                        ] > >
+                                    } | `component` < | `simple` | `local` 'Result Selection' _ > _ > >
+                                    'checks': < * "Validation-only checks on this option, after its named constraints resolve" | `component` < | `simple` | `local` 'Checks' _ > >
                                 } > >
                             } >
                         } _ > >
@@ -1051,6 +1076,7 @@ TODO:
                                 'sibling namespaces': < < < | `sibling namespace` < 'structure' 'Namespaces' > > < [] > > | `optional` ~ >
                             } {} > >
                             'Result Selection': < | `same as` 'Value' >
+                            'Checks': < | `same as` 'Value' >
                             'Value': < | `local` < {
                                 'definition': < < < | `sibling namespace` < 'structure' 'Value' > > < [] > > | `required` ~ >
                                 'list cursor': < < < | `sibling namespace` < 'structure' 'Value Result' > > < [] > > | `optional` ~ >
@@ -1095,28 +1121,34 @@ TODO:
                         `types`: {
                             'Basic Types': < | `dictionary` < | `group` {
                                 'type': < | `state` < {
-                                    'double quoted': < _ | `nothing` ~ _ >
-                                    'undelimited': < _ | `nothing` ~ _ >
+                                    'double quoted': < _ | `nothing` ~ _ _ >
+                                    'undelimited': < _ | `nothing` ~ _ _ >
                                 } > >
-                                'regular expression': < | `optional` < _ _ | `component` < | `local` 'Regular Expression' * < * {} * {} > _ > _ _ > >
+                                'regular expression': < | `optional` < _ _ | `component` < | `local` 'Regular Expression' * < * {} * {} > _ > _ _ _ > >
                                 'hyperlink': < | `optional` < _ _ | `group` {
                                     'prefix': < | `simple` ~ >
                                     'suffix': < | `simple` ~ >
-                                } _ _ > >
+                                } _ _ _ > >
                             } _ > >
                             'Dictionary': < | `group` {
-                                'benchmark': < | `optional` < _ _ | `component` < | `local` 'Value Reference' * < * {
-                                    'child namespaces': | `parameter` 'child namespaces'
-                                } * {
-                                    'types': | `selection` < | `parameter` 'noncircular sibling types' >
-                                    'sibling namespaces': | `selection` < | `parameter` 'sibling namespaces' >
-                                } > * {
-                                    'dictionary': < | `value` ~ < < [
-                                        | `group` 'path'
-                                        | `group` 'tail'
-                                        | `list result` ~
-                                    ] > | `state` < 'dictionary' > > >
-                                } > _ _ > >
+                                'benchmark': < | `optional` < _ _ | `group` {
+                                    'selection': < | `component` < | `local` 'Value Reference' * < * {
+                                        'child namespaces': | `parameter` 'child namespaces'
+                                    } * {
+                                        'types': | `selection` < | `parameter` 'noncircular sibling types' >
+                                        'sibling namespaces': | `selection` < | `parameter` 'sibling namespaces' >
+                                    } > * {
+                                        'dictionary': < | `value` ~ < < [
+                                            | `group` 'path'
+                                            | `group` 'tail'
+                                            | `list result` ~
+                                        ] > | `state` < 'dictionary' > > >
+                                    } > >
+                                    'coverage': < | `state` < {
+                                        'dense': < _ | `nothing` ~ _ _ >
+                                        'sparse': < _ | `nothing` ~ _ _ >
+                                    } > >
+                                } _ _ _ > >
                                 'value': < | `component` < | `local` 'Value' * < * {
                                     'basic types': | `parameter` 'basic types'
                                     'child namespaces': | `parameter` 'child namespaces'
@@ -1127,7 +1159,7 @@ TODO:
                                 } > _ > >
                             } >
                             'Group': < | `dictionary` < | `group` {
-                                'description': < | `optional` < _ _ | `simple` ~ _ _ > >
+                                'description': < | `optional` < _ _ | `simple` ~ _ _ _ > >
                                 'value': < | `component` < | `local` 'Value' * < * {
                                     'basic types': | `parameter` 'basic types'
                                     'child namespaces': | `parameter` 'child namespaces'
@@ -1140,7 +1172,7 @@ TODO:
                             'Namespaces': < | `dictionary` < | `component` < | `local` 'Structure' * < * {} * {
                                 'sibling namespaces': | `selection` < | `acyclic` | `siblings` ~ >
                             } > _ > _ > >
-                            'Option Constraints': < | `optional` < _ _ | `dictionary` < | `component` < | `local` 'Value Reference' * < _ _ > _ > _ > _ _ > >
+                            'Option Constraints': < | `optional` < _ _ | `dictionary` < | `component` < | `local` 'Value Reference' * < _ _ > _ > _ > _ _ _ > >
                             'Reference': < | `group` {
                                 'referent': < | `component` < | `local` 'Value Reference' * < * {
                                     'child namespaces': | `parameter` 'child namespaces'
@@ -1156,8 +1188,8 @@ TODO:
                                 } > >
                                 'type': < | `group` {
                                     'dependency': < | `state` < {
-                                        'acyclic': < _ | `nothing` ~ _ >
-                                        'cyclic': < _ | `nothing` ~ _ >
+                                        'acyclic': < _ | `nothing` ~ _ _ >
+                                        'cyclic': < _ | `nothing` ~ _ _ >
                                     } > >
                                     'constraints': < | `component` < | `local` 'Reference Constraints' * < * {
                                         'child namespaces': | `parameter` 'child namespaces'
@@ -1167,21 +1199,21 @@ TODO:
                                     } > _ > >
                                 } >
                             } >
-                            'Reference Constraints': < | `optional` < _ _ | `dictionary` < | `component` < | `local` 'Value Reference' * < _ _ > _ > _ > _ _ > >
+                            'Reference Constraints': < | `optional` < _ _ | `dictionary` < | `component` < | `local` 'Value Reference' * < _ _ > _ > _ > _ _ _ > >
                             'Regular Expression': < | `state` < {
-                                'any character': < _ | `nothing` ~ _ >
-                                'literal': < _ | `simple` ~ _ >
-                                'character set': < _ | `simple` ~ _ >
-                                'sequence': < _ | `list` < | `component` < | `local` 'Regular Expression' * < * {} * {} > _ > _ > _ >
-                                'choice': < _ | `list` < | `component` < | `local` 'Regular Expression' * < * {} * {} > _ > _ > _ >
+                                'any character': < _ | `nothing` ~ _ _ >
+                                'literal': < _ | `simple` ~ _ _ >
+                                'character set': < _ | `simple` ~ _ _ >
+                                'sequence': < _ | `list` < | `component` < | `local` 'Regular Expression' * < * {} * {} > _ > _ > _ _ >
+                                'choice': < _ | `list` < | `component` < | `local` 'Regular Expression' * < * {} * {} > _ > _ > _ _ >
                                 'repetition': < _ | `group` {
                                     'expression': < | `component` < | `local` 'Regular Expression' * < * {} * {} > _ > >
                                     'quantity': < | `state` < {
-                                        'optional': < _ | `nothing` ~ _ >
-                                        'zero or more': < _ | `nothing` ~ _ >
-                                        'one or more': < _ | `nothing` ~ _ >
+                                        'optional': < _ | `nothing` ~ _ _ >
+                                        'zero or more': < _ | `nothing` ~ _ _ >
+                                        'one or more': < _ | `nothing` ~ _ _ >
                                     } > >
-                                } _ >
+                                } _ _ >
                             } > >
                             'Structure': < | `group` {
                                 'namespaces': < | `component` < | `local` 'Namespaces' * < * {} * {} > _ > >
@@ -1199,9 +1231,9 @@ TODO:
                             } >
                             'Type': < | `group` {
                                 'visibility': < | `state` < {
-                                    'private': < _ | `nothing` ~ _ >
-                                    'private single use': < _ | `nothing` ~ _ >
-                                    'public': < _ | `nothing` ~ _ >
+                                    'private': < _ | `nothing` ~ _ _ >
+                                    'private single use': < _ | `nothing` ~ _ _ >
+                                    'public': < _ | `nothing` ~ _ _ >
                                 } > >
                                 'root value': < | `component` < | `local` 'Value' * < * {
                                     'basic types': | `parameter` 'basic types'
@@ -1224,7 +1256,7 @@ TODO:
                                 'component': < _ | `group` {
                                     'type': < | `state` < {
                                         'simple': < _ | `state` < {
-                                            'local': < _ | `reference` < < < | `parameter` 'possibly circular dependent sibling types' > _ > > _ >
+                                            'local': < _ | `reference` < < < | `parameter` 'possibly circular dependent sibling types' > _ > > _ _ >
                                             'child namespace': < _ | `group` {
                                                 'namespace': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'child namespaces' < [] > > > > _ > > >
                                                 'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespace' < [
@@ -1238,7 +1270,7 @@ TODO:
                                                         | `group` 'visibility'
                                                     ] > | `state` < 'public' > > >
                                                 } > > >
-                                            } _ >
+                                            } _ _ >
                                             'sibling namespace': < _ | `group` {
                                                 'namespace': < | `reference` < < < | `parameter` 'sibling namespaces' > _ > > >
                                                 'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespace' < [
@@ -1252,13 +1284,13 @@ TODO:
                                                         | `group` 'visibility'
                                                     ] > | `state` < 'public' > > >
                                                 } > > >
-                                            } _ >
-                                        } > _ >
+                                            } _ _ >
+                                        } > _ _ >
                                         'navigable': < _ | `state` < {
                                             'local': < _ | `reference` < < < | `parameter` 'noncircular sibling types' > _ > > * | `value` < [
                                                 | `reference` < >
                                                 | `simple component` | `local` 'Type'
-                                            ] > >
+                                            ] > _ >
                                             'child namespace': < _ | `group` {
                                                 'namespace': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'child namespaces' < [] > > > > _ > > >
                                                 'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespace' < [
@@ -1276,7 +1308,7 @@ TODO:
                                                 | `group` 'type'
                                                 | `reference` < >
                                                 | `simple component` | `local` 'Type'
-                                            ] > >
+                                            ] > _ >
                                             'sibling namespace': < _ | `group` {
                                                 'namespace': < | `reference` < < < | `parameter` 'sibling namespaces' > _ > > >
                                                 'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespace' < [
@@ -1294,8 +1326,8 @@ TODO:
                                                 | `group` 'type'
                                                 | `reference` < >
                                                 | `simple component` | `local` 'Type'
-                                            ] > >
-                                        } > _ >
+                                            ] > _ >
+                                        } > _ _ >
                                     } > >
                                     'constraints': < | `component` < | `local` 'Reference Constraints' * < * {
                                         'child namespaces': | `parameter` 'child namespaces'
@@ -1303,7 +1335,7 @@ TODO:
                                         'types': | `selection` < | `parameter` 'noncircular sibling types' >
                                         'sibling namespaces': | `selection` < | `parameter` 'sibling namespaces' >
                                     } > _ > >
-                                } _ >
+                                } _ _ >
                                 'dictionary': < _ | `component` < | `local` 'Dictionary' * < * {
                                     'basic types': | `parameter` 'basic types'
                                     'child namespaces': | `parameter` 'child namespaces'
@@ -1311,7 +1343,7 @@ TODO:
                                     'noncircular sibling types': | `selection` < | `parameter` 'noncircular sibling types' >
                                     'possibly circular dependent sibling types': | `selection` < | `parameter` 'possibly circular dependent sibling types' >
                                     'sibling namespaces': | `selection` < | `parameter` 'sibling namespaces' >
-                                } > _ > _ >
+                                } > _ > _ _ >
                                 'group': < _ | `component` < | `local` 'Group' * < * {
                                     'basic types': | `parameter` 'basic types'
                                     'child namespaces': | `parameter` 'child namespaces'
@@ -1319,7 +1351,7 @@ TODO:
                                     'noncircular sibling types': | `selection` < | `parameter` 'noncircular sibling types' >
                                     'possibly circular dependent sibling types': | `selection` < | `parameter` 'possibly circular dependent sibling types' >
                                     'sibling namespaces': | `selection` < | `parameter` 'sibling namespaces' >
-                                } > _ > _ >
+                                } > _ > _ _ >
                                 'list': < _ | `group` {
                                     'value': < | `component` < | `local` 'Value' * < _ _ > _ > >
                                     'result': < | `component` < | `local` 'Value Result' * < * {
@@ -1328,11 +1360,11 @@ TODO:
                                         'types': | `selection` < | `parameter` 'noncircular sibling types' >
                                         'sibling namespaces': | `selection` < | `parameter` 'sibling namespaces' >
                                     } > _ > >
-                                } _ >
-                                'nothing': < _ | `nothing` ~ _ >
+                                } _ _ >
+                                'nothing': < _ | `nothing` ~ _ _ >
                                 'simple': < * {
                                     'basic types': | `assert is set` | `parameter` 'basic types'
-                                } | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'basic types' < [] > > > > _ > > _ >
+                                } | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'basic types' < [] > > > > _ > > _ _ >
                                 'optional': < _ | `group` {
                                     'constraints': < | `component` < | `local` 'Option Constraints' * < * {
                                         'child namespaces': | `parameter` 'child namespaces'
@@ -1347,11 +1379,11 @@ TODO:
                                         'types': | `selection` < | `parameter` 'noncircular sibling types' >
                                         'sibling namespaces': | `selection` < | `parameter` 'sibling namespaces' >
                                     } > _ > >
-                                } _ >
-                                'reference': < _ | `component` < | `local` 'Reference' * < _ _ > _ > _ >
+                                } _ _ >
+                                'reference': < _ | `component` < | `local` 'Reference' * < _ _ > _ > _ _ >
                                 'state': < _ | `group` {
                                     'options': < | `dictionary` < | `group` {
-                                        'description': < | `optional` < _ _ | `simple` ~ _ _ > >
+                                        'description': < | `optional` < _ _ | `simple` ~ _ _ _ > >
                                         'constraints': < | `component` < | `local` 'Option Constraints' * < * {
                                             'child namespaces': | `parameter` 'child namespaces'
                                         } * {
@@ -1366,7 +1398,7 @@ TODO:
                                         'types': | `selection` < | `parameter` 'noncircular sibling types' >
                                         'sibling namespaces': | `selection` < | `parameter` 'sibling namespaces' >
                                     } > _ > >
-                                } _ >
+                                } _ _ >
                             } > >
                             'Value Reference': < | `group` {
                                 'type': < | `group` {
@@ -1374,7 +1406,7 @@ TODO:
                                         'local': < _ | `reference` < < < | `parameter` 'types' > _ > > * | `value` < [
                                             | `reference` < >
                                             | `simple component` | `local` 'Type'
-                                        ] > >
+                                        ] > _ >
                                         'child namespace': < _ | `group` {
                                             'namespace': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'child namespaces' < [] > > > > _ > > >
                                             'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespace' < [
@@ -1387,7 +1419,7 @@ TODO:
                                             | `group` 'type'
                                             | `reference` < >
                                             | `simple component` | `local` 'Type'
-                                        ] > >
+                                        ] > _ >
                                         'sibling namespace': < _ | `group` {
                                             'namespace': < | `reference` < < < | `parameter` 'sibling namespaces' > _ > > >
                                             'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespace' < [
@@ -1400,7 +1432,7 @@ TODO:
                                             | `group` 'type'
                                             | `reference` < >
                                             | `simple component` | `local` 'Type'
-                                        ] > >
+                                        ] > _ >
                                     } > >
                                 } >
                                 'path': < | `group` {
@@ -1411,18 +1443,19 @@ TODO:
                                             | `simple component` | `local` 'Dictionary'
                                             | `group` 'benchmark'
                                             | `optional` ~
+                                            | `group` 'selection'
                                             | `simple component` | `local` 'Value Reference'
                                             | `group` 'path'
                                             | `group` 'tail'
                                             | `list result` ~
-                                        ] > > >
+                                        ] > > _ >
                                         'dictionary': < * {
                                             'definition': | `state` < < | `list cursor` ~ < [] > > 'dictionary' >
                                         } | `nothing` ~ * | `context` < | `option constraint` 'definition' < [
                                             | `simple component` | `local` 'Dictionary'
                                             | `group` 'value'
                                             | `simple component` | `local` 'Value'
-                                        ] > > >
+                                        ] > > _ >
                                         'group': < * {
                                             'definition': | `state` < < | `list cursor` ~ < [] > > 'group' >
                                         } | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'definition' < [
@@ -1431,19 +1464,19 @@ TODO:
                                             | `reference` < >
                                             | `group` 'value'
                                             | `simple component` | `local` 'Value'
-                                        ] > >
+                                        ] > _ >
                                         'list': < * {
                                             'definition': | `state` < < | `list cursor` ~ < [] > > 'list' >
                                         } | `nothing` ~ * | `context` < | `option constraint` 'definition' < [
                                             | `group` 'value'
                                             | `simple component` | `local` 'Value'
-                                        ] > > >
+                                        ] > > _ >
                                         'optional': < * {
                                             'definition': | `state` < < | `list cursor` ~ < [] > > 'optional' >
                                         } | `nothing` ~ * | `context` < | `option constraint` 'definition' < [
                                             | `group` 'value'
                                             | `simple component` | `local` 'Value'
-                                        ] > > >
+                                        ] > > _ >
                                         'state': < * {
                                             'definition': | `state` < < | `list cursor` ~ < [] > > 'state' >
                                         } | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'definition' < [
@@ -1452,7 +1485,7 @@ TODO:
                                             | `reference` < >
                                             | `group` 'value'
                                             | `simple component` | `local` 'Value'
-                                        ] > >
+                                        ] > _ >
                                     } > * < < | `parent sibling` 'type' < [
                                         | `group` 'location'
                                         | `state result` ~
@@ -1463,15 +1496,15 @@ TODO:
                                     ] > > > >
                                 } >
                             } >
-                            'Value Result': < | `optional` < _ _ | `component` < | `local` 'Value Reference' * < _ _ > _ > _ _ > >
+                            'Value Result': < | `optional` < _ _ | `component` < | `local` 'Value Reference' * < _ _ > _ > _ _ _ > >
                         }
                     )
                     'declarations': (
                         `namespaces`: {}
                         `types`: {
                             'Presence': < | `state` < {
-                                'optional': < _ | `nothing` ~ _ >
-                                'required': < _ | `nothing` ~ _ >
+                                'optional': < _ | `nothing` ~ _ _ >
+                                'required': < _ | `nothing` ~ _ _ >
                             } > >
                             'Declaration': < | `group` {
                                 'signature': < | `state` < {
@@ -1482,13 +1515,13 @@ TODO:
                                         'sibling namespaces': | `selection` < | `parameter` 'sibling namespaces' >
                                     } > _ > * | `value` < [
                                         | `navigable component` ~
-                                    ] > >
+                                    ] > _ >
                                     'same as': < _ | `reference` < < < | `parameter` 'sibling declarations' > _ > > * | `value` < [
                                         | `reference` < >
                                         | `simple component` | `local` 'Declaration'
                                         | `group` 'signature'
                                         | `state result` ~
-                                    ] > >
+                                    ] > _ >
                                 } > >
                             } >
                             'Signature': < | `group` {
@@ -1515,8 +1548,8 @@ TODO:
                                         ] > | `state` < 'dictionary' > > >
                                     } > >
                                     'type': < | `state` < {
-                                        'cyclic': < _ | `nothing` ~ _ >
-                                        'acyclic': < _ | `nothing` ~ _ >
+                                        'cyclic': < _ | `nothing` ~ _ _ >
+                                        'acyclic': < _ | `nothing` ~ _ _ >
                                     } > >
                                     'presence': < | `component` < | `local` 'Presence' * < * {} * {} > _ > >
                                 } _ > >
@@ -1527,14 +1560,14 @@ TODO:
                             } * {
                                 'sibling declarations': | `selection` < | `acyclic` | `siblings` ~ >
                                 'sibling namespaces': | `selection` < | `parameter` 'sibling namespaces' >
-                            } > _ > * < < | `parameter` 'types' < [] > > | `dense` ~ > > >
+                            } > _ > * < < | `parameter` 'types' < [] > > > > >
                             'Signature Value Reference': < | `group` {
                                 'type': < | `group` {
                                     'location': < | `state` < {
                                         'local': < _ | `reference` < < < | `parameter` 'types' > _ > > * | `value` < [
                                             | `reference` < >
                                             | `simple component` | `sibling namespace` < 'structure' 'Type' >
-                                        ] > >
+                                        ] > _ >
                                         'child namespace': < _ | `group` {
                                             'namespace': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'child namespaces' < [] > > > > _ > > >
                                             'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespace' < [
@@ -1547,7 +1580,7 @@ TODO:
                                             | `group` 'type'
                                             | `reference` < >
                                             | `simple component` | `sibling namespace` < 'structure' 'Type' >
-                                        ] > >
+                                        ] > _ >
                                         'sibling namespace': < _ | `group` {
                                             'namespace': < | `reference` < < < | `parameter` 'sibling namespaces' > _ > > >
                                             'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespace' < [
@@ -1560,7 +1593,7 @@ TODO:
                                             | `group` 'type'
                                             | `reference` < >
                                             | `simple component` | `sibling namespace` < 'structure' 'Type' >
-                                        ] > >
+                                        ] > _ >
                                     } > >
                                 } >
                                 'subselection': < | `group` {
@@ -1571,7 +1604,7 @@ TODO:
                                             | `simple component` | `sibling namespace` < 'structure' 'Dictionary' >
                                             | `group` 'value'
                                             | `simple component` | `sibling namespace` < 'structure' 'Value' >
-                                        ] > > >
+                                        ] > > _ >
                                         'group': < * {
                                             'definition': | `state` < < | `list cursor` ~ < [] > > 'group' >
                                         } | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'definition' < [
@@ -1580,19 +1613,19 @@ TODO:
                                             | `reference` < >
                                             | `group` 'value'
                                             | `simple component` | `sibling namespace` < 'structure' 'Value' >
-                                        ] > >
+                                        ] > _ >
                                         'list': < * {
                                             'definition': | `state` < < | `list cursor` ~ < [] > > 'list' >
                                         } | `nothing` ~ * | `context` < | `option constraint` 'definition' < [
                                             | `group` 'value'
                                             | `simple component` | `sibling namespace` < 'structure' 'Value' >
-                                        ] > > >
+                                        ] > > _ >
                                         'optional': < * {
                                             'definition': | `state` < < | `list cursor` ~ < [] > > 'optional' >
                                         } | `nothing` ~ * | `context` < | `option constraint` 'definition' < [
                                             | `group` 'value'
                                             | `simple component` | `sibling namespace` < 'structure' 'Value' >
-                                        ] > > >
+                                        ] > > _ >
                                         'state': < * {
                                             'definition': | `state` < < | `list cursor` ~ < [] > > 'state' >
                                         } | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'definition' < [
@@ -1601,7 +1634,7 @@ TODO:
                                             | `reference` < >
                                             | `group` 'value'
                                             | `simple component` | `sibling namespace` < 'structure' 'Value' >
-                                        ] > >
+                                        ] > _ >
                                     } > * < < | `parent sibling` 'type' < [
                                         | `group` 'location'
                                         | `state result` ~
@@ -1618,7 +1651,7 @@ TODO:
                                 ] > >
                             } * {
                                 'sibling namespaces': | `selection` < | `acyclic` | `resolved dictionary` < < | `parameter` 'definition' < [] > > > >
-                            } > _ > * < < | `parameter` 'definition' < [] > > | `dense` ~ > > >
+                            } > _ > * < < | `parameter` 'definition' < [] > > > > >
                             'Declaration Namespace': < | `group` {
                                 'namespaces': < | `component` < | `local` 'Namespaces' * < * {
                                     'definition': | `required` < | `parameter` 'definition' < [
@@ -1656,7 +1689,25 @@ TODO:
                                         | `navigable component` ~
                                         | `group` 'path'
                                         | `list result` ~
-                                    ] > >
+                                    ] > * {
+                                        'fallback target': <
+                                            | `value` < [
+                                                | `group` 'selection'
+                                                | `simple component`
+                                                | `local` 'Possible Value Selection'
+                                                | `state result` ~
+                                            ] >
+                                            | `value` < [
+                                                | `group` 'fallback'
+                                                | `simple component`
+                                                | `local` 'Guaranteed Value Selection'
+                                                | `group` 'tail'
+                                                | `navigable component` ~
+                                                | `group` 'path'
+                                                | `list result` ~
+                                            ] >
+                                        >
+                                    } >
                                     'list cursor': < * {
                                         'result': | `assert is set` | `optional value` < < | `parameter` 'list cursor' < [] > > < [] > >
                                     } | `nothing` ~ * | `context` < | `option constraint` 'result' < [
@@ -1664,20 +1715,20 @@ TODO:
                                         | `group` 'path'
                                         | `group` 'tail'
                                         | `list result` ~
-                                    ] > > >
+                                    ] > > _ >
                                     'linked entry': < * {
                                         'entry': | `assert is set` | `parameter` 'linked entry'
-                                    } | `nothing` ~ * | `context` < | `option constraint` 'entry' < [] > > >
+                                    } | `nothing` ~ * | `context` < | `option constraint` 'entry' < [] > > _ >
                                     'sibling property': < _ | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'containing group' < [] > > > > _ > > * | `value` < [
                                         | `reference` < >
                                         | `group` 'value'
                                         | `simple component` | `sibling namespace` < 'structure' 'Value' >
-                                    ] > >
+                                    ] > _ >
                                     'parent sibling': < _ | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'parent containing group' < [] > > > > _ > > * | `value` < [
                                         | `reference` < >
                                         | `group` 'value'
                                         | `simple component` | `sibling namespace` < 'structure' 'Value' >
-                                    ] > >
+                                    ] > _ >
                                     'option constraint': < * {
                                         'oc': | `assert is set` | `parameter` 'option constraints'
                                     } | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'oc' < [
@@ -1688,11 +1739,11 @@ TODO:
                                         | `group` 'path'
                                         | `group` 'tail'
                                         | `list result` ~
-                                    ] > >
+                                    ] > _ >
                                     'sibling option constraint': < _ | `reference` < < < | `parameter` 'sibling option constraints' > _ > > * | `value` < [
                                         | `reference` < >
                                         | `state result` ~
-                                    ] > >
+                                    ] > _ >
                                     'constraint': < _ | `state` < {
                                         'component': < _ | `group` {
                                             'property': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'containing group' < [] > > > > * {
@@ -1713,7 +1764,7 @@ TODO:
                                             | `group` 'path'
                                             | `group` 'tail'
                                             | `list result` ~
-                                        ] > >
+                                        ] > _ >
                                         'reference': < _ | `group` {
                                             'property': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'containing group' < [] > > > > * {
                                                 'reference': < | `value` ~ < < [
@@ -1735,10 +1786,10 @@ TODO:
                                             | `group` 'path'
                                             | `group` 'tail'
                                             | `list result` ~
-                                        ] > >
+                                        ] > _ >
                                     } > * | `value` < [
                                         | `state result` ~
-                                    ] > >
+                                    ] > _ >
                                     'parameter': < _ | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'declaration' < [
                                         | `group` 'signature'
                                         | `state result` ~
@@ -1750,7 +1801,7 @@ TODO:
                                         | `group` 'subselection'
                                         | `group` 'tail'
                                         | `list result` ~
-                                    ] > >
+                                    ] > _ >
                                     'result': < _ | `state` < {
                                         'list': < _ | `group` {
                                             'property': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'containing group' < [] > > > > * {
@@ -1770,7 +1821,7 @@ TODO:
                                             | `group` 'path'
                                             | `group` 'tail'
                                             | `list result` ~
-                                        ] > >
+                                        ] > _ >
                                         'state': < _ | `group` {
                                             'property': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'containing group' < [] > > > > * {
                                                 'state': < | `value` ~ < < [
@@ -1789,7 +1840,7 @@ TODO:
                                             | `group` 'path'
                                             | `group` 'tail'
                                             | `list result` ~
-                                        ] > >
+                                        ] > _ >
                                         'optional value': < _ | `group` {
                                             'property': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'containing group' < [] > > > > * {
                                                 'optional': < | `value` ~ < < [
@@ -1808,10 +1859,10 @@ TODO:
                                             | `group` 'path'
                                             | `group` 'tail'
                                             | `list result` ~
-                                        ] > >
+                                        ] > _ >
                                     } > * | `value` < [
                                         | `state result` ~
-                                    ] > >
+                                    ] > _ >
                                 } > >
                                 'tail': < | `component` < | `local` 'Relative Value Selection' * < * {
                                     'types': | `parameter` 'types'
@@ -1825,7 +1876,7 @@ TODO:
                                     'acyclic': < _ | `state` < {
                                         'siblings': < * {
                                             'cd': | `assert is set` | `parameter` 'current dictionary'
-                                        } | `nothing` ~ * | `context` < | `option constraint` 'cd' < [] > > >
+                                        } | `nothing` ~ * | `context` < | `option constraint` 'cd' < [] > > _ >
                                         'resolved dictionary': < _ | `group` {
                                             'selection': < | `component` < | `local` 'Guaranteed Value Selection' * < _ _ > * {
                                                 'dictionary': < | `value` ~ < < [
@@ -1837,21 +1888,21 @@ TODO:
                                             } > >
                                         } * | `value` < [
                                             | `group` 'selection'
-                                            | `component constraint` < "dictionary" < < | `sibling namespace` < 'structure' 'Value' > > < [
+                                            | `component constraint` < 'dictionary' < < | `sibling namespace` < 'structure' 'Value' > > < [
                                                 | `state` 'dictionary'
                                             ] > > >
                                             | `simple component` | `sibling namespace` < 'structure' 'Dictionary' >
-                                        ] > >
+                                        ] > _ >
                                     } > * | `value` < [
                                         | `state result` ~
-                                    ] > >
+                                    ] > _ >
                                     'cyclic': < _ | `state` < {
                                         'siblings': < * {
                                             'cd': | `assert is set` | `parameter` 'current dictionary'
-                                        } | `nothing` ~ * | `context` < | `option constraint` 'cd' < [] > > >
+                                        } | `nothing` ~ * | `context` < | `option constraint` 'cd' < [] > > _ >
                                     } > * | `value` < [
                                         | `state result` ~
-                                    ] > >
+                                    ] > _ >
                                     'parameter': < _ | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'declaration' < [
                                         | `group` 'signature'
                                         | `state result` ~
@@ -1859,11 +1910,11 @@ TODO:
                                     ] > > > > _ > > * | `value` < [
                                         | `reference` < >
                                         | `group` 'referent'
-                                        | `component constraint` < "dictionary" < < | `sibling namespace` < 'structure' 'Value' > > < [
+                                        | `component constraint` < 'dictionary' < < | `sibling namespace` < 'structure' 'Value' > > < [
                                             | `state` 'dictionary'
                                         ] > > >
                                         | `simple component` | `sibling namespace` < 'structure' 'Dictionary' >
-                                    ] > >
+                                    ] > _ >
                                 } > >
                             } >
                             'Option Constraints': < | `optional` < _ * {
@@ -1888,16 +1939,46 @@ TODO:
                                     | `reference` < >
                                     | `group` 'value'
                                     | `simple component` | `sibling namespace` < 'structure' 'Value' >
-                                ] > >
+                                ] > * {
+                                    'constraint target': <
+                                        | `context` < | `linked entry` ~ < [
+                                            | `navigable component` ~
+                                            | `group` 'path'
+                                            | `group` 'tail'
+                                            | `list result` ~
+                                        ] > >
+                                        | `value` < [
+                                            | `group` 'option'
+                                            | `reference` < >
+                                            | `group` 'value'
+                                            | `simple component`
+                                            | `sibling namespace` < 'structure' 'Value' >
+                                        ] >
+                                    >
+                                } >
                                 'assert is set': < _ | `component` < | `local` 'Possible Value Selection' * < _ * {
                                     'sibling option constraints': | `selection` < | `acyclic` | `siblings` ~ >
                                 } > _ > * | `value` < [
                                     | `navigable component` ~
                                     | `state result` ~
-                                ] > >
-                            } > * < < | `option constraint` 'declarations' < [] > > | `dense` ~ > > * {
+                                ] > * {
+                                    'constraint target': <
+                                        | `context` < | `linked entry` ~ < [
+                                            | `navigable component` ~
+                                            | `group` 'path'
+                                            | `group` 'tail'
+                                            | `list result` ~
+                                        ] > >
+                                        | `value` < [ | `navigable component` ~ | `state result` ~ ] >
+                                    >
+                                } >
+                            } > * < < | `option constraint` 'declarations' < [] > > > > * {
                                 'declarations': | `optional value` < < | `parameter` 'constraints' < [] > > < [] > >
-                            } _ > >
+                            } _ _ > >
+                            'Checks': < | `optional` < _ _ | `dictionary` < | `group` {
+                                'expected': < | `component` < | `local` 'Result Selection' * < _ _ > _ > >
+                                'actual': < | `component` < | `local` 'Result Selection' * < _ _ > _ > >
+                            } _ > _ _ _ > >
                             'Possible Value Selection': < | `state` < {
                                 'optional value': < _ | `group` {
                                     'selection': < | `component` < | `local` 'Guaranteed Value Selection' * < _ _ > * {
@@ -1910,7 +1991,7 @@ TODO:
                                     } > >
                                     'tail': < | `component` < | `local` 'Relative Value Selection' * < * {
                                         'value': | `required` < | `sibling property` 'selection' < [
-                                            | `component constraint` < "optional" < < | `sibling namespace` < 'structure' 'Value' > > < [
+                                            | `component constraint` < 'optional' < < | `sibling namespace` < 'structure' 'Value' > > < [
                                                 | `state` 'optional'
                                             ] > > >
                                             | `group` 'value'
@@ -1925,7 +2006,7 @@ TODO:
                                     | `navigable component` ~
                                     | `group` 'path'
                                     | `list result` ~
-                                ] > >
+                                ] > _ >
                                 'parameter': < _ | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'declaration' < [
                                     | `group` 'signature'
                                     | `state result` ~
@@ -1937,7 +2018,7 @@ TODO:
                                     | `group` 'subselection'
                                     | `group` 'tail'
                                     | `list result` ~
-                                ] > >
+                                ] > _ >
                                 'result': < _ | `state` < {
                                     'state': < _ | `group` {
                                         'property': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'containing group' < [] > > > > * {
@@ -1957,7 +2038,7 @@ TODO:
                                         | `group` 'path'
                                         | `group` 'tail'
                                         | `list result` ~
-                                    ] > >
+                                    ] > _ >
                                     'optional value': < _ | `group` {
                                         'property': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'containing group' < [] > > > > * {
                                             'optional': < | `value` ~ < < [
@@ -1976,16 +2057,16 @@ TODO:
                                         | `group` 'path'
                                         | `group` 'tail'
                                         | `list result` ~
-                                    ] > >
+                                    ] > _ >
                                 } > * | `value` < [
                                     | `state result` ~
-                                ] > >
+                                ] > _ >
                             } > >
                             'Reference Constraints': < | `optional` < _ * {
                                 'declarations': | `assert is set` | `optional value` < < | `parameter` 'constraints' < [] > > < [] > >
                             } | `dictionary` < | `group` {
                                 'start': < | `state` < {
-                                    'value': < _ | `nothing` ~ * | `context` < | `parameter` 'value' < [] > > >
+                                    'value': < _ | `nothing` ~ * | `context` < | `parameter` 'value' < [] > > _ >
                                     'sibling': < _ | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'constraints' < [
                                         | `optional` ~
                                     ] > > > > _ > > * | `value` < [
@@ -1994,7 +2075,7 @@ TODO:
                                         | `group` 'path'
                                         | `group` 'tail'
                                         | `list result` ~
-                                    ] > >
+                                    ] > _ >
                                 } > >
                                 'constraint': < | `group` {
                                     'selection': < | `component` < | `local` 'Relative Value Selection' * < * {
@@ -2021,7 +2102,23 @@ TODO:
                                             | `reference` < >
                                             | `group` 'value'
                                             | `simple component` | `sibling namespace` < 'structure' 'Value' >
-                                        ] > >
+                                        ] > * {
+                                            'constraint target': <
+                                                | `context` < | `linked entry` ~ < [
+                                                    | `navigable component` ~
+                                                    | `group` 'path'
+                                                    | `group` 'tail'
+                                                    | `list result` ~
+                                                ] > >
+                                                | `value` < [
+                                                    | `group` 'option'
+                                                    | `reference` < >
+                                                    | `group` 'value'
+                                                    | `simple component`
+                                                    | `sibling namespace` < 'structure' 'Value' >
+                                                ] >
+                                            >
+                                        } >
                                         'optional value': < * {
                                             'optional': | `state` < < | `sibling property` 'selection' < [
                                                 | `navigable component` ~
@@ -2031,17 +2128,31 @@ TODO:
                                         } | `group` {} * | `context` < | `option constraint` 'optional' < [
                                             | `group` 'value'
                                             | `simple component` | `sibling namespace` < 'structure' 'Value' >
-                                        ] > > >
+                                        ] > > * {
+                                            'constraint target': <
+                                                | `context` < | `linked entry` ~ < [
+                                                    | `navigable component` ~
+                                                    | `group` 'path'
+                                                    | `group` 'tail'
+                                                    | `list result` ~
+                                                ] > >
+                                                | `context` < | `option constraint` 'optional' < [
+                                                    | `group` 'value'
+                                                    | `simple component`
+                                                    | `sibling namespace` < 'structure' 'Value' >
+                                                ] > >
+                                            >
+                                        } >
                                     } > >
                                 } >
-                            } * < < | `option constraint` 'declarations' < [] > > | `dense` ~ > > * {
+                            } * < < | `option constraint` 'declarations' < [] > > > > * {
                                 'declarations': | `optional value` < < | `parameter` 'constraints' < [] > > < [] > >
-                            } _ > >
+                            } _ _ > >
                             'Simple Component Selection': < | `state` < {
                                 'local': < _ | `reference` < < < | `parameter` 'types' > _ > > * | `value` < [
                                     | `reference` < >
                                     | `simple component` | `sibling namespace` < 'structure' 'Type' >
-                                ] > >
+                                ] > _ >
                                 'child namespace': < _ | `group` {
                                     'namespace': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'child namespaces' < [] > > > > _ > > >
                                     'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespace' < [
@@ -2054,7 +2165,7 @@ TODO:
                                     | `group` 'type'
                                     | `reference` < >
                                     | `simple component` | `sibling namespace` < 'structure' 'Type' >
-                                ] > >
+                                ] > _ >
                                 'sibling namespace': < _ | `group` {
                                     'namespace': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'sibling namespaces' < [] > > > > _ > > >
                                     'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespace' < [
@@ -2067,7 +2178,7 @@ TODO:
                                     | `group` 'type'
                                     | `reference` < >
                                     | `simple component` | `sibling namespace` < 'structure' 'Type' >
-                                ] > >
+                                ] > _ >
                             } > >
                             'Relative Value Selection': < | `group` {
                                 'path': < | `list` < | `state` < {
@@ -2081,7 +2192,7 @@ TODO:
                                         | `group` 'path'
                                         | `group` 'tail'
                                         | `list result` ~
-                                    ] > >
+                                    ] > _ >
                                     'simple component': < * {
                                         'component': | `state` < < | `list cursor` ~ < [] > > 'component' >
                                         'definition': | `state` < < | `sibling option constraint` 'component' < [
@@ -2097,11 +2208,15 @@ TODO:
                                         | `state result` ~
                                         | `group` 'root value'
                                         | `simple component` | `sibling namespace` < 'structure' 'Value' >
-                                    ] > >
+                                    ] > _ >
                                     'component constraint': < * {
                                         'definition': | `state` < < | `list cursor` ~ < [] > > 'component' >
+                                        'constraints': | `assert is set` | `optional value` < < | `sibling option constraint` 'definition' < [
+                                            | `group` 'constraints'
+                                            | `simple component` | `sibling namespace` < 'structure' 'Reference Constraints' >
+                                        ] > > < [] > >
                                     } | `group` {
-                                        'name': < | `simple` ~ >
+                                        'name': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'constraints' < [] > > > > _ > > >
                                         'target': < | `component` < | `local` 'Value Reference' * < * {
                                             'child namespaces': | `parameter` 'child namespaces'
                                             'sibling namespaces': | `parameter` 'sibling namespaces'
@@ -2114,7 +2229,25 @@ TODO:
                                         | `group` 'path'
                                         | `group` 'tail'
                                         | `list result` ~
-                                    ] > >
+                                    ] > * {
+                                        'component constraint target': <
+                                            | `value` < [
+                                                | `group` 'name'
+                                                | `reference` < >
+                                                | `navigable component` ~
+                                                | `group` 'path'
+                                                | `group` 'tail'
+                                                | `list result` ~
+                                            ] >
+                                            | `value` < [
+                                                | `group` 'target'
+                                                | `navigable component` ~
+                                                | `group` 'path'
+                                                | `group` 'tail'
+                                                | `list result` ~
+                                            ] >
+                                        >
+                                    } >
                                     'navigable component': < * {
                                         'component': | `state` < < | `list cursor` ~ < [] > > 'component' >
                                         'definition': | `state` < < | `sibling option constraint` 'component' < [
@@ -2124,7 +2257,7 @@ TODO:
                                         | `state result` ~
                                         | `group` 'root value'
                                         | `simple component` | `sibling namespace` < 'structure' 'Value' >
-                                    ] > > >
+                                    ] > > _ >
                                     'group': < * {
                                         'definition': | `state` < < | `list cursor` ~ < [] > > 'group' >
                                     } | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'definition' < [
@@ -2133,7 +2266,7 @@ TODO:
                                         | `reference` < >
                                         | `group` 'value'
                                         | `simple component` | `sibling namespace` < 'structure' 'Value' >
-                                    ] > >
+                                    ] > _ >
                                     'list result': < * {
                                         'definition': | `state` < < | `list cursor` ~ < [] > > 'list' >
                                     } | `nothing` ~ * | `context` < | `option constraint` 'definition' < [
@@ -2144,7 +2277,7 @@ TODO:
                                         | `group` 'path'
                                         | `group` 'tail'
                                         | `list result` ~
-                                    ] > > >
+                                    ] > > _ >
                                     'option constraint': < * {
                                         'definition': | `state` < < | `list cursor` ~ < [] > > 'state' >
                                     } | `group` {
@@ -2164,13 +2297,13 @@ TODO:
                                         | `group` 'path'
                                         | `group` 'tail'
                                         | `list result` ~
-                                    ] > >
+                                    ] > _ >
                                     'optional': < * {
                                         'definition': | `state` < < | `list cursor` ~ < [] > > 'optional' >
                                     } | `nothing` ~ * | `context` < | `option constraint` 'definition' < [
                                         | `group` 'value'
                                         | `simple component` | `sibling namespace` < 'structure' 'Value' >
-                                    ] > > >
+                                    ] > > _ >
                                     'optional value constraint': < * {
                                         'definition': | `state` < < | `list cursor` ~ < [] > > 'optional' >
                                     } | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'definition' < [
@@ -2183,7 +2316,7 @@ TODO:
                                         | `group` 'path'
                                         | `group` 'tail'
                                         | `list result` ~
-                                    ] > >
+                                    ] > _ >
                                     'reference constraint': < * {
                                         'definition': | `state` < < | `list cursor` ~ < [] > > 'reference' >
                                     } | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'definition' < [
@@ -2198,19 +2331,24 @@ TODO:
                                         | `group` 'path'
                                         | `group` 'tail'
                                         | `list result` ~
-                                    ] > >
+                                    ] > _ >
                                     'reference': < * {
                                         'definition': | `state` < < | `list cursor` ~ < [] > > 'reference' >
+                                        'acyclic': | `state` < < | `sibling option constraint` 'definition' < [
+                                            | `simple component` | `sibling namespace` < 'structure' 'Reference' >
+                                            | `group` 'type'
+                                            | `group` 'dependency'
+                                        ] > > 'acyclic' >
                                     } | `group` {} * | `context` < | `option constraint` 'definition' < [
                                         | `simple component` | `sibling namespace` < 'structure' 'Reference' >
                                         | `group` 'referent'
-                                        | `component constraint` < "dictionary" < < | `sibling namespace` < 'structure' 'Value' > > < [
+                                        | `component constraint` < 'dictionary' < < | `sibling namespace` < 'structure' 'Value' > > < [
                                             | `state` 'dictionary'
                                         ] > > >
                                         | `simple component` | `sibling namespace` < 'structure' 'Dictionary' >
                                         | `group` 'value'
                                         | `simple component` | `sibling namespace` < 'structure' 'Value' >
-                                    ] > > >
+                                    ] > > _ >
                                     'state result': < * {
                                         'definition': | `state` < < | `list cursor` ~ < [] > > 'state' >
                                     } | `nothing` ~ * | `context` < | `option constraint` 'definition' < [
@@ -2221,7 +2359,7 @@ TODO:
                                         | `group` 'path'
                                         | `group` 'tail'
                                         | `list result` ~
-                                    ] > > >
+                                    ] > > _ >
                                 } > * < < | `parameter` 'value' < [] > > | `value` < [
                                     | `state result` ~
                                 ] > > > >
@@ -2248,7 +2386,7 @@ TODO:
                                 } * {} > _ > * < < | `parameter` 'declarations' < [
                                     | `group` 'namespaces'
                                     | `navigable component` ~
-                                ] > > | `dense` ~ > > >
+                                ] > > > > >
                                 'types': < | `dictionary` < | `group` {
                                     'root value resolver': < | `component` < | `local` 'Value' * < * {
                                         'option constraints': | `optional` | `not set` ~
@@ -2292,16 +2430,26 @@ TODO:
                                 } * < < | `parameter` 'declarations' < [
                                     | `group` 'types'
                                     | `navigable component` ~
-                                ] > > | `dense` ~ > > >
+                                ] > > > > >
                             } >
                             'Result Selection': < | `state` < {
-                                'context': < _ | `component` < | `local` 'Guaranteed Value Selection' * < _ _ > _ > _ >
+                                'context': < _ | `component` < | `local` 'Guaranteed Value Selection' * < _ _ > _ > * | `value` < [
+                                    | `simple component` | `local` 'Guaranteed Value Selection'
+                                    | `group` 'tail'
+                                    | `navigable component` ~
+                                    | `group` 'path'
+                                    | `list result` ~
+                                ] > _ >
                                 'value': < _ | `component` < | `local` 'Relative Value Selection' * < * {
                                     'value': | `required` < | `parameter` 'definition' < [] > >
                                     'types': | `parameter` 'types'
                                     'child namespaces': | `parameter` 'child namespaces'
                                     'sibling namespaces': | `parameter` 'sibling namespaces'
-                                } * {} > _ > _ >
+                                } * {} > _ > * | `value` < [
+                                    | `simple component` | `local` 'Relative Value Selection'
+                                    | `group` 'path'
+                                    | `list result` ~
+                                ] > _ >
                             } > >
                             'Value': < | `state` < {
                                 'component': < * {
@@ -2310,7 +2458,7 @@ TODO:
                                     'location': < | `state` < {
                                         'local': < _ | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'declarations' < [] > > > > _ > > * | `value` < [
                                             | `reference` < >
-                                        ] > >
+                                        ] > _ >
                                         'child namespace': < _ | `group` {
                                             'namespace': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'child declarations' < [] > > > > _ > > >
                                             'resolver': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespace' < [
@@ -2330,7 +2478,7 @@ TODO:
                                         } * | `value` < [
                                             | `group` 'resolver'
                                             | `reference` < >
-                                        ] > >
+                                        ] > _ >
                                         'sibling namespace': < * {
                                             'declarations': | `assert is set` | `parameter` 'sibling declarations'
                                         } | `group` {
@@ -2352,40 +2500,116 @@ TODO:
                                         } * | `value` < [
                                             | `group` 'resolver'
                                             | `reference` < >
-                                        ] > >
+                                        ] > _ >
                                     } > >
                                     'arguments': < | `optional` < _ _ | `group` {
                                         'types': < | `optional` < _ _ | `dictionary` < | `state` < {
                                             'optional': < _ | `state` < {
-                                                'not set': < _ | `nothing` ~ _ >
-                                                'set': < _ | `component` < | `local` 'Guaranteed Value Selection' * < _ _ > _ > _ >
-                                                'selection': < _ | `component` < | `local` 'Possible Value Selection' * < _ _ > _ > _ >
-                                            } > _ >
-                                            'required': < _ | `component` < | `local` 'Guaranteed Value Selection' * < _ _ > _ > _ >
+                                                'not set': < _ | `nothing` ~ _ _ >
+                                                'set': < _ | `component` < | `local` 'Guaranteed Value Selection' * < _ _ > _ > _ * {
+                                                    'argument target': <
+                                                        | `context` < | `linked entry` ~ < [
+                                                            | `group` 'value'
+                                                            | `navigable component` ~
+                                                            | `group` 'subselection'
+                                                            | `group` 'tail'
+                                                            | `list result` ~
+                                                        ] > >
+                                                        | `value` < [
+                                                            | `simple component`
+                                                            | `local` 'Guaranteed Value Selection'
+                                                            | `group` 'tail'
+                                                            | `navigable component` ~
+                                                            | `group` 'path'
+                                                            | `list result` ~
+                                                        ] >
+                                                    >
+                                                } >
+                                                'selection': < _ | `component` < | `local` 'Possible Value Selection' * < _ _ > _ > _ * {
+                                                    'argument target': <
+                                                        | `context` < | `linked entry` ~ < [
+                                                            | `group` 'value'
+                                                            | `navigable component` ~
+                                                            | `group` 'subselection'
+                                                            | `group` 'tail'
+                                                            | `list result` ~
+                                                        ] > >
+                                                        | `value` < [ | `simple component` | `local` 'Possible Value Selection' | `state result` ~ ] >
+                                                    >
+                                                } >
+                                            } > _ _ >
+                                            'required': < _ | `component` < | `local` 'Guaranteed Value Selection' * < _ _ > _ > _ * {
+                                                'argument target': <
+                                                    | `context` < | `linked entry` ~ < [
+                                                        | `group` 'value'
+                                                        | `navigable component` ~
+                                                        | `group` 'subselection'
+                                                        | `group` 'tail'
+                                                        | `list result` ~
+                                                    ] > >
+                                                    | `value` < [
+                                                        | `simple component`
+                                                        | `local` 'Guaranteed Value Selection'
+                                                        | `group` 'tail'
+                                                        | `navigable component` ~
+                                                        | `group` 'path'
+                                                        | `list result` ~
+                                                    ] >
+                                                >
+                                            } >
                                             'parameter': < _ | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'declaration' < [
                                                 | `group` 'signature'
                                                 | `state result` ~
                                                 | `group` 'values'
-                                            ] > > > > _ > > _ >
+                                            ] > > > > _ > > _ * {
+                                                'argument target': <
+                                                    | `context` < | `linked entry` ~ < [
+                                                        | `group` 'value'
+                                                        | `navigable component` ~
+                                                        | `group` 'subselection'
+                                                        | `group` 'tail'
+                                                        | `list result` ~
+                                                    ] > >
+                                                    | `value` < [
+                                                        | `reference` < >
+                                                        | `group` 'value'
+                                                        | `navigable component` ~
+                                                        | `group` 'subselection'
+                                                        | `group` 'tail'
+                                                        | `list result` ~
+                                                    ] >
+                                                >
+                                            } >
                                         } > * < < | `parent sibling` 'location' < [
                                             | `state result` ~
                                             | `simple component` | `sibling namespace` < 'declarations' 'Declaration' >
                                             | `group` 'signature'
                                             | `state result` ~
                                             | `group` 'values'
-                                        ] > > | `dense` ~ > > _ _ > >
+                                        ] > > > > _ _ _ > >
                                         'lookups': < | `optional` < _ _ | `dictionary` < | `state` < {
-                                            'acyclic': < _ | `nothing` ~ _ >
-                                            'cyclic': < _ | `nothing` ~ _ >
-                                            'selection': < _ | `component` < | `local` 'Lookup Selection' * < _ _ > _ > _ >
+                                            'acyclic': < _ | `nothing` ~ _ _ >
+                                            'cyclic': < _ | `nothing` ~ _ _ >
+                                            'selection': < _ | `component` < | `local` 'Lookup Selection' * < _ _ > _ > _ * {
+                                                'lookup argument target': <
+                                                    | `context` < | `linked entry` ~ < [
+                                                        | `group` 'referent'
+                                                        | `component constraint` < 'dictionary' < < | `sibling namespace` < 'structure' 'Value' > > < [
+                                                        | `state` 'dictionary' ] > > >
+                                                        | `simple component`
+                                                        | `sibling namespace` < 'structure' 'Dictionary' >
+                                                    ] > >
+                                                    | `value` < [ | `simple component` | `local` 'Lookup Selection' | `group` 'type' | `state result` ~ ] >
+                                                >
+                                            } >
                                         } > * < < | `parent sibling` 'location' < [
                                             | `state result` ~
                                             | `simple component` | `sibling namespace` < 'declarations' 'Declaration' >
                                             | `group` 'signature'
                                             | `state result` ~
                                             | `group` 'lookups'
-                                        ] > > | `dense` ~ > > _ _ > >
-                                    } _ _ > >
+                                        ] > > > > _ _ _ > >
+                                    } _ _ _ > >
                                     'constraints': < | `component` < | `local` 'Reference Constraints' * < * {
                                         'constraints': | `required` < | `option constraint` 'definition' < [
                                             | `group` 'constraints'
@@ -2404,7 +2628,7 @@ TODO:
                                         'child namespaces': | `parameter` 'child namespaces'
                                         'sibling namespaces': | `parameter` 'sibling namespaces'
                                     } * {} > _ > >
-                                } _ >
+                                } _ _ >
                                 'dictionary': < * {
                                     'definition': | `state` < < | `parameter` 'definition' < [] > > 'dictionary' >
                                 } | `group` {
@@ -2422,15 +2646,29 @@ TODO:
                                                 | `list result` ~
                                             ] > | `state` < 'dictionary' > > >
                                         } > >
-                                        'coverage': < | `state` < {
-                                            'dense': < _ | `nothing` ~ _ >
-                                            'sparse': < _ | `nothing` ~ _ >
-                                        } > >
-                                    } _ _ > >
+                                    } _ _ * {
+                                        'benchmark target': <
+                                            | `context` < | `option constraint` 'benchmark' < [
+                                                | `group` 'selection'
+                                                | `simple component` | `sibling namespace` < 'structure' 'Value Reference' >
+                                                | `group` 'path'
+                                                | `group` 'tail'
+                                                | `list result` ~
+                                            ] > >
+                                            | `value` < [
+                                                | `group` 'selection'
+                                                | `simple component` | `local` 'Guaranteed Value Selection'
+                                                | `group` 'tail'
+                                                | `navigable component` ~
+                                                | `group` 'path'
+                                                | `list result` ~
+                                            ] >
+                                        >
+                                    } > >
                                     'resolver': < | `component` < | `local` 'Value' * < * {
                                         'linked entry': | `optional` | `selection` | `optional value` < < | `sibling property` 'benchmark' < [] > > < [
                                             | `group` 'selection'
-                                            | `component constraint` < "dictionary" < < | `sibling namespace` < 'structure' 'Value' > > < [
+                                            | `component constraint` < 'dictionary' < < | `sibling namespace` < 'structure' 'Value' > > < [
                                                 | `state` 'dictionary'
                                             ] > > >
                                             | `simple component` | `sibling namespace` < 'structure' 'Dictionary' >
@@ -2457,7 +2695,7 @@ TODO:
                                         'parent containing group': | `parameter` 'parent containing group'
                                         'sibling namespaces': | `parameter` 'sibling namespaces'
                                     } _ > _ > >
-                                } _ >
+                                } _ _ >
                                 'group': < * {
                                     'definition': | `state` < < | `parameter` 'definition' < [] > > 'group' >
                                 } | `dictionary` < | `group` {
@@ -2486,7 +2724,7 @@ TODO:
                                     } > _ > >
                                 } * < < | `option constraint` 'definition' < [
                                     | `navigable component` ~
-                                ] > > | `dense` ~ > > _ >
+                                ] > > > > _ _ >
                                 'list': < * {
                                     'definition': | `state` < < | `parameter` 'definition' < [] > > 'list' >
                                 } | `group` {
@@ -2539,7 +2777,38 @@ TODO:
                                         } * {
                                             'sibling option constraints': | `selection` < | `parameter` 'sibling option constraints' >
                                         } > _ > >
-                                    } _ _ > >
+                                    } _ _ * {
+                                        'initial result target': <
+                                            | `context` < | `option constraint` 'result' < [
+                                                | `navigable component` ~
+                                                | `group` 'path'
+                                                | `group` 'tail'
+                                                | `list result` ~
+                                            ] > >
+                                            | `value` < [
+                                                | `group` 'initial'
+                                                | `simple component`
+                                                | `local` 'Guaranteed Value Selection'
+                                                | `group` 'tail'
+                                                | `navigable component` ~
+                                                | `group` 'path'
+                                                | `list result` ~
+                                            ] >
+                                        >
+                                        'next result target': <
+                                            | `context` < | `option constraint` 'result' < [
+                                                | `navigable component` ~
+                                                | `group` 'path'
+                                                | `group` 'tail'
+                                                | `list result` ~
+                                            ] > >
+                                            | `value` < [
+                                                | `group` 'next'
+                                                | `simple component` | `local` 'Result Selection'
+                                                | `state result` ~
+                                            ] >
+                                        >
+                                    } > >
                                     'resolver': < | `component` < | `local` 'Value' * < * {
                                         'list cursor': | `optional` | `set` < | `option constraint` 'definition' < [
                                             | `group` 'result'
@@ -2562,17 +2831,41 @@ TODO:
                                         'parent containing group': | `parameter` 'parent containing group'
                                         'sibling namespaces': | `parameter` 'sibling namespaces'
                                     } _ > _ > >
-                                } _ >
+                                } _ _ >
                                 'nothing': < * {
                                     'definition': | `state` < < | `parameter` 'definition' < [] > > 'nothing' >
-                                } | `nothing` ~ _ >
+                                } | `nothing` ~ _ _ >
                                 'simple': < * {
                                     'definition': | `state` < < | `parameter` 'definition' < [] > > 'simple' >
-                                } | `nothing` ~ _ >
+                                } | `nothing` ~ _ _ >
                                 'optional': < * {
                                     'definition': | `state` < < | `parameter` 'definition' < [] > > 'optional' >
                                 } | `group` {
-                                    'presence': < | `optional` < _ _ | `component` < | `local` 'Possible Value Selection' * < _ _ > _ > _ _ > >
+                                    'presence': < | `optional` < _ _ | `component` < | `local` 'Possible Value Selection' * < _ _ > _ > _ _ _ > >
+                                    'checks': < | `component` < | `local` 'Checks' * < * {
+                                        'definition': | `required` < | `option constraint` 'definition' < [
+                                            | `group` 'value'
+                                            | `simple component` | `sibling namespace` < 'structure' 'Value' >
+                                        ] > >
+                                        'list cursor': | `parameter` 'list cursor'
+                                        'linked entry': | `parameter` 'linked entry'
+                                        'current dictionary': | `parameter` 'current dictionary'
+                                        'declaration': | `parameter` 'declaration'
+                                        'declarations': | `parameter` 'declarations'
+                                        'types': | `parameter` 'types'
+                                        'child namespaces': | `parameter` 'child namespaces'
+                                        'child declarations': | `parameter` 'child declarations'
+                                        'sibling declarations': | `parameter` 'sibling declarations'
+                                        'containing group': | `parameter` 'containing group'
+                                        'parent containing group': | `parameter` 'parent containing group'
+                                        'sibling namespaces': | `parameter` 'sibling namespaces'
+                                        'option constraints': | `optional` | `set` < | `option constraint` 'definition' < [
+                                            | `group` 'constraints'
+                                            | `simple component` | `sibling namespace` < 'structure' 'Option Constraints' >
+                                        ] > >
+                                    } * {
+                                        'sibling option constraints': | `selection` < | `parameter` 'sibling option constraints' >
+                                    } > _ > >
                                     'constraints': < | `component` < | `local` 'Option Constraints' * < * {
                                         'constraints': | `required` < | `option constraint` 'definition' < [
                                             | `group` 'constraints'
@@ -2593,7 +2886,7 @@ TODO:
                                         'parent containing group': | `parameter` 'parent containing group'
                                         'sibling namespaces': | `parameter` 'sibling namespaces'
                                     } _ > _ > >
-                                    'not set constraints': < | `optional` < _ _ | `dictionary` < | `component` < | `local` 'Possible Value Selection' * < _ _ > _ > _ > _ _ > >
+                                    'not set constraints': < | `optional` < _ _ | `dictionary` < | `component` < | `local` 'Possible Value Selection' * < _ _ > _ > _ > _ _ _ > >
                                     'resolver': < | `component` < | `local` 'Value' * < * {
                                         'definition': | `required` < | `option constraint` 'definition' < [
                                             | `group` 'value'
@@ -2643,8 +2936,21 @@ TODO:
                                         'containing group': | `parameter` 'containing group'
                                         'parent containing group': | `parameter` 'parent containing group'
                                         'sibling namespaces': | `parameter` 'sibling namespaces'
-                                    } _ > _ > _ _ > >
-                                } _ >
+                                    } _ > _ > _ _ * {
+                                        'optional result target': <
+                                            | `context` < | `option constraint` 'result' < [
+                                                | `navigable component` ~
+                                                | `group` 'path'
+                                                | `group` 'tail'
+                                                | `list result` ~
+                                            ] > >
+                                            | `value` < [
+                                                | `simple component` | `local` 'Result Selection'
+                                                | `state result` ~
+                                            ] >
+                                        >
+                                    } > >
+                                } _ _ >
                                 'reference': < * {
                                     'definition': | `state` < < | `parameter` 'definition' < [] > > 'reference' >
                                 } | `group` {
@@ -2669,11 +2975,55 @@ TODO:
                                             'sibling namespaces': | `parameter` 'sibling namespaces'
                                         } * {} > _ > >
                                     } >
-                                } _ >
+                                } _ * {
+                                    'reference dictionary': <
+                                        | `context` < | `option constraint` 'definition' < [
+                                            | `simple component`
+                                            | `sibling namespace` < 'structure' 'Reference' >
+                                            | `group` 'referent'
+                                            | `component constraint` < 'dictionary' < < | `sibling namespace` < 'structure' 'Value' > > < [
+                                            | `state` 'dictionary' ] > > >
+                                            | `simple component`
+                                            | `sibling namespace` < 'structure' 'Dictionary' >
+                                        ] > >
+                                        | `value` < [
+                                            | `group` 'type'
+                                            | `group` 'lookup'
+                                            | `simple component`
+                                            | `local` 'Lookup Selection'
+                                            | `group` 'type'
+                                            | `state result` ~
+                                        ] >
+                                    >
+                                } >
                                 'state': < * {
                                     'definition': | `state` < < | `parameter` 'definition' < [] > > 'state' >
                                 } | `group` {
                                     'options': < | `dictionary` < | `group` {
+                                        'checks': < | `component` < | `local` 'Checks' * < * {
+                                            'list cursor': | `parameter` 'list cursor'
+                                            'linked entry': | `parameter` 'linked entry'
+                                            'current dictionary': | `parameter` 'current dictionary'
+                                            'declaration': | `parameter` 'declaration'
+                                            'declarations': | `parameter` 'declarations'
+                                            'types': | `parameter` 'types'
+                                            'child namespaces': | `parameter` 'child namespaces'
+                                            'child declarations': | `parameter` 'child declarations'
+                                            'sibling declarations': | `parameter` 'sibling declarations'
+                                            'containing group': | `parameter` 'containing group'
+                                            'parent containing group': | `parameter` 'parent containing group'
+                                            'sibling namespaces': | `parameter` 'sibling namespaces'
+                                            'definition': | `required` < | `linked entry` ~ < [
+                                                | `group` 'value'
+                                                | `simple component` | `sibling namespace` < 'structure' 'Value' >
+                                            ] > >
+                                            'option constraints': | `optional` | `set` < | `linked entry` ~ < [
+                                                | `group` 'constraints'
+                                                | `simple component` | `sibling namespace` < 'structure' 'Option Constraints' >
+                                            ] > >
+                                        } * {
+                                            'sibling option constraints': | `selection` < | `parameter` 'sibling option constraints' >
+                                        } > _ > >
                                         'constraints': < | `component` < | `local` 'Option Constraints' * < * {
                                             'constraints': | `required` < | `linked entry` ~ < [
                                                 | `group` 'constraints'
@@ -2716,7 +3066,12 @@ TODO:
                                             'parent containing group': | `parameter` 'parent containing group'
                                             'sibling namespaces': | `parameter` 'sibling namespaces'
                                         } _ > _ > >
-                                        'result': < | `optional` < _ _ | `component` < | `local` 'Result Selection' * < * {
+                                        'result': < | `optional` < _ * {
+                                            'result': | `assert is set` | `optional value` < < | `option constraint` 'definition' < [
+                                                | `group` 'result'
+                                                | `simple component` | `sibling namespace` < 'structure' 'Value Result' >
+                                            ] > > < [] > >
+                                        } | `component` < | `local` 'Result Selection' * < * {
                                             'types': | `parameter` 'types'
                                             'declaration': | `parameter` 'declaration'
                                             'declarations': | `parameter` 'declarations'
@@ -2737,11 +3092,24 @@ TODO:
                                             'containing group': | `parameter` 'containing group'
                                             'parent containing group': | `parameter` 'parent containing group'
                                             'sibling namespaces': | `parameter` 'sibling namespaces'
-                                        } _ > _ > _ _ > >
+                                        } _ > _ > _ _ * {
+                                            'state result target': <
+                                                | `context` < | `option constraint` 'result' < [
+                                                    | `navigable component` ~
+                                                    | `group` 'path'
+                                                    | `group` 'tail'
+                                                    | `list result` ~
+                                                ] > >
+                                                | `value` < [
+                                                    | `simple component` | `local` 'Result Selection'
+                                                    | `state result` ~
+                                                ] >
+                                            >
+                                        } > >
                                     } * < < | `option constraint` 'definition' < [
                                         | `group` 'options'
-                                    ] > > | `dense` ~ > > >
-                                } _ >
+                                    ] > > > > >
+                                } _ _ >
                             } > >
                             'Value Reference': < | `group` {
                                 'type': < | `group` {
@@ -2749,7 +3117,7 @@ TODO:
                                         'local': < _ | `reference` < < < | `parameter` 'types' > _ > > * | `value` < [
                                             | `reference` < >
                                             | `simple component` | `sibling namespace` < 'structure' 'Type' >
-                                        ] > >
+                                        ] > _ >
                                         'child namespace': < _ | `group` {
                                             'namespace': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'child namespaces' < [] > > > > _ > > >
                                             'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespace' < [
@@ -2762,7 +3130,7 @@ TODO:
                                             | `group` 'type'
                                             | `reference` < >
                                             | `simple component` | `sibling namespace` < 'structure' 'Type' >
-                                        ] > >
+                                        ] > _ >
                                         'sibling namespace': < _ | `group` {
                                             'namespace': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'sibling namespaces' < [] > > > > _ > > >
                                             'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespace' < [
@@ -2775,7 +3143,7 @@ TODO:
                                             | `group` 'type'
                                             | `reference` < >
                                             | `simple component` | `sibling namespace` < 'structure' 'Type' >
-                                        ] > >
+                                        ] > _ >
                                     } > >
                                 } >
                                 'path': < | `group` {
@@ -2786,7 +3154,7 @@ TODO:
                                             | `simple component` | `sibling namespace` < 'structure' 'Dictionary' >
                                             | `group` 'value'
                                             | `simple component` | `sibling namespace` < 'structure' 'Value' >
-                                        ] > > >
+                                        ] > > _ >
                                         'group': < * {
                                             'definition': | `state` < < | `list cursor` ~ < [] > > 'group' >
                                         } | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'definition' < [
@@ -2795,19 +3163,19 @@ TODO:
                                             | `reference` < >
                                             | `group` 'value'
                                             | `simple component` | `sibling namespace` < 'structure' 'Value' >
-                                        ] > >
+                                        ] > _ >
                                         'list': < * {
                                             'definition': | `state` < < | `list cursor` ~ < [] > > 'list' >
                                         } | `nothing` ~ * | `context` < | `option constraint` 'definition' < [
                                             | `group` 'value'
                                             | `simple component` | `sibling namespace` < 'structure' 'Value' >
-                                        ] > > >
+                                        ] > > _ >
                                         'optional': < * {
                                             'definition': | `state` < < | `list cursor` ~ < [] > > 'optional' >
                                         } | `nothing` ~ * | `context` < | `option constraint` 'definition' < [
                                             | `group` 'value'
                                             | `simple component` | `sibling namespace` < 'structure' 'Value' >
-                                        ] > > >
+                                        ] > > _ >
                                         'state': < * {
                                             'definition': | `state` < < | `list cursor` ~ < [] > > 'state' >
                                         } | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'definition' < [
@@ -2816,7 +3184,7 @@ TODO:
                                             | `reference` < >
                                             | `group` 'value'
                                             | `simple component` | `sibling namespace` < 'structure' 'Value' >
-                                        ] > >
+                                        ] > _ >
                                     } > * < < | `parent sibling` 'type' < [
                                         | `group` 'location'
                                         | `state result` ~
@@ -2834,10 +3202,10 @@ TODO:
                     'Directory': < | `state` < {
                         'group': < _ | `group` {
                             'nodes': < | `dictionary` < | `component` < | `local` 'Node' * < _ _ > _ > _ > >
-                        } _ >
+                        } _ _ >
                         'dictionary': < _ | `group` {
                             'node': < | `component` < | `local` 'Node' * < _ _ > _ > >
-                        } _ >
+                        } _ _ >
                     } > >
                     'Node': < | `state` < {
                         'file': < _ | `group` {
@@ -2848,8 +3216,8 @@ TODO:
                                     | `group` 'visibility'
                                 ] > | `state` < 'public' > > >
                             } > > >
-                        } _ >
-                        'directory': < _ | `component` < | `local` 'Directory' * < _ _ > _ > _ >
+                        } _ _ >
+                        'directory': < _ | `component` < | `local` 'Directory' * < _ _ > _ > _ _ >
                     } > >
                     'Type Specification': < | `group` {
                         'schema': < | `group` {

@@ -40,7 +40,7 @@ import type * as p_di from 'pareto-core/schema'
 
 
 
-import type * as s_schema from "pareto-liana/modules/schema.generated/schemas/resolved/schema"
+import type * as s_schema from "pareto-liana/schemas/liana_next_schema/authoring_schema"
 import type * as s_ast_target from "astn/modules/authoring_target/schemas/authoring_target/schema"
 import * as full_range from 'astn-runtime/modules/deserialization/schemas/parse_tree/transformers/full_value_range'
 

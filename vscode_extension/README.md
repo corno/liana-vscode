@@ -45,10 +45,10 @@ Access these via the Command Palette (`Ctrl+Shift+P`):
 
 - **Initialize Liana schema authoring environment** - Set up an environment (directory) where schemas can be created and authored
 
-The following commands are also available in context menu's
+The following commands are also available in the editor context menu:
 - **New Liana File...** - Create a new .liana file
-- **Convert to JSON** - Export current file to JSON
 - **Save as JSON file** - Save a JSON version alongside your .liana file
+- **Convert document to JSON notation** - Refactor code action (`Ctrl+.`) that changes the notation of the whole document while preserving its Liana content
 - **Sort dictionary (shallow) / Sort dictionaries (deep)** - Refactor code actions (`Ctrl+.`). Shallow sorts the dictionary around the cursor; deep also sorts the dictionaries nested in it, or every dictionary in the document when the cursor is not in a dictionary. Comments move with their entries. When entries depend on each other (acyclic references to siblings), choose once between alphabetical, topological then alphabetical, or topological only (dependencies first, otherwise keep the current order); dictionaries without dependencies are sorted alphabetically. Liana itself does not require any order
 - **Toggle notation style** - Switch between verbose/concise notation
 - **Publish this Liana schema to an authoring environment...** - Write the schema as a read-only `.liana/schema.slna` into a chosen directory; the directory is remembered per schema for later updates (only offered when the document has no errors)
@@ -173,17 +173,19 @@ kinds. Resolver declarations describe value and lookup arguments, including
 their required or optional `presence`.
 
 Type and component locations use `local`, `child namespace`, and
-`sibling namespace`. Structural components additionally support `local cyclic`
-for recursion within a namespace. Sibling namespace dependencies are acyclic;
+`sibling namespace`. Structural components distinguish `simple` reusable payloads
+from `navigable` targets; simple local components support recursion within a
+namespace. Sibling namespace dependencies are acyclic;
 there is no sibling namespace at the root. Component resolvers select matching
 declarations in the chosen namespace, keeping same-named types isolated.
-The old `internal`, `internal cyclic`, `child`, and namespace-location `sibling`
-tags are not supported. Property selections still use `sibling`.
+The old `internal`, `internal cyclic`, `local cyclic`, `child`, and
+namespace-location `sibling` tags are not supported. Property selections still
+use `sibling`.
 
 Every structural type requires `visibility`: `public`, `private`, or
 `private single use`. File roots and cross-namespace component targets must be
 public, as must the structural benchmark of a selected cross-namespace component
-resolver declaration. Both private states allow local and local-cyclic
+resolver declaration. Both private states allow simple and navigable local
 components. Type references, including resolver signature and result references,
 may select private types across namespaces. `private single use` marks an
 intentional reuse exception; the extension does not enforce usage counts.
@@ -196,6 +198,16 @@ Resolvers provide the corresponding result selections: a list supplies `initial`
 and `next`, an optional supplies one selection for its present payload, and a
 state supplies a selection per option. A state resolver contains only `options`;
 there is no resolver-level result-type field.
+
+Dictionary benchmarks are declared structurally with a target and `dense` or
+`sparse` coverage; resolver implementations select the matching benchmark
+instance. Result selections carry their computed structural value, and
+component-constraint names are references into the named component's constraint
+dictionary rather than free text. The extension's handwritten schema validation
+checks result and component-constraint target identity. Some further identity
+checks for benchmark ownership, explicit simple-component targets, and
+component/resolver target matching are deferred in the generated resolver;
+cyclic reference targets remain unavailable during resolution.
 
 A guaranteed selection may start with `optional fallback`. Both branches must
 select the exact same structural target. The fallback is evaluated only when the
@@ -292,6 +304,24 @@ than silently reinterpreted. The bundled template initializes new environments
 with the matching Next self-schema.
 
 Validate with `npm run compile` and `node --test test/*.test.mjs`.
+
+### Starting a Liana version upgrade
+
+After the owner has reviewed and promoted the generated output in the sibling
+`clean_start` repository, run `bash ./upgrade_liana.sh` from this repository's
+root. The script deletes the obsolete `generated` and `next_generated` schema
+trees and replaces `pareto_liana/src/schemas/liana_next_schema/current_generated`
+with a verbatim copy of
+`clean_start/test_results/expected/generate_typescript_from_liana_via_pareto/liana`.
+It also copies `clean_start/instance/liana/.liana/schema.slna` into the bundled
+authoring template and the maintained-schema test context.
+Stale compiled copies of the generated schema trees are deleted as well, so they
+cannot hide missing source files.
+
+The script deliberately overwrites these destinations on every run. Do not edit
+the copied generated code: adapt its handwritten consumers, fix compilation
+errors, then run `npm run compile` and `node --test test/*.test.mjs` from
+`vscode_extension`. It does not build, install, commit, or modify `clean_start`.
 
 Below is a step-by-step guide to creating your first Liana language.
 

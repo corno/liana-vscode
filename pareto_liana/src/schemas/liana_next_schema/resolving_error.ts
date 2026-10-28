@@ -1,5 +1,5 @@
 import * as p from 'pareto-core/transformer'
-import type { Error as Generated_Error } from './next_generated/structure/schemas/resolving.js'
+import type { Error as Generated_Error } from './current_generated/structure/schemas/resolving.js'
 
 export type Resolving_Error = Generated_Error | { readonly type: readonly ['schema validation', { readonly message: string }] }
 

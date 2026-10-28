@@ -1,6 +1,6 @@
 import * as p_ from 'pareto-core/transformer'
 import * as ser_unmarshalling_error from 'liana-runtime/modules/value_unmarshalling/schemas/unmarshalling/serializers'
-import type { types as reader_errors } from './generated/schemas/reader_errors/schema.js'
+import type { types as reader_errors } from '../../modules/schema.generated/schemas/reader_errors/schema.js'
 import type * as core from 'pareto-core/schema'
 
 const Names = <T extends core.Value>(dictionary: core.Dictionary<T>): string => {

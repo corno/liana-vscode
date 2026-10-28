@@ -1,7 +1,7 @@
 import * as p from 'pareto-core/refiner'
 import type * as core from 'pareto-core/schema'
 import type * as tree from 'astn-runtime/modules/deserialization/schemas/parse_tree/schema'
-import type * as errors from './generated/schemas/reader_errors/schema.js'
+import type * as errors from '../../modules/schema.generated/schemas/reader_errors/schema.js'
 import * as read from 'liana-runtime/modules/value_unmarshalling/schemas/unmarshalled_value/refiners/astn_parse_tree'
 import type * as unmarshalling from 'liana-runtime/modules/value_unmarshalling/schemas/unmarshalling/schema'
 

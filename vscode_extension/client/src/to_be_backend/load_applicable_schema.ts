@@ -2,7 +2,7 @@ import p_create_refinement_context from 'pareto-core/__internal/sync/create_refi
 import p_list_from_text from 'pareto-core/refiner/specials/list_from_text'
 import * as p from 'pareto-core/transformer'
 import type * as specification from 'pareto-liana/schemas/temp_type_specifier/schema'
-import type * as schema from 'pareto-liana/modules/schema.generated/schemas/resolved/schema'
+import type * as schema from 'pareto-liana/schemas/liana_next_schema/authoring_schema'
 import { Type_Specifier } from 'pareto-liana/schemas/temp_type_specifier/refiners/list_of_characters'
 import { file_type } from 'pareto-liana/schemas/temp_type_specifier/file_type'
 import { error_message } from 'pareto-liana/schemas/temp_type_specifier/reader_error'

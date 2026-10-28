@@ -9,7 +9,7 @@ import type * as s_in from "../schema.js"
 import type * as s_out from "../../../schemas/unmarshall_result/schema.js"
 
 import type * as s_function from "../../../schemas/unmarshall_result_from_astn_parse_tree/schema.js"
-import type * as s_in_definition from "pareto-liana/modules/schema.generated/schemas/resolved/schema"
+import type * as s_in_definition from "pareto-liana/schemas/liana_next_schema/authoring_schema"
 import { component_type } from '../../liana_schema/select_component.js'
 import { matches_token } from '../../liana_schema/token_pattern.js'
 
