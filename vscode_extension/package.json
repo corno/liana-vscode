@@ -1,7 +1,7 @@
 {
 	"name": "liana",
 	"displayName": "Liana",
-	"version": "0.1.81",
+	"version": "0.1.82",
 	"publisher": "corno",
 	"description": "Language support for Liana, whose documents are written in ASTN syntax: syntax highlighting, intelligent code completion, schema-based validation, formatting, and JSON conversion.",
 	"author": "Corno",
