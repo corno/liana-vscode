@@ -62,7 +62,7 @@ const sealed = (source, schema) => seal(source, fail, {
     target: { indentation: '', newline: '' },
 }).__get_raw().join('')
 const entry = (dictionary, name) => p.from.dictionary(dictionary).get_possible_entry(name, value => value, () => assert.fail(name))
-const componentKind = mode => mode === 'local cyclic' ? 'simple' : 'navigable'
+const componentKind = mode => mode === 'local cyclic' ? 'cyclic' : 'simple'
 
 const loadWithSchema = async (source, schema) => {
     const dir = mkdtempSync(join(tmpdir(), 'liana-server-references-'))
@@ -301,8 +301,8 @@ test('nested components pass through whole categories or explicitly bind every t
             const schema = `(
                 \`schema\`: (\`structure\`: (\`namespaces\`: {} \`basic types\`: {}
                     \`types\`: {
-                        'Root': (\`visibility\`: | \`public\` ~ \`root value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`navigable\` | \`local\` 'Middle'))
-                        'Middle': (\`visibility\`: | \`public\` ~ \`root value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`navigable\` | \`local\` 'Leaf'))
+                        'Root': (\`visibility\`: | \`public\` ~ \`root value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`simple\` | \`local\` 'Middle'))
+                        'Middle': (\`visibility\`: | \`public\` ~ \`root value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`simple\` | \`local\` 'Leaf'))
                         'Leaf': (\`visibility\`: | \`public\` ~ \`root value\`: | \`nothing\` ~)
                     }
                     ) \`resolver\`: (\`declarations\`: (\`namespaces\`: {} \`types\`: {
@@ -339,7 +339,7 @@ test('nested components pass through whole categories or explicitly bind every t
 
 const template = () => readFileSync(new URL('./fixtures/latest_liana/.liana/schema.slna', import.meta.url), 'utf8')
 const typeReference = (name, mode = 'local') =>
-    `| \`component\` (\`constraints\`: _ \`type\`: | \`${componentKind(mode)}\` | \`local\` '${name}')`
+    `| \`component\` (\`constraints\`: _ \`type\`: | \`${componentKind(mode)}\` ${mode === 'local cyclic' ? '' : '| `local` '}'${name}')`
 
 test('state resolver results belong to options rather than the resolver itself', () => {
     const schema = parse(template())[1].schema
@@ -364,7 +364,7 @@ test('the self-schema binds local constraints when entering optional values and 
         assert.equal(binding[1][0], 'set')
         assert.equal(binding[1][1].start.value[0], start)
         if (start === 'option constraint') assert.equal(binding[1][1].start.value[1].value['l id'], 'definition')
-        assert.deepEqual(binding[1][1].tail.path.value.__get_raw().map(item => item.value.value[0]), ['group', 'simple component'])
+        assert.deepEqual(binding[1][1].tail.path.value.__get_raw().map(item => item.value.value[0]), ['group', 'cyclic component'])
     }
     const diagnostics = resolveDiagnostics.Document(await loadWithSchema(template(), template())).__get_raw()
     assert.deepEqual(diagnostics, [])
@@ -382,7 +382,7 @@ test('selected references report missing dictionary entries at the identifier to
         assert.equal(range[1].start.absolute, source.indexOf("'Text Tsypes'"))
         assert.equal(range[1].end.absolute, source.indexOf("'Text Tsypes'") + "'Text Tsypes'".length)
         assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(
-            source.replace("'Text Tsypes'", "'Root'").replace('`navigable`', '`simple`'), template()
+            source.replace("'Text Tsypes'", "'Root'").replace('| `simple` | `local`', '| `cyclic`'), template()
         )).__get_raw().filter(d => d.message.startsWith('Reference \'')), [])
     }
 })
@@ -405,7 +405,7 @@ test('acyclic references reject cycles while cyclic references allow mutual depe
 
 const dependentReferenceSchema = () => {
     const component = name =>
-        `| \`component\` (\`constraints\`: _ \`type\`: | \`navigable\` | \`local\` '${name}')`
+        `| \`component\` (\`constraints\`: _ \`type\`: | \`simple\` | \`local\` '${name}')`
     const resolverComponent = name => `| \`component\` (\`location\`: | \`local\` '${name}' \`arguments\`: _ \`constraints\`: _)`
     const reference = name => `| \`reference\` (
         \`referent\`: (\`type\`: (\`location\`: | \`local\` '${name}' ) \`path\`: (\`tail\`: [] ))
@@ -431,8 +431,8 @@ const dependentReferenceSchema = () => {
         }
         ) \`resolver\`: (\`declarations\`: (\`namespaces\`: {} \`types\`: {${declarations}}) \`implementations\`: (\`namespaces\`: {} \`types\`: {
             'Root': (\`root value resolver\`: | \`group\` {
-                'member': (\`resolver\`: ${resolverReference('chosen', '| `reference` () | `group` \'members\' | `navigable component` ~')})
-                'chosen': (\`resolver\`: ${resolverReference('entries', '| `navigable component` ~')})
+                'member': (\`resolver\`: ${resolverReference('chosen', '| `reference` () | `group` \'members\' | `component` ~')})
+                'chosen': (\`resolver\`: ${resolverReference('entries', '| `component` ~')})
                 'entries': (\`resolver\`: ${resolverComponent('Nodes')})
             })
             'Nodes': (\`root value resolver\`: | \`dictionary\` (\`resolver\`: | \`group\` {
@@ -870,7 +870,7 @@ const benchmarkSchema = dense => `(
                         \`selection\`: (\`type\`: (\`location\`: | \`local\` 'Expected') \`path\`: (\`tail\`: []))
                         \`coverage\`: | \`${dense ? 'dense' : 'sparse'}\` ~)
                     \`value\`: | \`nothing\` ~))
-                'expected': (\`description\`: _ \`value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`navigable\` | \`local\` 'Expected'))
+                'expected': (\`description\`: _ \`value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`simple\` | \`local\` 'Expected'))
             })
             'Expected': (\`visibility\`: | \`public\` ~ \`root value\`: | \`dictionary\` (\`benchmark\`: _ \`value\`: | \`nothing\` ~))
         })
@@ -884,7 +884,7 @@ const benchmarkSchema = dense => `(
                     'supplied': (\`resolver\`: | \`dictionary\` (
                         \`resolver\`: | \`nothing\` ~
                         \`benchmark\`: * (
-                            \`selection\`: (\`start\`: | \`sibling property\` 'expected' \`tail\`: (\`path\`: [| \`navigable component\` ~]))
+                            \`selection\`: (\`start\`: | \`sibling property\` 'expected' \`tail\`: (\`path\`: [| \`component\` ~]))
                             \`coverage\`: | \`${dense ? 'dense' : 'sparse'}\` ~)))
                     'expected': (\`resolver\`: | \`component\` (\`location\`: | \`local\` 'Expected' \`arguments\`: _ \`constraints\`: _))
                 })
@@ -977,7 +977,7 @@ test('runtime type initialization inherits only at whole/category boundaries, ne
 })
 
 const lookupBindingSchema = (mode, args) => {
-    const component = name => `| \`component\` (\`constraints\`: _ \`type\`: | \`navigable\` | \`local\` '${name}')`
+    const component = name => `| \`component\` (\`constraints\`: _ \`type\`: | \`simple\` | \`local\` '${name}')`
     const call = (name, args = '_') => `| \`component\` (\`location\`: | \`local\` '${name}' \`arguments\`: ${args} \`constraints\`: _)`
     const parameter = signature_lookup('Nodes', mode, 'optional')
     return `(\`schema\`: (\`structure\`: (\`namespaces\`: {} \`basic types\`: {}
@@ -1001,7 +1001,7 @@ const lookupBindingSchema = (mode, args) => {
                 'entries': (\`resolver\`: ${call('Nodes')})
                 'value': (\`resolver\`: ${call('Middle', `* (\`types\`: * {} \`lookups\`: * {
                     'source': | \`selection\` (\`type\`: | \`acyclic\` | \`resolved dictionary\` (
-                        \`selection\`: (\`start\`: | \`sibling property\` 'entries' \`tail\`: (\`path\`: [| \`navigable component\` ~] ) )
+                        \`selection\`: (\`start\`: | \`sibling property\` 'entries' \`tail\`: (\`path\`: [| \`component\` ~] ) )
                         ) )
                     'unused': | \`${mode}\` ~
                 })`)})
@@ -1343,7 +1343,7 @@ test('list results use the initial cursor for empty lists and advance it after e
 })
 
 test('state result declarations reject missing, unexpected and wrongly typed option selections', () => {
-    const selection = '* | `value` (`path`: [| `simple component` | `local` \'Nothing\'] )'
+    const selection = '* | `value` (`path`: [| `component` ~] )'
     const type = '* (`type`: (`location`: | `local` \'Nothing\') `path`: (`tail`: []))'
     const component = '| `component` (`constraints`: _ `type`: | `simple` | `local` \'Nothing\')'
     const componentResolver = '| `component` (`location`: | `local` \'Nothing\' `arguments`: _ `constraints`: _)'
@@ -1730,7 +1730,7 @@ test('bulk fixes preserve multiline closing indentation and empty identifiers', 
 
 test('recursive singleton states stop at a placeholder instead of expanding forever', async () => {
     const schema = specification(
-        '| `state` (`options`: { \'next\': (`description`: _ `constraints`: _ `value`: | `component` (`constraints`: _ `type`: | `simple` | `local` \'Root\')) } `result`: _)',
+        '| `state` (`options`: { \'next\': (`description`: _ `constraints`: _ `value`: | `component` (`constraints`: _ `type`: | `cyclic` \'Root\')) } `result`: _)',
         '| `state` (`options`: { \'next\': (`constraints`: _ `checks`: _ `resolver`: | `component` (`location`: | `local` \'Root\' `arguments`: _ `constraints`: _) `result`: _) })')
     assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema('~', schema, template())).__get_raw(), [])
     const result = await complete('#', schema, 0)
@@ -1928,14 +1928,14 @@ test('generated dictionary identifiers always use escaped single quotes', () => 
     ]) assert.equal(quote_identifier(id), expected)
 })
 
-const namespaced_schema = (throughSibling = false, componentType = 'navigable') => {
+const namespaced_schema = (throughSibling = false, componentType = 'simple') => {
     const structure = `(
         \`namespaces\`: {} \`basic types\`: {} \`types\`: {
             'Root': (\`visibility\`: | \`public\` ~ \`root value\`: | \`group\` {
                 'selected': (\`description\`: _ \`value\`: | \`reference\` (
                     \`referent\`: (\`type\`: (\`location\`: | \`local\` 'Nodes') \`path\`: (\`tail\`: []))
                     \`type\`: (\`dependency\`: | \`acyclic\` ~ \`constraints\`: _)))
-                'entries': (\`description\`: _ \`value\`: | \`component\` (\`constraints\`: _ \`type\`: | \`${componentType}\` | \`local\` 'Nodes'))
+                'entries': (\`description\`: _ \`value\`: ${typeReference('Nodes', componentType === 'cyclic' ? 'local cyclic' : 'local')})
             })
             'Nodes': (\`visibility\`: | \`public\` ~ \`root value\`: | \`dictionary\` (\`benchmark\`: _ \`value\`: | \`nothing\` ~))
         })`
@@ -1943,9 +1943,9 @@ const namespaced_schema = (throughSibling = false, componentType = 'navigable') 
         'Root': ${signature()}
         'Nodes': ${signature()}
     }`
-    const componentSelection = componentType === 'navigable'
-        ? '| \`navigable component\` ~'
-        : '| \`simple component\` | \`local\` \'Nodes\''
+    const componentSelection = componentType === 'simple'
+        ? '| \`component\` ~'
+        : '| \`cyclic component\` ~'
     const implementation = `(
         \`namespaces\`: {} \`types\`: {
             'Root': (\`root value resolver\`: | \`group\` {
@@ -1958,7 +1958,7 @@ const namespaced_schema = (throughSibling = false, componentType = 'navigable') 
             })
             'Nodes': (\`root value resolver\`: | \`dictionary\` (\`resolver\`: | \`nothing\` ~ \`benchmark\`: _))
         })`
-    const child = (name, location = 'child namespace', kind = componentType) =>
+    const child = (name, location = 'child namespace', kind = 'simple') =>
         `| \`component\` (\`constraints\`: _ \`type\`: | \`${kind}\` | \`${location}\` (\`namespace\`: '${name}' \`type\`: 'Root'))`
     const call = (name, location = 'child namespace') => `| \`component\` (
         \`location\`: | \`${location}\` (\`namespace\`: '${name}' \`resolver\`: 'Root')
@@ -1999,7 +1999,7 @@ const namespaced_schema = (throughSibling = false, componentType = 'navigable') 
         \`directory\`: | \`dictionary\` (\`node\`: | \`file\` (\`file extension\`: "" \`type\`: 'Root')))`
 }
 
-for (const componentType of ['simple', 'navigable']) {
+for (const componentType of ['simple', 'cyclic']) {
 for (const sibling of [false, true]) {
 test(`${componentType} components in ${sibling ? 'sibling' : 'child'} namespaces keep resolution, completion and navigation isolated`, async () => {
     const schema = namespaced_schema(sibling, componentType)
@@ -2028,12 +2028,12 @@ test(`${componentType} components in ${sibling ? 'sibling' : 'child'} namespaces
 test('sibling component locations reject missing targets, mismatched declarations and namespace cycles', () => {
     const schema = namespaced_schema(true)
     for (const [original, replacement] of [
-        ["`type`: | `navigable` | `sibling namespace` (`namespace`: 'left'", "`type`: | `navigable` | `sibling namespace` (`namespace`: 'missing'"],
-        ["`type`: | `navigable` | `sibling namespace` (`namespace`: 'left' `type`: 'Root')", "`type`: | `navigable` | `sibling namespace` (`namespace`: 'left' `type`: 'missing')"],
+        ["`type`: | `simple` | `sibling namespace` (`namespace`: 'left'", "`type`: | `simple` | `sibling namespace` (`namespace`: 'missing'"],
+        ["`type`: | `simple` | `sibling namespace` (`namespace`: 'left' `type`: 'Root')", "`type`: | `simple` | `sibling namespace` (`namespace`: 'left' `type`: 'missing')"],
         ["`location`: | `sibling namespace` (`namespace`: 'left'", "`location`: | `sibling namespace` (`namespace`: 'missing'"],
         ["`location`: | `sibling namespace` (`namespace`: 'left' `resolver`: 'Root')", "`location`: | `sibling namespace` (`namespace`: 'left' `resolver`: 'missing')"],
         ["`location`: | `sibling namespace` (`namespace`: 'left'", "`location`: | `sibling namespace` (`namespace`: 'right'"],
-        ["`type`: | `navigable` | `sibling namespace` (`namespace`: 'left'", "`type`: | `navigable` | `sibling namespace` (`namespace`: 'bridge'"],
+        ["`type`: | `simple` | `sibling namespace` (`namespace`: 'left'", "`type`: | `simple` | `sibling namespace` (`namespace`: 'bridge'"],
     ]) {
         assert.ok(schema.includes(original), original)
         assert.throws(() => parse(schema.replace(original, replacement)))
@@ -2054,10 +2054,11 @@ test('old component location tags are rejected without changing sibling property
 
 test('legacy structural component types and selection steps are rejected', () => {
     const typed = specification(typeReference('Root'))
-    assert.throws(() => parse(typed.replace('| \`navigable\` | \`local\`', '| \`local\`')))
+    assert.throws(() => parse(typed.replace('| \`simple\` | \`local\`', '| \`local\`')))
 
     const selected = namespaced_schema()
-    assert.throws(() => parse(selected.replace('| \`navigable component\` ~', '| \`component\` ~')))
+    assert.throws(() => parse(selected.replace('| \`component\` ~', '| \`navigable component\` ~')))
+    assert.throws(() => parse(selected.replace('| \`component\` ~', '| \`simple component\` | \`local\` \'Nodes\'')))
 })
 
 test('missing resolver coverage is reported instead of synthesizing a resolver', () => {
@@ -2157,4 +2158,44 @@ test('new relative tails select component, optional, reference, benchmark and li
             { lookups: {}, types: p.literal.dictionary({ input: ['resolved', source] }) },
         ), selected, step[0])
     }
+})
+
+test('reference traversal distinguishes acyclic references from explicit expect-resolved cyclic references', () => {
+    const acyclic = dependentReferenceSchema()
+    const cyclic = acyclic.replaceAll('`dependency`: | `acyclic`', '`dependency`: | `cyclic`')
+    const explicit = source => source.replace('| `reference` () | `group`', '| `expect resolved` () | `group`')
+    assert.doesNotThrow(() => parse(acyclic))
+    assert.throws(() => parse(explicit(acyclic)))
+    assert.throws(() => parse(cyclic))
+    assert.doesNotThrow(() => parse(explicit(cyclic)))
+})
+
+test('expect resolved traverses completed cyclic references and preserves unavailable selections', () => {
+    const seed = nothingValue()
+    const definition = { referent: { value: { path: { tail: { result: ['nothing', null] } } } } }
+    const selection = {
+        start: { value: ['parameter', { 'l id': 'input' }], result: null },
+        tail: { path: { value: p.literal.list([{
+            value: { value: ['expect resolved', { constraints: { definition }, value: {} }], result: null },
+            result: null,
+        }]), result: null } },
+    }
+    const source = status => ({
+        ...seed,
+        'unmarshall result': ['success', ['reference', ['selected', { 'resolve status': status }]]],
+    })
+    const consume = input => resolver.Resolver_Guaranteed_Value_Selection(selection, {
+        lookups: {}, types: p.literal.dictionary({ input }),
+    })
+    assert.deepEqual(consume(['resolved', source(['cyclic', {
+        get_circular_dependent: () => p.literal.set({
+            'unmarshall result': ['success', { value: ['set', seed] }],
+        }),
+    }])]), ['resolved', seed])
+    assert.deepEqual(consume(['resolved', source(['cyclic', {
+        get_circular_dependent: () => p.literal.not_set(),
+    }])]), ['unavailable', null])
+    assert.deepEqual(consume(['resolved', source(['missing', 'unknown'])]), ['unavailable', null])
+    assert.deepEqual(consume(['unavailable', null]), ['unavailable', null])
+    assert.deepEqual(consume(['resolved', { ...seed, 'unmarshall result': ['error', null] }]), ['unavailable', null])
 })

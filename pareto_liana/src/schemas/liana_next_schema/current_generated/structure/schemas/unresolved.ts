@@ -253,7 +253,7 @@ export namespace structure {
                 
                 export type type_ =
                     | readonly ['simple', s_self.structure.Value.type_.component.type_.type_.simple]
-                    | readonly ['navigable', s_self.structure.Value.type_.component.type_.type_.navigable]
+                    | readonly ['cyclic', s_self.structure.Value.type_.component.type_.type_.cyclic]
                 
                 export namespace type_ {
                     export namespace type_ {
@@ -298,45 +298,7 @@ export namespace structure {
                             
                         }
                         
-                        export type navigable =
-                            | readonly ['local', s_self.structure.Value.type_.component.type_.type_.navigable.type_.local]
-                            | readonly ['child namespace', s_self.structure.Value.type_.component.type_.type_.navigable.type_.child_namespace]
-                            | readonly ['sibling namespace', s_self.structure.Value.type_.component.type_.type_.navigable.type_.sibling_namespace]
-                        
-                        export namespace navigable {
-                            export namespace type_ {
-                                
-                                export type local = string
-                                
-                                export type child_namespace = {
-                                    readonly 'namespace': s_self.structure.Value.type_.component.type_.type_.navigable.type_.child_namespace.namespace
-                                    readonly 'type': s_self.structure.Value.type_.component.type_.type_.navigable.type_.child_namespace.type_
-                                }
-                                
-                                export namespace child_namespace {
-                                    
-                                    export type namespace = string
-                                    
-                                    export type type_ = string
-                                    
-                                }
-                                
-                                export type sibling_namespace = {
-                                    readonly 'namespace': s_self.structure.Value.type_.component.type_.type_.navigable.type_.sibling_namespace.namespace
-                                    readonly 'type': s_self.structure.Value.type_.component.type_.type_.navigable.type_.sibling_namespace.type_
-                                }
-                                
-                                export namespace sibling_namespace {
-                                    
-                                    export type namespace = string
-                                    
-                                    export type type_ = string
-                                    
-                                }
-                                
-                            }
-                            
-                        }
+                        export type cyclic = string
                         
                     }
                     
@@ -1052,46 +1014,6 @@ export namespace resolver {
         
     }
     
-    export type Simple_Component_Selection =
-        | readonly ['local', s_self.resolver.Simple_Component_Selection.type_.local]
-        | readonly ['child namespace', s_self.resolver.Simple_Component_Selection.type_.child_namespace]
-        | readonly ['sibling namespace', s_self.resolver.Simple_Component_Selection.type_.sibling_namespace]
-    
-    export namespace Simple_Component_Selection {
-        export namespace type_ {
-            
-            export type local = string
-            
-            export type child_namespace = {
-                readonly 'namespace': s_self.resolver.Simple_Component_Selection.type_.child_namespace.namespace
-                readonly 'type': s_self.resolver.Simple_Component_Selection.type_.child_namespace.type_
-            }
-            
-            export namespace child_namespace {
-                
-                export type namespace = string
-                
-                export type type_ = string
-                
-            }
-            
-            export type sibling_namespace = {
-                readonly 'namespace': s_self.resolver.Simple_Component_Selection.type_.sibling_namespace.namespace
-                readonly 'type': s_self.resolver.Simple_Component_Selection.type_.sibling_namespace.type_
-            }
-            
-            export namespace sibling_namespace {
-                
-                export type namespace = string
-                
-                export type type_ = string
-                
-            }
-            
-        }
-        
-    }
-    
     export type Relative_Value_Selection = {
         readonly 'path': s_self.resolver.Relative_Value_Selection.path
     }
@@ -1104,9 +1026,9 @@ export namespace resolver {
             
             export type L =
                 | readonly ['benchmark link', s_self.resolver.Relative_Value_Selection.path.L.type_.benchmark_link]
-                | readonly ['simple component', s_self.resolver.Relative_Value_Selection.path.L.type_.simple_component]
                 | readonly ['component constraint', s_self.resolver.Relative_Value_Selection.path.L.type_.component_constraint]
-                | readonly ['navigable component', s_self.resolver.Relative_Value_Selection.path.L.type_.navigable_component]
+                | readonly ['component', s_self.resolver.Relative_Value_Selection.path.L.type_.component]
+                | readonly ['cyclic component', s_self.resolver.Relative_Value_Selection.path.L.type_.cyclic_component]
                 | readonly ['group', s_self.resolver.Relative_Value_Selection.path.L.type_.group]
                 | readonly ['list result', s_self.resolver.Relative_Value_Selection.path.L.type_.list_result]
                 | readonly ['option constraint', s_self.resolver.Relative_Value_Selection.path.L.type_.option_constraint]
@@ -1114,14 +1036,13 @@ export namespace resolver {
                 | readonly ['optional value constraint', s_self.resolver.Relative_Value_Selection.path.L.type_.optional_value_constraint]
                 | readonly ['reference constraint', s_self.resolver.Relative_Value_Selection.path.L.type_.reference_constraint]
                 | readonly ['reference', s_self.resolver.Relative_Value_Selection.path.L.type_.reference]
+                | readonly ['expect resolved', s_self.resolver.Relative_Value_Selection.path.L.type_.expect_resolved]
                 | readonly ['state result', s_self.resolver.Relative_Value_Selection.path.L.type_.state_result]
             
             export namespace L {
                 export namespace type_ {
                     
                     export type benchmark_link = s_self.resolver.Value_Reference
-                    
-                    export type simple_component = s_self.resolver.Simple_Component_Selection
                     
                     export type component_constraint = {
                         readonly 'name': s_self.resolver.Relative_Value_Selection.path.L.type_.component_constraint.name
@@ -1136,7 +1057,9 @@ export namespace resolver {
                         
                     }
                     
-                    export type navigable_component = null
+                    export type component = null
+                    
+                    export type cyclic_component = null
                     
                     export type group = string
                     
@@ -1162,6 +1085,8 @@ export namespace resolver {
                     export type reference_constraint = string
                     
                     export type reference = null
+                    
+                    export type expect_resolved = null
                     
                     export type state_result = null
                     

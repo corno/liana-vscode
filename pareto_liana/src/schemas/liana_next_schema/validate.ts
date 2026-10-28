@@ -16,10 +16,6 @@ export const Validate = (schema: s.Type_Specification, abort: Abort): void => {
         let current = initial
         p.from.list(selection.path.value).map(item => {
             const step = item.value.value
-            if (step[0] === 'simple component') {
-                if (current[0] !== 'component' || current[1].type[0] !== 'simple') abort('simple component requires a simple component')
-                else if (Component_Type(current[1]) !== step[1].value.result) abort('same node: simple component target')
-            }
             if (step[0] === 'benchmark link') {
                 const owner = current
                 let found = false

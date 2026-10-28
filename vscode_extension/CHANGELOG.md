@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+### Changed
+- Upgraded the verbatim generated Liana model, bundled context, and maintained
+  schema fixtures. Simple components now select acyclic local/child/sibling
+  targets; cyclic components use local references. Relative selections use
+  `component`, `cyclic component`, and `expect resolved`; ordinary `reference`
+  traversal requires an acyclic dependency. Older component notation is rejected.
+
 ### Added
 - Same-document Find All References, declaration/reference highlights, and safe
   rename based on resolved target identity. Rename rejects collisions, new

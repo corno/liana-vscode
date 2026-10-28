@@ -174,7 +174,7 @@ export namespace structure {
                     const $property_type_: s_target.structure.Value.type_.component.type_ = p.change_context($['type'], ($) => p.from.state($).decide(
                         ($s): s_target.structure.Value.type_.component.type_ => {
                             switch ($s[0]) {
-                                case 'simple': return p.option($s, ($): s_target.structure.Value.type_.component.type_ => ['simple', p.from.state($).decide(
+                                case 'simple': return p.option($s, ($): s_target.structure.Value.type_.component.type_ => ['simple', p.change_context($['value'], ($) => p.from.state($).decide(
                                     ($s): s_target.structure.Value.type_.component.type_.type_.simple => {
                                         switch ($s[0]) {
                                             case 'local': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple => ['local', $['l id']])
@@ -197,31 +197,8 @@ export namespace structure {
                                             default: return p.exhaustive($s[0])
                                         }
                                     },
-                                )])
-                                case 'navigable': return p.option($s, ($): s_target.structure.Value.type_.component.type_ => ['navigable', p.change_context($['value'], ($) => p.from.state($).decide(
-                                    ($s): s_target.structure.Value.type_.component.type_.type_.navigable => {
-                                        switch ($s[0]) {
-                                            case 'local': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable => ['local', $['l id']])
-                                            case 'child namespace': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable => ['child namespace', p.literal.group_resolve(() => {
-                                                const $property_namespace: s_target.structure.Value.type_.component.type_.type_.navigable.type_.child_namespace.namespace = p.change_context($['namespace'], ($) => $['l id'])
-                                                const $property_type_: s_target.structure.Value.type_.component.type_.type_.navigable.type_.child_namespace.type_ = p.change_context($['type'], ($) => p.change_context($['value'], ($) => $['l id']))
-                                                return {
-                                                    'namespace': $property_namespace,
-                                                    'type': $property_type_,
-                                                }
-                                            })])
-                                            case 'sibling namespace': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable => ['sibling namespace', p.literal.group_resolve(() => {
-                                                const $property_namespace: s_target.structure.Value.type_.component.type_.type_.navigable.type_.sibling_namespace.namespace = p.change_context($['namespace'], ($) => $['l id'])
-                                                const $property_type_: s_target.structure.Value.type_.component.type_.type_.navigable.type_.sibling_namespace.type_ = p.change_context($['type'], ($) => p.change_context($['value'], ($) => $['l id']))
-                                                return {
-                                                    'namespace': $property_namespace,
-                                                    'type': $property_type_,
-                                                }
-                                            })])
-                                            default: return p.exhaustive($s[0])
-                                        }
-                                    },
                                 ))])
+                                case 'cyclic': return p.option($s, ($): s_target.structure.Value.type_.component.type_ => ['cyclic', $['l id']])
                                 default: return p.exhaustive($s[0])
                             }
                         },
@@ -711,31 +688,6 @@ export namespace resolver {
         }
     })
     
-    export const Simple_Component_Selection: d.resolver.Simple_Component_Selection = ($) => p.change_context($['value'], ($) => p.from.state($).decide(
-        ($s): s_target.resolver.Simple_Component_Selection => {
-            switch ($s[0]) {
-                case 'local': return p.option($s, ($): s_target.resolver.Simple_Component_Selection => ['local', $['l id']])
-                case 'child namespace': return p.option($s, ($): s_target.resolver.Simple_Component_Selection => ['child namespace', p.literal.group_resolve(() => {
-                    const $property_namespace: s_target.resolver.Simple_Component_Selection.type_.child_namespace.namespace = p.change_context($['namespace'], ($) => $['l id'])
-                    const $property_type_: s_target.resolver.Simple_Component_Selection.type_.child_namespace.type_ = p.change_context($['type'], ($) => $['l id'])
-                    return {
-                        'namespace': $property_namespace,
-                        'type': $property_type_,
-                    }
-                })])
-                case 'sibling namespace': return p.option($s, ($): s_target.resolver.Simple_Component_Selection => ['sibling namespace', p.literal.group_resolve(() => {
-                    const $property_namespace: s_target.resolver.Simple_Component_Selection.type_.sibling_namespace.namespace = p.change_context($['namespace'], ($) => $['l id'])
-                    const $property_type_: s_target.resolver.Simple_Component_Selection.type_.sibling_namespace.type_ = p.change_context($['type'], ($) => $['l id'])
-                    return {
-                        'namespace': $property_namespace,
-                        'type': $property_type_,
-                    }
-                })])
-                default: return p.exhaustive($s[0])
-            }
-        },
-    ))
-    
     export const Relative_Value_Selection: d.resolver.Relative_Value_Selection = ($) => p.literal.group_resolve(() => {
         const $property_path: s_target.resolver.Relative_Value_Selection.path = p.change_context($['path'], ($) => p.change_context($['value'], ($) => p.from.list($).map_with_index(
             ($, $index): s_target.resolver.Relative_Value_Selection.path.L => p.change_context($['value'], ($) => p.change_context($['value'], ($) => p.from.state($).decide(
@@ -744,9 +696,6 @@ export namespace resolver {
                         case 'benchmark link': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L => ['benchmark link', Value_Reference(
                             $,
                         )])
-                        case 'simple component': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L => ['simple component', p.change_context($['value'], ($) => Simple_Component_Selection(
-                            $,
-                        ))])
                         case 'component constraint': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L => ['component constraint', p.change_context($['value'], ($) => p.literal.group_resolve(() => {
                             const $property_name: s_target.resolver.Relative_Value_Selection.path.L.type_.component_constraint.name = p.change_context($['name'], ($) => $['l id'])
                             const $property_target: s_target.resolver.Relative_Value_Selection.path.L.type_.component_constraint.target = p.change_context($['target'], ($) => Value_Reference(
@@ -757,7 +706,8 @@ export namespace resolver {
                                 'target': $property_target,
                             }
                         }))])
-                        case 'navigable component': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L => ['navigable component', p.change_context($['value'], ($) => null)])
+                        case 'component': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L => ['component', p.change_context($['value'], ($) => null)])
+                        case 'cyclic component': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L => ['cyclic component', p.change_context($['value'], ($) => null)])
                         case 'group': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L => ['group', p.change_context($['value'], ($) => $['l id'])])
                         case 'list result': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L => ['list result', p.change_context($['value'], ($) => null)])
                         case 'option constraint': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L => ['option constraint', p.change_context($['value'], ($) => p.literal.group_resolve(() => {
@@ -772,6 +722,7 @@ export namespace resolver {
                         case 'optional value constraint': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L => ['optional value constraint', p.change_context($['value'], ($) => $['l id'])])
                         case 'reference constraint': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L => ['reference constraint', p.change_context($['value'], ($) => $['l id'])])
                         case 'reference': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L => ['reference', p.change_context($['value'], ($) => null)])
+                        case 'expect resolved': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L => ['expect resolved', p.change_context($['value'], ($) => null)])
                         case 'state result': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L => ['state result', p.change_context($['value'], ($) => null)])
                         default: return p.exhaustive($s[0])
                     }

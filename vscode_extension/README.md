@@ -173,9 +173,9 @@ kinds. Resolver declarations describe value and lookup arguments, including
 their required or optional `presence`.
 
 Type and component locations use `local`, `child namespace`, and
-`sibling namespace`. Structural components distinguish `simple` reusable payloads
-from `navigable` targets; simple local components support recursion within a
-namespace. Sibling namespace dependencies are acyclic;
+`sibling namespace`. Structural `simple` components select an acyclic target in
+any of those locations. Structural `cyclic` components refer directly to a local
+type and support recursion within a namespace. Sibling namespace dependencies are acyclic;
 there is no sibling namespace at the root. Component resolvers select matching
 declarations in the chosen namespace, keeping same-named types isolated.
 The old `internal`, `internal cyclic`, `local cyclic`, `child`, and
@@ -185,7 +185,7 @@ use `sibling`.
 Every structural type requires `visibility`: `public`, `private`, or
 `private single use`. File roots and cross-namespace component targets must be
 public, as must the structural benchmark of a selected cross-namespace component
-resolver declaration. Both private states allow simple and navigable local
+resolver declaration. Both private states allow simple and cyclic local
 components. Type references, including resolver signature and result references,
 may select private types across namespaces. `private single use` marks an
 intentional reuse exception; the extension does not enforce usage counts.
@@ -205,9 +205,17 @@ instance. Result selections carry their computed structural value, and
 component-constraint names are references into the named component's constraint
 dictionary rather than free text. The extension's handwritten schema validation
 checks result and component-constraint target identity. Some further identity
-checks for benchmark ownership, explicit simple-component targets, and
-component/resolver target matching are deferred in the generated resolver;
-cyclic reference targets remain unavailable during resolution.
+checks for benchmark ownership and component/resolver target matching remain
+deferred in the generated resolver; cyclic reference targets remain unavailable
+during schema resolution.
+
+Relative selections use `component` for simple components and `cyclic component`
+for cyclic components. The old `navigable` component category and
+`navigable component` / explicit-target `simple component` steps are not supported.
+Ordinary `reference` selections require an acyclic dependency. Use
+`expect resolved` to dereference a cyclic document reference that is already
+resolved, for example through a fully resolved value parameter. The maintained
+schema does not yet verify that this expectation is guaranteed.
 
 A guaranteed selection may start with `optional fallback`. Both branches must
 select the exact same structural target. The fallback is evaluated only when the

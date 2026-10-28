@@ -40,7 +40,6 @@ export const api: d.API = {
                 },
                 'resolver': {
                     'Value Reference': unresolved_uptransformers_unmarshal.resolver.Value_Reference,
-                    'Simple Component Selection': unresolved_uptransformers_unmarshal.resolver.Simple_Component_Selection,
                     'Relative Value Selection': unresolved_uptransformers_unmarshal.resolver.Relative_Value_Selection,
                     'Possible Value Selection': unresolved_uptransformers_unmarshal.resolver.Possible_Value_Selection,
                     'Option Constraints': unresolved_uptransformers_unmarshal.resolver.Option_Constraints,
@@ -86,7 +85,6 @@ export const api: d.API = {
                 },
                 'resolver': {
                     'Value Reference': unresolved_downtransformers_marshal.resolver.Value_Reference,
-                    'Simple Component Selection': unresolved_downtransformers_marshal.resolver.Simple_Component_Selection,
                     'Relative Value Selection': unresolved_downtransformers_marshal.resolver.Relative_Value_Selection,
                     'Possible Value Selection': unresolved_downtransformers_marshal.resolver.Possible_Value_Selection,
                     'Option Constraints': unresolved_downtransformers_marshal.resolver.Option_Constraints,
@@ -134,7 +132,6 @@ export const api: d.API = {
                 },
                 'resolver': {
                     'Value Reference': resolved_uptransformers_resolve.resolver.Value_Reference,
-                    'Simple Component Selection': resolved_uptransformers_resolve.resolver.Simple_Component_Selection,
                     'Relative Value Selection': resolved_uptransformers_resolve.resolver.Relative_Value_Selection,
                     'Possible Value Selection': resolved_uptransformers_resolve.resolver.Possible_Value_Selection,
                     'Option Constraints': resolved_uptransformers_resolve.resolver.Option_Constraints,
@@ -180,7 +177,6 @@ export const api: d.API = {
                 },
                 'resolver': {
                     'Value Reference': resolved_downtransformers_unresolve.resolver.Value_Reference,
-                    'Simple Component Selection': resolved_downtransformers_unresolve.resolver.Simple_Component_Selection,
                     'Relative Value Selection': resolved_downtransformers_unresolve.resolver.Relative_Value_Selection,
                     'Possible Value Selection': resolved_downtransformers_unresolve.resolver.Possible_Value_Selection,
                     'Option Constraints': resolved_downtransformers_unresolve.resolver.Option_Constraints,

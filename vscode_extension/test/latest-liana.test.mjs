@@ -552,7 +552,7 @@ test('optional fallback branches must resolve to the exact same structural targe
     }) \`constraints\`: _)`
     // A call is placed under a component so the selected parameter target and callee match.
     const full = source
-        .replace("'Nothing': (`visibility`: | `public` ~ `root value`: | `nothing` ~)", "'Nothing': (`visibility`: | `public` ~ `root value`: | `component` (`constraints`: _ `type`: | `simple` | `local` 'Nothing'))")
+        .replace("'Nothing': (`visibility`: | `public` ~ `root value`: | `nothing` ~)", "'Nothing': (`visibility`: | `public` ~ `root value`: | `component` (`constraints`: _ `type`: | `cyclic` 'Nothing'))")
         .replace("'Nothing': (`root value resolver`: | `nothing` ~)", `'Nothing': (\`root value resolver\`: ${component})`)
     assert.doesNotThrow(() => parse(full))
     assert.throws(() => parse(full.replace("'fallback': (`value`: (`type`: (`location`: | `local` 'Nothing')", "'fallback': (`value`: (`type`: (`location`: | `local` 'Text')")))
@@ -578,7 +578,7 @@ test('optional producer results select the declared payload and remain absent wh
         .replace("'Nothing': (`root value resolver`: | `nothing` ~)", `'Nothing': (\`root value resolver\`: | \`optional\` (
             \`presence\`: _ \`constraints\`: _ \`checks\`: _ \`not set constraints\`: _
             \`resolver\`: | \`component\` (\`location\`: | \`local\` 'Text' \`arguments\`: _ \`constraints\`: _)
-            \`result\`: * | \`value\` (\`path\`: [| \`simple component\` | \`local\` 'Text'])))`)
+            \`result\`: * | \`value\` (\`path\`: [| \`component\` ~])))`)
     const dir = mkdtempSync(join(tmpdir(), 'liana-optional-result-'))
     try {
         for (const [body, status] of [['* "hello"', 'resolved'], ['_', 'not set'], ['* #', 'unavailable']]) {

@@ -281,13 +281,14 @@ const Relative = (
                 ? current[0] === 'resolved' ? State_Result(current[1], step[1].constraints.definition) : Select(current, Unavailable)
                 : Select(current, ($) => {
                 switch (step[0]) {
-                    case 'simple component':
-                    case 'navigable component': return $[0] === 'component' ? ['resolved', $[1].value] : Unavailable()
+                    case 'component':
+                    case 'cyclic component': return $[0] === 'component' ? ['resolved', $[1].value] : Unavailable()
                     case 'group': return $[0] === 'group' ? Property(step[1].value['l id'], p_lookup.acyclic.from_resolved_dictionary($[1].properties)) : Unavailable()
                     case 'optional': return $[0] === 'optional'
                         ? $[1].status[0] === 'set' ? ['resolved', $[1].status[1]['child value']] : $[1].status : Unavailable()
                     case 'list result': return $[0] === 'list' ? $[1].result : Unavailable()
-                    case 'reference': {
+                    case 'reference':
+                    case 'expect resolved': {
                         if ($[0] !== 'reference') return Unavailable()
                         const definition = step[1].constraints.definition
                         const referent = definition.referent.value.path.tail.result
@@ -298,7 +299,7 @@ const Relative = (
                 }
                 })
                 if (next[0] === 'constraint failed') return next
-                if (step[0] === 'reference' && next[0] === 'resolved') {
+                if ((step[0] === 'reference' || step[0] === 'expect resolved') && next[0] === 'resolved') {
                     const definition = step[1].constraints.definition
                     const referent = definition.referent.value.path.tail.result
                     const target = referent[0] === 'dictionary' ? referent[1].value : referent
@@ -307,7 +308,7 @@ const Relative = (
                         // Derived selections can already expose the declared component payload.
                         if (next[1].unmarshalled.definition === root) {
                             return p_.from.list(rest).on_has_first_item(
-                                (following, tail) => following.value.value[0] === 'simple component' || following.value.value[0] === 'navigable component' ? path(tail, next) : path(rest, next),
+                                (following, tail) => following.value.value[0] === 'component' || following.value.value[0] === 'cyclic component' ? path(tail, next) : path(rest, next),
                                 () => next,
                             )
                         }

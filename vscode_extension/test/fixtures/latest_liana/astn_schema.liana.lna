@@ -8,8 +8,8 @@
             }
             `types`: {
                 'Schema': < | `public` ~ | `group` {
-                    'text types': < _ | `component` < | `navigable` | `local` 'Text Types' _ > >
-                    'types': < _ | `component` < | `navigable` | `local` 'Types' _ > >
+                    'text types': < _ | `component` < | `simple` | `local` 'Text Types' _ > >
+                    'types': < _ | `component` < | `simple` | `local` 'Types' _ > >
                     'root': < * "The type at the root of a document" | `reference` < < < | `local` 'Types' > < [] > > < | `acyclic` ~ _ > > >
                 } >
                 'Text Types': < | `private` ~ | `dictionary` < _ | `state` < {
@@ -17,7 +17,7 @@
                     'undelimited': < * "Undelimited text (for example; numbers, booleans, dates)" _ | `nothing` ~ >
                 } _ > > >
                 'Types': < | `private` ~ | `dictionary` < _ | `group` {
-                    'root value': < _ | `component` < | `simple` | `local` 'Value' _ > >
+                    'root value': < _ | `component` < | `cyclic` 'Value' _ > >
                 } > >
                 'Value': < | `private` ~ | `state` < {
                     'component': < * "Reference to another named type" _ | `group` {
@@ -26,21 +26,21 @@
                             'cyclic': < * "Reference a type within the same schema (allows cycles)" _ | `reference` < < < | `local` 'Types' > < [] > > < | `cyclic` ~ _ > > >
                         } _ > >
                     } >
-                    'dictionary': < * "Indexed collection of named values (like a map or hash table)" _ | `component` < | `simple` | `local` 'Value' _ > >
+                    'dictionary': < * "Indexed collection of named values (like a map or hash table)" _ | `component` < | `cyclic` 'Value' _ > >
                     'group': < * "Collection of properties, each with a specific name and type" _ | `group` {
                         'properties': < _ | `dictionary` < _ | `group` {
                             'description': < * "Documentation shown in IDE for this property" | `optional` < _ | `simple` 'multi line text' _ > >
-                            'value': < * "The type of this property" | `component` < | `simple` | `local` 'Value' _ > >
+                            'value': < * "The type of this property" | `component` < | `cyclic` 'Value' _ > >
                         } > >
                     } >
                     'identifier': < * "A value that uniquely identifies an entity (denoted with single quotes)" _ | `reference` < < < | `local` 'Text Types' > < [] > > < | `acyclic` ~ _ > > >
-                    'list': < * "Ordered sequence of values of the same type" _ | `component` < | `simple` | `local` 'Value' _ > >
+                    'list': < * "Ordered sequence of values of the same type" _ | `component` < | `cyclic` 'Value' _ > >
                     'nothing': < * "Empty value (unit type, no data)" _ | `nothing` ~ >
-                    'optional': < * "Value that may or may not be present" _ | `component` < | `simple` | `local` 'Value' _ > >
+                    'optional': < * "Value that may or may not be present" _ | `component` < | `cyclic` 'Value' _ > >
                     'state': < * "Tagged union: value is one of several named options (like a sum type or enum)" _ | `group` {
                         'options': < * "The possible variants, each with its own name and associated data" | `dictionary` < _ | `group` {
                             'description': < * "Documentation shown in IDE for this option" | `optional` < _ | `simple` 'multi line text' _ > >
-                            'value': < _ | `component` < | `simple` | `local` 'Value' _ > >
+                            'value': < _ | `component` < | `cyclic` 'Value' _ > >
                         } > >
                     } >
                     'text': < * "A text value (denoted with double quotes or no delimiter)" _ | `reference` < < < | `local` 'Text Types' > < [] > > < | `acyclic` ~ _ > > >
@@ -71,11 +71,11 @@
                         'text types': < | `component` < | `local` 'Text Types' * < * {} * {} > _ > >
                         'types': < | `component` < | `local` 'Types' * < * {
                             'text types': | `required` < | `sibling property` 'text types' < [
-                                | `navigable component` ~
+                                | `component` ~
                             ] > >
                         } * {} > _ > >
                         'root': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'types' < [
-                            | `navigable component` ~
+                            | `component` ~
                         ] > > > > _ > > >
                     } >
                     'Text Types': < | `dictionary` < | `state` < {

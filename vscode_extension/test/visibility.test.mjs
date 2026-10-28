@@ -14,8 +14,8 @@ const entry = (values, name) => {
 }
 const fail = error => { throw new Error(JSON.stringify(error)) }
 const signature = () => ({ signature: ['local', { values: dictionary({}), lookups: dictionary({}) }] })
-const component = (location, namespace, kind = 'navigable') => ['component', {
-    type: [kind, [location, namespace === undefined ? 'Hidden' : { namespace, type: 'Item' }]], constraints: none(),
+const component = (location, namespace, kind = 'simple') => ['component', {
+    type: [kind, kind === 'cyclic' ? 'Hidden' : [location, namespace === undefined ? 'Hidden' : { namespace, type: 'Item' }]], constraints: none(),
 }]
 const call = (location, namespace) => ['component', {
     location: [location, namespace === undefined ? 'Hidden' : { namespace, resolver: 'Item' }],
@@ -55,7 +55,7 @@ const fixture = () => ({
 })
 
 for (const visibility of ['private', 'private single use']) {
-    for (const kind of ['simple', 'navigable']) {
+    for (const kind of ['simple', 'cyclic']) {
         test(`${visibility} types allow local ${kind} components and preserve visibility`, () => {
             const input = fixture()
             const namespace = entry(input.schema.structure.namespaces, 'A')

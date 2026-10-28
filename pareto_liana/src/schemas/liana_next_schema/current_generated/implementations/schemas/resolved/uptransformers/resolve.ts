@@ -334,337 +334,13 @@ export namespace structure {
                     const $property_type_: s_target.structure.Value.type_.component.type_ = p.change_context($['type'], ($) => p.from.state($).decide(
                         ($s): s_target.structure.Value.type_.component.type_ => {
                             switch ($s[0]) {
-                                case 'simple': return p.option($s, ($): s_target.structure.Value.type_.component.type_ => ['simple', p.from.state($).decide(
-                                    ($s): s_target.structure.Value.type_.component.type_.type_.simple => {
-                                        switch ($s[0]) {
-                                            case 'local': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple => ['local', p.literal.group_resolve(() => {
-                                                const $property_l_id: s_target.structure.Value.type_.component.type_.type_.simple.type_.local.l_id = $
-                                                const $property_l_entry: s_target.structure.Value.type_.component.type_.type_.simple.type_.local.l_entry = $lookups['possibly circular dependent sibling types'].get_entry(
-                                                    $,
-                                                    {
-                                                        'no_such_entry': () => abort(
-                                                            p.literal.group_resolve(() => {
-                                                                const $property_type_: s_error.Error.type_ = ['missing reference', p.literal.group_resolve(() => {
-                                                                    const $property_identifier: s_error.Error.type_.type_.missing_reference.identifier = $
-                                                                    return {
-                                                                        'identifier': $property_identifier,
-                                                                    }
-                                                                })]
-                                                                return {
-                                                                    'type': $property_type_,
-                                                                }
-                                                            }),
-                                                        ),
-                                                        'no_context_lookup': () => abort(
-                                                            p.literal.group_resolve(() => {
-                                                                const $property_type_: s_error.Error.type_ = ['reference lookup has no context', null]
-                                                                return {
-                                                                    'type': $property_type_,
-                                                                }
-                                                            }),
-                                                        ),
-                                                        'accessing_cyclic_sibling_before_it_is_resolved': () => abort(
-                                                            p.literal.group_resolve(() => {
-                                                                const $property_type_: s_error.Error.type_ = ['premature reference access', p.literal.group_resolve(() => {
-                                                                    const $property_identifier: s_error.Error.type_.type_.premature_reference_access.identifier = $
-                                                                    return {
-                                                                        'identifier': $property_identifier,
-                                                                    }
-                                                                })]
-                                                                return {
-                                                                    'type': $property_type_,
-                                                                }
-                                                            }),
-                                                        ),
-                                                    },
-                                                )
-                                                return {
-                                                    'l id': $property_l_id,
-                                                    'l entry': $property_l_entry,
-                                                }
-                                            })])
-                                            case 'child namespace': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple => ['child namespace', p.literal.group_resolve(() => {
-                                                const $property_namespace: s_target.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.namespace = p.change_context($['namespace'], ($) => p.literal.group_resolve(() => {
-                                                    const $property_l_id: s_target.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.namespace.l_id = $
-                                                    const $property_l_entry: s_target.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.namespace.l_entry = p_lookup.acyclic.from_resolved_dictionary($values['child namespaces']).get_entry(
-                                                        $,
-                                                        {
-                                                            'no_such_entry': () => abort(
-                                                                p.literal.group_resolve(() => {
-                                                                    const $property_type_: s_error.Error.type_ = ['missing reference', p.literal.group_resolve(() => {
-                                                                        const $property_identifier: s_error.Error.type_.type_.missing_reference.identifier = $
-                                                                        return {
-                                                                            'identifier': $property_identifier,
-                                                                        }
-                                                                    })]
-                                                                    return {
-                                                                        'type': $property_type_,
-                                                                    }
-                                                                }),
-                                                            ),
-                                                            'no_context_lookup': () => p_unreachable(
-                                                                'from_resolved_dictionary supplies the lookup context directly; it cannot report an absent context',
-                                                            ),
-                                                            'cycle_detected': () => p_unreachable(
-                                                                'from_resolved_dictionary only reads already-resolved entries; it does not resolve dependencies and cannot detect a cycle',
-                                                            ),
-                                                        },
-                                                    )
-                                                    return {
-                                                        'l id': $property_l_id,
-                                                        'l entry': $property_l_entry,
-                                                    }
-                                                }))
-                                                const $property_type_: s_target.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.type_ = p.change_context($['type'], ($) => temp_pareto_core.group_resolve_with_dependencies(
-                                                    {
-                                                        'namespace': $property_namespace,
-                                                    },
-                                                    ($parent_captures) => {
-                                                        const $property_value: s_target.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.type_.value = temp_pareto_core.group_resolve_with_dependencies(
-                                                            {
-                                                                'namespace': $parent_captures['namespace'],
-                                                            },
-                                                            ($parent_captures) => {
-                                                                const $property_l_id: s_target.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.type_.value.l_id = $
-                                                                const $property_l_entry: s_target.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.type_.value.l_entry = p_lookup.acyclic.from_resolved_dictionary($parent_captures['namespace']['l entry']['types']).get_entry(
-                                                                    $,
-                                                                    {
-                                                                        'no_such_entry': () => abort(
-                                                                            p.literal.group_resolve(() => {
-                                                                                const $property_type_: s_error.Error.type_ = ['missing reference', p.literal.group_resolve(() => {
-                                                                                    const $property_identifier: s_error.Error.type_.type_.missing_reference.identifier = $
-                                                                                    return {
-                                                                                        'identifier': $property_identifier,
-                                                                                    }
-                                                                                })]
-                                                                                return {
-                                                                                    'type': $property_type_,
-                                                                                }
-                                                                            }),
-                                                                        ),
-                                                                        'no_context_lookup': () => p_unreachable(
-                                                                            'from_resolved_dictionary supplies the lookup context directly; it cannot report an absent context',
-                                                                        ),
-                                                                        'cycle_detected': () => p_unreachable(
-                                                                            'from_resolved_dictionary only reads already-resolved entries; it does not resolve dependencies and cannot detect a cycle',
-                                                                        ),
-                                                                    },
-                                                                )
-                                                                return {
-                                                                    'l id': $property_l_id,
-                                                                    'l entry': $property_l_entry,
-                                                                }
-                                                            },
-                                                        )
-                                                        const $property_constraints: s_target.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.type_.constraints = temp_pareto_core.group_resolve_with_dependencies(
-                                                            {
-                                                                'value': $property_value,
-                                                            },
-                                                            ($parent_captures) => {
-                                                                const $property_public_: s_target.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.type_.constraints.public_ = p.from.state($parent_captures['value']['l entry']['visibility']).decide(
-                                                                    ($s): s_target.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.type_.constraints.public_ => {
-                                                                        switch ($s[0]) {
-                                                                            case 'private': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.type_.constraints.public_ => abort(
-                                                                                p.literal.group_resolve(() => {
-                                                                                    const $property_type_: s_error.Error.type_ = ['reference constraint failed', p.literal.group_resolve(() => {
-                                                                                        const $property_constraint: s_error.Error.type_.type_.reference_constraint_failed.constraint = 'public'
-                                                                                        return {
-                                                                                            'constraint': $property_constraint,
-                                                                                        }
-                                                                                    })]
-                                                                                    return {
-                                                                                        'type': $property_type_,
-                                                                                    }
-                                                                                }),
-                                                                            ))
-                                                                            case 'private single use': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.type_.constraints.public_ => abort(
-                                                                                p.literal.group_resolve(() => {
-                                                                                    const $property_type_: s_error.Error.type_ = ['reference constraint failed', p.literal.group_resolve(() => {
-                                                                                        const $property_constraint: s_error.Error.type_.type_.reference_constraint_failed.constraint = 'public'
-                                                                                        return {
-                                                                                            'constraint': $property_constraint,
-                                                                                        }
-                                                                                    })]
-                                                                                    return {
-                                                                                        'type': $property_type_,
-                                                                                    }
-                                                                                }),
-                                                                            ))
-                                                                            case 'public': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.type_.constraints.public_ => $)
-                                                                            default: return p.exhaustive($s[0])
-                                                                        }
-                                                                    },
-                                                                )
-                                                                return {
-                                                                    'public': $property_public_,
-                                                                }
-                                                            },
-                                                        )
-                                                        return {
-                                                            'value': $property_value,
-                                                            'constraints': $property_constraints,
-                                                        }
-                                                    },
-                                                ))
-                                                return {
-                                                    'namespace': $property_namespace,
-                                                    'type': $property_type_,
-                                                }
-                                            })])
-                                            case 'sibling namespace': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple => ['sibling namespace', p.literal.group_resolve(() => {
-                                                const $property_namespace: s_target.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.namespace = p.change_context($['namespace'], ($) => p.literal.group_resolve(() => {
-                                                    const $property_l_id: s_target.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.namespace.l_id = $
-                                                    const $property_l_entry: s_target.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.namespace.l_entry = $lookups['sibling namespaces'].get_entry(
-                                                        $,
-                                                        {
-                                                            'no_such_entry': () => abort(
-                                                                p.literal.group_resolve(() => {
-                                                                    const $property_type_: s_error.Error.type_ = ['missing reference', p.literal.group_resolve(() => {
-                                                                        const $property_identifier: s_error.Error.type_.type_.missing_reference.identifier = $
-                                                                        return {
-                                                                            'identifier': $property_identifier,
-                                                                        }
-                                                                    })]
-                                                                    return {
-                                                                        'type': $property_type_,
-                                                                    }
-                                                                }),
-                                                            ),
-                                                            'no_context_lookup': () => abort(
-                                                                p.literal.group_resolve(() => {
-                                                                    const $property_type_: s_error.Error.type_ = ['reference lookup has no context', null]
-                                                                    return {
-                                                                        'type': $property_type_,
-                                                                    }
-                                                                }),
-                                                            ),
-                                                            'cycle_detected': () => abort(
-                                                                p.literal.group_resolve(() => {
-                                                                    const $property_type_: s_error.Error.type_ = ['cyclic reference dependency', p.literal.group_resolve(() => {
-                                                                        const $property_identifier: s_error.Error.type_.type_.cyclic_reference_dependency.identifier = $
-                                                                        return {
-                                                                            'identifier': $property_identifier,
-                                                                        }
-                                                                    })]
-                                                                    return {
-                                                                        'type': $property_type_,
-                                                                    }
-                                                                }),
-                                                            ),
-                                                        },
-                                                    )
-                                                    return {
-                                                        'l id': $property_l_id,
-                                                        'l entry': $property_l_entry,
-                                                    }
-                                                }))
-                                                const $property_type_: s_target.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.type_ = p.change_context($['type'], ($) => temp_pareto_core.group_resolve_with_dependencies(
-                                                    {
-                                                        'namespace': $property_namespace,
-                                                    },
-                                                    ($parent_captures) => {
-                                                        const $property_value: s_target.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.type_.value = temp_pareto_core.group_resolve_with_dependencies(
-                                                            {
-                                                                'namespace': $parent_captures['namespace'],
-                                                            },
-                                                            ($parent_captures) => {
-                                                                const $property_l_id: s_target.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.type_.value.l_id = $
-                                                                const $property_l_entry: s_target.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.type_.value.l_entry = p_lookup.acyclic.from_resolved_dictionary($parent_captures['namespace']['l entry']['types']).get_entry(
-                                                                    $,
-                                                                    {
-                                                                        'no_such_entry': () => abort(
-                                                                            p.literal.group_resolve(() => {
-                                                                                const $property_type_: s_error.Error.type_ = ['missing reference', p.literal.group_resolve(() => {
-                                                                                    const $property_identifier: s_error.Error.type_.type_.missing_reference.identifier = $
-                                                                                    return {
-                                                                                        'identifier': $property_identifier,
-                                                                                    }
-                                                                                })]
-                                                                                return {
-                                                                                    'type': $property_type_,
-                                                                                }
-                                                                            }),
-                                                                        ),
-                                                                        'no_context_lookup': () => p_unreachable(
-                                                                            'from_resolved_dictionary supplies the lookup context directly; it cannot report an absent context',
-                                                                        ),
-                                                                        'cycle_detected': () => p_unreachable(
-                                                                            'from_resolved_dictionary only reads already-resolved entries; it does not resolve dependencies and cannot detect a cycle',
-                                                                        ),
-                                                                    },
-                                                                )
-                                                                return {
-                                                                    'l id': $property_l_id,
-                                                                    'l entry': $property_l_entry,
-                                                                }
-                                                            },
-                                                        )
-                                                        const $property_constraints: s_target.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.type_.constraints = temp_pareto_core.group_resolve_with_dependencies(
-                                                            {
-                                                                'value': $property_value,
-                                                            },
-                                                            ($parent_captures) => {
-                                                                const $property_public_: s_target.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.type_.constraints.public_ = p.from.state($parent_captures['value']['l entry']['visibility']).decide(
-                                                                    ($s): s_target.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.type_.constraints.public_ => {
-                                                                        switch ($s[0]) {
-                                                                            case 'private': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.type_.constraints.public_ => abort(
-                                                                                p.literal.group_resolve(() => {
-                                                                                    const $property_type_: s_error.Error.type_ = ['reference constraint failed', p.literal.group_resolve(() => {
-                                                                                        const $property_constraint: s_error.Error.type_.type_.reference_constraint_failed.constraint = 'public'
-                                                                                        return {
-                                                                                            'constraint': $property_constraint,
-                                                                                        }
-                                                                                    })]
-                                                                                    return {
-                                                                                        'type': $property_type_,
-                                                                                    }
-                                                                                }),
-                                                                            ))
-                                                                            case 'private single use': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.type_.constraints.public_ => abort(
-                                                                                p.literal.group_resolve(() => {
-                                                                                    const $property_type_: s_error.Error.type_ = ['reference constraint failed', p.literal.group_resolve(() => {
-                                                                                        const $property_constraint: s_error.Error.type_.type_.reference_constraint_failed.constraint = 'public'
-                                                                                        return {
-                                                                                            'constraint': $property_constraint,
-                                                                                        }
-                                                                                    })]
-                                                                                    return {
-                                                                                        'type': $property_type_,
-                                                                                    }
-                                                                                }),
-                                                                            ))
-                                                                            case 'public': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.type_.constraints.public_ => $)
-                                                                            default: return p.exhaustive($s[0])
-                                                                        }
-                                                                    },
-                                                                )
-                                                                return {
-                                                                    'public': $property_public_,
-                                                                }
-                                                            },
-                                                        )
-                                                        return {
-                                                            'value': $property_value,
-                                                            'constraints': $property_constraints,
-                                                        }
-                                                    },
-                                                ))
-                                                return {
-                                                    'namespace': $property_namespace,
-                                                    'type': $property_type_,
-                                                }
-                                            })])
-                                            default: return p.exhaustive($s[0])
-                                        }
-                                    },
-                                )])
-                                case 'navigable': return p.option($s, ($): s_target.structure.Value.type_.component.type_ => ['navigable', p.literal.group_resolve(() => {
-                                    const $property_value: s_target.structure.Value.type_.component.type_.type_.navigable.value = p.from.state($).decide(
-                                        ($s): s_target.structure.Value.type_.component.type_.type_.navigable.value => {
+                                case 'simple': return p.option($s, ($): s_target.structure.Value.type_.component.type_ => ['simple', p.literal.group_resolve(() => {
+                                    const $property_value: s_target.structure.Value.type_.component.type_.type_.simple.value = p.from.state($).decide(
+                                        ($s): s_target.structure.Value.type_.component.type_.type_.simple.value => {
                                             switch ($s[0]) {
-                                                case 'local': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable.value => ['local', p.literal.group_resolve(() => {
-                                                    const $property_l_id: s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.local.l_id = $
-                                                    const $property_l_entry: s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.local.l_entry = $lookups['noncircular sibling types'].get_entry(
+                                                case 'local': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple.value => ['local', p.literal.group_resolve(() => {
+                                                    const $property_l_id: s_target.structure.Value.type_.component.type_.type_.simple.value.type_.local.l_id = $
+                                                    const $property_l_entry: s_target.structure.Value.type_.component.type_.type_.simple.value.type_.local.l_entry = $lookups['noncircular sibling types'].get_entry(
                                                         $,
                                                         {
                                                             'no_such_entry': () => abort(
@@ -708,10 +384,10 @@ export namespace structure {
                                                         'l entry': $property_l_entry,
                                                     }
                                                 })])
-                                                case 'child namespace': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable.value => ['child namespace', p.literal.group_resolve(() => {
-                                                    const $property_namespace: s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace.namespace = p.change_context($['namespace'], ($) => p.literal.group_resolve(() => {
-                                                        const $property_l_id: s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace.namespace.l_id = $
-                                                        const $property_l_entry: s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace.namespace.l_entry = p_lookup.acyclic.from_resolved_dictionary($values['child namespaces']).get_entry(
+                                                case 'child namespace': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple.value => ['child namespace', p.literal.group_resolve(() => {
+                                                    const $property_namespace: s_target.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.namespace = p.change_context($['namespace'], ($) => p.literal.group_resolve(() => {
+                                                        const $property_l_id: s_target.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.namespace.l_id = $
+                                                        const $property_l_entry: s_target.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.namespace.l_entry = p_lookup.acyclic.from_resolved_dictionary($values['child namespaces']).get_entry(
                                                             $,
                                                             {
                                                                 'no_such_entry': () => abort(
@@ -740,18 +416,18 @@ export namespace structure {
                                                             'l entry': $property_l_entry,
                                                         }
                                                     }))
-                                                    const $property_type_: s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace.type_ = p.change_context($['type'], ($) => temp_pareto_core.group_resolve_with_dependencies(
+                                                    const $property_type_: s_target.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.type_ = p.change_context($['type'], ($) => temp_pareto_core.group_resolve_with_dependencies(
                                                         {
                                                             'namespace': $property_namespace,
                                                         },
                                                         ($parent_captures) => {
-                                                            const $property_value: s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace.type_.value = temp_pareto_core.group_resolve_with_dependencies(
+                                                            const $property_value: s_target.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.type_.value = temp_pareto_core.group_resolve_with_dependencies(
                                                                 {
                                                                     'namespace': $parent_captures['namespace'],
                                                                 },
                                                                 ($parent_captures) => {
-                                                                    const $property_l_id: s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace.type_.value.l_id = $
-                                                                    const $property_l_entry: s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace.type_.value.l_entry = p_lookup.acyclic.from_resolved_dictionary($parent_captures['namespace']['l entry']['types']).get_entry(
+                                                                    const $property_l_id: s_target.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.type_.value.l_id = $
+                                                                    const $property_l_entry: s_target.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.type_.value.l_entry = p_lookup.acyclic.from_resolved_dictionary($parent_captures['namespace']['l entry']['types']).get_entry(
                                                                         $,
                                                                         {
                                                                             'no_such_entry': () => abort(
@@ -781,15 +457,15 @@ export namespace structure {
                                                                     }
                                                                 },
                                                             )
-                                                            const $property_constraints: s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace.type_.constraints = temp_pareto_core.group_resolve_with_dependencies(
+                                                            const $property_constraints: s_target.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.type_.constraints = temp_pareto_core.group_resolve_with_dependencies(
                                                                 {
                                                                     'value': $property_value,
                                                                 },
                                                                 ($parent_captures) => {
-                                                                    const $property_public_: s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace.type_.constraints.public_ = p.from.state($parent_captures['value']['l entry']['visibility']).decide(
-                                                                        ($s): s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace.type_.constraints.public_ => {
+                                                                    const $property_public_: s_target.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.type_.constraints.public_ = p.from.state($parent_captures['value']['l entry']['visibility']).decide(
+                                                                        ($s): s_target.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.type_.constraints.public_ => {
                                                                             switch ($s[0]) {
-                                                                                case 'private': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace.type_.constraints.public_ => abort(
+                                                                                case 'private': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.type_.constraints.public_ => abort(
                                                                                     p.literal.group_resolve(() => {
                                                                                         const $property_type_: s_error.Error.type_ = ['reference constraint failed', p.literal.group_resolve(() => {
                                                                                             const $property_constraint: s_error.Error.type_.type_.reference_constraint_failed.constraint = 'public'
@@ -802,7 +478,7 @@ export namespace structure {
                                                                                         }
                                                                                     }),
                                                                                 ))
-                                                                                case 'private single use': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace.type_.constraints.public_ => abort(
+                                                                                case 'private single use': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.type_.constraints.public_ => abort(
                                                                                     p.literal.group_resolve(() => {
                                                                                         const $property_type_: s_error.Error.type_ = ['reference constraint failed', p.literal.group_resolve(() => {
                                                                                             const $property_constraint: s_error.Error.type_.type_.reference_constraint_failed.constraint = 'public'
@@ -815,7 +491,7 @@ export namespace structure {
                                                                                         }
                                                                                     }),
                                                                                 ))
-                                                                                case 'public': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace.type_.constraints.public_ => $)
+                                                                                case 'public': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.type_.constraints.public_ => $)
                                                                                 default: return p.exhaustive($s[0])
                                                                             }
                                                                         },
@@ -836,10 +512,10 @@ export namespace structure {
                                                         'type': $property_type_,
                                                     }
                                                 })])
-                                                case 'sibling namespace': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable.value => ['sibling namespace', p.literal.group_resolve(() => {
-                                                    const $property_namespace: s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace.namespace = p.change_context($['namespace'], ($) => p.literal.group_resolve(() => {
-                                                        const $property_l_id: s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace.namespace.l_id = $
-                                                        const $property_l_entry: s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace.namespace.l_entry = $lookups['sibling namespaces'].get_entry(
+                                                case 'sibling namespace': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple.value => ['sibling namespace', p.literal.group_resolve(() => {
+                                                    const $property_namespace: s_target.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.namespace = p.change_context($['namespace'], ($) => p.literal.group_resolve(() => {
+                                                        const $property_l_id: s_target.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.namespace.l_id = $
+                                                        const $property_l_entry: s_target.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.namespace.l_entry = $lookups['sibling namespaces'].get_entry(
                                                             $,
                                                             {
                                                                 'no_such_entry': () => abort(
@@ -883,18 +559,18 @@ export namespace structure {
                                                             'l entry': $property_l_entry,
                                                         }
                                                     }))
-                                                    const $property_type_: s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace.type_ = p.change_context($['type'], ($) => temp_pareto_core.group_resolve_with_dependencies(
+                                                    const $property_type_: s_target.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.type_ = p.change_context($['type'], ($) => temp_pareto_core.group_resolve_with_dependencies(
                                                         {
                                                             'namespace': $property_namespace,
                                                         },
                                                         ($parent_captures) => {
-                                                            const $property_value: s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace.type_.value = temp_pareto_core.group_resolve_with_dependencies(
+                                                            const $property_value: s_target.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.type_.value = temp_pareto_core.group_resolve_with_dependencies(
                                                                 {
                                                                     'namespace': $parent_captures['namespace'],
                                                                 },
                                                                 ($parent_captures) => {
-                                                                    const $property_l_id: s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace.type_.value.l_id = $
-                                                                    const $property_l_entry: s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace.type_.value.l_entry = p_lookup.acyclic.from_resolved_dictionary($parent_captures['namespace']['l entry']['types']).get_entry(
+                                                                    const $property_l_id: s_target.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.type_.value.l_id = $
+                                                                    const $property_l_entry: s_target.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.type_.value.l_entry = p_lookup.acyclic.from_resolved_dictionary($parent_captures['namespace']['l entry']['types']).get_entry(
                                                                         $,
                                                                         {
                                                                             'no_such_entry': () => abort(
@@ -924,15 +600,15 @@ export namespace structure {
                                                                     }
                                                                 },
                                                             )
-                                                            const $property_constraints: s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace.type_.constraints = temp_pareto_core.group_resolve_with_dependencies(
+                                                            const $property_constraints: s_target.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.type_.constraints = temp_pareto_core.group_resolve_with_dependencies(
                                                                 {
                                                                     'value': $property_value,
                                                                 },
                                                                 ($parent_captures) => {
-                                                                    const $property_public_: s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace.type_.constraints.public_ = p.from.state($parent_captures['value']['l entry']['visibility']).decide(
-                                                                        ($s): s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace.type_.constraints.public_ => {
+                                                                    const $property_public_: s_target.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.type_.constraints.public_ = p.from.state($parent_captures['value']['l entry']['visibility']).decide(
+                                                                        ($s): s_target.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.type_.constraints.public_ => {
                                                                             switch ($s[0]) {
-                                                                                case 'private': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace.type_.constraints.public_ => abort(
+                                                                                case 'private': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.type_.constraints.public_ => abort(
                                                                                     p.literal.group_resolve(() => {
                                                                                         const $property_type_: s_error.Error.type_ = ['reference constraint failed', p.literal.group_resolve(() => {
                                                                                             const $property_constraint: s_error.Error.type_.type_.reference_constraint_failed.constraint = 'public'
@@ -945,7 +621,7 @@ export namespace structure {
                                                                                         }
                                                                                     }),
                                                                                 ))
-                                                                                case 'private single use': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace.type_.constraints.public_ => abort(
+                                                                                case 'private single use': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.type_.constraints.public_ => abort(
                                                                                     p.literal.group_resolve(() => {
                                                                                         const $property_type_: s_error.Error.type_ = ['reference constraint failed', p.literal.group_resolve(() => {
                                                                                             const $property_constraint: s_error.Error.type_.type_.reference_constraint_failed.constraint = 'public'
@@ -958,7 +634,7 @@ export namespace structure {
                                                                                         }
                                                                                     }),
                                                                                 ))
-                                                                                case 'public': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace.type_.constraints.public_ => $)
+                                                                                case 'public': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.type_.constraints.public_ => $)
                                                                                 default: return p.exhaustive($s[0])
                                                                             }
                                                                         },
@@ -983,12 +659,12 @@ export namespace structure {
                                             }
                                         },
                                     )
-                                    const $property_result: s_target.structure.Value.type_.component.type_.type_.navigable.result = p.from.state($property_value).decide(
-                                        ($s): s_target.structure.Value.type_.component.type_.type_.navigable.result => {
+                                    const $property_result: s_target.structure.Value.type_.component.type_.type_.simple.result = p.from.state($property_value).decide(
+                                        ($s): s_target.structure.Value.type_.component.type_.type_.simple.result => {
                                             switch ($s[0]) {
-                                                case 'local': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable.result => $['l entry'])
-                                                case 'child namespace': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable.result => $['type']['value']['l entry'])
-                                                case 'sibling namespace': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable.result => $['type']['value']['l entry'])
+                                                case 'local': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple.result => $['l entry'])
+                                                case 'child namespace': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple.result => $['type']['value']['l entry'])
+                                                case 'sibling namespace': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple.result => $['type']['value']['l entry'])
                                                 default: return p.exhaustive($s[0])
                                             }
                                         },
@@ -996,6 +672,52 @@ export namespace structure {
                                     return {
                                         'value': $property_value,
                                         'result': $property_result,
+                                    }
+                                })])
+                                case 'cyclic': return p.option($s, ($): s_target.structure.Value.type_.component.type_ => ['cyclic', p.literal.group_resolve(() => {
+                                    const $property_l_id: s_target.structure.Value.type_.component.type_.type_.cyclic.l_id = $
+                                    const $property_l_entry: s_target.structure.Value.type_.component.type_.type_.cyclic.l_entry = $lookups['possibly circular dependent sibling types'].get_entry(
+                                        $,
+                                        {
+                                            'no_such_entry': () => abort(
+                                                p.literal.group_resolve(() => {
+                                                    const $property_type_: s_error.Error.type_ = ['missing reference', p.literal.group_resolve(() => {
+                                                        const $property_identifier: s_error.Error.type_.type_.missing_reference.identifier = $
+                                                        return {
+                                                            'identifier': $property_identifier,
+                                                        }
+                                                    })]
+                                                    return {
+                                                        'type': $property_type_,
+                                                    }
+                                                }),
+                                            ),
+                                            'no_context_lookup': () => abort(
+                                                p.literal.group_resolve(() => {
+                                                    const $property_type_: s_error.Error.type_ = ['reference lookup has no context', null]
+                                                    return {
+                                                        'type': $property_type_,
+                                                    }
+                                                }),
+                                            ),
+                                            'accessing_cyclic_sibling_before_it_is_resolved': () => abort(
+                                                p.literal.group_resolve(() => {
+                                                    const $property_type_: s_error.Error.type_ = ['premature reference access', p.literal.group_resolve(() => {
+                                                        const $property_identifier: s_error.Error.type_.type_.premature_reference_access.identifier = $
+                                                        return {
+                                                            'identifier': $property_identifier,
+                                                        }
+                                                    })]
+                                                    return {
+                                                        'type': $property_type_,
+                                                    }
+                                                }),
+                                            ),
+                                        },
+                                    )
+                                    return {
+                                        'l id': $property_l_id,
+                                        'l entry': $property_l_entry,
                                     }
                                 })])
                                 default: return p.exhaustive($s[0])
@@ -5251,243 +4973,6 @@ export namespace resolver {
         }
     })
     
-    export const Simple_Component_Selection: d.resolver.Simple_Component_Selection = ($, abort, $values, $lookups) => p.literal.group_resolve(() => {
-        const $property_value: s_target.resolver.Simple_Component_Selection.value = p.from.state($).decide(
-            ($s): s_target.resolver.Simple_Component_Selection.value => {
-                switch ($s[0]) {
-                    case 'local': return p.option($s, ($): s_target.resolver.Simple_Component_Selection.value => ['local', p.literal.group_resolve(() => {
-                        const $property_l_id: s_target.resolver.Simple_Component_Selection.value.type_.local.l_id = $
-                        const $property_l_entry: s_target.resolver.Simple_Component_Selection.value.type_.local.l_entry = $lookups['types'].get_entry(
-                            $,
-                            {
-                                'no_such_entry': () => abort(
-                                    p.literal.group_resolve(() => {
-                                        const $property_type_: s_error.Error.type_ = ['missing reference', p.literal.group_resolve(() => {
-                                            const $property_identifier: s_error.Error.type_.type_.missing_reference.identifier = $
-                                            return {
-                                                'identifier': $property_identifier,
-                                            }
-                                        })]
-                                        return {
-                                            'type': $property_type_,
-                                        }
-                                    }),
-                                ),
-                                'no_context_lookup': () => abort(
-                                    p.literal.group_resolve(() => {
-                                        const $property_type_: s_error.Error.type_ = ['reference lookup has no context', null]
-                                        return {
-                                            'type': $property_type_,
-                                        }
-                                    }),
-                                ),
-                                'cycle_detected': () => abort(
-                                    p.literal.group_resolve(() => {
-                                        const $property_type_: s_error.Error.type_ = ['cyclic reference dependency', p.literal.group_resolve(() => {
-                                            const $property_identifier: s_error.Error.type_.type_.cyclic_reference_dependency.identifier = $
-                                            return {
-                                                'identifier': $property_identifier,
-                                            }
-                                        })]
-                                        return {
-                                            'type': $property_type_,
-                                        }
-                                    }),
-                                ),
-                            },
-                        )
-                        return {
-                            'l id': $property_l_id,
-                            'l entry': $property_l_entry,
-                        }
-                    })])
-                    case 'child namespace': return p.option($s, ($): s_target.resolver.Simple_Component_Selection.value => ['child namespace', p.literal.group_resolve(() => {
-                        const $property_namespace: s_target.resolver.Simple_Component_Selection.value.type_.child_namespace.namespace = p.change_context($['namespace'], ($) => p.literal.group_resolve(() => {
-                            const $property_l_id: s_target.resolver.Simple_Component_Selection.value.type_.child_namespace.namespace.l_id = $
-                            const $property_l_entry: s_target.resolver.Simple_Component_Selection.value.type_.child_namespace.namespace.l_entry = p_lookup.acyclic.from_resolved_dictionary($values['child namespaces']).get_entry(
-                                $,
-                                {
-                                    'no_such_entry': () => abort(
-                                        p.literal.group_resolve(() => {
-                                            const $property_type_: s_error.Error.type_ = ['missing reference', p.literal.group_resolve(() => {
-                                                const $property_identifier: s_error.Error.type_.type_.missing_reference.identifier = $
-                                                return {
-                                                    'identifier': $property_identifier,
-                                                }
-                                            })]
-                                            return {
-                                                'type': $property_type_,
-                                            }
-                                        }),
-                                    ),
-                                    'no_context_lookup': () => p_unreachable(
-                                        'from_resolved_dictionary supplies the lookup context directly; it cannot report an absent context',
-                                    ),
-                                    'cycle_detected': () => p_unreachable(
-                                        'from_resolved_dictionary only reads already-resolved entries; it does not resolve dependencies and cannot detect a cycle',
-                                    ),
-                                },
-                            )
-                            return {
-                                'l id': $property_l_id,
-                                'l entry': $property_l_entry,
-                            }
-                        }))
-                        const $property_type_: s_target.resolver.Simple_Component_Selection.value.type_.child_namespace.type_ = p.change_context($['type'], ($) => temp_pareto_core.group_resolve_with_dependencies(
-                            {
-                                'namespace': $property_namespace,
-                            },
-                            ($parent_captures) => {
-                                const $property_l_id: s_target.resolver.Simple_Component_Selection.value.type_.child_namespace.type_.l_id = $
-                                const $property_l_entry: s_target.resolver.Simple_Component_Selection.value.type_.child_namespace.type_.l_entry = p_lookup.acyclic.from_resolved_dictionary($parent_captures['namespace']['l entry']['types']).get_entry(
-                                    $,
-                                    {
-                                        'no_such_entry': () => abort(
-                                            p.literal.group_resolve(() => {
-                                                const $property_type_: s_error.Error.type_ = ['missing reference', p.literal.group_resolve(() => {
-                                                    const $property_identifier: s_error.Error.type_.type_.missing_reference.identifier = $
-                                                    return {
-                                                        'identifier': $property_identifier,
-                                                    }
-                                                })]
-                                                return {
-                                                    'type': $property_type_,
-                                                }
-                                            }),
-                                        ),
-                                        'no_context_lookup': () => p_unreachable(
-                                            'from_resolved_dictionary supplies the lookup context directly; it cannot report an absent context',
-                                        ),
-                                        'cycle_detected': () => p_unreachable(
-                                            'from_resolved_dictionary only reads already-resolved entries; it does not resolve dependencies and cannot detect a cycle',
-                                        ),
-                                    },
-                                )
-                                return {
-                                    'l id': $property_l_id,
-                                    'l entry': $property_l_entry,
-                                }
-                            },
-                        ))
-                        return {
-                            'namespace': $property_namespace,
-                            'type': $property_type_,
-                        }
-                    })])
-                    case 'sibling namespace': return p.option($s, ($): s_target.resolver.Simple_Component_Selection.value => ['sibling namespace', p.literal.group_resolve(() => {
-                        const $property_namespace: s_target.resolver.Simple_Component_Selection.value.type_.sibling_namespace.namespace = p.change_context($['namespace'], ($) => p_variables(() => {
-                            const $captures = {
-                                'reference key': $,
-                            }
-                            return p.from.optional($values['sibling namespaces']).decide(
-                                ($): s_target.resolver.Simple_Component_Selection.value.type_.sibling_namespace.namespace => p_variables(() => {
-                                    const $captures_1 = {
-                                        'reference key': $captures['reference key'],
-                                        'reference dictionary': $,
-                                    }
-                                    return p.change_context($captures_1['reference key'], ($) => p.literal.group_resolve(() => {
-                                        const $property_l_id: s_target.resolver.Simple_Component_Selection.value.type_.sibling_namespace.namespace.l_id = $
-                                        const $property_l_entry: s_target.resolver.Simple_Component_Selection.value.type_.sibling_namespace.namespace.l_entry = p_lookup.acyclic.from_resolved_dictionary($captures_1['reference dictionary']).get_entry(
-                                            $,
-                                            {
-                                                'no_such_entry': () => abort(
-                                                    p.literal.group_resolve(() => {
-                                                        const $property_type_: s_error.Error.type_ = ['missing reference', p.literal.group_resolve(() => {
-                                                            const $property_identifier: s_error.Error.type_.type_.missing_reference.identifier = $
-                                                            return {
-                                                                'identifier': $property_identifier,
-                                                            }
-                                                        })]
-                                                        return {
-                                                            'type': $property_type_,
-                                                        }
-                                                    }),
-                                                ),
-                                                'no_context_lookup': () => p_unreachable(
-                                                    'from_resolved_dictionary supplies the lookup context directly; it cannot report an absent context',
-                                                ),
-                                                'cycle_detected': () => p_unreachable(
-                                                    'from_resolved_dictionary only reads already-resolved entries; it does not resolve dependencies and cannot detect a cycle',
-                                                ),
-                                            },
-                                        )
-                                        return {
-                                            'l id': $property_l_id,
-                                            'l entry': $property_l_entry,
-                                        }
-                                    }))
-                                }),
-                                (): s_target.resolver.Simple_Component_Selection.value.type_.sibling_namespace.namespace => abort(
-                                    p.literal.group_resolve(() => {
-                                        const $property_type_: s_error.Error.type_ = ['reference lookup has no context', null]
-                                        return {
-                                            'type': $property_type_,
-                                        }
-                                    }),
-                                ),
-                            )
-                        }))
-                        const $property_type_: s_target.resolver.Simple_Component_Selection.value.type_.sibling_namespace.type_ = p.change_context($['type'], ($) => temp_pareto_core.group_resolve_with_dependencies(
-                            {
-                                'namespace': $property_namespace,
-                            },
-                            ($parent_captures) => {
-                                const $property_l_id: s_target.resolver.Simple_Component_Selection.value.type_.sibling_namespace.type_.l_id = $
-                                const $property_l_entry: s_target.resolver.Simple_Component_Selection.value.type_.sibling_namespace.type_.l_entry = p_lookup.acyclic.from_resolved_dictionary($parent_captures['namespace']['l entry']['types']).get_entry(
-                                    $,
-                                    {
-                                        'no_such_entry': () => abort(
-                                            p.literal.group_resolve(() => {
-                                                const $property_type_: s_error.Error.type_ = ['missing reference', p.literal.group_resolve(() => {
-                                                    const $property_identifier: s_error.Error.type_.type_.missing_reference.identifier = $
-                                                    return {
-                                                        'identifier': $property_identifier,
-                                                    }
-                                                })]
-                                                return {
-                                                    'type': $property_type_,
-                                                }
-                                            }),
-                                        ),
-                                        'no_context_lookup': () => p_unreachable(
-                                            'from_resolved_dictionary supplies the lookup context directly; it cannot report an absent context',
-                                        ),
-                                        'cycle_detected': () => p_unreachable(
-                                            'from_resolved_dictionary only reads already-resolved entries; it does not resolve dependencies and cannot detect a cycle',
-                                        ),
-                                    },
-                                )
-                                return {
-                                    'l id': $property_l_id,
-                                    'l entry': $property_l_entry,
-                                }
-                            },
-                        ))
-                        return {
-                            'namespace': $property_namespace,
-                            'type': $property_type_,
-                        }
-                    })])
-                    default: return p.exhaustive($s[0])
-                }
-            },
-        )
-        const $property_result: s_target.resolver.Simple_Component_Selection.result = p.from.state($property_value).decide(
-            ($s): s_target.resolver.Simple_Component_Selection.result => {
-                switch ($s[0]) {
-                    case 'local': return p.option($s, ($): s_target.resolver.Simple_Component_Selection.result => $['l entry'])
-                    case 'child namespace': return p.option($s, ($): s_target.resolver.Simple_Component_Selection.result => $['type']['l entry'])
-                    case 'sibling namespace': return p.option($s, ($): s_target.resolver.Simple_Component_Selection.result => $['type']['l entry'])
-                    default: return p.exhaustive($s[0])
-                }
-            },
-        )
-        return {
-            'value': $property_value,
-            'result': $property_result,
-        }
-    })
-    
     export const Relative_Value_Selection: d.resolver.Relative_Value_Selection = ($, abort, $values, $lookups) => p.literal.group_resolve(() => {
         const $property_path: s_target.resolver.Relative_Value_Selection.path = p.change_context($['path'], ($) => p.literal.group_resolve(() => {
             const $property_value: s_target.resolver.Relative_Value_Selection.path.value = p_variables(() => {
@@ -5510,162 +4995,6 @@ export namespace resolver {
                                                     'types': p_lookup.acyclic.from_resolved_dictionary($values['types']),
                                                 },
                                             )])
-                                            case 'simple component': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value => ['simple component', p.literal.group_resolve(() => {
-                                                const $property_constraints: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.simple_component.constraints = p.literal.group_resolve(() => {
-                                                    const $property_component: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.simple_component.constraints.component = p.from.state($cursor_0).decide(
-                                                        ($s): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.simple_component.constraints.component => {
-                                                            switch ($s[0]) {
-                                                                case 'component': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.simple_component.constraints.component => $)
-                                                                case 'dictionary': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.simple_component.constraints.component => abort(
-                                                                    p.literal.group_resolve(() => {
-                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
-                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
-                                                                            return {
-                                                                                'constraint': $property_constraint,
-                                                                            }
-                                                                        })]
-                                                                        return {
-                                                                            'type': $property_type_,
-                                                                        }
-                                                                    }),
-                                                                ))
-                                                                case 'group': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.simple_component.constraints.component => abort(
-                                                                    p.literal.group_resolve(() => {
-                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
-                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
-                                                                            return {
-                                                                                'constraint': $property_constraint,
-                                                                            }
-                                                                        })]
-                                                                        return {
-                                                                            'type': $property_type_,
-                                                                        }
-                                                                    }),
-                                                                ))
-                                                                case 'list': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.simple_component.constraints.component => abort(
-                                                                    p.literal.group_resolve(() => {
-                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
-                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
-                                                                            return {
-                                                                                'constraint': $property_constraint,
-                                                                            }
-                                                                        })]
-                                                                        return {
-                                                                            'type': $property_type_,
-                                                                        }
-                                                                    }),
-                                                                ))
-                                                                case 'nothing': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.simple_component.constraints.component => abort(
-                                                                    p.literal.group_resolve(() => {
-                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
-                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
-                                                                            return {
-                                                                                'constraint': $property_constraint,
-                                                                            }
-                                                                        })]
-                                                                        return {
-                                                                            'type': $property_type_,
-                                                                        }
-                                                                    }),
-                                                                ))
-                                                                case 'simple': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.simple_component.constraints.component => abort(
-                                                                    p.literal.group_resolve(() => {
-                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
-                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
-                                                                            return {
-                                                                                'constraint': $property_constraint,
-                                                                            }
-                                                                        })]
-                                                                        return {
-                                                                            'type': $property_type_,
-                                                                        }
-                                                                    }),
-                                                                ))
-                                                                case 'optional': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.simple_component.constraints.component => abort(
-                                                                    p.literal.group_resolve(() => {
-                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
-                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
-                                                                            return {
-                                                                                'constraint': $property_constraint,
-                                                                            }
-                                                                        })]
-                                                                        return {
-                                                                            'type': $property_type_,
-                                                                        }
-                                                                    }),
-                                                                ))
-                                                                case 'reference': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.simple_component.constraints.component => abort(
-                                                                    p.literal.group_resolve(() => {
-                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
-                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
-                                                                            return {
-                                                                                'constraint': $property_constraint,
-                                                                            }
-                                                                        })]
-                                                                        return {
-                                                                            'type': $property_type_,
-                                                                        }
-                                                                    }),
-                                                                ))
-                                                                case 'state': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.simple_component.constraints.component => abort(
-                                                                    p.literal.group_resolve(() => {
-                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
-                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
-                                                                            return {
-                                                                                'constraint': $property_constraint,
-                                                                            }
-                                                                        })]
-                                                                        return {
-                                                                            'type': $property_type_,
-                                                                        }
-                                                                    }),
-                                                                ))
-                                                                default: return p.exhaustive($s[0])
-                                                            }
-                                                        },
-                                                    )
-                                                    const $property_definition: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.simple_component.constraints.definition = p.from.state($property_component['type']).decide(
-                                                        ($s): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.simple_component.constraints.definition => {
-                                                            switch ($s[0]) {
-                                                                case 'simple': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.simple_component.constraints.definition => $)
-                                                                case 'navigable': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.simple_component.constraints.definition => abort(
-                                                                    p.literal.group_resolve(() => {
-                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
-                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'definition'
-                                                                            return {
-                                                                                'constraint': $property_constraint,
-                                                                            }
-                                                                        })]
-                                                                        return {
-                                                                            'type': $property_type_,
-                                                                        }
-                                                                    }),
-                                                                ))
-                                                                default: return p.exhaustive($s[0])
-                                                            }
-                                                        },
-                                                    )
-                                                    return {
-                                                        'component': $property_component,
-                                                        'definition': $property_definition,
-                                                    }
-                                                })
-                                                const $property_value: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.simple_component.value = Simple_Component_Selection(
-                                                    $,
-                                                    abort,
-                                                    {
-                                                        'child namespaces': $values['child namespaces'],
-                                                        'sibling namespaces': $values['sibling namespaces'],
-                                                    },
-                                                    {
-                                                        'types': p_lookup.acyclic.from_resolved_dictionary($values['types']),
-                                                    },
-                                                )
-                                                return {
-                                                    'constraints': $property_constraints,
-                                                    'value': $property_value,
-                                                }
-                                            })])
                                             case 'component constraint': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value => ['component constraint', p.literal.group_resolve(() => {
                                                 const $property_constraints: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component_constraint.constraints = p.literal.group_resolve(() => {
                                                     const $property_definition: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component_constraint.constraints.definition = p.from.state($cursor_0).decide(
@@ -5864,13 +5193,13 @@ export namespace resolver {
                                                     'value': $property_value,
                                                 }
                                             })])
-                                            case 'navigable component': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value => ['navigable component', p.literal.group_resolve(() => {
-                                                const $property_constraints: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.navigable_component.constraints = p.literal.group_resolve(() => {
-                                                    const $property_component: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.navigable_component.constraints.component = p.from.state($cursor_0).decide(
-                                                        ($s): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.navigable_component.constraints.component => {
+                                            case 'component': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value => ['component', p.literal.group_resolve(() => {
+                                                const $property_constraints: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.constraints = p.literal.group_resolve(() => {
+                                                    const $property_component: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.constraints.component = p.from.state($cursor_0).decide(
+                                                        ($s): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.constraints.component => {
                                                             switch ($s[0]) {
-                                                                case 'component': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.navigable_component.constraints.component => $)
-                                                                case 'dictionary': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.navigable_component.constraints.component => abort(
+                                                                case 'component': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.constraints.component => $)
+                                                                case 'dictionary': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.constraints.component => abort(
                                                                     p.literal.group_resolve(() => {
                                                                         const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
                                                                             const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
@@ -5883,7 +5212,7 @@ export namespace resolver {
                                                                         }
                                                                     }),
                                                                 ))
-                                                                case 'group': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.navigable_component.constraints.component => abort(
+                                                                case 'group': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.constraints.component => abort(
                                                                     p.literal.group_resolve(() => {
                                                                         const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
                                                                             const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
@@ -5896,7 +5225,7 @@ export namespace resolver {
                                                                         }
                                                                     }),
                                                                 ))
-                                                                case 'list': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.navigable_component.constraints.component => abort(
+                                                                case 'list': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.constraints.component => abort(
                                                                     p.literal.group_resolve(() => {
                                                                         const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
                                                                             const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
@@ -5909,7 +5238,7 @@ export namespace resolver {
                                                                         }
                                                                     }),
                                                                 ))
-                                                                case 'nothing': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.navigable_component.constraints.component => abort(
+                                                                case 'nothing': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.constraints.component => abort(
                                                                     p.literal.group_resolve(() => {
                                                                         const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
                                                                             const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
@@ -5922,7 +5251,7 @@ export namespace resolver {
                                                                         }
                                                                     }),
                                                                 ))
-                                                                case 'simple': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.navigable_component.constraints.component => abort(
+                                                                case 'simple': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.constraints.component => abort(
                                                                     p.literal.group_resolve(() => {
                                                                         const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
                                                                             const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
@@ -5935,7 +5264,7 @@ export namespace resolver {
                                                                         }
                                                                     }),
                                                                 ))
-                                                                case 'optional': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.navigable_component.constraints.component => abort(
+                                                                case 'optional': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.constraints.component => abort(
                                                                     p.literal.group_resolve(() => {
                                                                         const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
                                                                             const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
@@ -5948,7 +5277,7 @@ export namespace resolver {
                                                                         }
                                                                     }),
                                                                 ))
-                                                                case 'reference': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.navigable_component.constraints.component => abort(
+                                                                case 'reference': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.constraints.component => abort(
                                                                     p.literal.group_resolve(() => {
                                                                         const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
                                                                             const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
@@ -5961,7 +5290,7 @@ export namespace resolver {
                                                                         }
                                                                     }),
                                                                 ))
-                                                                case 'state': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.navigable_component.constraints.component => abort(
+                                                                case 'state': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.constraints.component => abort(
                                                                     p.literal.group_resolve(() => {
                                                                         const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
                                                                             const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
@@ -5978,10 +5307,11 @@ export namespace resolver {
                                                             }
                                                         },
                                                     )
-                                                    const $property_definition: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.navigable_component.constraints.definition = p.from.state($property_component['type']).decide(
-                                                        ($s): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.navigable_component.constraints.definition => {
+                                                    const $property_definition: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.constraints.definition = p.from.state($property_component['type']).decide(
+                                                        ($s): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.constraints.definition => {
                                                             switch ($s[0]) {
-                                                                case 'simple': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.navigable_component.constraints.definition => abort(
+                                                                case 'simple': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.constraints.definition => $)
+                                                                case 'cyclic': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.constraints.definition => abort(
                                                                     p.literal.group_resolve(() => {
                                                                         const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
                                                                             const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'definition'
@@ -5994,7 +5324,6 @@ export namespace resolver {
                                                                         }
                                                                     }),
                                                                 ))
-                                                                case 'navigable': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.navigable_component.constraints.definition => $)
                                                                 default: return p.exhaustive($s[0])
                                                             }
                                                         },
@@ -6004,7 +5333,153 @@ export namespace resolver {
                                                         'definition': $property_definition,
                                                     }
                                                 })
-                                                const $property_value: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.navigable_component.value = null
+                                                const $property_value: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.value = null
+                                                return {
+                                                    'constraints': $property_constraints,
+                                                    'value': $property_value,
+                                                }
+                                            })])
+                                            case 'cyclic component': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value => ['cyclic component', p.literal.group_resolve(() => {
+                                                const $property_constraints: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.constraints = p.literal.group_resolve(() => {
+                                                    const $property_component: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.constraints.component = p.from.state($cursor_0).decide(
+                                                        ($s): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.constraints.component => {
+                                                            switch ($s[0]) {
+                                                                case 'component': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.constraints.component => $)
+                                                                case 'dictionary': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.constraints.component => abort(
+                                                                    p.literal.group_resolve(() => {
+                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
+                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
+                                                                            return {
+                                                                                'constraint': $property_constraint,
+                                                                            }
+                                                                        })]
+                                                                        return {
+                                                                            'type': $property_type_,
+                                                                        }
+                                                                    }),
+                                                                ))
+                                                                case 'group': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.constraints.component => abort(
+                                                                    p.literal.group_resolve(() => {
+                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
+                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
+                                                                            return {
+                                                                                'constraint': $property_constraint,
+                                                                            }
+                                                                        })]
+                                                                        return {
+                                                                            'type': $property_type_,
+                                                                        }
+                                                                    }),
+                                                                ))
+                                                                case 'list': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.constraints.component => abort(
+                                                                    p.literal.group_resolve(() => {
+                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
+                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
+                                                                            return {
+                                                                                'constraint': $property_constraint,
+                                                                            }
+                                                                        })]
+                                                                        return {
+                                                                            'type': $property_type_,
+                                                                        }
+                                                                    }),
+                                                                ))
+                                                                case 'nothing': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.constraints.component => abort(
+                                                                    p.literal.group_resolve(() => {
+                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
+                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
+                                                                            return {
+                                                                                'constraint': $property_constraint,
+                                                                            }
+                                                                        })]
+                                                                        return {
+                                                                            'type': $property_type_,
+                                                                        }
+                                                                    }),
+                                                                ))
+                                                                case 'simple': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.constraints.component => abort(
+                                                                    p.literal.group_resolve(() => {
+                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
+                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
+                                                                            return {
+                                                                                'constraint': $property_constraint,
+                                                                            }
+                                                                        })]
+                                                                        return {
+                                                                            'type': $property_type_,
+                                                                        }
+                                                                    }),
+                                                                ))
+                                                                case 'optional': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.constraints.component => abort(
+                                                                    p.literal.group_resolve(() => {
+                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
+                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
+                                                                            return {
+                                                                                'constraint': $property_constraint,
+                                                                            }
+                                                                        })]
+                                                                        return {
+                                                                            'type': $property_type_,
+                                                                        }
+                                                                    }),
+                                                                ))
+                                                                case 'reference': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.constraints.component => abort(
+                                                                    p.literal.group_resolve(() => {
+                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
+                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
+                                                                            return {
+                                                                                'constraint': $property_constraint,
+                                                                            }
+                                                                        })]
+                                                                        return {
+                                                                            'type': $property_type_,
+                                                                        }
+                                                                    }),
+                                                                ))
+                                                                case 'state': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.constraints.component => abort(
+                                                                    p.literal.group_resolve(() => {
+                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
+                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'component'
+                                                                            return {
+                                                                                'constraint': $property_constraint,
+                                                                            }
+                                                                        })]
+                                                                        return {
+                                                                            'type': $property_type_,
+                                                                        }
+                                                                    }),
+                                                                ))
+                                                                default: return p.exhaustive($s[0])
+                                                            }
+                                                        },
+                                                    )
+                                                    const $property_definition: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.constraints.definition = p.from.state($property_component['type']).decide(
+                                                        ($s): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.constraints.definition => {
+                                                            switch ($s[0]) {
+                                                                case 'simple': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.constraints.definition => abort(
+                                                                    p.literal.group_resolve(() => {
+                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
+                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'definition'
+                                                                            return {
+                                                                                'constraint': $property_constraint,
+                                                                            }
+                                                                        })]
+                                                                        return {
+                                                                            'type': $property_type_,
+                                                                        }
+                                                                    }),
+                                                                ))
+                                                                case 'cyclic': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.constraints.definition => $)
+                                                                default: return p.exhaustive($s[0])
+                                                            }
+                                                        },
+                                                    )
+                                                    return {
+                                                        'component': $property_component,
+                                                        'definition': $property_definition,
+                                                    }
+                                                })
+                                                const $property_value: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.value = null
                                                 return {
                                                     'constraints': $property_constraints,
                                                     'value': $property_value,
@@ -7157,6 +6632,159 @@ export namespace resolver {
                                                     'value': $property_value,
                                                 }
                                             })])
+                                            case 'expect resolved': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value => ['expect resolved', p.literal.group_resolve(() => {
+                                                const $property_constraints: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.constraints = p.literal.group_resolve(() => {
+                                                    const $property_definition: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.constraints.definition = p.from.state($cursor_0).decide(
+                                                        ($s): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.constraints.definition => {
+                                                            switch ($s[0]) {
+                                                                case 'component': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.constraints.definition => abort(
+                                                                    p.literal.group_resolve(() => {
+                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
+                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'definition'
+                                                                            return {
+                                                                                'constraint': $property_constraint,
+                                                                            }
+                                                                        })]
+                                                                        return {
+                                                                            'type': $property_type_,
+                                                                        }
+                                                                    }),
+                                                                ))
+                                                                case 'dictionary': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.constraints.definition => abort(
+                                                                    p.literal.group_resolve(() => {
+                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
+                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'definition'
+                                                                            return {
+                                                                                'constraint': $property_constraint,
+                                                                            }
+                                                                        })]
+                                                                        return {
+                                                                            'type': $property_type_,
+                                                                        }
+                                                                    }),
+                                                                ))
+                                                                case 'group': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.constraints.definition => abort(
+                                                                    p.literal.group_resolve(() => {
+                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
+                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'definition'
+                                                                            return {
+                                                                                'constraint': $property_constraint,
+                                                                            }
+                                                                        })]
+                                                                        return {
+                                                                            'type': $property_type_,
+                                                                        }
+                                                                    }),
+                                                                ))
+                                                                case 'list': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.constraints.definition => abort(
+                                                                    p.literal.group_resolve(() => {
+                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
+                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'definition'
+                                                                            return {
+                                                                                'constraint': $property_constraint,
+                                                                            }
+                                                                        })]
+                                                                        return {
+                                                                            'type': $property_type_,
+                                                                        }
+                                                                    }),
+                                                                ))
+                                                                case 'nothing': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.constraints.definition => abort(
+                                                                    p.literal.group_resolve(() => {
+                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
+                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'definition'
+                                                                            return {
+                                                                                'constraint': $property_constraint,
+                                                                            }
+                                                                        })]
+                                                                        return {
+                                                                            'type': $property_type_,
+                                                                        }
+                                                                    }),
+                                                                ))
+                                                                case 'simple': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.constraints.definition => abort(
+                                                                    p.literal.group_resolve(() => {
+                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
+                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'definition'
+                                                                            return {
+                                                                                'constraint': $property_constraint,
+                                                                            }
+                                                                        })]
+                                                                        return {
+                                                                            'type': $property_type_,
+                                                                        }
+                                                                    }),
+                                                                ))
+                                                                case 'optional': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.constraints.definition => abort(
+                                                                    p.literal.group_resolve(() => {
+                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
+                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'definition'
+                                                                            return {
+                                                                                'constraint': $property_constraint,
+                                                                            }
+                                                                        })]
+                                                                        return {
+                                                                            'type': $property_type_,
+                                                                        }
+                                                                    }),
+                                                                ))
+                                                                case 'reference': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.constraints.definition => $)
+                                                                case 'state': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.constraints.definition => abort(
+                                                                    p.literal.group_resolve(() => {
+                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
+                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'definition'
+                                                                            return {
+                                                                                'constraint': $property_constraint,
+                                                                            }
+                                                                        })]
+                                                                        return {
+                                                                            'type': $property_type_,
+                                                                        }
+                                                                    }),
+                                                                ))
+                                                                default: return p.exhaustive($s[0])
+                                                            }
+                                                        },
+                                                    )
+                                                    const $property_cyclic: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.constraints.cyclic = p.from.state($property_definition['type']['dependency']).decide(
+                                                        ($s): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.constraints.cyclic => {
+                                                            switch ($s[0]) {
+                                                                case 'acyclic': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.constraints.cyclic => abort(
+                                                                    p.literal.group_resolve(() => {
+                                                                        const $property_type_: s_error.Error.type_ = ['option constraint failed', p.literal.group_resolve(() => {
+                                                                            const $property_constraint: s_error.Error.type_.type_.option_constraint_failed.constraint = 'cyclic'
+                                                                            return {
+                                                                                'constraint': $property_constraint,
+                                                                            }
+                                                                        })]
+                                                                        return {
+                                                                            'type': $property_type_,
+                                                                        }
+                                                                    }),
+                                                                ))
+                                                                case 'cyclic': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.constraints.cyclic => $)
+                                                                default: return p.exhaustive($s[0])
+                                                            }
+                                                        },
+                                                    )
+                                                    return {
+                                                        'definition': $property_definition,
+                                                        'cyclic': $property_cyclic,
+                                                    }
+                                                })
+                                                const $property_value: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.value = temp_pareto_core.group_resolve_with_dependencies(
+                                                    {
+                                                        'constraints': $property_constraints,
+                                                    },
+                                                    ($parent_captures) => {
+                                                        return null
+                                                    },
+                                                )
+                                                return {
+                                                    'constraints': $property_constraints,
+                                                    'value': $property_value,
+                                                }
+                                            })])
                                             case 'state result': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.value => ['state result', p.literal.group_resolve(() => {
                                                 const $property_constraints: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.state_result.constraints = p.literal.group_resolve(() => {
                                                     const $property_definition: s_target.resolver.Relative_Value_Selection.path.value.L.value.value.type_.state_result.constraints.definition = p.from.state($cursor_0).decide(
@@ -7289,9 +6917,9 @@ export namespace resolver {
                                     ($s): s_target.resolver.Relative_Value_Selection.path.value.L.value.result => {
                                         switch ($s[0]) {
                                             case 'benchmark link': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.result => $['path']['tail']['result'])
-                                            case 'simple component': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.result => $['value']['result']['root value'])
+                                            case 'cyclic component': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.result => $['constraints']['definition']['l entry'].get_circular_dependent()['root value'])
                                             case 'component constraint': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.result => $['value']['target']['path']['tail']['result'])
-                                            case 'navigable component': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.result => $['constraints']['definition']['result']['root value'])
+                                            case 'component': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.result => $['constraints']['definition']['result']['root value'])
                                             case 'group': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.result => $['value']['l entry']['value'])
                                             case 'list result': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.result => p.from.optional($['constraints']['definition']['result']).decide(
                                                 ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.result => $['path']['tail']['result'],
@@ -7309,6 +6937,7 @@ export namespace resolver {
                                             case 'optional value constraint': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.result => $['value']['l entry']['path']['tail']['result'])
                                             case 'reference constraint': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.result => $['value']['l entry']['path']['tail']['result'])
                                             case 'reference': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.result => $['constraints']['definition']['referent']['constraints']['dictionary']['value'])
+                                            case 'expect resolved': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.result => $['constraints']['definition']['referent']['constraints']['dictionary']['value'])
                                             case 'state result': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.result => p.from.optional($['constraints']['definition']['result']).decide(
                                                 ($): s_target.resolver.Relative_Value_Selection.path.value.L.value.result => $['path']['tail']['result'],
                                                 (): s_target.resolver.Relative_Value_Selection.path.value.L.value.result => abort(

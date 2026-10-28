@@ -173,12 +173,6 @@ export namespace resolver {
         s_source.Value
     >
     
-    export type Simple_Component_Selection = temp_pareto_core.Refiner_With_Error_With_Source_Value<
-        s_target.resolver.Simple_Component_Selection,
-        s_error.Error,
-        s_source.Value
-    >
-    
     export type Relative_Value_Selection = temp_pareto_core.Refiner_With_Error_With_Source_Value<
         s_target.resolver.Relative_Value_Selection,
         s_error.Error,

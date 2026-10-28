@@ -283,162 +283,29 @@ export namespace structure {
                 
                 export type type_ =
                     | readonly ['simple', s_self.structure.Value.type_.component.type_.type_.simple]
-                    | readonly ['navigable', s_self.structure.Value.type_.component.type_.type_.navigable]
+                    | readonly ['cyclic', s_self.structure.Value.type_.component.type_.type_.cyclic]
                 
                 export namespace type_ {
                     export namespace type_ {
                         
-                        export type simple =
-                            | readonly ['local', s_self.structure.Value.type_.component.type_.type_.simple.type_.local]
-                            | readonly ['child namespace', s_self.structure.Value.type_.component.type_.type_.simple.type_.child_namespace]
-                            | readonly ['sibling namespace', s_self.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace]
+                        export type simple = {
+                            readonly 'value': s_self.structure.Value.type_.component.type_.type_.simple.value
+                            readonly 'result': s_self.structure.Value.type_.component.type_.type_.simple.result
+                        }
                         
                         export namespace simple {
-                            export namespace type_ {
-                                
-                                export type local = {
-                                    readonly 'l entry': s_self.structure.Value.type_.component.type_.type_.simple.type_.local.l_entry
-                                    readonly 'l id': s_self.structure.Value.type_.component.type_.type_.simple.type_.local.l_id
-                                }
-                                
-                                export namespace local {
-                                    
-                                    export type l_entry = p_.Circular_Dependency<s_self.structure.Types.D>
-                                    
-                                    export type l_id = string
-                                    
-                                }
-                                
-                                export type child_namespace = {
-                                    readonly 'namespace': s_self.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.namespace
-                                    readonly 'type': s_self.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.type_
-                                }
-                                
-                                export namespace child_namespace {
-                                    
-                                    export type namespace = {
-                                        readonly 'l entry': s_self.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.namespace.l_entry
-                                        readonly 'l id': s_self.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.namespace.l_id
-                                    }
-                                    
-                                    export namespace namespace {
-                                        
-                                        export type l_entry = s_self.structure.Namespaces.D
-                                        
-                                        export type l_id = string
-                                        
-                                    }
-                                    
-                                    export type type_ = {
-                                        readonly 'constraints': s_self.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.type_.constraints
-                                        readonly 'value': s_self.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.type_.value
-                                    }
-                                    
-                                    export namespace type_ {
-                                        
-                                        export type constraints = {
-                                            readonly 'public': s_self.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.type_.constraints.public_
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type public_ = s_self.structure.Type.visibility.type_.public_
-                                            
-                                        }
-                                        
-                                        export type value = {
-                                            readonly 'l entry': s_self.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.type_.value.l_entry
-                                            readonly 'l id': s_self.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.type_.value.l_id
-                                        }
-                                        
-                                        export namespace value {
-                                            
-                                            export type l_entry = s_self.structure.Types.D
-                                            
-                                            export type l_id = string
-                                            
-                                        }
-                                        
-                                    }
-                                    
-                                }
-                                
-                                export type sibling_namespace = {
-                                    readonly 'namespace': s_self.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.namespace
-                                    readonly 'type': s_self.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.type_
-                                }
-                                
-                                export namespace sibling_namespace {
-                                    
-                                    export type namespace = {
-                                        readonly 'l entry': s_self.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.namespace.l_entry
-                                        readonly 'l id': s_self.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.namespace.l_id
-                                    }
-                                    
-                                    export namespace namespace {
-                                        
-                                        export type l_entry = s_self.structure.Namespaces.D
-                                        
-                                        export type l_id = string
-                                        
-                                    }
-                                    
-                                    export type type_ = {
-                                        readonly 'constraints': s_self.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.type_.constraints
-                                        readonly 'value': s_self.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.type_.value
-                                    }
-                                    
-                                    export namespace type_ {
-                                        
-                                        export type constraints = {
-                                            readonly 'public': s_self.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.type_.constraints.public_
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type public_ = s_self.structure.Type.visibility.type_.public_
-                                            
-                                        }
-                                        
-                                        export type value = {
-                                            readonly 'l entry': s_self.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.type_.value.l_entry
-                                            readonly 'l id': s_self.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.type_.value.l_id
-                                        }
-                                        
-                                        export namespace value {
-                                            
-                                            export type l_entry = s_self.structure.Types.D
-                                            
-                                            export type l_id = string
-                                            
-                                        }
-                                        
-                                    }
-                                    
-                                }
-                                
-                            }
-                            
-                        }
-                        
-                        export type navigable = {
-                            readonly 'value': s_self.structure.Value.type_.component.type_.type_.navigable.value
-                            readonly 'result': s_self.structure.Value.type_.component.type_.type_.navigable.result
-                        }
-                        
-                        export namespace navigable {
                             
                             export type value =
-                                | readonly ['local', s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.local]
-                                | readonly ['child namespace', s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace]
-                                | readonly ['sibling namespace', s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace]
+                                | readonly ['local', s_self.structure.Value.type_.component.type_.type_.simple.value.type_.local]
+                                | readonly ['child namespace', s_self.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace]
+                                | readonly ['sibling namespace', s_self.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace]
                             
                             export namespace value {
                                 export namespace type_ {
                                     
                                     export type local = {
-                                        readonly 'l entry': s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.local.l_entry
-                                        readonly 'l id': s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.local.l_id
+                                        readonly 'l entry': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.local.l_entry
+                                        readonly 'l id': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.local.l_id
                                     }
                                     
                                     export namespace local {
@@ -450,15 +317,15 @@ export namespace structure {
                                     }
                                     
                                     export type child_namespace = {
-                                        readonly 'namespace': s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace.namespace
-                                        readonly 'type': s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace.type_
+                                        readonly 'namespace': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.namespace
+                                        readonly 'type': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.type_
                                     }
                                     
                                     export namespace child_namespace {
                                         
                                         export type namespace = {
-                                            readonly 'l entry': s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace.namespace.l_entry
-                                            readonly 'l id': s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace.namespace.l_id
+                                            readonly 'l entry': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.namespace.l_entry
+                                            readonly 'l id': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.namespace.l_id
                                         }
                                         
                                         export namespace namespace {
@@ -470,14 +337,14 @@ export namespace structure {
                                         }
                                         
                                         export type type_ = {
-                                            readonly 'constraints': s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace.type_.constraints
-                                            readonly 'value': s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace.type_.value
+                                            readonly 'constraints': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.type_.constraints
+                                            readonly 'value': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.type_.value
                                         }
                                         
                                         export namespace type_ {
                                             
                                             export type constraints = {
-                                                readonly 'public': s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace.type_.constraints.public_
+                                                readonly 'public': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.type_.constraints.public_
                                             }
                                             
                                             export namespace constraints {
@@ -487,8 +354,8 @@ export namespace structure {
                                             }
                                             
                                             export type value = {
-                                                readonly 'l entry': s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace.type_.value.l_entry
-                                                readonly 'l id': s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.child_namespace.type_.value.l_id
+                                                readonly 'l entry': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.type_.value.l_entry
+                                                readonly 'l id': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.type_.value.l_id
                                             }
                                             
                                             export namespace value {
@@ -504,15 +371,15 @@ export namespace structure {
                                     }
                                     
                                     export type sibling_namespace = {
-                                        readonly 'namespace': s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace.namespace
-                                        readonly 'type': s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace.type_
+                                        readonly 'namespace': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.namespace
+                                        readonly 'type': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.type_
                                     }
                                     
                                     export namespace sibling_namespace {
                                         
                                         export type namespace = {
-                                            readonly 'l entry': s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace.namespace.l_entry
-                                            readonly 'l id': s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace.namespace.l_id
+                                            readonly 'l entry': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.namespace.l_entry
+                                            readonly 'l id': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.namespace.l_id
                                         }
                                         
                                         export namespace namespace {
@@ -524,14 +391,14 @@ export namespace structure {
                                         }
                                         
                                         export type type_ = {
-                                            readonly 'constraints': s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace.type_.constraints
-                                            readonly 'value': s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace.type_.value
+                                            readonly 'constraints': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.type_.constraints
+                                            readonly 'value': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.type_.value
                                         }
                                         
                                         export namespace type_ {
                                             
                                             export type constraints = {
-                                                readonly 'public': s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace.type_.constraints.public_
+                                                readonly 'public': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.type_.constraints.public_
                                             }
                                             
                                             export namespace constraints {
@@ -541,8 +408,8 @@ export namespace structure {
                                             }
                                             
                                             export type value = {
-                                                readonly 'l entry': s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace.type_.value.l_entry
-                                                readonly 'l id': s_self.structure.Value.type_.component.type_.type_.navigable.value.type_.sibling_namespace.type_.value.l_id
+                                                readonly 'l entry': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.type_.value.l_entry
+                                                readonly 'l id': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.type_.value.l_id
                                             }
                                             
                                             export namespace value {
@@ -562,6 +429,19 @@ export namespace structure {
                             }
                             
                             export type result = s_self.structure.Type
+                            
+                        }
+                        
+                        export type cyclic = {
+                            readonly 'l entry': s_self.structure.Value.type_.component.type_.type_.cyclic.l_entry
+                            readonly 'l id': s_self.structure.Value.type_.component.type_.type_.cyclic.l_id
+                        }
+                        
+                        export namespace cyclic {
+                            
+                            export type l_entry = p_.Circular_Dependency<s_self.structure.Types.D>
+                            
+                            export type l_id = string
                             
                         }
                         
@@ -2077,112 +1957,6 @@ export namespace resolver {
         
     }
     
-    export type Simple_Component_Selection = {
-        readonly 'value': s_self.resolver.Simple_Component_Selection.value
-        readonly 'result': s_self.resolver.Simple_Component_Selection.result
-    }
-    
-    export namespace Simple_Component_Selection {
-        
-        export type value =
-            | readonly ['local', s_self.resolver.Simple_Component_Selection.value.type_.local]
-            | readonly ['child namespace', s_self.resolver.Simple_Component_Selection.value.type_.child_namespace]
-            | readonly ['sibling namespace', s_self.resolver.Simple_Component_Selection.value.type_.sibling_namespace]
-        
-        export namespace value {
-            export namespace type_ {
-                
-                export type local = {
-                    readonly 'l entry': s_self.resolver.Simple_Component_Selection.value.type_.local.l_entry
-                    readonly 'l id': s_self.resolver.Simple_Component_Selection.value.type_.local.l_id
-                }
-                
-                export namespace local {
-                    
-                    export type l_entry = s_self.structure.Types.D
-                    
-                    export type l_id = string
-                    
-                }
-                
-                export type child_namespace = {
-                    readonly 'namespace': s_self.resolver.Simple_Component_Selection.value.type_.child_namespace.namespace
-                    readonly 'type': s_self.resolver.Simple_Component_Selection.value.type_.child_namespace.type_
-                }
-                
-                export namespace child_namespace {
-                    
-                    export type namespace = {
-                        readonly 'l entry': s_self.resolver.Simple_Component_Selection.value.type_.child_namespace.namespace.l_entry
-                        readonly 'l id': s_self.resolver.Simple_Component_Selection.value.type_.child_namespace.namespace.l_id
-                    }
-                    
-                    export namespace namespace {
-                        
-                        export type l_entry = s_self.structure.Namespaces.D
-                        
-                        export type l_id = string
-                        
-                    }
-                    
-                    export type type_ = {
-                        readonly 'l entry': s_self.resolver.Simple_Component_Selection.value.type_.child_namespace.type_.l_entry
-                        readonly 'l id': s_self.resolver.Simple_Component_Selection.value.type_.child_namespace.type_.l_id
-                    }
-                    
-                    export namespace type_ {
-                        
-                        export type l_entry = s_self.structure.Types.D
-                        
-                        export type l_id = string
-                        
-                    }
-                    
-                }
-                
-                export type sibling_namespace = {
-                    readonly 'namespace': s_self.resolver.Simple_Component_Selection.value.type_.sibling_namespace.namespace
-                    readonly 'type': s_self.resolver.Simple_Component_Selection.value.type_.sibling_namespace.type_
-                }
-                
-                export namespace sibling_namespace {
-                    
-                    export type namespace = {
-                        readonly 'l entry': s_self.resolver.Simple_Component_Selection.value.type_.sibling_namespace.namespace.l_entry
-                        readonly 'l id': s_self.resolver.Simple_Component_Selection.value.type_.sibling_namespace.namespace.l_id
-                    }
-                    
-                    export namespace namespace {
-                        
-                        export type l_entry = s_self.structure.Namespaces.D
-                        
-                        export type l_id = string
-                        
-                    }
-                    
-                    export type type_ = {
-                        readonly 'l entry': s_self.resolver.Simple_Component_Selection.value.type_.sibling_namespace.type_.l_entry
-                        readonly 'l id': s_self.resolver.Simple_Component_Selection.value.type_.sibling_namespace.type_.l_id
-                    }
-                    
-                    export namespace type_ {
-                        
-                        export type l_entry = s_self.structure.Types.D
-                        
-                        export type l_id = string
-                        
-                    }
-                    
-                }
-                
-            }
-            
-        }
-        
-        export type result = s_self.structure.Type
-        
-    }
-    
     export type Relative_Value_Selection = {
         readonly 'path': s_self.resolver.Relative_Value_Selection.path
     }
@@ -2216,9 +1990,9 @@ export namespace resolver {
                         
                         export type value =
                             | readonly ['benchmark link', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.benchmark_link]
-                            | readonly ['simple component', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.simple_component]
                             | readonly ['component constraint', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component_constraint]
-                            | readonly ['navigable component', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.navigable_component]
+                            | readonly ['component', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component]
+                            | readonly ['cyclic component', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component]
                             | readonly ['group', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.group]
                             | readonly ['list result', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.list_result]
                             | readonly ['option constraint', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.option_constraint]
@@ -2226,36 +2000,13 @@ export namespace resolver {
                             | readonly ['optional value constraint', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.optional_value_constraint]
                             | readonly ['reference constraint', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.reference_constraint]
                             | readonly ['reference', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.reference]
+                            | readonly ['expect resolved', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved]
                             | readonly ['state result', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.state_result]
                         
                         export namespace value {
                             export namespace type_ {
                                 
                                 export type benchmark_link = s_self.resolver.Value_Reference
-                                
-                                export type simple_component = {
-                                    readonly 'constraints': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.simple_component.constraints
-                                    readonly 'value': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.simple_component.value
-                                }
-                                
-                                export namespace simple_component {
-                                    
-                                    export type constraints = {
-                                        readonly 'component': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.simple_component.constraints.component
-                                        readonly 'definition': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.simple_component.constraints.definition
-                                    }
-                                    
-                                    export namespace constraints {
-                                        
-                                        export type component = s_self.structure.Value.type_.component
-                                        
-                                        export type definition = s_self.structure.Value.type_.component.type_.type_.simple
-                                        
-                                    }
-                                    
-                                    export type value = s_self.resolver.Simple_Component_Selection
-                                    
-                                }
                                 
                                 export type component_constraint = {
                                     readonly 'constraints': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component_constraint.constraints
@@ -2303,23 +2054,47 @@ export namespace resolver {
                                     
                                 }
                                 
-                                export type navigable_component = {
-                                    readonly 'constraints': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.navigable_component.constraints
-                                    readonly 'value': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.navigable_component.value
+                                export type component = {
+                                    readonly 'constraints': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.constraints
+                                    readonly 'value': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.value
                                 }
                                 
-                                export namespace navigable_component {
+                                export namespace component {
                                     
                                     export type constraints = {
-                                        readonly 'component': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.navigable_component.constraints.component
-                                        readonly 'definition': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.navigable_component.constraints.definition
+                                        readonly 'component': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.constraints.component
+                                        readonly 'definition': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.constraints.definition
                                     }
                                     
                                     export namespace constraints {
                                         
                                         export type component = s_self.structure.Value.type_.component
                                         
-                                        export type definition = s_self.structure.Value.type_.component.type_.type_.navigable
+                                        export type definition = s_self.structure.Value.type_.component.type_.type_.simple
+                                        
+                                    }
+                                    
+                                    export type value = null
+                                    
+                                }
+                                
+                                export type cyclic_component = {
+                                    readonly 'constraints': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.constraints
+                                    readonly 'value': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.value
+                                }
+                                
+                                export namespace cyclic_component {
+                                    
+                                    export type constraints = {
+                                        readonly 'component': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.constraints.component
+                                        readonly 'definition': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.constraints.definition
+                                    }
+                                    
+                                    export namespace constraints {
+                                        
+                                        export type component = s_self.structure.Value.type_.component
+                                        
+                                        export type definition = s_self.structure.Value.type_.component.type_.type_.cyclic
                                         
                                     }
                                     
@@ -2536,6 +2311,30 @@ export namespace resolver {
                                         export type definition = s_self.structure.Value.type_.reference
                                         
                                         export type acyclic = s_self.structure.Reference.type_.dependency.type_.acyclic
+                                        
+                                    }
+                                    
+                                    export type value = null
+                                    
+                                }
+                                
+                                export type expect_resolved = {
+                                    readonly 'constraints': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.constraints
+                                    readonly 'value': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.value
+                                }
+                                
+                                export namespace expect_resolved {
+                                    
+                                    export type constraints = {
+                                        readonly 'definition': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.constraints.definition
+                                        readonly 'cyclic': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.constraints.cyclic
+                                    }
+                                    
+                                    export namespace constraints {
+                                        
+                                        export type definition = s_self.structure.Value.type_.reference
+                                        
+                                        export type cyclic = s_self.structure.Reference.type_.dependency.type_.cyclic
                                         
                                     }
                                     

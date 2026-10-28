@@ -12,15 +12,15 @@
                             | `group` 'namespaces'
                         ] > > < | `acyclic` ~ _ > > * < < | `local` 'Schema' > < [] > > > >
                         'Schema': < | `private` ~ | `group` {
-                            'namespaces': < * "Nested namespaces; components select one namespace, references may follow a list of nested namespaces" | `dictionary` < _ | `component` < | `simple` | `local` 'Schema' _ > > >
-                            'types': < _ | `component` < | `simple` | `local` 'Types' _ > >
+                            'namespaces': < * "Nested namespaces; components select one namespace, references may follow a list of nested namespaces" | `dictionary` < _ | `component` < | `cyclic` 'Schema' _ > > >
+                            'types': < _ | `component` < | `cyclic` 'Types' _ > >
                         } >
-                        'Schemas': < | `private` ~ | `dictionary` < _ | `component` < | `simple` | `local` 'Schema' _ > > >
+                        'Schemas': < | `private` ~ | `dictionary` < _ | `component` < | `cyclic` 'Schema' _ > > >
                         'Structure': < | `public` ~ | `group` {
-                            'schemas': < _ | `component` < | `navigable` | `local` 'Schemas' _ > >
+                            'schemas': < _ | `component` < | `simple` | `local` 'Schemas' _ > >
                         } >
                         'Type': < | `private` ~ | `group` {
-                            'root': < * "Root value of this named type" | `component` < | `simple` | `local` 'Value' _ > >
+                            'root': < * "Root value of this named type" | `component` < | `cyclic` 'Value' _ > >
                         } >
                         'Type Reference': < | `public` ~ | `group` {
                             'location': < * "Select a local type, or start in a child or sibling namespace and follow a flat list of child namespace names" | `state` < {
@@ -28,7 +28,7 @@
                                     'namespace': < _ | `reference` < < < | `local` 'Schema' > < [
                                         | `group` 'namespaces'
                                     ] > > < | `acyclic` ~ _ > > >
-                                    'namespaces': < * "Further child namespaces, selected in order; an empty list keeps the starting namespace" | `component` < | `navigable` | `local` 'Namespace Selection' _ > >
+                                    'namespaces': < * "Further child namespaces, selected in order; an empty list keeps the starting namespace" | `component` < | `simple` | `local` 'Namespace Selection' _ > >
                                     'type': < _ | `reference` < < < | `local` 'Types' > < [] > > < | `acyclic` ~ _ > > >
                                 } >
                                 'local': < _ _ | `reference` < < < | `local` 'Types' > < [] > > < | `acyclic` ~ _ > > >
@@ -36,12 +36,12 @@
                                     'namespace': < _ | `reference` < < < | `local` 'Schema' > < [
                                         | `group` 'namespaces'
                                     ] > > < | `acyclic` ~ _ > > >
-                                    'namespaces': < * "Further child namespaces, selected in order; an empty list keeps the starting namespace" | `component` < | `navigable` | `local` 'Namespace Selection' _ > >
+                                    'namespaces': < * "Further child namespaces, selected in order; an empty list keeps the starting namespace" | `component` < | `simple` | `local` 'Namespace Selection' _ > >
                                     'type': < _ | `reference` < < < | `local` 'Types' > < [] > > < | `acyclic` ~ _ > > >
                                 } >
                             } * < < | `local` 'Type' > < [] > > > >
                         } >
-                        'Types': < | `private` ~ | `dictionary` < _ | `component` < | `simple` | `local` 'Type' _ > > >
+                        'Types': < | `private` ~ | `dictionary` < _ | `component` < | `cyclic` 'Type' _ > > >
                         'Component': < | `private single use` ~ | `state` < {
                             'simple': < * "Use a component without exposing its target; local targets may be cyclic" _ | `state` < {
                                 'child namespace': < _ _ | `group` {
@@ -76,12 +76,12 @@
                         } _ > >
                         'Value': < | `private` ~ | `state` < {
                             'boolean': < _ _ | `nothing` ~ >
-                            'component': < _ _ | `component` < | `simple` | `local` 'Component' _ > >
-                            'dictionary': < _ _ | `component` < | `simple` | `local` 'Value' _ > >
+                            'component': < _ _ | `component` < | `cyclic` 'Component' _ > >
+                            'dictionary': < _ _ | `component` < | `cyclic` 'Value' _ > >
                             'group': < _ _ | `group` {
-                                'properties': < _ | `dictionary` < _ | `component` < | `simple` | `local` 'Value' _ > > >
+                                'properties': < _ | `dictionary` < _ | `component` < | `cyclic` 'Value' _ > > >
                             } >
-                            'list': < _ _ | `component` < | `simple` | `local` 'Value' _ > >
+                            'list': < _ _ | `component` < | `cyclic` 'Value' _ > >
                             'nothing': < _ _ | `nothing` ~ >
                             'number': < _ _ | `state` < {
                                 'approximation': < _ _ | `nothing` ~ >
@@ -90,20 +90,20 @@
                                     'natural': < _ _ | `nothing` ~ >
                                 } _ > >
                             } _ > >
-                            'optional': < _ _ | `component` < | `simple` | `local` 'Value' _ > >
+                            'optional': < _ _ | `component` < | `cyclic` 'Value' _ > >
                             'reference': < _ _ | `group` {
                                 'cyclic': < _ | `simple` 'boolean' >
-                                'subselection': < _ | `component` < | `simple` | `local` 'Value Subselection' _ > >
-                                'type reference': < _ | `component` < | `navigable` | `local` 'Type Reference' _ > >
+                                'subselection': < _ | `component` < | `cyclic` 'Value Subselection' _ > >
+                                'type reference': < _ | `component` < | `simple` | `local` 'Type Reference' _ > >
                             } >
                             'state': < _ _ | `group` {
-                                'options': < _ | `dictionary` < _ | `component` < | `simple` | `local` 'Value' _ > > >
+                                'options': < _ | `dictionary` < _ | `component` < | `cyclic` 'Value' _ > > >
                             } >
                             'text': < _ _ | `nothing` ~ >
                         } _ > >
                         'Value Reference': < | `public` ~ | `group` {
-                            'subselection': < _ | `component` < | `simple` | `local` 'Value Subselection' _ > >
-                            'type': < _ | `component` < | `navigable` | `local` 'Type Reference' _ > >
+                            'subselection': < _ | `component` < | `cyclic` 'Value Subselection' _ > >
+                            'type': < _ | `component` < | `simple` | `local` 'Type Reference' _ > >
                         } >
                         'Value Subselection': < | `private` ~ | `group` {
                             'steps': < _ | `list` < | `state` < {
@@ -147,46 +147,46 @@
                     `basic types`: {}
                     `types`: {
                         'Declarations': < | `public` ~ | `group` {
-                            'schemas': < _ | `dictionary` < * < < < | `sibling namespace` < 'schema' 'Schemas' > > < [  ] > > | `sparse` ~ > | `component` < | `navigable` | `local` 'Schema' _ > > >
+                            'schemas': < _ | `dictionary` < * < < < | `sibling namespace` < 'schema' 'Schemas' > > < [  ] > > | `sparse` ~ > | `component` < | `simple` | `local` 'Schema' _ > > >
                         } >
                         'Downtransformer Functions': < | `private` ~ | `group` {
-                            'namespaces': < * "Sparse over structural namespaces; the transformer signature is shared" | `dictionary` < * < < < | `sibling namespace` < 'schema' 'Schema' > > < [ | `group` 'namespaces' ] > > | `sparse` ~ > | `component` < | `simple` | `local` 'Downtransformer Functions' _ > > >
+                            'namespaces': < * "Sparse over structural namespaces; the transformer signature is shared" | `dictionary` < * < < < | `sibling namespace` < 'schema' 'Schema' > > < [ | `group` 'namespaces' ] > > | `sparse` ~ > | `component` < | `cyclic` 'Downtransformer Functions' _ > > >
                             'types': < * "Sparse over local types; each identifier names the function's source type" | `dictionary` < * < < < | `sibling namespace` < 'schema' 'Types' > > < [  ] > > | `sparse` ~ > | `group` {
-                                'directive type': < * "Named type without subselection; present exactly when the transformer has a directive schema" | `component` < | `navigable` | `local` 'Optional Type Reference' _ > >
-                                'target value': < _ | `component` < | `navigable` | `sibling namespace` < 'schema' 'Value Reference' > _ > >
+                                'directive type': < * "Named type without subselection; present exactly when the transformer has a directive schema" | `component` < | `simple` | `local` 'Optional Type Reference' _ > >
+                                'target value': < _ | `component` < | `simple` | `sibling namespace` < 'schema' 'Value Reference' > _ > >
                             } > >
                         } >
                         'Optional Type Reference': < | `private` ~ | `optional` < * {
                             'schema': < < | `sibling namespace` < 'schema' 'Schema' > > < [] > >
-                        } | `component` < | `navigable` | `sibling namespace` < 'schema' 'Type Reference' > _ > _ > >
+                        } | `component` < | `simple` | `sibling namespace` < 'schema' 'Type Reference' > _ > _ > >
                         'Schema': < | `private single use` ~ | `group` {
                             'downtransformers': < _ | `dictionary` < _ | `group` {
-                                'directive schema': < _ | `optional` < _ | `component` < | `navigable` | `local` 'Schema Reference' _ > _ > >
-                                'functions': < _ | `component` < | `navigable` | `local` 'Downtransformer Functions' _ > >
-                                'target schema': < _ | `component` < | `navigable` | `local` 'Schema Reference' _ > >
+                                'directive schema': < _ | `optional` < _ | `component` < | `simple` | `local` 'Schema Reference' _ > _ > >
+                                'functions': < _ | `component` < | `simple` | `local` 'Downtransformer Functions' _ > >
+                                'target schema': < _ | `component` < | `simple` | `local` 'Schema Reference' _ > >
                             } > >
                             'uptransformers': < _ | `dictionary` < _ | `group` {
-                                'directive schema': < _ | `optional` < _ | `component` < | `navigable` | `local` 'Schema Reference' _ > _ > >
-                                'error schema': < _ | `optional` < _ | `component` < | `navigable` | `local` 'Schema Reference' _ > _ > >
-                                'functions': < _ | `component` < | `navigable` | `local` 'Uptransformer Functions' _ > >
-                                'source schema': < _ | `component` < | `navigable` | `local` 'Schema Reference' _ > >
+                                'directive schema': < _ | `optional` < _ | `component` < | `simple` | `local` 'Schema Reference' _ > _ > >
+                                'error schema': < _ | `optional` < _ | `component` < | `simple` | `local` 'Schema Reference' _ > _ > >
+                                'functions': < _ | `component` < | `simple` | `local` 'Uptransformer Functions' _ > >
+                                'source schema': < _ | `component` < | `simple` | `local` 'Schema Reference' _ > >
                             } > >
                         } >
                         'Schema Reference': < | `private` ~ | `group` {
                             'root schema': < _ | `reference` < < < | `sibling namespace` < 'schema' 'Schemas' > > < [] > > < | `acyclic` ~ _ > > >
                         } >
                         'Uptransformer Functions': < | `private` ~ | `group` {
-                            'namespaces': < * "Sparse over structural namespaces; the transformer signature is shared" | `dictionary` < * < < < | `sibling namespace` < 'schema' 'Schema' > > < [ | `group` 'namespaces' ] > > | `sparse` ~ > | `component` < | `simple` | `local` 'Uptransformer Functions' _ > > >
+                            'namespaces': < * "Sparse over structural namespaces; the transformer signature is shared" | `dictionary` < * < < < | `sibling namespace` < 'schema' 'Schema' > > < [ | `group` 'namespaces' ] > > | `sparse` ~ > | `component` < | `cyclic` 'Uptransformer Functions' _ > > >
                             'types': < * "Sparse over local types; each identifier names the function's target type" | `dictionary` < * < < < | `sibling namespace` < 'schema' 'Types' > > < [  ] > > | `sparse` ~ > | `group` {
                                 'type': < _ | `state` < {
                                     'production': < _ _ | `group` {
-                                        'iterator item': < _ | `component` < | `navigable` | `sibling namespace` < 'schema' 'Value Reference' > _ > >
+                                        'iterator item': < _ | `component` < | `simple` | `sibling namespace` < 'schema' 'Value Reference' > _ > >
                                     } >
                                     'refiner': < _ _ | `group` {
-                                        'directive type': < * "Named type without subselection; present exactly when the transformer has a directive schema" | `component` < | `navigable` | `local` 'Optional Type Reference' _ > >
-                                        'error type': < * "Named type without subselection; present exactly when the transformer has an error schema" | `component` < | `navigable` | `local` 'Optional Type Reference' _ > >
+                                        'directive type': < * "Named type without subselection; present exactly when the transformer has a directive schema" | `component` < | `simple` | `local` 'Optional Type Reference' _ > >
+                                        'error type': < * "Named type without subselection; present exactly when the transformer has an error schema" | `component` < | `simple` | `local` 'Optional Type Reference' _ > >
                                         'lookups': < * "Named lookup capabilities; available only to refiners" | `dictionary` < _ | `group` {
-                                            'dictionary': < * "Dictionary definition in the uptransformer's target schema; lookup results are its entry values" | `component` < | `navigable` | `sibling namespace` < 'schema' 'Value Reference' > _ > >
+                                            'dictionary': < * "Dictionary definition in the uptransformer's target schema; lookup results are its entry values" | `component` < | `simple` | `sibling namespace` < 'schema' 'Value Reference' > _ > >
                                             'presence': < _ | `state` < {
                                                 'optional': < _ _ | `nothing` ~ >
                                                 'required': < _ _ | `nothing` ~ >
@@ -204,13 +204,13 @@
                                                 } | `nothing` ~ >
                                             } _ > >
                                         } > >
-                                        'source value': < _ | `component` < | `navigable` | `sibling namespace` < 'schema' 'Value Reference' > _ > >
+                                        'source value': < _ | `component` < | `simple` | `sibling namespace` < 'schema' 'Value Reference' > _ > >
                                         'values': < * "Named contextual values; available only to refiners" | `dictionary` < _ | `group` {
                                             'presence': < * "Optional values require a presence check through with optional value parameter before selection" | `state` < {
                                                 'optional': < _ _ | `nothing` ~ >
                                                 'required': < _ _ | `nothing` ~ >
                                             } _ > >
-                                            'value': < * "Structural value in the uptransformer's target schema, including an optional subselection" | `component` < | `navigable` | `sibling namespace` < 'schema' 'Value Reference' > _ > >
+                                            'value': < * "Structural value in the uptransformer's target schema, including an optional subselection" | `component` < | `simple` | `sibling namespace` < 'schema' 'Value Reference' > _ > >
                                         } > >
                                     } >
                                 } _ > >
@@ -225,11 +225,11 @@
                         'text': < | `double quoted` ~ _ _ >
                     }
                     `types`: {
-                        'Captures': < | `private single use` ~ | `dictionary` < _ | `component` < | `simple` | `local` 'Value Selection' _ > > >
+                        'Captures': < | `private single use` ~ | `dictionary` < _ | `component` < | `cyclic` 'Value Selection' _ > > >
                         'Downtransformer Functions': < | `private` ~ | `group` {
-                            'namespaces': < * "Dense over the corresponding declaration namespace tree" | `dictionary` < * < < < | `sibling namespace` < 'declarations' 'Downtransformer Functions' > > < [ | `group` 'namespaces' ] > > | `dense` ~ > | `component` < | `simple` | `local` 'Downtransformer Functions' _ > > >
+                            'namespaces': < * "Dense over the corresponding declaration namespace tree" | `dictionary` < * < < < | `sibling namespace` < 'declarations' 'Downtransformer Functions' > > < [ | `group` 'namespaces' ] > > | `dense` ~ > | `component` < | `cyclic` 'Downtransformer Functions' _ > > >
                             'types': < _ | `dictionary` < * < < < | `sibling namespace` < 'declarations' 'Downtransformer Functions' > > < [ | `group` 'types' ] > > | `dense` ~ > | `group` {
-                                'expression': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
+                                'expression': < _ | `component` < | `cyclic` 'Value Expression' _ > >
                             } > >
                         } >
                         'Downtransformer Namespace Selection': < | `private single use` ~ | `list` < | `reference` < < < | `sibling namespace` < 'declarations' 'Downtransformer Functions' > > < [
@@ -238,15 +238,15 @@
                         'Implementations': < | `public` ~ | `group` {
                             'schemas': < * "Dense over declaration schemas, transformers, and functions" | `dictionary` < * < < < | `sibling namespace` < 'declarations' 'Declarations' > > < [ | `group` 'schemas' ] > > | `dense` ~ > | `group` {
                                 'downtransformers': < _ | `dictionary` < * < < < | `sibling namespace` < 'declarations' 'Schema' > > < [ | `group` 'downtransformers' ] > > | `dense` ~ > | `group` {
-                                    'functions': < _ | `component` < | `simple` | `local` 'Downtransformer Functions' _ > >
+                                    'functions': < _ | `component` < | `cyclic` 'Downtransformer Functions' _ > >
                                 } > >
                                 'uptransformers': < _ | `dictionary` < * < < < | `sibling namespace` < 'declarations' 'Schema' > > < [ | `group` 'uptransformers' ] > > | `dense` ~ > | `group` {
-                                    'functions': < _ | `component` < | `simple` | `local` 'Uptransformer Functions' _ > >
+                                    'functions': < _ | `component` < | `cyclic` 'Uptransformer Functions' _ > >
                                 } > >
                             } > >
                         } >
                         'List Cursor': < | `private` ~ | `group` {
-                            'initial': < * "Select the seed in the enclosing context; its selected structural value defines the cursor type" | `component` < | `simple` | `local` 'Value Selection' _ > >
+                            'initial': < * "Select the seed in the enclosing context; its selected structural value defines the cursor type" | `component` < | `cyclic` 'Value Selection' _ > >
                         } >
                         'Lookup Selection': < | `private` ~ | `state` < {
                             'acyclic siblings': < _ * {
@@ -274,7 +274,7 @@
                                 | `state` 'refiner'
                                 | `group` 'lookups'
                             ] > > < | `acyclic` ~ _ > > >
-                            'resolved dictionary': < _ _ | `component` < | `simple` | `local` 'Value Selection' * {
+                            'resolved dictionary': < _ _ | `component` < | `cyclic` 'Value Selection' * {
                                 'dictionary': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                     | `state` 'dictionary'
                                 ] > >
@@ -307,7 +307,7 @@
                                 | `state` 'optional'
                             ] > >
                         } > > >
-                        'Sibling Dependencies': < | `private` ~ | `dictionary` < _ | `component` < | `simple` | `local` 'Sibling Dependency' _ > > >
+                        'Sibling Dependencies': < | `private` ~ | `dictionary` < _ | `component` < | `cyclic` 'Sibling Dependency' _ > > >
                         'Sibling Dependency': < | `private` ~ | `state` < {
                             'dependency': < * "Forward a whole value from the incoming dependency context, not from this dictionary. Explicit forwarding through each group boundary supports any nesting depth." * {
                                 'dependencies': < < | `local` 'Sibling Dependencies' > < [] > >
@@ -322,12 +322,12 @@
                             } | `nothing` ~ >
                             'literal': < * "Produce literal text without selecting a structural value" _ | `simple` 'text' >
                             'unexpected state option': < * "Use the actual option name in the nearest enclosing expect state option mismatch handler. This is operation context, not a structural value selection; the generator rejects use outside such a handler." _ | `nothing` ~ >
-                            'selected text': < * "Use an existing structural text value" _ | `component` < | `simple` | `local` 'Value Selection' * {
+                            'selected text': < * "Use an existing structural text value" _ | `component` < | `cyclic` 'Value Selection' * {
                                 'text': < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'text' ] > >
                             } > >
                         } _ > >
                         'Uptransformer Functions': < | `private` ~ | `group` {
-                            'namespaces': < * "Dense over the corresponding declaration namespace tree" | `dictionary` < * < < < | `sibling namespace` < 'declarations' 'Uptransformer Functions' > > < [ | `group` 'namespaces' ] > > | `dense` ~ > | `component` < | `simple` | `local` 'Uptransformer Functions' _ > > >
+                            'namespaces': < * "Dense over the corresponding declaration namespace tree" | `dictionary` < * < < < | `sibling namespace` < 'declarations' 'Uptransformer Functions' > > < [ | `group` 'namespaces' ] > > | `dense` ~ > | `component` < | `cyclic` 'Uptransformer Functions' _ > > >
                             'types': < * "Each implementation must match its declaration's function kind" | `dictionary` < * < < < | `sibling namespace` < 'declarations' 'Uptransformer Functions' > > < [ | `group` 'types' ] > > | `dense` ~ > | `state` < {
                                 'production': < _ * {
                                     'declaration': < < | `sibling namespace` < 'declarations' 'Uptransformer Functions' > > < [
@@ -337,7 +337,7 @@
                                         | `state` 'production'
                                     ] > >
                                 } | `group` {
-                                    'expression': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
+                                    'expression': < _ | `component` < | `cyclic` 'Value Expression' _ > >
                                 } >
                                 'refiner': < _ * {
                                     'declaration': < < | `sibling namespace` < 'declarations' 'Uptransformer Functions' > > < [
@@ -347,7 +347,7 @@
                                         | `state` 'refiner'
                                     ] > >
                                 } | `group` {
-                                    'expression': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
+                                    'expression': < _ | `component` < | `cyclic` 'Value Expression' _ > >
                                 } >
                             } _ > > >
                         } >
@@ -358,11 +358,11 @@
                             'abort': < * "Abort with an error initialized by the nested expression; requires an error type" * {
                                 'error type': < < | `sibling namespace` < 'schema' 'Type' > > < [] > >
                             } | `group` {
-                                'expression': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
+                                'expression': < _ | `component` < | `cyclic` 'Value Expression' _ > >
                             } >
                             'capture': < * "Remember selected values. Selections use the enclosing captures; the body sees only this block. Copy an outer capture explicitly to retain it." _ | `group` {
-                                'captures': < _ | `component` < | `navigable` | `local` 'Captures' _ > >
-                                'expression': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
+                                'captures': < _ | `component` < | `simple` | `local` 'Captures' _ > >
+                                'expression': < _ | `component` < | `cyclic` 'Value Expression' _ > >
                             } >
                             'implement me': < _ * {
                                 'development mode': < < | `local` 'Maturity' > < [
@@ -375,8 +375,8 @@
                                 'chained list': < * "Append one item to a list without changing the original list; both expressions retain the enclosing contexts" * {
                                     'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'list' ] > >
                                 } | `group` {
-                                    'item': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
-                                    'list': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
+                                    'item': < _ | `component` < | `cyclic` 'Value Expression' _ > >
+                                    'list': < _ | `component` < | `cyclic` 'Value Expression' _ > >
                                 } >
                                 'component': < * "Cross a target component boundary and initialize its root; preserve all other contexts without calling a function or adding a runtime wrapper" * {
                                     'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
@@ -385,12 +385,12 @@
                                     'navigable': < < | `sibling namespace` < 'schema' 'Component' > > < [
                                         | `state` 'navigable'
                                     ] > >
-                                } | `component` < | `simple` | `local` 'Value Expression' _ > >
+                                } | `component` < | `cyclic` 'Value Expression' _ > >
                                 'dictionary': < * "Literal entries, each initialized against the dictionary's value definition" * {
                                     'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                         | `state` 'dictionary'
                                     ] > >
-                                } | `dictionary` < _ | `component` < | `simple` | `local` 'Value Expression' _ > > >
+                                } | `dictionary` < _ | `component` < | `cyclic` 'Value Expression' _ > > >
                                 'false': < _ * {
                                     'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                         | `state` 'boolean'
@@ -401,14 +401,14 @@
                                         | `state` 'group'
                                     ] > >
                                 } | `group` {
-                                    'properties': < * "Dense initializers for the target group's properties. Sibling property selects this group; dependency selects only the context provided by this group's sibling dependencies." | `dictionary` < * < < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'group' | `group` 'properties' ] > > | `dense` ~ > | `component` < | `simple` | `local` 'Value Expression' _ > > >
-                                    'sibling dependencies': < * "Absent selects ordinary group resolution with no dependency context. Present selects dependency-aware resolution, even for an empty dictionary. Identifiers must match source names; whole values retain identity. Forwarding is explicit." | `optional` < _ | `component` < | `navigable` | `local` 'Sibling Dependencies' _ > _ > >
+                                    'properties': < * "Dense initializers for the target group's properties. Sibling property selects this group; dependency selects only the context provided by this group's sibling dependencies." | `dictionary` < * < < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'group' | `group` 'properties' ] > > | `dense` ~ > | `component` < | `cyclic` 'Value Expression' _ > > >
+                                    'sibling dependencies': < * "Absent selects ordinary group resolution with no dependency context. Present selects dependency-aware resolution, even for an empty dictionary. Identifiers must match source names; whole values retain identity. Forwarding is explicit." | `optional` < _ | `component` < | `simple` | `local` 'Sibling Dependencies' _ > _ > >
                                 } >
                                 'list': < * "Literal items initialized against the list's element definition" * {
                                     'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                         | `state` 'list'
                                     ] > >
-                                } | `list` < | `component` < | `simple` | `local` 'Value Expression' _ > _ > >
+                                } | `list` < | `component` < | `cyclic` 'Value Expression' _ > _ > >
                                 'nothing': < _ * {
                                     'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                         | `state` 'nothing'
@@ -416,7 +416,7 @@
                                 } | `nothing` ~ >
                                 'number': < * "Initialize a number using a number expression" * {
                                     'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'number' ] > >
-                                } | `component` < | `simple` | `local` 'Number Expression' _ > >
+                                } | `component` < | `cyclic` 'Number Expression' _ > >
                                 'optional': < * "Initialize an absent optional value" * {
                                     'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                         | `state` 'optional'
@@ -426,23 +426,23 @@
                                     'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'reference' ] > >
                                     'error type': < < | `sibling namespace` < 'schema' 'Type' > > < [] > >
                                 } | `group` {
-                                    'identifier': < _ | `component` < | `simple` | `local` 'Text Expression' _ > >
-                                    'lookup': < _ | `component` < | `simple` | `local` 'Lookup Selection' _ > >
-                                    'on cycle': < * "Initialize the declared error and abort when acyclic lookup resolution detects a dependency cycle; the enclosing structural source is retained; text expressions can access a dictionary entry identifier" | `component` < | `simple` | `local` 'Value Expression' _ > >
-                                    'on missing': < * "Initialize the declared error and abort; the enclosing structural source is retained; text expressions can access a dictionary entry identifier, and enclosing captures remain available" | `component` < | `simple` | `local` 'Value Expression' _ > >
-                                    'on no context': < * "Initialize the declared error and abort when a named lookup is not set; the enclosing structural source is retained; text expressions can access a dictionary entry identifier" | `component` < | `simple` | `local` 'Value Expression' _ > >
-                                    'on premature access': < * "Initialize the declared error and abort when a cyclic reference is dereferenced before its entry has resolved; the enclosing structural source is retained; text expressions can access a dictionary entry identifier" | `component` < | `simple` | `local` 'Value Expression' _ > >
+                                    'identifier': < _ | `component` < | `cyclic` 'Text Expression' _ > >
+                                    'lookup': < _ | `component` < | `cyclic` 'Lookup Selection' _ > >
+                                    'on cycle': < * "Initialize the declared error and abort when acyclic lookup resolution detects a dependency cycle; the enclosing structural source is retained; text expressions can access a dictionary entry identifier" | `component` < | `cyclic` 'Value Expression' _ > >
+                                    'on missing': < * "Initialize the declared error and abort; the enclosing structural source is retained; text expressions can access a dictionary entry identifier, and enclosing captures remain available" | `component` < | `cyclic` 'Value Expression' _ > >
+                                    'on no context': < * "Initialize the declared error and abort when a named lookup is not set; the enclosing structural source is retained; text expressions can access a dictionary entry identifier" | `component` < | `cyclic` 'Value Expression' _ > >
+                                    'on premature access': < * "Initialize the declared error and abort when a cyclic reference is dereferenced before its entry has resolved; the enclosing structural source is retained; text expressions can access a dictionary entry identifier" | `component` < | `cyclic` 'Value Expression' _ > >
                                 } >
                                 'reference from value': < * "Reference an existing selected value without copying it; the selected node must be the declared referent" * {
                                     'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                         | `state` 'reference'
                                     ] > >
-                                } | `component` < | `simple` | `local` 'Value Selection' _ > >
+                                } | `component` < | `cyclic` 'Value Selection' _ > >
                                 'segmented list': < * "Segments each produce a whole list of the target type" * {
                                     'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                         | `state` 'list'
                                     ] > >
-                                } | `list` < | `component` < | `simple` | `local` 'Value Expression' _ > _ > >
+                                } | `list` < | `component` < | `cyclic` 'Value Expression' _ > _ > >
                                 'state': < _ * {
                                     'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                         | `state` 'state'
@@ -452,13 +452,13 @@
                                         | `state` 'state'
                                         | `group` 'options'
                                     ] > > < | `acyclic` ~ _ > > >
-                                    'value': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
+                                    'value': < _ | `component` < | `cyclic` 'Value Expression' _ > >
                                 } >
                                 'text': < _ * {
                                     'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                         | `state` 'text'
                                     ] > >
-                                } | `component` < | `simple` | `local` 'Text Expression' _ > >
+                                } | `component` < | `cyclic` 'Text Expression' _ > >
                                 'true': < _ * {
                                     'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                         | `state` 'boolean'
@@ -471,8 +471,8 @@
                             'variables': < * "Initialize typed bindings in the directive schema and enclosing variable scope, then evaluate the body in only the new scope. No sibling dependencies or recursive bindings; explicitly bind an outer variable to retain it." * {
                                 'directive schema': < < | `sibling namespace` < 'schema' 'Schema' > > < [] > >
                             } | `group` {
-                                'bindings': < _ | `component` < | `navigable` | `local` 'Variables' _ > >
-                                'expression': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
+                                'bindings': < _ | `component` < | `simple` | `local` 'Variables' _ > >
+                                'expression': < _ | `component` < | `cyclic` 'Value Expression' _ > >
                             } >
                             'with': < * "Select a source value, then choose an applicable operation; map and resolve preserve shape, and primitive mappings copy" _ | `group` {
                                 'operation': < _ | `state` < {
@@ -483,11 +483,11 @@
                                     } | `group` {
                                         'directive': < _ | `optional` < * {
                                             'directive': < < | `sibling namespace` < 'schema' 'Type' > > < [] > >
-                                        } | `component` < | `simple` | `local` 'Value Expression' _ > _ > >
+                                        } | `component` < | `cyclic` 'Value Expression' _ > _ > >
                                         'function': < _ | `reference` < < < | `sibling namespace` < 'declarations' 'Downtransformer Functions' > > < [
                                             | `group` 'types'
                                         ] > > < | `acyclic` ~ _ > > >
-                                        'namespaces': < _ | `component` < | `navigable` | `local` 'Downtransformer Namespace Selection' _ > >
+                                        'namespaces': < _ | `component` < | `simple` | `local` 'Downtransformer Namespace Selection' _ > >
                                         'schema': < _ | `reference` < < < | `sibling namespace` < 'declarations' 'Declarations' > > < [
                                             | `group` 'schemas'
                                         ] > > < | `acyclic` ~ _ > > >
@@ -515,7 +515,7 @@
                                             } | `group` {
                                                 'directive': < _ | `optional` < * {
                                                     'directive': < < | `sibling namespace` < 'schema' 'Type' > > < [] > >
-                                                } | `component` < | `simple` | `local` 'Value Expression' _ > _ > >
+                                                } | `component` < | `cyclic` 'Value Expression' _ > _ > >
                                                 'lookups': < * "Pass through current lookup parameters or supply individual lookup arguments" | `state` < {
                                                     'arguments': < _ * {
                                                         'declaration': < < | `sibling namespace` < 'declarations' 'Uptransformer Functions' > > < [
@@ -536,7 +536,7 @@
                                                                 | `group` 'presence'
                                                                 | `state` 'optional'
                                                             ] > >
-                                                        } | `optional` < _ | `component` < | `simple` | `local` 'Lookup Selection' _ > _ > >
+                                                        } | `optional` < _ | `component` < | `cyclic` 'Lookup Selection' _ > _ > >
                                                         'required': < _ * {
                                                             'presence': < < | `sibling namespace` < 'declarations' 'Uptransformer Functions' > > < [
                                                                 | `group` 'types'
@@ -548,13 +548,13 @@
                                                                 | `group` 'presence'
                                                                 | `state` 'required'
                                                             ] > >
-                                                        } | `component` < | `simple` | `local` 'Lookup Selection' _ > >
+                                                        } | `component` < | `cyclic` 'Lookup Selection' _ > >
                                                     } _ > > >
                                                     'pass through': < _ _ | `nothing` ~ >
                                                 } _ > >
                                                 'on error': < _ | `optional` < * {
                                                     'error': < < | `sibling namespace` < 'schema' 'Type' > > < [] > >
-                                                } | `component` < | `simple` | `local` 'Value Expression' _ > _ > >
+                                                } | `component` < | `cyclic` 'Value Expression' _ > _ > >
                                                 'values': < * "Pass through all current value parameters, or supply individual existing contextual values by selection" | `state` < {
                                                     'arguments': < _ * {
                                                         'declaration': < < | `sibling namespace` < 'declarations' 'Uptransformer Functions' > > < [
@@ -575,7 +575,7 @@
                                                                 | `group` 'presence'
                                                                 | `state` 'optional'
                                                             ] > >
-                                                        } | `optional` < _ | `component` < | `simple` | `local` 'Value Selection' _ > _ > >
+                                                        } | `optional` < _ | `component` < | `cyclic` 'Value Selection' _ > _ > >
                                                         'optional parameter': < * "Pass through an optional named value parameter without changing its presence" * {
                                                             'presence': < < | `sibling namespace` < 'declarations' 'Uptransformer Functions' > > < [
                                                                 | `group` 'types'
@@ -587,7 +587,7 @@
                                                                 | `group` 'presence'
                                                                 | `state` 'optional'
                                                             ] > >
-                                                        } | `component` < | `simple` | `local` 'Optional Value Selection' _ > >
+                                                        } | `component` < | `cyclic` 'Optional Value Selection' _ > >
                                                         'required': < _ * {
                                                             'presence': < < | `sibling namespace` < 'declarations' 'Uptransformer Functions' > > < [
                                                                 | `group` 'types'
@@ -599,7 +599,7 @@
                                                                 | `group` 'presence'
                                                                 | `state` 'required'
                                                             ] > >
-                                                        } | `component` < | `simple` | `local` 'Value Selection' _ > >
+                                                        } | `component` < | `cyclic` 'Value Selection' _ > >
                                                     } _ > > >
                                                     'pass through': < _ _ | `nothing` ~ >
                                                 } _ > >
@@ -608,7 +608,7 @@
                                         'function': < _ | `reference` < < < | `sibling namespace` < 'declarations' 'Uptransformer Functions' > > < [
                                             | `group` 'types'
                                         ] > > < | `acyclic` ~ _ > > >
-                                        'namespaces': < _ | `component` < | `navigable` | `local` 'Uptransformer Namespace Selection' _ > >
+                                        'namespaces': < _ | `component` < | `simple` | `local` 'Uptransformer Namespace Selection' _ > >
                                         'schema': < _ | `reference` < < < | `sibling namespace` < 'declarations' 'Declarations' > > < [
                                             | `group` 'schemas'
                                         ] > > < | `acyclic` ~ _ > > >
@@ -616,28 +616,28 @@
                                             | `group` 'uptransformers'
                                         ] > > < | `acyclic` ~ _ > > >
                                     } >
-                                    'change context': < * "Evaluate the body with the selected source value; preserve captures and all other contexts" _ | `component` < | `simple` | `local` 'Value Expression' _ > >
+                                    'change context': < * "Evaluate the body with the selected source value; preserve captures and all other contexts" _ | `component` < | `cyclic` 'Value Expression' _ > >
                                     'decide boolean': < * "Choose a branch without changing its source context; both branches produce the expected target" * {
                                         'source': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                             | `state` 'boolean'
                                         ] > >
                                     } | `group` {
-                                        'if false': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
-                                        'if true': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
+                                        'if false': < _ | `component` < | `cyclic` 'Value Expression' _ > >
+                                        'if true': < _ | `component` < | `cyclic` 'Value Expression' _ > >
                                     } >
                                     'decide optional': < * "The present branch uses the selected payload as source; the absent branch retains the enclosing source" * {
                                         'source': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                             | `state` 'optional'
                                         ] > >
                                     } | `group` {
-                                        'if absent': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
-                                        'if present': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
+                                        'if absent': < _ | `component` < | `cyclic` 'Value Expression' _ > >
+                                        'if present': < _ | `component` < | `cyclic` 'Value Expression' _ > >
                                     } >
                                     'decide state': < * "Exhaustive branches over the selected state's options; each branch uses its option payload as source" * {
                                         'source': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                             | `state` 'state'
                                         ] > >
-                                    } | `dictionary` < * < < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'state' | `group` 'options' ] > > | `dense` ~ > | `component` < | `simple` | `local` 'Value Expression' _ > > >
+                                    } | `dictionary` < * < < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'state' | `group` 'options' ] > > | `dense` ~ > | `component` < | `cyclic` 'Value Expression' _ > > >
                                     'expect state option': < * "Handle one selected state option with its payload as source. All other options share one handler retaining the enclosing source; unexpected state option text exposes the actual option name. Both branches produce the expected target." * {
                                         'source': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                             | `state` 'state'
@@ -647,8 +647,8 @@
                                             | `state` 'state'
                                             | `group` 'options'
                                         ] > > < | `acyclic` ~ _ > > >
-                                        'if expected': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
-                                        'if unexpected': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
+                                        'if expected': < _ | `component` < | `cyclic` 'Value Expression' _ > >
+                                        'if unexpected': < _ | `component` < | `cyclic` 'Value Expression' _ > >
                                     } >
                                     'map boolean': < _ * {
                                         'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
@@ -665,13 +665,13 @@
                                         'source': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                             | `state` 'dictionary'
                                         ] > >
-                                    } | `component` < | `simple` | `local` 'Value Expression' _ > >
+                                    } | `component` < | `cyclic` 'Value Expression' _ > >
                                     'get possible entry': < * "Look up an identifier in the selected dictionary. The found branch uses the entry as source; the missing branch retains the enclosing source. Both produce the expected target." * {
                                         'source': < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'dictionary' ] > >
                                     } | `group` {
-                                        'identifier': < _ | `component` < | `simple` | `local` 'Text Expression' _ > >
-                                        'if found': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
-                                        'if missing': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
+                                        'identifier': < _ | `component` < | `cyclic` 'Text Expression' _ > >
+                                        'if found': < _ | `component` < | `cyclic` 'Value Expression' _ > >
+                                        'if missing': < _ | `component` < | `cyclic` 'Value Expression' _ > >
                                     } >
                                     'map list': < * "Preserve order and map items independently; retain enclosing resolve contexts" * {
                                         'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
@@ -680,7 +680,7 @@
                                         'source': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                             | `state` 'list'
                                         ] > >
-                                    } | `component` < | `simple` | `local` 'Value Expression' _ > >
+                                    } | `component` < | `cyclic` 'Value Expression' _ > >
                                     'map nothing': < _ * {
                                         'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                             | `state` 'nothing'
@@ -750,7 +750,7 @@
                                         'source': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                             | `state` 'optional'
                                         ] > >
-                                    } | `component` < | `simple` | `local` 'Value Expression' _ > >
+                                    } | `component` < | `cyclic` 'Value Expression' _ > >
                                     'map text': < _ * {
                                         'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                             | `state` 'text'
@@ -763,8 +763,8 @@
                                         'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'state' ] > >
                                         'source': < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'text' ] > >
                                     } | `group` {
-                                        'options': < _ | `dictionary` < * < < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'state' | `group` 'options' ] > > | `dense` ~ > | `component` < | `simple` | `local` 'Value Expression' _ > > >
-                                        'if unknown': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
+                                        'options': < _ | `dictionary` < * < < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'state' | `group` 'options' ] > > | `dense` ~ > | `component` < | `cyclic` 'Value Expression' _ > > >
+                                        'if unknown': < _ | `component` < | `cyclic` 'Value Expression' _ > >
                                     } >
                                     'reuse': < * "Return the selected value unchanged, preserving identity. The compiler requires the exact same structural target, not merely matching shapes." _ | `nothing` ~ >
                                     'resolve dictionary': < * "Preserve identifiers and map entries with acyclic and cyclic lookups of resolved siblings" * {
@@ -778,20 +778,20 @@
                                         'coverage': < * "When present, after resolving all entries require every identifier in this dictionary to occur in the result. Extra result identifiers are checked separately by entry resolution." | `optional` < * {
                                             'error type': < < | `sibling namespace` < 'schema' 'Type' > > < [] > >
                                         } | `group` {
-                                            'dictionary': < _ | `component` < | `simple` | `local` 'Value Selection' * {
+                                            'dictionary': < _ | `component` < | `cyclic` 'Value Selection' * {
                                                 'dictionary': < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'dictionary' ] > >
                                             } > >
-                                            'on missing': < * "Initialize the error and abort on an uncovered identifier; retain the enclosing source and resolve contexts" | `component` < | `simple` | `local` 'Value Expression' _ > >
+                                            'on missing': < * "Initialize the error and abort on an uncovered identifier; retain the enclosing source and resolve contexts" | `component` < | `cyclic` 'Value Expression' _ > >
                                         } _ > >
-                                        'entry': < * "Resolve each entry with its identifier and sibling lookups" | `component` < | `simple` | `local` 'Value Expression' _ > >
+                                        'entry': < * "Resolve each entry with its identifier and sibling lookups" | `component` < | `cyclic` 'Value Expression' _ > >
                                     } >
                                     'on has last item': < * "Choose a branch without resolving the list again. The present branch uses the last item as source; the absent branch retains the enclosing source. Preserve all other contexts." * {
                                         'source': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                             | `state` 'list'
                                         ] > >
                                     } | `group` {
-                                        'if absent': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
-                                        'if present': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
+                                        'if absent': < _ | `component` < | `cyclic` 'Value Expression' _ > >
+                                        'if present': < _ | `component` < | `cyclic` 'Value Expression' _ > >
                                     } >
                                     'resolve list': < * "Seed the cursor from initial, then resolve each input item once in source order with the current cursor. Select next from the resolved item to advance the cursor. The seed is context, not an output item. Empty input produces an empty list. Result wrappers remain ordinary structural groups." * {
                                         'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
@@ -801,17 +801,17 @@
                                             | `state` 'list'
                                         ] > >
                                     } | `group` {
-                                        'cursor': < * "Declare the seeded cursor context for this list resolution" | `component` < | `navigable` | `local` 'List Cursor' _ > >
-                                        'item': < * "Initialize one target item with the input item as source and source iterator item, the current cursor, and the zero-based input index" | `component` < | `simple` | `local` 'Value Expression' _ > >
-                                        'next': < * "Select the next cursor with the resolved target item as source. Must select the exact same structural value as initial; the compiler enforces identity." | `component` < | `simple` | `local` 'Value Selection' _ > >
+                                        'cursor': < * "Declare the seeded cursor context for this list resolution" | `component` < | `simple` | `local` 'List Cursor' _ > >
+                                        'item': < * "Initialize one target item with the input item as source and source iterator item, the current cursor, and the zero-based input index" | `component` < | `cyclic` 'Value Expression' _ > >
+                                        'next': < * "Select the next cursor with the resolved target item as source. Must select the exact same structural value as initial; the compiler enforces identity." | `component` < | `cyclic` 'Value Selection' _ > >
                                     } >
                                 } _ > >
-                                'selection': < _ | `component` < | `navigable` | `local` 'Value Selection' _ > >
+                                'selection': < _ | `component` < | `simple` | `local` 'Value Selection' _ > >
                             } >
                             'with optional value parameter': < * "Check an optional named value parameter; the present branch uses its underlying value as source, and the absent branch retains the enclosing source" _ | `group` {
-                                'if absent': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
-                                'if present': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
-                                'value': < _ | `component` < | `navigable` | `local` 'Optional Value Selection' _ > >
+                                'if absent': < _ | `component` < | `cyclic` 'Value Expression' _ > >
+                                'if present': < _ | `component` < | `cyclic` 'Value Expression' _ > >
+                                'value': < _ | `component` < | `simple` | `local` 'Optional Value Selection' _ > >
                             } >
                         } _ > >
                         'Value Selection': < | `private` ~ | `group` {
@@ -879,14 +879,17 @@
                                     | `state` 'group'
                                     | `group` 'properties'
                                 ] > > < | `acyclic` ~ _ > > >
-                                'reference': < * "Dereference an already-resolved acyclic reference. Cyclic reference traversal is not supported yet." * {
+                                'reference': < * "Dereference an acyclic reference" * {
+                                    'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'reference' ] > >
+                                } | `nothing` ~ >
+                                'expect resolved': < * "Dereference a cyclic reference expected to be resolved already; resolvedness is not statically checked" * {
                                     'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'reference' ] > >
                                 } | `nothing` ~ >
                             } * < < | `sibling namespace` < 'schema' 'Value' > > < [] > > > * < < | `sibling namespace` < 'schema' 'Value' > > < [] > > > >
                         } >
                         'Variables': < | `private` ~ | `dictionary` < _ | `group` {
-                            'expression': < _ | `component` < | `simple` | `local` 'Value Expression' _ > >
-                            'value': < * "Declared structural value in the directive schema, including optional subselection; the initializer is checked against this exact target" | `component` < | `navigable` | `sibling namespace` < 'schema' 'Value Reference' > _ > >
+                            'expression': < _ | `component` < | `cyclic` 'Value Expression' _ > >
+                            'value': < * "Declared structural value in the directive schema, including optional subselection; the initializer is checked against this exact target" | `component` < | `simple` | `sibling namespace` < 'schema' 'Value Reference' > _ > >
                         } > >
                     }
                 )
@@ -894,10 +897,10 @@
             `basic types`: {}
             `types`: {
                 'Module': < | `public` ~ | `group` {
-                    'structure': < _ | `component` < | `navigable` | `child namespace` < 'schema' 'Structure' > _ > >
-                    'declarations': < _ | `component` < | `navigable` | `child namespace` < 'declarations' 'Declarations' > _ > >
+                    'structure': < _ | `component` < | `simple` | `child namespace` < 'schema' 'Structure' > _ > >
+                    'declarations': < _ | `component` < | `simple` | `child namespace` < 'declarations' 'Declarations' > _ > >
                     'implementations': < _ | `component` < | `simple` | `child namespace` < 'implementations' 'Implementations' > _ > >
-                    'maturity': < _ | `component` < | `navigable` | `child namespace` < 'implementations' 'Maturity' > _ > >
+                    'maturity': < _ | `component` < | `simple` | `child namespace` < 'implementations' 'Maturity' > _ > >
                 } >
             }
         )
@@ -1213,7 +1216,7 @@
                             'Declarations': < | `group` {
                                 'schemas': < | `dictionary` < | `component` < | `local` 'Schema' * < * {
                                     'schema': | `required` < | `linked entry` ~ < [
-                                        | `simple component` | `sibling namespace` < 'schema' 'Schema' >
+                                        | `cyclic component` ~
                                     ] > >
                                     'schemas': | `parameter` 'schemas'
                                 } * {} > _ > * < < | `parameter` 'schemas' < [] > > > > >
@@ -1222,7 +1225,7 @@
                                 'namespaces': < | `dictionary` < | `component` < | `local` 'Downtransformer Functions' * < * {
                                     'directive schema': | `parameter` 'directive schema'
                                     'local schema': | `required` < | `linked entry` ~ < [
-                                        | `simple component` | `sibling namespace` < 'schema' 'Schema' >
+                                        | `cyclic component` ~
                                     ] > >
                                     'target schema': | `parameter` 'target schema'
                                 } * {} > _ > * < < | `parameter` 'local schema' < [
@@ -1237,7 +1240,7 @@
                                     } * {} > _ > >
                                 } * < < | `parameter` 'local schema' < [
                                     | `group` 'types'
-                                    | `simple component` | `sibling namespace` < 'schema' 'Types' >
+                                    | `cyclic component` ~
                                 ] > > > > >
                             } >
                             'Optional Type Reference': < | `optional` < * | `parameter` 'schema' * {
@@ -1250,7 +1253,7 @@
                                 'sibling namespaces': | `acyclic` ~
                                 'types': | `selection` < | `acyclic` | `resolved dictionary` < < | `option constraint` 'schema' < [
                                     | `group` 'types'
-                                    | `simple component` | `sibling namespace` < 'schema' 'Types' >
+                                    | `cyclic component` ~
                                 ] > > > >
                             } > _ > _ _ _ > >
                             'Schema': < | `group` {
@@ -1260,17 +1263,17 @@
                                     } * {} > _ > _ _ _ > >
                                     'functions': < | `component` < | `local` 'Downtransformer Functions' * < * {
                                         'directive schema': | `optional` | `selection` | `optional value` < < | `sibling property` 'directive schema' < [] > > < [
-                                            | `navigable component` ~
+                                            | `component` ~
                                             | `group` 'root schema'
                                             | `reference` < >
-                                            | `simple component` | `sibling namespace` < 'schema' 'Schema' >
+                                            | `cyclic component` ~
                                         ] > >
                                         'local schema': | `parameter` 'schema'
                                         'target schema': | `required` < | `sibling property` 'target schema' < [
-                                            | `navigable component` ~
+                                            | `component` ~
                                             | `group` 'root schema'
                                             | `reference` < >
-                                            | `simple component` | `sibling namespace` < 'schema' 'Schema' >
+                                            | `cyclic component` ~
                                         ] > >
                                     } * {} > _ > >
                                     'target schema': < | `component` < | `local` 'Schema Reference' * < * {
@@ -1286,23 +1289,23 @@
                                     } * {} > _ > _ _ _ > >
                                     'functions': < | `component` < | `local` 'Uptransformer Functions' * < * {
                                         'directive schema': | `optional` | `selection` | `optional value` < < | `sibling property` 'directive schema' < [] > > < [
-                                            | `navigable component` ~
+                                            | `component` ~
                                             | `group` 'root schema'
                                             | `reference` < >
-                                            | `simple component` | `sibling namespace` < 'schema' 'Schema' >
+                                            | `cyclic component` ~
                                         ] > >
                                         'error schema': | `optional` | `selection` | `optional value` < < | `sibling property` 'error schema' < [] > > < [
-                                            | `navigable component` ~
+                                            | `component` ~
                                             | `group` 'root schema'
                                             | `reference` < >
-                                            | `simple component` | `sibling namespace` < 'schema' 'Schema' >
+                                            | `cyclic component` ~
                                         ] > >
                                         'local schema': | `parameter` 'schema'
                                         'source schema': | `required` < | `sibling property` 'source schema' < [
-                                            | `navigable component` ~
+                                            | `component` ~
                                             | `group` 'root schema'
                                             | `reference` < >
-                                            | `simple component` | `sibling namespace` < 'schema' 'Schema' >
+                                            | `cyclic component` ~
                                         ] > >
                                         'target schema': | `parameter` 'schema'
                                     } * {} > _ > >
@@ -1319,7 +1322,7 @@
                                     'directive schema': | `parameter` 'directive schema'
                                     'error schema': | `parameter` 'error schema'
                                     'local schema': | `required` < | `linked entry` ~ < [
-                                        | `simple component` | `sibling namespace` < 'schema' 'Schema' >
+                                        | `cyclic component` ~
                                     ] > >
                                     'source schema': | `parameter` 'source schema'
                                     'target schema': | `parameter` 'target schema'
@@ -1351,18 +1354,18 @@
                                                 'type': < | `state` < {
                                                     'acyclic': < * {
                                                         'definition': | `state` < < | `sibling property` 'dictionary' < [
-                                                            | `navigable component` ~
+                                                            | `component` ~
                                                             | `group` 'subselection'
-                                                            | `simple component` | `sibling namespace` < 'schema' 'Value Subselection' >
+                                                            | `cyclic component` ~
                                                             | `group` 'steps'
                                                             | `list result` ~
                                                         ] > > 'dictionary' >
                                                     } | `nothing` ~ _ _ >
                                                     'cyclic': < * {
                                                         'definition': | `state` < < | `sibling property` 'dictionary' < [
-                                                            | `navigable component` ~
+                                                            | `component` ~
                                                             | `group` 'subselection'
-                                                            | `simple component` | `sibling namespace` < 'schema' 'Value Subselection' >
+                                                            | `cyclic component` ~
                                                             | `group` 'steps'
                                                             | `list result` ~
                                                         ] > > 'dictionary' >
@@ -1385,7 +1388,7 @@
                                     } > >
                                 } * < < | `parameter` 'local schema' < [
                                     | `group` 'types'
-                                    | `simple component` | `sibling namespace` < 'schema' 'Types' >
+                                    | `cyclic component` ~
                                 ] > > > > >
                             } >
                         }
@@ -1406,7 +1409,7 @@
                             'Downtransformer Functions': < | `group` {
                                 'namespaces': < | `dictionary` < | `component` < | `local` 'Downtransformer Functions' * < * {
                                     'declaration': | `required` < | `linked entry` ~ < [
-                                        | `simple component` | `sibling namespace` < 'declarations' 'Downtransformer Functions' >
+                                        | `cyclic component` ~
                                     ] > >
                                     'declarations': | `parameter` 'declarations'
                                     'directive schema': | `parameter` 'directive schema'
@@ -1424,9 +1427,9 @@
                                         'directive schema': | `parameter` 'directive schema'
                                         'directive type': | `optional` | `selection` | `optional value` < < | `linked entry` ~ < [
                                             | `group` 'directive type'
-                                            | `navigable component` ~
+                                            | `component` ~
                                         ] > > < [
-                                            | `navigable component` ~
+                                            | `component` ~
                                             | `group` 'location'
                                             | `state result` ~
                                         ] > >
@@ -1440,15 +1443,15 @@
                                             | `benchmark link` < < | `sibling namespace` < 'schema' 'Types' > > < [
                                                 | `dictionary` ~
                                             ] > >
-                                            | `simple component` | `sibling namespace` < 'schema' 'Type' >
+                                            | `cyclic component` ~
                                             | `group` 'root'
-                                            | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                            | `cyclic component` ~
                                         ] > >
                                         'target value': | `required` < | `linked entry` ~ < [
                                             | `group` 'target value'
-                                            | `navigable component` ~
+                                            | `component` ~
                                             | `group` 'subselection'
-                                            | `simple component` | `sibling namespace` < 'schema' 'Value Subselection' >
+                                            | `cyclic component` ~
                                             | `group` 'steps'
                                             | `list result` ~
                                         ] > >
@@ -1463,7 +1466,7 @@
                                 | `group` 'namespaces'
                             ] > > > > _ > > * < < | `parameter` 'functions' < [] > > | `value` < [
                                 | `reference` < >
-                                | `simple component` | `sibling namespace` < 'declarations' 'Downtransformer Functions' >
+                                | `cyclic component` ~
                             ] > > > >
                             'Implementations': < | `group` {
                                 'schemas': < | `dictionary` < | `group` {
@@ -1471,42 +1474,42 @@
                                         'functions': < | `component` < | `local` 'Downtransformer Functions' * < * {
                                             'declaration': | `required` < | `linked entry` ~ < [
                                                 | `group` 'functions'
-                                                | `navigable component` ~
+                                                | `component` ~
                                             ] > >
                                             'declarations': | `parameter` 'schemas'
                                             'maturity': | `parameter` 'maturity'
                                             'directive schema': | `optional` | `selection` | `optional value` < < | `linked entry` ~ < [
                                                 | `group` 'directive schema'
                                             ] > > < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'root schema'
                                                 | `reference` < >
-                                                | `simple component` | `sibling namespace` < 'schema' 'Schema' >
+                                                | `cyclic component` ~
                                             ] > >
                                         } * {} > _ > >
                                     } * < < | `linked entry` ~ < [
-                                        | `navigable component` ~
+                                        | `component` ~
                                         | `group` 'downtransformers'
                                     ] > > > > >
                                     'uptransformers': < | `dictionary` < | `group` {
                                         'functions': < | `component` < | `local` 'Uptransformer Functions' * < * {
                                             'declaration': | `required` < | `linked entry` ~ < [
                                                 | `group` 'functions'
-                                                | `navigable component` ~
+                                                | `component` ~
                                             ] > >
                                             'declarations': | `parameter` 'schemas'
                                             'maturity': | `parameter` 'maturity'
                                             'directive schema': | `optional` | `selection` | `optional value` < < | `linked entry` ~ < [
                                                 | `group` 'directive schema'
                                             ] > > < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'root schema'
                                                 | `reference` < >
-                                                | `simple component` | `sibling namespace` < 'schema' 'Schema' >
+                                                | `cyclic component` ~
                                             ] > >
                                         } * {} > _ > >
                                     } * < < | `linked entry` ~ < [
-                                        | `navigable component` ~
+                                        | `component` ~
                                         | `group` 'uptransformers'
                                     ] > > > > >
                                 } * < < | `parameter` 'schemas' < [] > > > > >
@@ -1559,12 +1562,12 @@
                                 'dependency': < * {
                                     'dependencies': | `assert is set` | `parameter` 'dependencies'
                                 } | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'dependencies' < [] > > > > _ > > * | `value` < [
-                                    | `reference` < > | `simple component` | `local` 'Sibling Dependency' | `state result` ~
+                                    | `reference` < > | `cyclic component` ~ | `state result` ~
                                 ] > _ >
                                 'sibling property': < * {
                                     'group': | `assert is set` | `parameter` 'sibling properties'
                                 } | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'group' < [ | `group` 'properties' ] > > > > _ > > * | `value` < [
-                                    | `reference` < > | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                    | `reference` < > | `cyclic component` ~
                                 ] > _ >
                             } > >
                             'Text Expression': < | `state` < {
@@ -1589,7 +1592,7 @@
                             'Uptransformer Functions': < | `group` {
                                 'namespaces': < | `dictionary` < | `component` < | `local` 'Uptransformer Functions' * < * {
                                     'declaration': | `required` < | `linked entry` ~ < [
-                                        | `simple component` | `sibling namespace` < 'declarations' 'Uptransformer Functions' >
+                                        | `cyclic component` ~
                                     ] > >
                                     'declarations': | `parameter` 'declarations'
                                     'directive schema': | `parameter` 'directive schema'
@@ -1618,9 +1621,9 @@
                                             'sibling properties': | `optional` | `not set` ~
                                             'source iterator item': | `optional` | `set` < | `option constraint` 'declaration' < [
                                                 | `group` 'iterator item'
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'subselection'
-                                                | `simple component` | `sibling namespace` < 'schema' 'Value Subselection' >
+                                                | `cyclic component` ~
                                                 | `group` 'steps'
                                                 | `list result` ~
                                             ] > >
@@ -1629,9 +1632,9 @@
                                                 | `benchmark link` < < | `sibling namespace` < 'schema' 'Types' > > < [
                                                     | `dictionary` ~
                                                 ] > >
-                                                | `simple component` | `sibling namespace` < 'schema' 'Type' >
+                                                | `cyclic component` ~
                                                 | `group` 'root'
-                                                | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                | `cyclic component` ~
                                             ] > >
                                             'values': | `optional` | `not set` ~
                                             'variables': | `optional` | `not set` ~
@@ -1651,17 +1654,17 @@
                                             'directive schema': | `parameter` 'directive schema'
                                             'directive type': | `optional` | `selection` | `optional value` < < | `option constraint` 'declaration' < [
                                                 | `group` 'directive type'
-                                                | `navigable component` ~
+                                                | `component` ~
                                             ] > > < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'location'
                                                 | `state result` ~
                                             ] > >
                                             'error type': | `optional` | `selection` | `optional value` < < | `option constraint` 'declaration' < [
                                                 | `group` 'error type'
-                                                | `navigable component` ~
+                                                | `component` ~
                                             ] > > < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'location'
                                                 | `state result` ~
                                             ] > >
@@ -1674,9 +1677,9 @@
                                             'source iterator item': | `optional` | `not set` ~
                                             'source value': | `optional` | `set` < | `option constraint` 'declaration' < [
                                                 | `group` 'source value'
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'subselection'
-                                                | `simple component` | `sibling namespace` < 'schema' 'Value Subselection' >
+                                                | `cyclic component` ~
                                                 | `group` 'steps'
                                                 | `list result` ~
                                             ] > >
@@ -1684,9 +1687,9 @@
                                                 | `benchmark link` < < | `sibling namespace` < 'schema' 'Types' > > < [
                                                     | `dictionary` ~
                                                 ] > >
-                                                | `simple component` | `sibling namespace` < 'schema' 'Type' >
+                                                | `cyclic component` ~
                                                 | `group` 'root'
-                                                | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                | `cyclic component` ~
                                             ] > >
                                             'values': | `optional` | `set` < | `option constraint` 'declaration' < [
                                                 | `group` 'values'
@@ -1702,7 +1705,7 @@
                                 | `group` 'namespaces'
                             ] > > > > _ > > * < < | `parameter` 'functions' < [] > > | `value` < [
                                 | `reference` < >
-                                | `simple component` | `sibling namespace` < 'declarations' 'Uptransformer Functions' >
+                                | `cyclic component` ~
                             ] > > > >
                             'Value Expression': < | `state` < {
                                 'abort': < * {
@@ -1725,7 +1728,7 @@
                                         'source value': | `parameter` 'source value'
                                         'target value': | `required` < | `option constraint` 'error type' < [
                                             | `group` 'root'
-                                            | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                            | `cyclic component` ~
                                         ] > >
                                         'values': | `parameter` 'values'
                                         'variables': | `parameter` 'variables'
@@ -1745,7 +1748,7 @@
                                     } * {} > _ > >
                                     'expression': < | `component` < | `local` 'Value Expression' * < * {
                                         'captures': | `optional` | `set` < | `sibling property` 'captures' < [
-                                            | `navigable component` ~
+                                            | `component` ~
                                         ] > >
                                         'cursor': | `parameter` 'cursor'
                                         'declarations': | `parameter` 'declarations'
@@ -1789,7 +1792,7 @@
                                             'sibling properties': | `parameter` 'sibling properties'
                                             'source iterator item': | `parameter` 'source iterator item'
                                             'source value': | `parameter` 'source value'
-                                            'target value': | `required` < | `option constraint` 'definition' < [ | `simple component` | `sibling namespace` < 'schema' 'Value' > ] > >
+                                            'target value': | `required` < | `option constraint` 'definition' < [ | `cyclic component` ~ ] > >
                                             'values': | `parameter` 'values'
                                             'variables': | `parameter` 'variables'
                                         } * {} > _ > >
@@ -1816,7 +1819,7 @@
                                     'component': < * {
                                         'definition': | `state` < < | `parameter` 'target value' < [] > > 'component' >
                                         'navigable': | `state` < < | `sibling option constraint` 'definition' < [
-                                            | `simple component` | `sibling namespace` < 'schema' 'Component' >
+                                            | `cyclic component` ~
                                         ] > > 'navigable' >
                                     } | `component` < | `local` 'Value Expression' * < * {
                                         'captures': | `parameter` 'captures'
@@ -1834,7 +1837,7 @@
                                         'source iterator item': | `parameter` 'source iterator item'
                                         'source value': | `parameter` 'source value'
                                         'target value': | `required` < | `option constraint` 'navigable' < [
-                                            | `state result` ~ | `group` 'root' | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                            | `state result` ~ | `group` 'root' | `cyclic component` ~
                                         ] > >
                                         'values': | `parameter` 'values'
                                         'variables': | `parameter` 'variables'
@@ -1857,7 +1860,7 @@
                                         'source iterator item': | `parameter` 'source iterator item'
                                         'source value': | `parameter` 'source value'
                                         'target value': | `required` < | `option constraint` 'definition' < [
-                                            | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                            | `cyclic component` ~
                                         ] > >
                                         'values': | `parameter` 'values'
                                         'variables': | `parameter` 'variables'
@@ -1872,7 +1875,7 @@
                                             'captures': | `parameter` 'captures'
                                             'cursor': | `parameter` 'cursor'
                                             'declarations': | `parameter` 'declarations'
-                                            'dependencies': | `optional` | `selection` | `optional value` < < | `sibling property` 'sibling dependencies' < [] > > < [ | `navigable component` ~ ] > >
+                                            'dependencies': | `optional` | `selection` | `optional value` < < | `sibling property` 'sibling dependencies' < [] > > < [ | `component` ~ ] > >
                                             'dictionary resolve': | `parameter` 'dictionary resolve'
                                             'directive schema': | `parameter` 'directive schema'
                                             'directive type': | `parameter` 'directive type'
@@ -1884,7 +1887,7 @@
                                             'source iterator item': | `parameter` 'source iterator item'
                                             'source value': | `parameter` 'source value'
                                             'target value': | `required` < | `linked entry` ~ < [
-                                                | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                | `cyclic component` ~
                                             ] > >
                                             'values': | `parameter` 'values'
                                             'variables': | `parameter` 'variables'
@@ -1914,7 +1917,7 @@
                                         'source iterator item': | `parameter` 'source iterator item'
                                         'source value': | `parameter` 'source value'
                                         'target value': | `required` < | `option constraint` 'definition' < [
-                                            | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                            | `cyclic component` ~
                                         ] > >
                                         'values': | `parameter` 'values'
                                         'variables': | `parameter` 'variables'
@@ -1974,7 +1977,7 @@
                                             'source value': | `parameter` 'source value'
                                             'target value': | `required` < | `option constraint` 'error type' < [
                                                 | `group` 'root'
-                                                | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                | `cyclic component` ~
                                             ] > >
                                             'values': | `parameter` 'values'
                                             'variables': | `parameter` 'variables'
@@ -1996,7 +1999,7 @@
                                             'source value': | `parameter` 'source value'
                                             'target value': | `required` < | `option constraint` 'error type' < [
                                                 | `group` 'root'
-                                                | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                | `cyclic component` ~
                                             ] > >
                                             'values': | `parameter` 'values'
                                             'variables': | `parameter` 'variables'
@@ -2018,7 +2021,7 @@
                                             'source value': | `parameter` 'source value'
                                             'target value': | `required` < | `option constraint` 'error type' < [
                                                 | `group` 'root'
-                                                | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                | `cyclic component` ~
                                             ] > >
                                             'values': | `parameter` 'values'
                                             'variables': | `parameter` 'variables'
@@ -2040,7 +2043,7 @@
                                             'source value': | `parameter` 'source value'
                                             'target value': | `required` < | `option constraint` 'error type' < [
                                                 | `group` 'root'
-                                                | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                | `cyclic component` ~
                                             ] > >
                                             'values': | `parameter` 'values'
                                             'variables': | `parameter` 'variables'
@@ -2084,7 +2087,7 @@
                                             'source value': | `parameter` 'source value'
                                             'target value': | `required` < | `sibling property` 'option' < [
                                                 | `reference` < >
-                                                | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                | `cyclic component` ~
                                             ] > >
                                             'values': | `parameter` 'values'
                                             'variables': | `parameter` 'variables'
@@ -2149,14 +2152,14 @@
                                         'source value': | `parameter` 'source value'
                                         'target value': | `parameter` 'target value'
                                         'values': | `parameter` 'values'
-                                        'variables': | `optional` | `set` < | `sibling property` 'bindings' < [ | `navigable component` ~ ] > >
+                                        'variables': | `optional` | `set` < | `sibling property` 'bindings' < [ | `component` ~ ] > >
                                     } * {} > _ > >
                                 } _ _ >
                                 'with': < _ | `group` {
                                     'operation': < | `state` < {
                                         'call': < * {
                                             'source': | `state` < < | `sibling property` 'selection' < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'steps'
                                                 | `list result` ~
                                             ] > > 'component' >
@@ -2164,18 +2167,18 @@
                                             'directive': < | `optional` < * | `optional value` < < | `sibling property` 'function' < [
                                                 | `reference` < >
                                                 | `group` 'directive type'
-                                                | `navigable component` ~
+                                                | `component` ~
                                             ] > > < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'location'
                                                 | `state result` ~
                                             ] > > * {
                                                 'directive': | `assert is set` | `optional value` < < | `sibling property` 'function' < [
                                                     | `reference` < >
                                                     | `group` 'directive type'
-                                                    | `navigable component` ~
+                                                    | `component` ~
                                                 ] > > < [
-                                                    | `navigable component` ~
+                                                    | `component` ~
                                                     | `group` 'location'
                                                     | `state result` ~
                                                 ] > >
@@ -2196,13 +2199,13 @@
                                                 'source value': | `parameter` 'source value'
                                                 'target value': | `required` < | `option constraint` 'directive' < [
                                                     | `group` 'root'
-                                                    | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                    | `cyclic component` ~
                                                 ] > >
                                                 'values': | `parameter` 'values'
                                                 'variables': | `parameter` 'variables'
                                             } * {} > _ > _ _ _ > >
                                             'function': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespaces' < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `list result` ~
                                                 | `group` 'types'
                                             ] > > > > _ > > >
@@ -2210,13 +2213,13 @@
                                                 'functions': | `required` < | `sibling property` 'transformer' < [
                                                     | `reference` < >
                                                     | `group` 'functions'
-                                                    | `navigable component` ~
+                                                    | `component` ~
                                                 ] > >
                                             } * {} > _ > >
                                             'schema': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'declarations' < [] > > > > _ > > >
                                             'transformer': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'schema' < [
                                                 | `reference` < >
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'downtransformers'
                                             ] > > > > _ > > >
                                         } _ _ >
@@ -2236,17 +2239,17 @@
                                                 } | `group` {
                                                     'directive': < | `optional` < * | `optional value` < < | `option constraint` 'declaration' < [
                                                         | `group` 'directive type'
-                                                        | `navigable component` ~
+                                                        | `component` ~
                                                     ] > > < [
-                                                        | `navigable component` ~
+                                                        | `component` ~
                                                         | `group` 'location'
                                                         | `state result` ~
                                                     ] > > * {
                                                         'directive': | `assert is set` | `optional value` < < | `option constraint` 'declaration' < [
                                                             | `group` 'directive type'
-                                                            | `navigable component` ~
+                                                            | `component` ~
                                                         ] > > < [
-                                                            | `navigable component` ~
+                                                            | `component` ~
                                                             | `group` 'location'
                                                             | `state result` ~
                                                         ] > >
@@ -2267,7 +2270,7 @@
                                                         'source value': | `parameter` 'source value'
                                                         'target value': | `required` < | `option constraint` 'directive' < [
                                                             | `group` 'root'
-                                                            | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                            | `cyclic component` ~
                                                         ] > >
                                                         'values': | `parameter` 'values'
                                                         'variables': | `parameter` 'variables'
@@ -2318,17 +2321,17 @@
                                                     } > >
                                                     'on error': < | `optional` < * | `optional value` < < | `option constraint` 'declaration' < [
                                                         | `group` 'error type'
-                                                        | `navigable component` ~
+                                                        | `component` ~
                                                     ] > > < [
-                                                        | `navigable component` ~
+                                                        | `component` ~
                                                         | `group` 'location'
                                                         | `state result` ~
                                                     ] > > * {
                                                         'error': | `assert is set` | `optional value` < < | `option constraint` 'declaration' < [
                                                             | `group` 'error type'
-                                                            | `navigable component` ~
+                                                            | `component` ~
                                                         ] > > < [
-                                                            | `navigable component` ~
+                                                            | `component` ~
                                                             | `group` 'location'
                                                             | `state result` ~
                                                         ] > >
@@ -2348,7 +2351,7 @@
                                                         'source iterator item': | `parameter` 'source iterator item'
                                                         'source value': | `optional` | `set` < | `option constraint` 'error' < [
                                                             | `group` 'root'
-                                                            | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                            | `cyclic component` ~
                                                         ] > >
                                                         'target value': | `parameter` 'target value'
                                                         'values': | `parameter` 'values'
@@ -2404,7 +2407,7 @@
                                                 } _ _ >
                                             } > >
                                             'function': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespaces' < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `list result` ~
                                                 | `group` 'types'
                                             ] > > > > _ > > >
@@ -2412,13 +2415,13 @@
                                                 'functions': | `required` < | `sibling property` 'transformer' < [
                                                     | `reference` < >
                                                     | `group` 'functions'
-                                                    | `navigable component` ~
+                                                    | `component` ~
                                                 ] > >
                                             } * {} > _ > >
                                             'schema': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'declarations' < [] > > > > _ > > >
                                             'transformer': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'schema' < [
                                                 | `reference` < >
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'uptransformers'
                                             ] > > > > _ > > >
                                         } _ _ >
@@ -2437,7 +2440,7 @@
                                             'sibling properties': | `parameter` 'sibling properties'
                                             'source iterator item': | `parameter` 'source iterator item'
                                             'source value': | `optional` | `set` < | `sibling property` 'selection' < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'steps'
                                                 | `list result` ~
                                             ] > >
@@ -2447,7 +2450,7 @@
                                         } * {} > _ > _ _ >
                                         'decide boolean': < * {
                                             'source': | `state` < < | `sibling property` 'selection' < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'steps'
                                                 | `list result` ~
                                             ] > > 'boolean' >
@@ -2457,7 +2460,7 @@
                                         } _ _ >
                                         'decide optional': < * {
                                             'source': | `state` < < | `sibling property` 'selection' < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'steps'
                                                 | `list result` ~
                                             ] > > 'optional' >
@@ -2478,7 +2481,7 @@
                                                 'sibling properties': | `parameter` 'sibling properties'
                                                 'source iterator item': | `parameter` 'source iterator item'
                                                 'source value': | `optional` | `set` < | `option constraint` 'source' < [
-                                                    | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                    | `cyclic component` ~
                                                 ] > >
                                                 'target value': | `parameter` 'target value'
                                                 'values': | `parameter` 'values'
@@ -2487,7 +2490,7 @@
                                         } _ _ >
                                         'decide state': < * {
                                             'source': | `state` < < | `sibling property` 'selection' < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'steps'
                                                 | `list result` ~
                                             ] > > 'state' >
@@ -2506,7 +2509,7 @@
                                             'sibling properties': | `parameter` 'sibling properties'
                                             'source iterator item': | `parameter` 'source iterator item'
                                             'source value': | `optional` | `set` < | `linked entry` ~ < [
-                                                | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                | `cyclic component` ~
                                             ] > >
                                             'target value': | `parameter` 'target value'
                                             'values': | `parameter` 'values'
@@ -2516,7 +2519,7 @@
                                         ] > > > > _ _ >
                                         'expect state option': < * {
                                             'source': | `state` < < | `sibling property` 'selection' < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'steps'
                                                 | `list result` ~
                                             ] > > 'state' >
@@ -2540,7 +2543,7 @@
                                                 'source iterator item': | `parameter` 'source iterator item'
                                                 'source value': | `optional` | `set` < | `sibling property` 'option' < [
                                                     | `reference` < >
-                                                    | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                    | `cyclic component` ~
                                                 ] > >
                                                 'target value': | `parameter` 'target value'
                                                 'values': | `parameter` 'values'
@@ -2551,7 +2554,7 @@
                                         'map boolean': < * {
                                             'definition': | `state` < < | `parameter` 'target value' < [] > > 'boolean' >
                                             'source': | `state` < < | `sibling property` 'selection' < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'steps'
                                                 | `list result` ~
                                             ] > > 'boolean' >
@@ -2559,7 +2562,7 @@
                                         'map dictionary': < * {
                                             'definition': | `state` < < | `parameter` 'target value' < [] > > 'dictionary' >
                                             'source': | `state` < < | `sibling property` 'selection' < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'steps'
                                                 | `list result` ~
                                             ] > > 'dictionary' >
@@ -2578,17 +2581,17 @@
                                             'sibling properties': | `parameter` 'sibling properties'
                                             'source iterator item': | `parameter` 'source iterator item'
                                             'source value': | `optional` | `set` < | `option constraint` 'source' < [
-                                                | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                | `cyclic component` ~
                                             ] > >
                                             'target value': | `required` < | `option constraint` 'definition' < [
-                                                | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                | `cyclic component` ~
                                             ] > >
                                             'values': | `parameter` 'values'
                                             'variables': | `parameter` 'variables'
                                         } * {} > _ > _ _ >
                                         'get possible entry': < * {
                                             'source': | `state` < < | `sibling property` 'selection' < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'steps'
                                                 | `list result` ~
                                             ] > > 'dictionary' >
@@ -2619,7 +2622,7 @@
                                                 'sibling properties': | `parameter` 'sibling properties'
                                                 'source iterator item': | `parameter` 'source iterator item'
                                                 'source value': | `optional` | `set` < | `option constraint` 'source' < [
-                                                    | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                    | `cyclic component` ~
                                                 ] > >
                                                 'target value': | `parameter` 'target value'
                                                 'values': | `parameter` 'values'
@@ -2630,7 +2633,7 @@
                                         'map list': < * {
                                             'definition': | `state` < < | `parameter` 'target value' < [] > > 'list' >
                                             'source': | `state` < < | `sibling property` 'selection' < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'steps'
                                                 | `list result` ~
                                             ] > > 'list' >
@@ -2649,10 +2652,10 @@
                                             'sibling properties': | `parameter` 'sibling properties'
                                             'source iterator item': | `parameter` 'source iterator item'
                                             'source value': | `optional` | `set` < | `option constraint` 'source' < [
-                                                | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                | `cyclic component` ~
                                             ] > >
                                             'target value': | `required` < | `option constraint` 'definition' < [
-                                                | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                | `cyclic component` ~
                                             ] > >
                                             'values': | `parameter` 'values'
                                             'variables': | `parameter` 'variables'
@@ -2660,7 +2663,7 @@
                                         'map nothing': < * {
                                             'definition': | `state` < < | `parameter` 'target value' < [] > > 'nothing' >
                                             'source': | `state` < < | `sibling property` 'selection' < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'steps'
                                                 | `list result` ~
                                             ] > > 'nothing' >
@@ -2668,7 +2671,7 @@
                                         'map number': < * {
                                             'definition': | `state` < < | `parameter` 'target value' < [] > > 'number' >
                                             'source': | `state` < < | `sibling property` 'selection' < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'steps'
                                                 | `list result` ~
                                             ] > > 'number' >
@@ -2694,7 +2697,7 @@
                                         'map optional': < * {
                                             'definition': | `state` < < | `parameter` 'target value' < [] > > 'optional' >
                                             'source': | `state` < < | `sibling property` 'selection' < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'steps'
                                                 | `list result` ~
                                             ] > > 'optional' >
@@ -2713,10 +2716,10 @@
                                             'sibling properties': | `parameter` 'sibling properties'
                                             'source iterator item': | `parameter` 'source iterator item'
                                             'source value': | `optional` | `set` < | `option constraint` 'source' < [
-                                                | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                | `cyclic component` ~
                                             ] > >
                                             'target value': | `required` < | `option constraint` 'definition' < [
-                                                | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                | `cyclic component` ~
                                             ] > >
                                             'values': | `parameter` 'values'
                                             'variables': | `parameter` 'variables'
@@ -2724,7 +2727,7 @@
                                         'map text': < * {
                                             'definition': | `state` < < | `parameter` 'target value' < [] > > 'text' >
                                             'source': | `state` < < | `sibling property` 'selection' < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'steps'
                                                 | `list result` ~
                                             ] > > 'text' >
@@ -2732,7 +2735,7 @@
                                         'to state': < * {
                                             'definition': | `state` < < | `parameter` 'target value' < [] > > 'state' >
                                             'source': | `state` < < | `sibling property` 'selection' < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'steps'
                                                 | `list result` ~
                                             ] > > 'text' >
@@ -2753,7 +2756,7 @@
                                                 'source iterator item': | `parameter` 'source iterator item'
                                                 'source value': | `parameter` 'source value'
                                                 'target value': | `required` < | `linked entry` ~ < [
-                                                    | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                    | `cyclic component` ~
                                                 ] > >
                                                 'values': | `parameter` 'values'
                                                 'variables': | `parameter` 'variables'
@@ -2766,7 +2769,7 @@
                                         'resolve dictionary': < * {
                                             'definition': | `state` < < | `parameter` 'target value' < [] > > 'dictionary' >
                                             'source': | `state` < < | `sibling property` 'selection' < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'steps'
                                                 | `list result` ~
                                             ] > > 'dictionary' >
@@ -2802,7 +2805,7 @@
                                                     'source iterator item': | `parameter` 'source iterator item'
                                                     'source value': | `parameter` 'source value'
                                                     'target value': | `required` < | `option constraint` 'error type' < [
-                                                        | `group` 'root' | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                        | `group` 'root' | `cyclic component` ~
                                                     ] > >
                                                     'values': | `parameter` 'values'
                                                     'variables': | `parameter` 'variables'
@@ -2823,10 +2826,10 @@
                                                 'sibling properties': | `parameter` 'sibling properties'
                                                 'source iterator item': | `parameter` 'source iterator item'
                                                 'source value': | `optional` | `set` < | `option constraint` 'source' < [
-                                                    | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                    | `cyclic component` ~
                                                 ] > >
                                                 'target value': | `required` < | `option constraint` 'definition' < [
-                                                    | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                    | `cyclic component` ~
                                                 ] > >
                                                 'values': | `parameter` 'values'
                                                 'variables': | `parameter` 'variables'
@@ -2834,7 +2837,7 @@
                                         } _ _ >
                                         'on has last item': < * {
                                             'source': | `state` < < | `sibling property` 'selection' < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'steps'
                                                 | `list result` ~
                                             ] > > 'list' >
@@ -2855,7 +2858,7 @@
                                                 'sibling properties': | `parameter` 'sibling properties'
                                                 'source iterator item': | `parameter` 'source iterator item'
                                                 'source value': | `optional` | `set` < | `option constraint` 'source' < [
-                                                    | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                                    | `cyclic component` ~
                                                 ] > >
                                                 'target value': | `parameter` 'target value'
                                                 'values': | `parameter` 'values'
@@ -2865,7 +2868,7 @@
                                         'resolve list': < * {
                                             'definition': | `state` < < | `parameter` 'target value' < [] > > 'list' >
                                             'source': | `state` < < | `sibling property` 'selection' < [
-                                                | `navigable component` ~
+                                                | `component` ~
                                                 | `group` 'steps'
                                                 | `list result` ~
                                             ] > > 'list' >
@@ -2874,7 +2877,7 @@
                                             'item': < | `component` < | `local` 'Value Expression' * < * {
                                                 'captures': | `parameter` 'captures'
                                                 'cursor': | `optional` | `set` < | `sibling property` 'cursor' < [
-                                                    | `navigable component` ~
+                                                    | `component` ~
                                                 ] > >
                                                 'declarations': | `parameter` 'declarations'
                                                 'dependencies': | `parameter` 'dependencies'
@@ -2886,22 +2889,22 @@
                                                 'lookups': | `parameter` 'lookups'
                                                 'maturity': | `parameter` 'maturity'
                                                 'sibling properties': | `parameter` 'sibling properties'
-                                                'source iterator item': | `optional` | `set` < | `option constraint` 'source' < [ | `simple component` | `sibling namespace` < 'schema' 'Value' > ] > >
-                                                'source value': | `optional` | `set` < | `option constraint` 'source' < [ | `simple component` | `sibling namespace` < 'schema' 'Value' > ] > >
-                                                'target value': | `required` < | `option constraint` 'definition' < [ | `simple component` | `sibling namespace` < 'schema' 'Value' > ] > >
+                                                'source iterator item': | `optional` | `set` < | `option constraint` 'source' < [ | `cyclic component` ~ ] > >
+                                                'source value': | `optional` | `set` < | `option constraint` 'source' < [ | `cyclic component` ~ ] > >
+                                                'target value': | `required` < | `option constraint` 'definition' < [ | `cyclic component` ~ ] > >
                                                 'values': | `parameter` 'values'
                                                 'variables': | `parameter` 'variables'
                                             } * {} > _ > >
                                             'next': < | `component` < | `local` 'Value Selection' * < * {
                                                 'captures': | `parameter` 'captures'
                                                 'cursor': | `optional` | `set` < | `sibling property` 'cursor' < [
-                                                    | `navigable component` ~
+                                                    | `component` ~
                                                 ] > >
                                                 'dependencies': | `parameter` 'dependencies'
                                                 'directive type': | `parameter` 'directive type'
                                                 'sibling properties': | `parameter` 'sibling properties'
-                                                'source iterator item': | `optional` | `set` < | `option constraint` 'source' < [ | `simple component` | `sibling namespace` < 'schema' 'Value' > ] > >
-                                                'source value': | `optional` | `set` < | `option constraint` 'definition' < [ | `simple component` | `sibling namespace` < 'schema' 'Value' > ] > >
+                                                'source iterator item': | `optional` | `set` < | `option constraint` 'source' < [ | `cyclic component` ~ ] > >
+                                                'source value': | `optional` | `set` < | `option constraint` 'definition' < [ | `cyclic component` ~ ] > >
                                                 'values': | `parameter` 'values'
                                             } * {} > _ > >
                                         } _ _ >
@@ -2934,8 +2937,8 @@
                                         'sibling properties': | `parameter` 'sibling properties'
                                         'source iterator item': | `parameter` 'source iterator item'
                                         'source value': | `optional` | `set` < | `sibling property` 'value' < [
-                                            | `navigable component` ~ | `reference` < > | `group` 'value' | `navigable component` ~
-                                            | `group` 'subselection' | `simple component` | `sibling namespace` < 'schema' 'Value Subselection' > | `group` 'steps' | `list result` ~
+                                            | `component` ~ | `reference` < > | `group` 'value' | `component` ~
+                                            | `group` 'subselection' | `cyclic component` ~ | `group` 'steps' | `list result` ~
                                         ] > >
                                         'target value': | `parameter` 'target value'
                                         'values': | `parameter` 'values'
@@ -2952,30 +2955,30 @@
                                         'captures': | `assert is set` | `parameter` 'captures'
                                     } | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'captures' < [] > > > > _ > > * | `value` < [
                                         | `reference` < >
-                                        | `simple component` | `local` 'Value Selection'
+                                        | `cyclic component` ~
                                         | `group` 'steps'
                                         | `list result` ~
                                     ] > _ >
                                     'dependency': < * {
                                         'dependencies': | `assert is set` | `parameter` 'dependencies'
                                     } | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'dependencies' < [] > > > > _ > > * | `value` < [
-                                        | `reference` < > | `simple component` | `local` 'Sibling Dependency' | `state result` ~
+                                        | `reference` < > | `cyclic component` ~ | `state result` ~
                                     ] > _ >
                                     'directive value': < * {
                                         'definition': | `assert is set` | `parameter` 'directive type'
                                     } | `nothing` ~ * | `context` < | `option constraint` 'definition' < [
                                         | `group` 'root'
-                                        | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                        | `cyclic component` ~
                                     ] > > _ >
                                     'sibling property': < * {
                                         'group': | `assert is set` | `parameter` 'sibling properties'
                                     } | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'group' < [ | `group` 'properties' ] > > > > _ > > * | `value` < [
-                                        | `reference` < > | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                        | `reference` < > | `cyclic component` ~
                                     ] > _ >
                                     'cursor': < * {
                                         'definition': | `assert is set` | `parameter` 'cursor'
                                     } | `nothing` ~ * | `context` < | `option constraint` 'definition' < [
-                                        | `group` 'initial' | `simple component` | `local` 'Value Selection' | `group` 'steps' | `list result` ~
+                                        | `group` 'initial' | `cyclic component` ~ | `group` 'steps' | `list result` ~
                                     ] > > _ >
                                     'source iterator item': < * {
                                         'definition': | `assert is set` | `parameter` 'source iterator item'
@@ -2992,9 +2995,9 @@
                                     } > > * | `value` < [
                                         | `reference` < >
                                         | `group` 'value'
-                                        | `navigable component` ~
+                                        | `component` ~
                                         | `group` 'subselection'
-                                        | `simple component` | `sibling namespace` < 'schema' 'Value Subselection' >
+                                        | `cyclic component` ~
                                         | `group` 'steps'
                                         | `list result` ~
                                     ] > _ >
@@ -3003,10 +3006,10 @@
                                     'component': < * {
                                         'component': | `state` < < | `list cursor` ~ < [] > > 'component' >
                                         'navigable': | `state` < < | `sibling option constraint` 'component' < [
-                                            | `simple component` | `sibling namespace` < 'schema' 'Component' >
+                                            | `cyclic component` ~
                                         ] > > 'navigable' >
                                     } | `nothing` ~ * | `context` < | `option constraint` 'navigable' < [
-                                        | `state result` ~ | `group` 'root' | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                        | `state result` ~ | `group` 'root' | `cyclic component` ~
                                     ] > > _ >
                                     'group': < * {
                                         'definition': | `state` < < | `list cursor` ~ < [] > > 'group' >
@@ -3014,12 +3017,17 @@
                                         | `group` 'properties'
                                     ] > > > > _ > > * | `value` < [
                                         | `reference` < >
-                                        | `simple component` | `sibling namespace` < 'schema' 'Value' >
+                                        | `cyclic component` ~
                                     ] > _ >
                                     'reference': < * {
                                         'definition': | `state` < < | `list cursor` ~ < [] > > 'reference' >
                                     } | `nothing` ~ * | `context` < | `option constraint` 'definition' < [
-                                        | `group` 'subselection' | `simple component` | `sibling namespace` < 'schema' 'Value Subselection' > | `group` 'steps' | `list result` ~
+                                        | `group` 'subselection' | `cyclic component` ~ | `group` 'steps' | `list result` ~
+                                    ] > > _ >
+                                    'expect resolved': < * {
+                                        'definition': | `state` < < | `list cursor` ~ < [] > > 'reference' >
+                                    } | `nothing` ~ * | `context` < | `option constraint` 'definition' < [
+                                        | `group` 'subselection' | `cyclic component` ~ | `group` 'steps' | `list result` ~
                                     ] > > _ >
                                 } > * < < | `sibling property` 'start' < [
                                     | `state result` ~
@@ -3043,7 +3051,7 @@
                                     'source iterator item': | `parameter` 'source iterator item'
                                     'source value': | `parameter` 'source value'
                                     'directive schema': | `optional` | `set` < | `parameter` 'directive schema' < [] > >
-                                    'target value': | `required` < | `sibling property` 'value' < [ | `navigable component` ~ | `group` 'subselection' | `simple component` | `sibling namespace` < 'schema' 'Value Subselection' > | `group` 'steps' | `list result` ~ ] > >
+                                    'target value': | `required` < | `sibling property` 'value' < [ | `component` ~ | `group` 'subselection' | `cyclic component` ~ | `group` 'steps' | `list result` ~ ] > >
                                     'values': | `parameter` 'values'
                                     'variables': | `parameter` 'variables'
                                 } * {} > _ > >
@@ -3060,7 +3068,7 @@
                                 | `group` 'namespaces'
                             ] > > > > _ > > * < < | `parameter` 'schema' < [] > > | `value` < [
                                 | `reference` < >
-                                | `simple component` | `local` 'Schema'
+                                | `cyclic component` ~
                             ] > > > >
                             'Schema': < | `group` {
                                 'namespaces': < | `dictionary` < | `component` < | `local` 'Schema' * < * {} * {
@@ -3088,42 +3096,42 @@
                                         'namespaces': < | `component` < | `local` 'Namespace Selection' * < * {
                                             'schema': | `required` < | `sibling property` 'namespace' < [
                                                 | `reference` < >
-                                                | `simple component` | `local` 'Schema'
+                                                | `cyclic component` ~
                                             ] > >
                                         } * {} > _ > >
                                         'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespaces' < [
-                                            | `navigable component` ~
+                                            | `component` ~
                                             | `list result` ~
                                             | `group` 'types'
-                                            | `simple component` | `local` 'Types'
+                                            | `cyclic component` ~
                                         ] > > > > _ > > >
                                     } * | `value` < [
                                         | `group` 'type'
                                         | `reference` < >
-                                        | `simple component` | `local` 'Type'
+                                        | `cyclic component` ~
                                     ] > _ >
                                     'local': < _ | `reference` < < < | `parameter` 'types' > _ > > * | `value` < [
                                         | `reference` < >
-                                        | `simple component` | `local` 'Type'
+                                        | `cyclic component` ~
                                     ] > _ >
                                     'sibling namespace': < _ | `group` {
                                         'namespace': < | `reference` < < < | `parameter` 'sibling namespaces' > _ > > >
                                         'namespaces': < | `component` < | `local` 'Namespace Selection' * < * {
                                             'schema': | `required` < | `sibling property` 'namespace' < [
                                                 | `reference` < >
-                                                | `simple component` | `local` 'Schema'
+                                                | `cyclic component` ~
                                             ] > >
                                         } * {} > _ > >
                                         'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespaces' < [
-                                            | `navigable component` ~
+                                            | `component` ~
                                             | `list result` ~
                                             | `group` 'types'
-                                            | `simple component` | `local` 'Types'
+                                            | `cyclic component` ~
                                         ] > > > > _ > > >
                                     } * | `value` < [
                                         | `group` 'type'
                                         | `reference` < >
-                                        | `simple component` | `local` 'Type'
+                                        | `cyclic component` ~
                                     ] > _ >
                                 } > >
                             } >
@@ -3140,9 +3148,9 @@
                                         'namespace': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'child namespaces' < [] > > > > _ > > >
                                         'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespace' < [
                                             | `reference` < >
-                                            | `simple component` | `local` 'Schema'
+                                            | `cyclic component` ~
                                             | `group` 'types'
-                                            | `simple component` | `local` 'Types'
+                                            | `cyclic component` ~
                                         ] > > > > _ > > >
                                     } _ _ >
                                     'local': < _ | `reference` < < < | `parameter` 'cyclic types' > _ > > _ _ >
@@ -3150,9 +3158,9 @@
                                         'namespace': < | `reference` < < < | `parameter` 'sibling namespaces' > _ > > >
                                         'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespace' < [
                                             | `reference` < >
-                                            | `simple component` | `local` 'Schema'
+                                            | `cyclic component` ~
                                             | `group` 'types'
-                                            | `simple component` | `local` 'Types'
+                                            | `cyclic component` ~
                                         ] > > > > _ > > >
                                     } _ _ >
                                 } > _ _ >
@@ -3161,23 +3169,23 @@
                                         'namespace': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'child namespaces' < [] > > > > _ > > >
                                         'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespace' < [
                                             | `reference` < >
-                                            | `simple component` | `local` 'Schema'
+                                            | `cyclic component` ~
                                             | `group` 'types'
-                                            | `simple component` | `local` 'Types'
+                                            | `cyclic component` ~
                                         ] > > > > _ > > >
-                                    } * | `value` < [ | `group` 'type' | `reference` < > | `simple component` | `local` 'Type' ] > _ >
+                                    } * | `value` < [ | `group` 'type' | `reference` < > | `cyclic component` ~ ] > _ >
                                     'local': < _ | `reference` < < < | `parameter` 'acyclic types' > _ > > * | `value` < [
-                                        | `reference` < > | `simple component` | `local` 'Type'
+                                        | `reference` < > | `cyclic component` ~
                                     ] > _ >
                                     'sibling namespace': < _ | `group` {
                                         'namespace': < | `reference` < < < | `parameter` 'sibling namespaces' > _ > > >
                                         'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespace' < [
                                             | `reference` < >
-                                            | `simple component` | `local` 'Schema'
+                                            | `cyclic component` ~
                                             | `group` 'types'
-                                            | `simple component` | `local` 'Types'
+                                            | `cyclic component` ~
                                         ] > > > > _ > > >
-                                    } * | `value` < [ | `group` 'type' | `reference` < > | `simple component` | `local` 'Type' ] > _ >
+                                    } * | `value` < [ | `group` 'type' | `reference` < > | `cyclic component` ~ ] > _ >
                                 } > _ _ >
                             } > >
                             'Value': < | `state` < {
@@ -3201,11 +3209,11 @@
                                     'cyclic': < | `simple` ~ >
                                     'subselection': < | `component` < | `local` 'Value Subselection' * < * {
                                         'value': | `required` < | `sibling property` 'type reference' < [
-                                            | `navigable component` ~
+                                            | `component` ~
                                             | `group` 'location'
                                             | `state result` ~
                                             | `group` 'root'
-                                            | `simple component` | `local` 'Value'
+                                            | `cyclic component` ~
                                         ] > >
                                     } * {} > _ > >
                                     'type reference': < | `component` < | `local` 'Type Reference' * < * {
@@ -3223,11 +3231,11 @@
                             'Value Reference': < | `group` {
                                 'subselection': < | `component` < | `local` 'Value Subselection' * < * {
                                     'value': | `required` < | `sibling property` 'type' < [
-                                        | `navigable component` ~
+                                        | `component` ~
                                         | `group` 'location'
                                         | `state result` ~
                                         | `group` 'root'
-                                        | `simple component` | `local` 'Value'
+                                        | `cyclic component` ~
                                     ] > >
                                 } * {} > _ > >
                                 'type': < | `component` < | `local` 'Type Reference' * < * {
@@ -3238,7 +3246,7 @@
                                     'sibling namespaces': | `acyclic` ~
                                     'types': | `selection` < | `acyclic` | `resolved dictionary` < < | `parameter` 'schema' < [
                                         | `group` 'types'
-                                        | `simple component` | `local` 'Types'
+                                        | `cyclic component` ~
                                     ] > > > >
                                 } > _ > >
                             } >
@@ -3247,7 +3255,7 @@
                                     'dictionary': < * {
                                         'definition': | `state` < < | `list cursor` ~ < [] > > 'dictionary' >
                                     } | `nothing` ~ * | `context` < | `option constraint` 'definition' < [
-                                        | `simple component` | `local` 'Value'
+                                        | `cyclic component` ~
                                     ] > > _ >
                                     'group': < * {
                                         'definition': | `state` < < | `list cursor` ~ < [] > > 'group' >
@@ -3255,17 +3263,17 @@
                                         | `group` 'properties'
                                     ] > > > > _ > > * | `value` < [
                                         | `reference` < >
-                                        | `simple component` | `local` 'Value'
+                                        | `cyclic component` ~
                                     ] > _ >
                                     'list': < * {
                                         'definition': | `state` < < | `list cursor` ~ < [] > > 'list' >
                                     } | `nothing` ~ * | `context` < | `option constraint` 'definition' < [
-                                        | `simple component` | `local` 'Value'
+                                        | `cyclic component` ~
                                     ] > > _ >
                                     'optional': < * {
                                         'definition': | `state` < < | `list cursor` ~ < [] > > 'optional' >
                                     } | `nothing` ~ * | `context` < | `option constraint` 'definition' < [
-                                        | `simple component` | `local` 'Value'
+                                        | `cyclic component` ~
                                     ] > > _ >
                                     'state': < * {
                                         'definition': | `state` < < | `list cursor` ~ < [] > > 'state' >
@@ -3273,7 +3281,7 @@
                                         | `group` 'options'
                                     ] > > > > _ > > * | `value` < [
                                         | `reference` < >
-                                        | `simple component` | `local` 'Value'
+                                        | `cyclic component` ~
                                     ] > _ >
                                 } > * < < | `parameter` 'value' < [] > > | `value` < [
                                     | `state result` ~
@@ -3286,17 +3294,17 @@
                     'Module': < | `group` {
                         'declarations': < | `component` < | `child namespace` < 'declarations' 'Declarations' > * < * {
                             'schemas': | `required` < | `sibling property` 'structure' < [
-                                | `navigable component` ~
+                                | `component` ~
                                 | `group` 'schemas'
-                                | `navigable component` ~
+                                | `component` ~
                             ] > >
                         } * {} > _ > >
                         'implementations': < | `component` < | `child namespace` < 'implementations' 'Implementations' > * < * {
                             'maturity': | `required` < | `sibling property` 'maturity' < [
-                                | `navigable component` ~
+                                | `component` ~
                             ] > >
                             'schemas': | `required` < | `sibling property` 'declarations' < [
-                                | `navigable component` ~
+                                | `component` ~
                                 | `group` 'schemas'
                             ] > >
                         } * {} > _ > >

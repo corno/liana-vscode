@@ -1711,297 +1711,13 @@ export namespace structure {
                                                                                 }
                                                                             },
                                                                         ))]
-                                                                        case "navigable": return ['navigable', p.change_context($['value'], ($) => p.from.state($['type']).decide(
-                                                                            ($s): s_target.structure.Value.type_.component.type_.type_.navigable => {
+                                                                        case "cyclic": return ['cyclic', p.change_context($['value'], ($) => p.from.state($['type']).decide(
+                                                                            ($s): s_target.structure.Value.type_.component.type_.type_.cyclic => {
                                                                                 switch ($s[0]) {
-                                                                                    case 'state': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable => p_refine.from.text($['option']).to_state(
-                                                                                        ($t): s_target.structure.Value.type_.component.type_.type_.navigable => {
-                                                                                            switch ($t) {
-                                                                                                case "local": return ['local', p.change_context($['value'], ($) => p.from.state($['type']).decide(
-                                                                                                    ($s): s_target.structure.Value.type_.component.type_.type_.navigable.type_.local => {
-                                                                                                        switch ($s[0]) {
-                                                                                                            case 'reference': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable.type_.local => $)
-                                                                                                            default: return abort(
-                                                                                                                ['type mismatch', p.literal.group_resolve(() => {
-                                                                                                                    const $property_expected: s_error.Error.type_.type_mismatch.expected = ['reference', null]
-                                                                                                                    const $property_found: s_error.Error.type_.type_mismatch.found = p.from.state($['type']).decide(
-                                                                                                                        ($s): s_error.Error.type_.type_mismatch.found => {
-                                                                                                                            switch ($s[0]) {
-                                                                                                                                case 'dictionary': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['dictionary', null])
-                                                                                                                                case 'group': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['group', null])
-                                                                                                                                case 'list': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['list', null])
-                                                                                                                                case 'nothing': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['nothing', null])
-                                                                                                                                case 'optional': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['optional', null])
-                                                                                                                                case 'reference': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['reference', null])
-                                                                                                                                case 'state': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['state', null])
-                                                                                                                                case 'text': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['text', null])
-                                                                                                                                default: return p.exhaustive($s[0])
-                                                                                                                            }
-                                                                                                                        },
-                                                                                                                    )
-                                                                                                                    return {
-                                                                                                                        'expected': $property_expected,
-                                                                                                                        'found': $property_found,
-                                                                                                                    }
-                                                                                                                })],
-                                                                                                            )
-                                                                                                        }
-                                                                                                    },
-                                                                                                ))]
-                                                                                                case "child namespace": return ['child namespace', p.change_context($['value'], ($) => p.from.state($['type']).decide(
-                                                                                                    ($s): s_target.structure.Value.type_.component.type_.type_.navigable.type_.child_namespace => {
-                                                                                                        switch ($s[0]) {
-                                                                                                            case 'group': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable.type_.child_namespace => p.literal.group_resolve(() => {
-                                                                                                                const $property_namespace: s_target.structure.Value.type_.component.type_.type_.navigable.type_.child_namespace.namespace = p.from.dictionary($['properties']).get_possible_entry(
-                                                                                                                    'namespace',
-                                                                                                                    ($): s_target.structure.Value.type_.component.type_.type_.navigable.type_.child_namespace.namespace => p.from.state($['type']).decide(
-                                                                                                                        ($s): s_target.structure.Value.type_.component.type_.type_.navigable.type_.child_namespace.namespace => {
-                                                                                                                            switch ($s[0]) {
-                                                                                                                                case 'reference': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable.type_.child_namespace.namespace => $)
-                                                                                                                                default: return abort(
-                                                                                                                                    ['type mismatch', p.literal.group_resolve(() => {
-                                                                                                                                        const $property_expected: s_error.Error.type_.type_mismatch.expected = ['reference', null]
-                                                                                                                                        const $property_found: s_error.Error.type_.type_mismatch.found = p.from.state($['type']).decide(
-                                                                                                                                            ($s): s_error.Error.type_.type_mismatch.found => {
-                                                                                                                                                switch ($s[0]) {
-                                                                                                                                                    case 'dictionary': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['dictionary', null])
-                                                                                                                                                    case 'group': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['group', null])
-                                                                                                                                                    case 'list': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['list', null])
-                                                                                                                                                    case 'nothing': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['nothing', null])
-                                                                                                                                                    case 'optional': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['optional', null])
-                                                                                                                                                    case 'reference': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['reference', null])
-                                                                                                                                                    case 'state': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['state', null])
-                                                                                                                                                    case 'text': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['text', null])
-                                                                                                                                                    default: return p.exhaustive($s[0])
-                                                                                                                                                }
-                                                                                                                                            },
-                                                                                                                                        )
-                                                                                                                                        return {
-                                                                                                                                            'expected': $property_expected,
-                                                                                                                                            'found': $property_found,
-                                                                                                                                        }
-                                                                                                                                    })],
-                                                                                                                                )
-                                                                                                                            }
-                                                                                                                        },
-                                                                                                                    ),
-                                                                                                                    (): s_target.structure.Value.type_.component.type_.type_.navigable.type_.child_namespace.namespace => abort(
-                                                                                                                        ['missing property', p.literal.group_resolve(() => {
-                                                                                                                            const $property_identifier: s_error.Error.type_.missing_property.identifier = 'namespace'
-                                                                                                                            return {
-                                                                                                                                'identifier': $property_identifier,
-                                                                                                                            }
-                                                                                                                        })],
-                                                                                                                    ),
-                                                                                                                )
-                                                                                                                const $property_type_: s_target.structure.Value.type_.component.type_.type_.navigable.type_.child_namespace.type_ = p.from.dictionary($['properties']).get_possible_entry(
-                                                                                                                    'type',
-                                                                                                                    ($): s_target.structure.Value.type_.component.type_.type_.navigable.type_.child_namespace.type_ => p.from.state($['type']).decide(
-                                                                                                                        ($s): s_target.structure.Value.type_.component.type_.type_.navigable.type_.child_namespace.type_ => {
-                                                                                                                            switch ($s[0]) {
-                                                                                                                                case 'reference': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable.type_.child_namespace.type_ => $)
-                                                                                                                                default: return abort(
-                                                                                                                                    ['type mismatch', p.literal.group_resolve(() => {
-                                                                                                                                        const $property_expected: s_error.Error.type_.type_mismatch.expected = ['reference', null]
-                                                                                                                                        const $property_found: s_error.Error.type_.type_mismatch.found = p.from.state($['type']).decide(
-                                                                                                                                            ($s): s_error.Error.type_.type_mismatch.found => {
-                                                                                                                                                switch ($s[0]) {
-                                                                                                                                                    case 'dictionary': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['dictionary', null])
-                                                                                                                                                    case 'group': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['group', null])
-                                                                                                                                                    case 'list': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['list', null])
-                                                                                                                                                    case 'nothing': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['nothing', null])
-                                                                                                                                                    case 'optional': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['optional', null])
-                                                                                                                                                    case 'reference': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['reference', null])
-                                                                                                                                                    case 'state': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['state', null])
-                                                                                                                                                    case 'text': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['text', null])
-                                                                                                                                                    default: return p.exhaustive($s[0])
-                                                                                                                                                }
-                                                                                                                                            },
-                                                                                                                                        )
-                                                                                                                                        return {
-                                                                                                                                            'expected': $property_expected,
-                                                                                                                                            'found': $property_found,
-                                                                                                                                        }
-                                                                                                                                    })],
-                                                                                                                                )
-                                                                                                                            }
-                                                                                                                        },
-                                                                                                                    ),
-                                                                                                                    (): s_target.structure.Value.type_.component.type_.type_.navigable.type_.child_namespace.type_ => abort(
-                                                                                                                        ['missing property', p.literal.group_resolve(() => {
-                                                                                                                            const $property_identifier: s_error.Error.type_.missing_property.identifier = 'type'
-                                                                                                                            return {
-                                                                                                                                'identifier': $property_identifier,
-                                                                                                                            }
-                                                                                                                        })],
-                                                                                                                    ),
-                                                                                                                )
-                                                                                                                return {
-                                                                                                                    'namespace': $property_namespace,
-                                                                                                                    'type': $property_type_,
-                                                                                                                }
-                                                                                                            }))
-                                                                                                            default: return abort(
-                                                                                                                ['type mismatch', p.literal.group_resolve(() => {
-                                                                                                                    const $property_expected: s_error.Error.type_.type_mismatch.expected = ['group', null]
-                                                                                                                    const $property_found: s_error.Error.type_.type_mismatch.found = p.from.state($['type']).decide(
-                                                                                                                        ($s): s_error.Error.type_.type_mismatch.found => {
-                                                                                                                            switch ($s[0]) {
-                                                                                                                                case 'dictionary': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['dictionary', null])
-                                                                                                                                case 'group': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['group', null])
-                                                                                                                                case 'list': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['list', null])
-                                                                                                                                case 'nothing': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['nothing', null])
-                                                                                                                                case 'optional': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['optional', null])
-                                                                                                                                case 'reference': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['reference', null])
-                                                                                                                                case 'state': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['state', null])
-                                                                                                                                case 'text': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['text', null])
-                                                                                                                                default: return p.exhaustive($s[0])
-                                                                                                                            }
-                                                                                                                        },
-                                                                                                                    )
-                                                                                                                    return {
-                                                                                                                        'expected': $property_expected,
-                                                                                                                        'found': $property_found,
-                                                                                                                    }
-                                                                                                                })],
-                                                                                                            )
-                                                                                                        }
-                                                                                                    },
-                                                                                                ))]
-                                                                                                case "sibling namespace": return ['sibling namespace', p.change_context($['value'], ($) => p.from.state($['type']).decide(
-                                                                                                    ($s): s_target.structure.Value.type_.component.type_.type_.navigable.type_.sibling_namespace => {
-                                                                                                        switch ($s[0]) {
-                                                                                                            case 'group': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable.type_.sibling_namespace => p.literal.group_resolve(() => {
-                                                                                                                const $property_namespace: s_target.structure.Value.type_.component.type_.type_.navigable.type_.sibling_namespace.namespace = p.from.dictionary($['properties']).get_possible_entry(
-                                                                                                                    'namespace',
-                                                                                                                    ($): s_target.structure.Value.type_.component.type_.type_.navigable.type_.sibling_namespace.namespace => p.from.state($['type']).decide(
-                                                                                                                        ($s): s_target.structure.Value.type_.component.type_.type_.navigable.type_.sibling_namespace.namespace => {
-                                                                                                                            switch ($s[0]) {
-                                                                                                                                case 'reference': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable.type_.sibling_namespace.namespace => $)
-                                                                                                                                default: return abort(
-                                                                                                                                    ['type mismatch', p.literal.group_resolve(() => {
-                                                                                                                                        const $property_expected: s_error.Error.type_.type_mismatch.expected = ['reference', null]
-                                                                                                                                        const $property_found: s_error.Error.type_.type_mismatch.found = p.from.state($['type']).decide(
-                                                                                                                                            ($s): s_error.Error.type_.type_mismatch.found => {
-                                                                                                                                                switch ($s[0]) {
-                                                                                                                                                    case 'dictionary': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['dictionary', null])
-                                                                                                                                                    case 'group': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['group', null])
-                                                                                                                                                    case 'list': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['list', null])
-                                                                                                                                                    case 'nothing': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['nothing', null])
-                                                                                                                                                    case 'optional': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['optional', null])
-                                                                                                                                                    case 'reference': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['reference', null])
-                                                                                                                                                    case 'state': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['state', null])
-                                                                                                                                                    case 'text': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['text', null])
-                                                                                                                                                    default: return p.exhaustive($s[0])
-                                                                                                                                                }
-                                                                                                                                            },
-                                                                                                                                        )
-                                                                                                                                        return {
-                                                                                                                                            'expected': $property_expected,
-                                                                                                                                            'found': $property_found,
-                                                                                                                                        }
-                                                                                                                                    })],
-                                                                                                                                )
-                                                                                                                            }
-                                                                                                                        },
-                                                                                                                    ),
-                                                                                                                    (): s_target.structure.Value.type_.component.type_.type_.navigable.type_.sibling_namespace.namespace => abort(
-                                                                                                                        ['missing property', p.literal.group_resolve(() => {
-                                                                                                                            const $property_identifier: s_error.Error.type_.missing_property.identifier = 'namespace'
-                                                                                                                            return {
-                                                                                                                                'identifier': $property_identifier,
-                                                                                                                            }
-                                                                                                                        })],
-                                                                                                                    ),
-                                                                                                                )
-                                                                                                                const $property_type_: s_target.structure.Value.type_.component.type_.type_.navigable.type_.sibling_namespace.type_ = p.from.dictionary($['properties']).get_possible_entry(
-                                                                                                                    'type',
-                                                                                                                    ($): s_target.structure.Value.type_.component.type_.type_.navigable.type_.sibling_namespace.type_ => p.from.state($['type']).decide(
-                                                                                                                        ($s): s_target.structure.Value.type_.component.type_.type_.navigable.type_.sibling_namespace.type_ => {
-                                                                                                                            switch ($s[0]) {
-                                                                                                                                case 'reference': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.navigable.type_.sibling_namespace.type_ => $)
-                                                                                                                                default: return abort(
-                                                                                                                                    ['type mismatch', p.literal.group_resolve(() => {
-                                                                                                                                        const $property_expected: s_error.Error.type_.type_mismatch.expected = ['reference', null]
-                                                                                                                                        const $property_found: s_error.Error.type_.type_mismatch.found = p.from.state($['type']).decide(
-                                                                                                                                            ($s): s_error.Error.type_.type_mismatch.found => {
-                                                                                                                                                switch ($s[0]) {
-                                                                                                                                                    case 'dictionary': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['dictionary', null])
-                                                                                                                                                    case 'group': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['group', null])
-                                                                                                                                                    case 'list': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['list', null])
-                                                                                                                                                    case 'nothing': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['nothing', null])
-                                                                                                                                                    case 'optional': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['optional', null])
-                                                                                                                                                    case 'reference': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['reference', null])
-                                                                                                                                                    case 'state': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['state', null])
-                                                                                                                                                    case 'text': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['text', null])
-                                                                                                                                                    default: return p.exhaustive($s[0])
-                                                                                                                                                }
-                                                                                                                                            },
-                                                                                                                                        )
-                                                                                                                                        return {
-                                                                                                                                            'expected': $property_expected,
-                                                                                                                                            'found': $property_found,
-                                                                                                                                        }
-                                                                                                                                    })],
-                                                                                                                                )
-                                                                                                                            }
-                                                                                                                        },
-                                                                                                                    ),
-                                                                                                                    (): s_target.structure.Value.type_.component.type_.type_.navigable.type_.sibling_namespace.type_ => abort(
-                                                                                                                        ['missing property', p.literal.group_resolve(() => {
-                                                                                                                            const $property_identifier: s_error.Error.type_.missing_property.identifier = 'type'
-                                                                                                                            return {
-                                                                                                                                'identifier': $property_identifier,
-                                                                                                                            }
-                                                                                                                        })],
-                                                                                                                    ),
-                                                                                                                )
-                                                                                                                return {
-                                                                                                                    'namespace': $property_namespace,
-                                                                                                                    'type': $property_type_,
-                                                                                                                }
-                                                                                                            }))
-                                                                                                            default: return abort(
-                                                                                                                ['type mismatch', p.literal.group_resolve(() => {
-                                                                                                                    const $property_expected: s_error.Error.type_.type_mismatch.expected = ['group', null]
-                                                                                                                    const $property_found: s_error.Error.type_.type_mismatch.found = p.from.state($['type']).decide(
-                                                                                                                        ($s): s_error.Error.type_.type_mismatch.found => {
-                                                                                                                            switch ($s[0]) {
-                                                                                                                                case 'dictionary': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['dictionary', null])
-                                                                                                                                case 'group': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['group', null])
-                                                                                                                                case 'list': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['list', null])
-                                                                                                                                case 'nothing': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['nothing', null])
-                                                                                                                                case 'optional': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['optional', null])
-                                                                                                                                case 'reference': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['reference', null])
-                                                                                                                                case 'state': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['state', null])
-                                                                                                                                case 'text': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['text', null])
-                                                                                                                                default: return p.exhaustive($s[0])
-                                                                                                                            }
-                                                                                                                        },
-                                                                                                                    )
-                                                                                                                    return {
-                                                                                                                        'expected': $property_expected,
-                                                                                                                        'found': $property_found,
-                                                                                                                    }
-                                                                                                                })],
-                                                                                                            )
-                                                                                                        }
-                                                                                                    },
-                                                                                                ))]
-                                                                                                default: return abort(
-                                                                                                    ['unknown state option', p.literal.group_resolve(() => {
-                                                                                                        const $property_identifier: s_error.Error.type_.unknown_state_option.identifier = $['option']
-                                                                                                        return {
-                                                                                                            'identifier': $property_identifier,
-                                                                                                        }
-                                                                                                    })],
-                                                                                                )
-                                                                                            }
-                                                                                        },
-                                                                                    ))
+                                                                                    case 'reference': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.cyclic => $)
                                                                                     default: return abort(
                                                                                         ['type mismatch', p.literal.group_resolve(() => {
-                                                                                            const $property_expected: s_error.Error.type_.type_mismatch.expected = ['state', null]
+                                                                                            const $property_expected: s_error.Error.type_.type_mismatch.expected = ['reference', null]
                                                                                             const $property_found: s_error.Error.type_.type_mismatch.found = p.from.state($['type']).decide(
                                                                                                 ($s): s_error.Error.type_.type_mismatch.found => {
                                                                                                     switch ($s[0]) {
@@ -6652,322 +6368,6 @@ export namespace resolver {
         },
     )
     
-    export const Simple_Component_Selection: d.resolver.Simple_Component_Selection = ($, abort) => p.from.state($['type']).decide(
-        ($s): s_target.resolver.Simple_Component_Selection => {
-            switch ($s[0]) {
-                case 'state': return p.option($s, ($): s_target.resolver.Simple_Component_Selection => p_refine.from.text($['option']).to_state(
-                    ($t): s_target.resolver.Simple_Component_Selection => {
-                        switch ($t) {
-                            case "local": return ['local', p.change_context($['value'], ($) => p.from.state($['type']).decide(
-                                ($s): s_target.resolver.Simple_Component_Selection.type_.local => {
-                                    switch ($s[0]) {
-                                        case 'reference': return p.option($s, ($): s_target.resolver.Simple_Component_Selection.type_.local => $)
-                                        default: return abort(
-                                            ['type mismatch', p.literal.group_resolve(() => {
-                                                const $property_expected: s_error.Error.type_.type_mismatch.expected = ['reference', null]
-                                                const $property_found: s_error.Error.type_.type_mismatch.found = p.from.state($['type']).decide(
-                                                    ($s): s_error.Error.type_.type_mismatch.found => {
-                                                        switch ($s[0]) {
-                                                            case 'dictionary': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['dictionary', null])
-                                                            case 'group': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['group', null])
-                                                            case 'list': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['list', null])
-                                                            case 'nothing': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['nothing', null])
-                                                            case 'optional': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['optional', null])
-                                                            case 'reference': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['reference', null])
-                                                            case 'state': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['state', null])
-                                                            case 'text': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['text', null])
-                                                            default: return p.exhaustive($s[0])
-                                                        }
-                                                    },
-                                                )
-                                                return {
-                                                    'expected': $property_expected,
-                                                    'found': $property_found,
-                                                }
-                                            })],
-                                        )
-                                    }
-                                },
-                            ))]
-                            case "child namespace": return ['child namespace', p.change_context($['value'], ($) => p.from.state($['type']).decide(
-                                ($s): s_target.resolver.Simple_Component_Selection.type_.child_namespace => {
-                                    switch ($s[0]) {
-                                        case 'group': return p.option($s, ($): s_target.resolver.Simple_Component_Selection.type_.child_namespace => p.literal.group_resolve(() => {
-                                            const $property_namespace: s_target.resolver.Simple_Component_Selection.type_.child_namespace.namespace = p.from.dictionary($['properties']).get_possible_entry(
-                                                'namespace',
-                                                ($): s_target.resolver.Simple_Component_Selection.type_.child_namespace.namespace => p.from.state($['type']).decide(
-                                                    ($s): s_target.resolver.Simple_Component_Selection.type_.child_namespace.namespace => {
-                                                        switch ($s[0]) {
-                                                            case 'reference': return p.option($s, ($): s_target.resolver.Simple_Component_Selection.type_.child_namespace.namespace => $)
-                                                            default: return abort(
-                                                                ['type mismatch', p.literal.group_resolve(() => {
-                                                                    const $property_expected: s_error.Error.type_.type_mismatch.expected = ['reference', null]
-                                                                    const $property_found: s_error.Error.type_.type_mismatch.found = p.from.state($['type']).decide(
-                                                                        ($s): s_error.Error.type_.type_mismatch.found => {
-                                                                            switch ($s[0]) {
-                                                                                case 'dictionary': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['dictionary', null])
-                                                                                case 'group': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['group', null])
-                                                                                case 'list': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['list', null])
-                                                                                case 'nothing': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['nothing', null])
-                                                                                case 'optional': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['optional', null])
-                                                                                case 'reference': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['reference', null])
-                                                                                case 'state': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['state', null])
-                                                                                case 'text': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['text', null])
-                                                                                default: return p.exhaustive($s[0])
-                                                                            }
-                                                                        },
-                                                                    )
-                                                                    return {
-                                                                        'expected': $property_expected,
-                                                                        'found': $property_found,
-                                                                    }
-                                                                })],
-                                                            )
-                                                        }
-                                                    },
-                                                ),
-                                                (): s_target.resolver.Simple_Component_Selection.type_.child_namespace.namespace => abort(
-                                                    ['missing property', p.literal.group_resolve(() => {
-                                                        const $property_identifier: s_error.Error.type_.missing_property.identifier = 'namespace'
-                                                        return {
-                                                            'identifier': $property_identifier,
-                                                        }
-                                                    })],
-                                                ),
-                                            )
-                                            const $property_type_: s_target.resolver.Simple_Component_Selection.type_.child_namespace.type_ = p.from.dictionary($['properties']).get_possible_entry(
-                                                'type',
-                                                ($): s_target.resolver.Simple_Component_Selection.type_.child_namespace.type_ => p.from.state($['type']).decide(
-                                                    ($s): s_target.resolver.Simple_Component_Selection.type_.child_namespace.type_ => {
-                                                        switch ($s[0]) {
-                                                            case 'reference': return p.option($s, ($): s_target.resolver.Simple_Component_Selection.type_.child_namespace.type_ => $)
-                                                            default: return abort(
-                                                                ['type mismatch', p.literal.group_resolve(() => {
-                                                                    const $property_expected: s_error.Error.type_.type_mismatch.expected = ['reference', null]
-                                                                    const $property_found: s_error.Error.type_.type_mismatch.found = p.from.state($['type']).decide(
-                                                                        ($s): s_error.Error.type_.type_mismatch.found => {
-                                                                            switch ($s[0]) {
-                                                                                case 'dictionary': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['dictionary', null])
-                                                                                case 'group': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['group', null])
-                                                                                case 'list': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['list', null])
-                                                                                case 'nothing': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['nothing', null])
-                                                                                case 'optional': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['optional', null])
-                                                                                case 'reference': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['reference', null])
-                                                                                case 'state': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['state', null])
-                                                                                case 'text': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['text', null])
-                                                                                default: return p.exhaustive($s[0])
-                                                                            }
-                                                                        },
-                                                                    )
-                                                                    return {
-                                                                        'expected': $property_expected,
-                                                                        'found': $property_found,
-                                                                    }
-                                                                })],
-                                                            )
-                                                        }
-                                                    },
-                                                ),
-                                                (): s_target.resolver.Simple_Component_Selection.type_.child_namespace.type_ => abort(
-                                                    ['missing property', p.literal.group_resolve(() => {
-                                                        const $property_identifier: s_error.Error.type_.missing_property.identifier = 'type'
-                                                        return {
-                                                            'identifier': $property_identifier,
-                                                        }
-                                                    })],
-                                                ),
-                                            )
-                                            return {
-                                                'namespace': $property_namespace,
-                                                'type': $property_type_,
-                                            }
-                                        }))
-                                        default: return abort(
-                                            ['type mismatch', p.literal.group_resolve(() => {
-                                                const $property_expected: s_error.Error.type_.type_mismatch.expected = ['group', null]
-                                                const $property_found: s_error.Error.type_.type_mismatch.found = p.from.state($['type']).decide(
-                                                    ($s): s_error.Error.type_.type_mismatch.found => {
-                                                        switch ($s[0]) {
-                                                            case 'dictionary': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['dictionary', null])
-                                                            case 'group': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['group', null])
-                                                            case 'list': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['list', null])
-                                                            case 'nothing': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['nothing', null])
-                                                            case 'optional': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['optional', null])
-                                                            case 'reference': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['reference', null])
-                                                            case 'state': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['state', null])
-                                                            case 'text': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['text', null])
-                                                            default: return p.exhaustive($s[0])
-                                                        }
-                                                    },
-                                                )
-                                                return {
-                                                    'expected': $property_expected,
-                                                    'found': $property_found,
-                                                }
-                                            })],
-                                        )
-                                    }
-                                },
-                            ))]
-                            case "sibling namespace": return ['sibling namespace', p.change_context($['value'], ($) => p.from.state($['type']).decide(
-                                ($s): s_target.resolver.Simple_Component_Selection.type_.sibling_namespace => {
-                                    switch ($s[0]) {
-                                        case 'group': return p.option($s, ($): s_target.resolver.Simple_Component_Selection.type_.sibling_namespace => p.literal.group_resolve(() => {
-                                            const $property_namespace: s_target.resolver.Simple_Component_Selection.type_.sibling_namespace.namespace = p.from.dictionary($['properties']).get_possible_entry(
-                                                'namespace',
-                                                ($): s_target.resolver.Simple_Component_Selection.type_.sibling_namespace.namespace => p.from.state($['type']).decide(
-                                                    ($s): s_target.resolver.Simple_Component_Selection.type_.sibling_namespace.namespace => {
-                                                        switch ($s[0]) {
-                                                            case 'reference': return p.option($s, ($): s_target.resolver.Simple_Component_Selection.type_.sibling_namespace.namespace => $)
-                                                            default: return abort(
-                                                                ['type mismatch', p.literal.group_resolve(() => {
-                                                                    const $property_expected: s_error.Error.type_.type_mismatch.expected = ['reference', null]
-                                                                    const $property_found: s_error.Error.type_.type_mismatch.found = p.from.state($['type']).decide(
-                                                                        ($s): s_error.Error.type_.type_mismatch.found => {
-                                                                            switch ($s[0]) {
-                                                                                case 'dictionary': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['dictionary', null])
-                                                                                case 'group': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['group', null])
-                                                                                case 'list': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['list', null])
-                                                                                case 'nothing': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['nothing', null])
-                                                                                case 'optional': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['optional', null])
-                                                                                case 'reference': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['reference', null])
-                                                                                case 'state': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['state', null])
-                                                                                case 'text': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['text', null])
-                                                                                default: return p.exhaustive($s[0])
-                                                                            }
-                                                                        },
-                                                                    )
-                                                                    return {
-                                                                        'expected': $property_expected,
-                                                                        'found': $property_found,
-                                                                    }
-                                                                })],
-                                                            )
-                                                        }
-                                                    },
-                                                ),
-                                                (): s_target.resolver.Simple_Component_Selection.type_.sibling_namespace.namespace => abort(
-                                                    ['missing property', p.literal.group_resolve(() => {
-                                                        const $property_identifier: s_error.Error.type_.missing_property.identifier = 'namespace'
-                                                        return {
-                                                            'identifier': $property_identifier,
-                                                        }
-                                                    })],
-                                                ),
-                                            )
-                                            const $property_type_: s_target.resolver.Simple_Component_Selection.type_.sibling_namespace.type_ = p.from.dictionary($['properties']).get_possible_entry(
-                                                'type',
-                                                ($): s_target.resolver.Simple_Component_Selection.type_.sibling_namespace.type_ => p.from.state($['type']).decide(
-                                                    ($s): s_target.resolver.Simple_Component_Selection.type_.sibling_namespace.type_ => {
-                                                        switch ($s[0]) {
-                                                            case 'reference': return p.option($s, ($): s_target.resolver.Simple_Component_Selection.type_.sibling_namespace.type_ => $)
-                                                            default: return abort(
-                                                                ['type mismatch', p.literal.group_resolve(() => {
-                                                                    const $property_expected: s_error.Error.type_.type_mismatch.expected = ['reference', null]
-                                                                    const $property_found: s_error.Error.type_.type_mismatch.found = p.from.state($['type']).decide(
-                                                                        ($s): s_error.Error.type_.type_mismatch.found => {
-                                                                            switch ($s[0]) {
-                                                                                case 'dictionary': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['dictionary', null])
-                                                                                case 'group': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['group', null])
-                                                                                case 'list': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['list', null])
-                                                                                case 'nothing': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['nothing', null])
-                                                                                case 'optional': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['optional', null])
-                                                                                case 'reference': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['reference', null])
-                                                                                case 'state': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['state', null])
-                                                                                case 'text': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['text', null])
-                                                                                default: return p.exhaustive($s[0])
-                                                                            }
-                                                                        },
-                                                                    )
-                                                                    return {
-                                                                        'expected': $property_expected,
-                                                                        'found': $property_found,
-                                                                    }
-                                                                })],
-                                                            )
-                                                        }
-                                                    },
-                                                ),
-                                                (): s_target.resolver.Simple_Component_Selection.type_.sibling_namespace.type_ => abort(
-                                                    ['missing property', p.literal.group_resolve(() => {
-                                                        const $property_identifier: s_error.Error.type_.missing_property.identifier = 'type'
-                                                        return {
-                                                            'identifier': $property_identifier,
-                                                        }
-                                                    })],
-                                                ),
-                                            )
-                                            return {
-                                                'namespace': $property_namespace,
-                                                'type': $property_type_,
-                                            }
-                                        }))
-                                        default: return abort(
-                                            ['type mismatch', p.literal.group_resolve(() => {
-                                                const $property_expected: s_error.Error.type_.type_mismatch.expected = ['group', null]
-                                                const $property_found: s_error.Error.type_.type_mismatch.found = p.from.state($['type']).decide(
-                                                    ($s): s_error.Error.type_.type_mismatch.found => {
-                                                        switch ($s[0]) {
-                                                            case 'dictionary': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['dictionary', null])
-                                                            case 'group': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['group', null])
-                                                            case 'list': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['list', null])
-                                                            case 'nothing': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['nothing', null])
-                                                            case 'optional': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['optional', null])
-                                                            case 'reference': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['reference', null])
-                                                            case 'state': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['state', null])
-                                                            case 'text': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['text', null])
-                                                            default: return p.exhaustive($s[0])
-                                                        }
-                                                    },
-                                                )
-                                                return {
-                                                    'expected': $property_expected,
-                                                    'found': $property_found,
-                                                }
-                                            })],
-                                        )
-                                    }
-                                },
-                            ))]
-                            default: return abort(
-                                ['unknown state option', p.literal.group_resolve(() => {
-                                    const $property_identifier: s_error.Error.type_.unknown_state_option.identifier = $['option']
-                                    return {
-                                        'identifier': $property_identifier,
-                                    }
-                                })],
-                            )
-                        }
-                    },
-                ))
-                default: return abort(
-                    ['type mismatch', p.literal.group_resolve(() => {
-                        const $property_expected: s_error.Error.type_.type_mismatch.expected = ['state', null]
-                        const $property_found: s_error.Error.type_.type_mismatch.found = p.from.state($['type']).decide(
-                            ($s): s_error.Error.type_.type_mismatch.found => {
-                                switch ($s[0]) {
-                                    case 'dictionary': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['dictionary', null])
-                                    case 'group': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['group', null])
-                                    case 'list': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['list', null])
-                                    case 'nothing': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['nothing', null])
-                                    case 'optional': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['optional', null])
-                                    case 'reference': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['reference', null])
-                                    case 'state': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['state', null])
-                                    case 'text': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['text', null])
-                                    default: return p.exhaustive($s[0])
-                                }
-                            },
-                        )
-                        return {
-                            'expected': $property_expected,
-                            'found': $property_found,
-                        }
-                    })],
-                )
-            }
-        },
-    )
-    
     export const Relative_Value_Selection: d.resolver.Relative_Value_Selection = ($, abort) => p.from.state($['type']).decide(
         ($s): s_target.resolver.Relative_Value_Selection => {
             switch ($s[0]) {
@@ -6985,10 +6385,6 @@ export namespace resolver {
                                                         ($t): s_target.resolver.Relative_Value_Selection.path.L => {
                                                             switch ($t) {
                                                                 case "benchmark link": return ['benchmark link', p.change_context($['value'], ($) => Value_Reference(
-                                                                    $,
-                                                                    abort,
-                                                                ))]
-                                                                case "simple component": return ['simple component', p.change_context($['value'], ($) => Simple_Component_Selection(
                                                                     $,
                                                                     abort,
                                                                 ))]
@@ -7085,10 +6481,41 @@ export namespace resolver {
                                                                         }
                                                                     },
                                                                 ))]
-                                                                case "navigable component": return ['navigable component', p.change_context($['value'], ($) => p.from.state($['type']).decide(
-                                                                    ($s): s_target.resolver.Relative_Value_Selection.path.L.type_.navigable_component => {
+                                                                case "component": return ['component', p.change_context($['value'], ($) => p.from.state($['type']).decide(
+                                                                    ($s): s_target.resolver.Relative_Value_Selection.path.L.type_.component => {
                                                                         switch ($s[0]) {
-                                                                            case 'nothing': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L.type_.navigable_component => null)
+                                                                            case 'nothing': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L.type_.component => null)
+                                                                            default: return abort(
+                                                                                ['type mismatch', p.literal.group_resolve(() => {
+                                                                                    const $property_expected: s_error.Error.type_.type_mismatch.expected = ['nothing', null]
+                                                                                    const $property_found: s_error.Error.type_.type_mismatch.found = p.from.state($['type']).decide(
+                                                                                        ($s): s_error.Error.type_.type_mismatch.found => {
+                                                                                            switch ($s[0]) {
+                                                                                                case 'dictionary': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['dictionary', null])
+                                                                                                case 'group': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['group', null])
+                                                                                                case 'list': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['list', null])
+                                                                                                case 'nothing': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['nothing', null])
+                                                                                                case 'optional': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['optional', null])
+                                                                                                case 'reference': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['reference', null])
+                                                                                                case 'state': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['state', null])
+                                                                                                case 'text': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['text', null])
+                                                                                                default: return p.exhaustive($s[0])
+                                                                                            }
+                                                                                        },
+                                                                                    )
+                                                                                    return {
+                                                                                        'expected': $property_expected,
+                                                                                        'found': $property_found,
+                                                                                    }
+                                                                                })],
+                                                                            )
+                                                                        }
+                                                                    },
+                                                                ))]
+                                                                case "cyclic component": return ['cyclic component', p.change_context($['value'], ($) => p.from.state($['type']).decide(
+                                                                    ($s): s_target.resolver.Relative_Value_Selection.path.L.type_.cyclic_component => {
+                                                                        switch ($s[0]) {
+                                                                            case 'nothing': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L.type_.cyclic_component => null)
                                                                             default: return abort(
                                                                                 ['type mismatch', p.literal.group_resolve(() => {
                                                                                     const $property_expected: s_error.Error.type_.type_mismatch.expected = ['nothing', null]
@@ -7395,6 +6822,37 @@ export namespace resolver {
                                                                     ($s): s_target.resolver.Relative_Value_Selection.path.L.type_.reference => {
                                                                         switch ($s[0]) {
                                                                             case 'group': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L.type_.reference => null)
+                                                                            default: return abort(
+                                                                                ['type mismatch', p.literal.group_resolve(() => {
+                                                                                    const $property_expected: s_error.Error.type_.type_mismatch.expected = ['group', null]
+                                                                                    const $property_found: s_error.Error.type_.type_mismatch.found = p.from.state($['type']).decide(
+                                                                                        ($s): s_error.Error.type_.type_mismatch.found => {
+                                                                                            switch ($s[0]) {
+                                                                                                case 'dictionary': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['dictionary', null])
+                                                                                                case 'group': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['group', null])
+                                                                                                case 'list': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['list', null])
+                                                                                                case 'nothing': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['nothing', null])
+                                                                                                case 'optional': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['optional', null])
+                                                                                                case 'reference': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['reference', null])
+                                                                                                case 'state': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['state', null])
+                                                                                                case 'text': return p.option($s, ($): s_error.Error.type_.type_mismatch.found => ['text', null])
+                                                                                                default: return p.exhaustive($s[0])
+                                                                                            }
+                                                                                        },
+                                                                                    )
+                                                                                    return {
+                                                                                        'expected': $property_expected,
+                                                                                        'found': $property_found,
+                                                                                    }
+                                                                                })],
+                                                                            )
+                                                                        }
+                                                                    },
+                                                                ))]
+                                                                case "expect resolved": return ['expect resolved', p.change_context($['value'], ($) => p.from.state($['type']).decide(
+                                                                    ($s): s_target.resolver.Relative_Value_Selection.path.L.type_.expect_resolved => {
+                                                                        switch ($s[0]) {
+                                                                            case 'group': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L.type_.expect_resolved => null)
                                                                             default: return abort(
                                                                                 ['type mismatch', p.literal.group_resolve(() => {
                                                                                     const $property_expected: s_error.Error.type_.type_mismatch.expected = ['group', null]

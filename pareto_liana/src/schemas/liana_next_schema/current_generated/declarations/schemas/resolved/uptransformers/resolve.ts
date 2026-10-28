@@ -313,19 +313,6 @@ export namespace resolver {
         }
     >
     
-    export type Simple_Component_Selection = temp_pareto_core.Refiner_With_Error_With_Source_Value_With_Values_And_Lookups<
-        s_target.resolver.Simple_Component_Selection,
-        s_error.Error,
-        s_source.resolver.Simple_Component_Selection,
-        {
-            readonly 'child namespaces': s_target.structure.Namespaces
-            readonly 'sibling namespaces': p_schema_deprecated.Optional_Value<s_target.structure.Namespaces>
-        },
-        {
-            readonly 'types': p_.lookup.Acyclic<s_target.structure.Types.D>
-        }
-    >
-    
     export type Relative_Value_Selection = temp_pareto_core.Refiner_With_Error_With_Source_Value_With_Values_And_Lookups<
         s_target.resolver.Relative_Value_Selection,
         s_error.Error,

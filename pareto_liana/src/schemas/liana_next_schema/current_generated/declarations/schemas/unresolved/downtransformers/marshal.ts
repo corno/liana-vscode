@@ -140,11 +140,6 @@ export namespace resolver {
         s_source.resolver.Value_Reference
     >
     
-    export type Simple_Component_Selection = temp_pareto_core.Transformer_With_Source_Value<
-        s_target.Value,
-        s_source.resolver.Simple_Component_Selection
-    >
-    
     export type Relative_Value_Selection = temp_pareto_core.Transformer_With_Source_Value<
         s_target.Value,
         s_source.resolver.Relative_Value_Selection
