@@ -6983,10 +6983,244 @@ export namespace resolver {
         }
     })
     
+    export const Possible_Value_Branches: d.resolver.Possible_Value_Branches = ($, abort, $values, $lookups) => p_variables(() => {
+        const $coverage = $values['options']
+        const $resolved = p_refine.from.dictionary($).resolve(
+            ($, $id, $acyclic, $cyclic): s_target.resolver.Possible_Value_Branches.D => p.literal.group_resolve(() => {
+                const $property_benchmark: s_target.resolver.Possible_Value_Branches.D.benchmark = p_lookup.acyclic.from_resolved_dictionary($values['options']).get_entry(
+                    $id,
+                    {
+                        'no_such_entry': () => abort(
+                            p.literal.group_resolve(() => {
+                                const $property_type_: s_error.Error.type_ = ['missing benchmark entry', p.literal.group_resolve(() => {
+                                    const $property_identifier: s_error.Error.type_.type_.missing_benchmark_entry.identifier = $id
+                                    return {
+                                        'identifier': $property_identifier,
+                                    }
+                                })]
+                                return {
+                                    'type': $property_type_,
+                                }
+                            }),
+                        ),
+                        'no_context_lookup': () => p_unreachable(
+                            'from_resolved_dictionary supplies the lookup context directly; it cannot report an absent context',
+                        ),
+                        'cycle_detected': () => p_unreachable(
+                            'from_resolved_dictionary only reads already-resolved entries; it does not resolve dependencies and cannot detect a cycle',
+                        ),
+                    },
+                )
+                const $property_value: s_target.resolver.Possible_Value_Branches.D.value = p.from.state($).decide(
+                    ($s): s_target.resolver.Possible_Value_Branches.D.value => {
+                        switch ($s[0]) {
+                            case 'not set': return p.option($s, ($): s_target.resolver.Possible_Value_Branches.D.value => ['not set', null])
+                            case 'set': return p.option($s, ($): s_target.resolver.Possible_Value_Branches.D.value => ['set', Relative_Value_Selection(
+                                $,
+                                abort,
+                                {
+                                    'value': $property_benchmark['value'],
+                                    'types': $values['types'],
+                                    'child namespaces': $values['child namespaces'],
+                                    'sibling namespaces': $values['sibling namespaces'],
+                                },
+                                null,
+                            )])
+                            default: return p.exhaustive($s[0])
+                        }
+                    },
+                )
+                return {
+                    'benchmark': $property_benchmark,
+                    'value': $property_value,
+                }
+            }),
+        )
+        p.from.dictionary($coverage).map(
+            ($coverage_entry, $coverage_id) => p.from.dictionary($resolved).get_possible_entry(
+                $coverage_id,
+                () => null,
+                () => abort(
+                    p.literal.group_resolve(() => {
+                        const $property_type_: s_error.Error.type_ = ['missing dense dictionary entry', null]
+                        return {
+                            'type': $property_type_,
+                        }
+                    }),
+                ),
+            ),
+        )
+        return $resolved
+    })
+    
     export const Possible_Value_Selection: d.resolver.Possible_Value_Selection = ($, abort, $values, $lookups) => p.literal.group_resolve(() => {
         const $property_value: s_target.resolver.Possible_Value_Selection.value = p.from.state($).decide(
             ($s): s_target.resolver.Possible_Value_Selection.value => {
                 switch ($s[0]) {
+                    case 'switch state': return p.option($s, ($): s_target.resolver.Possible_Value_Selection.value => ['switch state', p.literal.group_resolve(() => {
+                        const $property_target: s_target.resolver.Possible_Value_Selection.value.type_.switch_state.target = p.change_context($['target'], ($) => Value_Reference(
+                            $,
+                            abort,
+                            {
+                                'child namespaces': $values['child namespaces'],
+                                'sibling namespaces': $values['sibling namespaces'],
+                            },
+                            {
+                                'types': p_lookup.acyclic.from_resolved_dictionary($values['types']),
+                            },
+                        ))
+                        const $property_selection: s_target.resolver.Possible_Value_Selection.value.type_.switch_state.selection = p.change_context($['selection'], ($) => p.literal.group_resolve(() => {
+                            const $property_value: s_target.resolver.Possible_Value_Selection.value.type_.switch_state.selection.value = Guaranteed_Value_Selection(
+                                $,
+                                abort,
+                                $values,
+                                $lookups,
+                            )
+                            const $property_constraints: s_target.resolver.Possible_Value_Selection.value.type_.switch_state.selection.constraints = temp_pareto_core.group_resolve_with_dependencies(
+                                {
+                                    'value': $property_value,
+                                },
+                                ($parent_captures) => {
+                                    const $property_state: s_target.resolver.Possible_Value_Selection.value.type_.switch_state.selection.constraints.state = p.from.state($parent_captures['value']['tail']['path']['result']).decide(
+                                        ($s): s_target.resolver.Possible_Value_Selection.value.type_.switch_state.selection.constraints.state => {
+                                            switch ($s[0]) {
+                                                case 'component': return p.option($s, ($): s_target.resolver.Possible_Value_Selection.value.type_.switch_state.selection.constraints.state => abort(
+                                                    p.literal.group_resolve(() => {
+                                                        const $property_type_: s_error.Error.type_ = ['reference constraint failed', p.literal.group_resolve(() => {
+                                                            const $property_constraint: s_error.Error.type_.type_.reference_constraint_failed.constraint = 'state'
+                                                            return {
+                                                                'constraint': $property_constraint,
+                                                            }
+                                                        })]
+                                                        return {
+                                                            'type': $property_type_,
+                                                        }
+                                                    }),
+                                                ))
+                                                case 'dictionary': return p.option($s, ($): s_target.resolver.Possible_Value_Selection.value.type_.switch_state.selection.constraints.state => abort(
+                                                    p.literal.group_resolve(() => {
+                                                        const $property_type_: s_error.Error.type_ = ['reference constraint failed', p.literal.group_resolve(() => {
+                                                            const $property_constraint: s_error.Error.type_.type_.reference_constraint_failed.constraint = 'state'
+                                                            return {
+                                                                'constraint': $property_constraint,
+                                                            }
+                                                        })]
+                                                        return {
+                                                            'type': $property_type_,
+                                                        }
+                                                    }),
+                                                ))
+                                                case 'group': return p.option($s, ($): s_target.resolver.Possible_Value_Selection.value.type_.switch_state.selection.constraints.state => abort(
+                                                    p.literal.group_resolve(() => {
+                                                        const $property_type_: s_error.Error.type_ = ['reference constraint failed', p.literal.group_resolve(() => {
+                                                            const $property_constraint: s_error.Error.type_.type_.reference_constraint_failed.constraint = 'state'
+                                                            return {
+                                                                'constraint': $property_constraint,
+                                                            }
+                                                        })]
+                                                        return {
+                                                            'type': $property_type_,
+                                                        }
+                                                    }),
+                                                ))
+                                                case 'list': return p.option($s, ($): s_target.resolver.Possible_Value_Selection.value.type_.switch_state.selection.constraints.state => abort(
+                                                    p.literal.group_resolve(() => {
+                                                        const $property_type_: s_error.Error.type_ = ['reference constraint failed', p.literal.group_resolve(() => {
+                                                            const $property_constraint: s_error.Error.type_.type_.reference_constraint_failed.constraint = 'state'
+                                                            return {
+                                                                'constraint': $property_constraint,
+                                                            }
+                                                        })]
+                                                        return {
+                                                            'type': $property_type_,
+                                                        }
+                                                    }),
+                                                ))
+                                                case 'nothing': return p.option($s, ($): s_target.resolver.Possible_Value_Selection.value.type_.switch_state.selection.constraints.state => abort(
+                                                    p.literal.group_resolve(() => {
+                                                        const $property_type_: s_error.Error.type_ = ['reference constraint failed', p.literal.group_resolve(() => {
+                                                            const $property_constraint: s_error.Error.type_.type_.reference_constraint_failed.constraint = 'state'
+                                                            return {
+                                                                'constraint': $property_constraint,
+                                                            }
+                                                        })]
+                                                        return {
+                                                            'type': $property_type_,
+                                                        }
+                                                    }),
+                                                ))
+                                                case 'simple': return p.option($s, ($): s_target.resolver.Possible_Value_Selection.value.type_.switch_state.selection.constraints.state => abort(
+                                                    p.literal.group_resolve(() => {
+                                                        const $property_type_: s_error.Error.type_ = ['reference constraint failed', p.literal.group_resolve(() => {
+                                                            const $property_constraint: s_error.Error.type_.type_.reference_constraint_failed.constraint = 'state'
+                                                            return {
+                                                                'constraint': $property_constraint,
+                                                            }
+                                                        })]
+                                                        return {
+                                                            'type': $property_type_,
+                                                        }
+                                                    }),
+                                                ))
+                                                case 'optional': return p.option($s, ($): s_target.resolver.Possible_Value_Selection.value.type_.switch_state.selection.constraints.state => abort(
+                                                    p.literal.group_resolve(() => {
+                                                        const $property_type_: s_error.Error.type_ = ['reference constraint failed', p.literal.group_resolve(() => {
+                                                            const $property_constraint: s_error.Error.type_.type_.reference_constraint_failed.constraint = 'state'
+                                                            return {
+                                                                'constraint': $property_constraint,
+                                                            }
+                                                        })]
+                                                        return {
+                                                            'type': $property_type_,
+                                                        }
+                                                    }),
+                                                ))
+                                                case 'reference': return p.option($s, ($): s_target.resolver.Possible_Value_Selection.value.type_.switch_state.selection.constraints.state => abort(
+                                                    p.literal.group_resolve(() => {
+                                                        const $property_type_: s_error.Error.type_ = ['reference constraint failed', p.literal.group_resolve(() => {
+                                                            const $property_constraint: s_error.Error.type_.type_.reference_constraint_failed.constraint = 'state'
+                                                            return {
+                                                                'constraint': $property_constraint,
+                                                            }
+                                                        })]
+                                                        return {
+                                                            'type': $property_type_,
+                                                        }
+                                                    }),
+                                                ))
+                                                case 'state': return p.option($s, ($): s_target.resolver.Possible_Value_Selection.value.type_.switch_state.selection.constraints.state => $)
+                                                default: return p.exhaustive($s[0])
+                                            }
+                                        },
+                                    )
+                                    return {
+                                        'state': $property_state,
+                                    }
+                                },
+                            )
+                            return {
+                                'value': $property_value,
+                                'constraints': $property_constraints,
+                            }
+                        }))
+                        const $property_options: s_target.resolver.Possible_Value_Selection.value.type_.switch_state.options = p.change_context($['options'], ($) => Possible_Value_Branches(
+                            $,
+                            abort,
+                            {
+                                'target': $property_target['path']['tail']['result'],
+                                'options': $property_selection['constraints']['state']['options'],
+                                'types': $values['types'],
+                                'child namespaces': $values['child namespaces'],
+                                'sibling namespaces': $values['sibling namespaces'],
+                            },
+                            null,
+                        ))
+                        return {
+                            'target': $property_target,
+                            'selection': $property_selection,
+                            'options': $property_options,
+                        }
+                    })])
                     case 'optional value': return p.option($s, ($): s_target.resolver.Possible_Value_Selection.value => ['optional value', p.literal.group_resolve(() => {
                         const $property_selection: s_target.resolver.Possible_Value_Selection.value.type_.optional_value.selection = p.change_context($['selection'], ($) => p.literal.group_resolve(() => {
                             const $property_value: s_target.resolver.Possible_Value_Selection.value.type_.optional_value.selection.value = Guaranteed_Value_Selection(
@@ -7602,6 +7836,7 @@ export namespace resolver {
         const $property_result: s_target.resolver.Possible_Value_Selection.result = p.from.state($property_value).decide(
             ($s): s_target.resolver.Possible_Value_Selection.result => {
                 switch ($s[0]) {
+                    case 'switch state': return p.option($s, ($): s_target.resolver.Possible_Value_Selection.result => $['target']['path']['tail']['result'])
                     case 'optional value': return p.option($s, ($): s_target.resolver.Possible_Value_Selection.result => $['tail']['path']['result'])
                     case 'parameter': return p.option($s, ($): s_target.resolver.Possible_Value_Selection.result => $['l entry']['value']['subselection']['tail']['result'])
                     case 'result': return p.option($s, ($): s_target.resolver.Possible_Value_Selection.result => $['result'])

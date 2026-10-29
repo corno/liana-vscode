@@ -145,6 +145,11 @@ export namespace resolver {
         s_source.resolver.Relative_Value_Selection
     >
     
+    export type Possible_Value_Branches = temp_pareto_core.Transformer_With_Source_Value<
+        s_target.Value,
+        s_source.resolver.Possible_Value_Branches
+    >
+    
     export type Possible_Value_Selection = temp_pareto_core.Transformer_With_Source_Value<
         s_target.Value,
         s_source.resolver.Possible_Value_Selection

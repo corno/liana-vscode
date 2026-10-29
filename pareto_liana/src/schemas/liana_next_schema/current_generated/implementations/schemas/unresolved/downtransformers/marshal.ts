@@ -2691,9 +2691,97 @@ export namespace resolver {
         }
     })
     
+    export const Possible_Value_Branches: d.resolver.Possible_Value_Branches = ($) => p.literal.group_resolve(() => {
+        const $property_type_: s_target.Value.type_ = ['dictionary', p.literal.group_resolve(() => {
+            const $property_entries: s_target.Value.type_.type_.dictionary.entries = p.from.dictionary($).map(
+                ($): s_target.Value.type_.type_.dictionary.entries.D => p.from.state($).decide(
+                    ($s): s_target.Value => {
+                        switch ($s[0]) {
+                            case 'not set': return p.option($s, ($): s_target.Value => p.literal.group_resolve(() => {
+                                const $property_type_: s_target.Value.type_ = ['state', p.literal.group_resolve(() => {
+                                    const $property_option: s_target.Value.type_.type_.state.option = 'not set'
+                                    const $property_value: s_target.Value.type_.type_.state.value = p.literal.group_resolve(() => {
+                                        const $property_type_: s_target.Value.type_ = ['nothing', null]
+                                        return {
+                                            'type': $property_type_,
+                                        }
+                                    })
+                                    return {
+                                        'option': $property_option,
+                                        'value': $property_value,
+                                    }
+                                })]
+                                return {
+                                    'type': $property_type_,
+                                }
+                            }))
+                            case 'set': return p.option($s, ($): s_target.Value => p.literal.group_resolve(() => {
+                                const $property_type_: s_target.Value.type_ = ['state', p.literal.group_resolve(() => {
+                                    const $property_option: s_target.Value.type_.type_.state.option = 'set'
+                                    const $property_value: s_target.Value.type_.type_.state.value = Relative_Value_Selection(
+                                        $,
+                                    )
+                                    return {
+                                        'option': $property_option,
+                                        'value': $property_value,
+                                    }
+                                })]
+                                return {
+                                    'type': $property_type_,
+                                }
+                            }))
+                            default: return p.exhaustive($s[0])
+                        }
+                    },
+                ),
+            )
+            return {
+                'entries': $property_entries,
+            }
+        })]
+        return {
+            'type': $property_type_,
+        }
+    })
+    
     export const Possible_Value_Selection: d.resolver.Possible_Value_Selection = ($) => p.from.state($).decide(
         ($s): s_target.Value => {
             switch ($s[0]) {
+                case 'switch state': return p.option($s, ($): s_target.Value => p.literal.group_resolve(() => {
+                    const $property_type_: s_target.Value.type_ = ['state', p.literal.group_resolve(() => {
+                        const $property_option: s_target.Value.type_.type_.state.option = 'switch state'
+                        const $property_value: s_target.Value.type_.type_.state.value = p.literal.group_resolve(() => {
+                            const $property_type_: s_target.Value.type_ = ['group', p.literal.group_resolve(() => {
+                                const $property_properties: s_target.Value.type_.type_.group.properties = p.literal.dictionary(
+                                    {
+                                        'target': p.change_context($['target'], ($) => Value_Reference(
+                                            $,
+                                        )),
+                                        'selection': p.change_context($['selection'], ($) => Guaranteed_Value_Selection(
+                                            $,
+                                        )),
+                                        'options': p.change_context($['options'], ($) => Possible_Value_Branches(
+                                            $,
+                                        )),
+                                    },
+                                )
+                                return {
+                                    'properties': $property_properties,
+                                }
+                            })]
+                            return {
+                                'type': $property_type_,
+                            }
+                        })
+                        return {
+                            'option': $property_option,
+                            'value': $property_value,
+                        }
+                    })]
+                    return {
+                        'type': $property_type_,
+                    }
+                }))
                 case 'optional value': return p.option($s, ($): s_target.Value => p.literal.group_resolve(() => {
                     const $property_type_: s_target.Value.type_ = ['state', p.literal.group_resolve(() => {
                         const $property_option: s_target.Value.type_.type_.state.option = 'optional value'

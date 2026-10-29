@@ -39,6 +39,7 @@ export type API = {
                 readonly 'resolver': {
                     readonly 'Value Reference': unresolved_uptransformers_unmarshal.resolver.Value_Reference
                     readonly 'Relative Value Selection': unresolved_uptransformers_unmarshal.resolver.Relative_Value_Selection
+                    readonly 'Possible Value Branches': unresolved_uptransformers_unmarshal.resolver.Possible_Value_Branches
                     readonly 'Possible Value Selection': unresolved_uptransformers_unmarshal.resolver.Possible_Value_Selection
                     readonly 'Option Constraints': unresolved_uptransformers_unmarshal.resolver.Option_Constraints
                     readonly 'Guaranteed Value Selection': unresolved_uptransformers_unmarshal.resolver.Guaranteed_Value_Selection
@@ -84,6 +85,7 @@ export type API = {
                 readonly 'resolver': {
                     readonly 'Value Reference': unresolved_downtransformers_marshal.resolver.Value_Reference
                     readonly 'Relative Value Selection': unresolved_downtransformers_marshal.resolver.Relative_Value_Selection
+                    readonly 'Possible Value Branches': unresolved_downtransformers_marshal.resolver.Possible_Value_Branches
                     readonly 'Possible Value Selection': unresolved_downtransformers_marshal.resolver.Possible_Value_Selection
                     readonly 'Option Constraints': unresolved_downtransformers_marshal.resolver.Option_Constraints
                     readonly 'Guaranteed Value Selection': unresolved_downtransformers_marshal.resolver.Guaranteed_Value_Selection
@@ -131,6 +133,7 @@ export type API = {
                 readonly 'resolver': {
                     readonly 'Value Reference': resolved_uptransformers_resolve.resolver.Value_Reference
                     readonly 'Relative Value Selection': resolved_uptransformers_resolve.resolver.Relative_Value_Selection
+                    readonly 'Possible Value Branches': resolved_uptransformers_resolve.resolver.Possible_Value_Branches
                     readonly 'Possible Value Selection': resolved_uptransformers_resolve.resolver.Possible_Value_Selection
                     readonly 'Option Constraints': resolved_uptransformers_resolve.resolver.Option_Constraints
                     readonly 'Guaranteed Value Selection': resolved_uptransformers_resolve.resolver.Guaranteed_Value_Selection
@@ -176,6 +179,7 @@ export type API = {
                 readonly 'resolver': {
                     readonly 'Value Reference': resolved_downtransformers_unresolve.resolver.Value_Reference
                     readonly 'Relative Value Selection': resolved_downtransformers_unresolve.resolver.Relative_Value_Selection
+                    readonly 'Possible Value Branches': resolved_downtransformers_unresolve.resolver.Possible_Value_Branches
                     readonly 'Possible Value Selection': resolved_downtransformers_unresolve.resolver.Possible_Value_Selection
                     readonly 'Option Constraints': resolved_downtransformers_unresolve.resolver.Option_Constraints
                     readonly 'Guaranteed Value Selection': resolved_downtransformers_unresolve.resolver.Guaranteed_Value_Selection

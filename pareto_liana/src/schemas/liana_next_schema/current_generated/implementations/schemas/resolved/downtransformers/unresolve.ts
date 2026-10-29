@@ -734,9 +734,39 @@ export namespace resolver {
         }
     })
     
+    export const Possible_Value_Branches: d.resolver.Possible_Value_Branches = ($) => p.from.dictionary($).map(
+        ($): s_target.resolver.Possible_Value_Branches.D => p.change_context($['value'], ($) => p.from.state($).decide(
+            ($s): s_target.resolver.Possible_Value_Branches.D => {
+                switch ($s[0]) {
+                    case 'not set': return p.option($s, ($): s_target.resolver.Possible_Value_Branches.D => ['not set', null])
+                    case 'set': return p.option($s, ($): s_target.resolver.Possible_Value_Branches.D => ['set', Relative_Value_Selection(
+                        $,
+                    )])
+                    default: return p.exhaustive($s[0])
+                }
+            },
+        )),
+    )
+    
     export const Possible_Value_Selection: d.resolver.Possible_Value_Selection = ($) => p.change_context($['value'], ($) => p.from.state($).decide(
         ($s): s_target.resolver.Possible_Value_Selection => {
             switch ($s[0]) {
+                case 'switch state': return p.option($s, ($): s_target.resolver.Possible_Value_Selection => ['switch state', p.literal.group_resolve(() => {
+                    const $property_target: s_target.resolver.Possible_Value_Selection.type_.switch_state.target = p.change_context($['target'], ($) => Value_Reference(
+                        $,
+                    ))
+                    const $property_selection: s_target.resolver.Possible_Value_Selection.type_.switch_state.selection = p.change_context($['selection'], ($) => p.change_context($['value'], ($) => Guaranteed_Value_Selection(
+                        $,
+                    )))
+                    const $property_options: s_target.resolver.Possible_Value_Selection.type_.switch_state.options = p.change_context($['options'], ($) => Possible_Value_Branches(
+                        $,
+                    ))
+                    return {
+                        'target': $property_target,
+                        'selection': $property_selection,
+                        'options': $property_options,
+                    }
+                })])
                 case 'optional value': return p.option($s, ($): s_target.resolver.Possible_Value_Selection => ['optional value', p.literal.group_resolve(() => {
                     const $property_selection: s_target.resolver.Possible_Value_Selection.type_.optional_value.selection = p.change_context($['selection'], ($) => p.change_context($['value'], ($) => Guaranteed_Value_Selection(
                         $,

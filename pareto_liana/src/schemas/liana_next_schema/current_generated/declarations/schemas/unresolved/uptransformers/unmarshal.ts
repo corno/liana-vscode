@@ -179,6 +179,12 @@ export namespace resolver {
         s_source.Value
     >
     
+    export type Possible_Value_Branches = temp_pareto_core.Refiner_With_Error_With_Source_Value<
+        s_target.resolver.Possible_Value_Branches,
+        s_error.Error,
+        s_source.Value
+    >
+    
     export type Possible_Value_Selection = temp_pareto_core.Refiner_With_Error_With_Source_Value<
         s_target.resolver.Possible_Value_Selection,
         s_error.Error,

@@ -8,6 +8,9 @@
   targets; cyclic components use local references. Relative selections use
   `component`, `cyclic component`, and `expect resolved`; ordinary `reference`
   traversal requires an acyclic dependency. Older component notation is rejected.
+- Upgraded to the Liana schema with `switch state` possible selections: every
+  state option needs a branch, only the active branch decides presence, and every
+  `set` branch must select the declared structural target.
 
 ### Added
 - Same-document Find All References, declaration/reference highlights, and safe

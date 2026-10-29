@@ -331,6 +331,26 @@ const Possible = (
             value[0] === 'optional'
                 ? value[1].status[0] === 'set' ? ['resolved', value[1].status[1]['child value']] : value[1].status
                 : Unavailable()))
+        case 'switch state': {
+            const branches = selection[1].options
+            return Select_Constraint(Guaranteed(selection[1].selection.value, context), (value) => {
+                if (value[0] !== 'state') return ['constraint failed', 'expected a state value']
+                const status = value[1].unmarshalled.derived['option status']
+                if (status[0] !== 'set') return Unavailable()
+                const active = status[1].option
+                return p_.from.optional(value[1].option).decide(
+                    (payload) => p_.from.dictionary(branches).get_possible_entry(active, (branch) => {
+                        const selected = branch.value
+                        switch (selected[0]) {
+                            case 'not set': return ['not set', null]
+                            case 'set': return Relative(selected[1], ['resolved', payload])
+                            default: return p_.exhaustive(selected[0])
+                        }
+                    }, Unavailable),
+                    Unavailable,
+                )
+            })
+        }
         case 'parameter': return p_.from.dictionary(context.types).get_possible_entry(selection[1]['l id'], Parameter, Unavailable)
         case 'result': {
             const result = selection[1].value

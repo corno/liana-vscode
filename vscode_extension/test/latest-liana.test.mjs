@@ -352,6 +352,33 @@ test('optional fallback is lazy and only handles absence, not failures or unavai
     }
 })
 
+test('switch state selects only the active branch and propagates unavailable inputs', () => {
+    const empty = { path: { value: p.literal.list([]), result: null } }
+    const selection = ['switch state', {
+        target: null,
+        selection: { constraints: { state: null }, value: { start: { value: ['parameter', { 'l id': 'input' }], result: null }, tail: empty } },
+        options: p.literal.dictionary({
+            'on': { benchmark: null, value: ['set', empty] },
+            'off': { benchmark: null, value: ['not set', null] },
+        }),
+    }]
+    const payload = { constraints: p.literal.dictionary({}), 'unmarshall result': ['success', ['nothing', null]] }
+    const state = (status, option) => ['resolved', {
+        constraints: p.literal.dictionary({}),
+        'unmarshall result': ['success', ['state', { unmarshalled: { derived: { 'option status': status } }, option }]],
+    }]
+    const resolve = input => runtime.Resolver_Optional_Value_Initialization(['selection', { value: selection }], {
+        lookups: {}, types: p.literal.dictionary({ input }),
+    })
+    assert.deepEqual(resolve(state(['set', { option: 'on' }], p.literal.set(payload))), ['resolved', payload])
+    assert.deepEqual(resolve(state(['set', { option: 'off' }], p.literal.set(payload))), ['not set', null])
+    assert.equal(resolve(state(['missing data', null], p.literal.not_set()))[0], 'unavailable')
+    assert.equal(resolve(['resolved', payload])[0], 'constraint failed')
+    assert.deepEqual(resolve(['unavailable', null]), ['unavailable', null])
+    // Upstream failures are reported once at their source, so selections from them are unavailable.
+    assert.deepEqual(resolve(['constraint failed', 'invalid']), ['unavailable', null])
+})
+
 test('formatting and JSON conversion consume the current header without losing the body', async () => {
     const source = header(specification(), [], 'settings.cfg.lna', '"hello"')
     const document = TextDocument.create('file:///export.slna', 'liana', 1, source)
@@ -622,3 +649,17 @@ for (const name of ['astn_schema', 'boekhouding', 'liana', 'pareto']) {
         }
     })
 }
+
+test('switch state branches are exhaustive and must select the declared target', () => {
+    const context = readFileSync(new URL('./fixtures/latest_liana/.liana/schema.slna', import.meta.url), 'utf8')
+    const source = readFileSync(new URL('./fixtures/latest_liana/pareto.liana.lna', import.meta.url), 'utf8')
+    const type = selected(parse(context), [], 'pareto.liana.lna')['l entry']
+    const sealed = source => parse(seal(source, fail, {
+        unmarshall: { type, 'tab size': 1 }, target: { indentation: '', newline: '' },
+    }).__get_raw().join(''))
+    const branch = "'impure': | `set` < [ | `group` 'impure' | `component` ~ ] >"
+    assert.ok(source.includes(branch))
+    assert.doesNotThrow(() => sealed(source))
+    assert.throws(() => sealed(source.replace(branch, "'impure': | `set` < [ | `group` 'impure' ] >")), /switch state branch impure target/)
+    assert.throws(() => sealed(source.replace(/\n\s*'pure': \| `not set` ~/, '')))
+})

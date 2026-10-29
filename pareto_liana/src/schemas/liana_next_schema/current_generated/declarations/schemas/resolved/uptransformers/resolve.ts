@@ -326,6 +326,20 @@ export namespace resolver {
         null
     >
     
+    export type Possible_Value_Branches = temp_pareto_core.Refiner_With_Error_With_Source_Value_With_Values_And_Lookups<
+        s_target.resolver.Possible_Value_Branches,
+        s_error.Error,
+        s_source.resolver.Possible_Value_Branches,
+        {
+            readonly 'target': s_target.structure.Value
+            readonly 'options': s_target.structure.Value.type_.state.options
+            readonly 'types': s_target.structure.Types
+            readonly 'child namespaces': s_target.structure.Namespaces
+            readonly 'sibling namespaces': p_schema_deprecated.Optional_Value<s_target.structure.Namespaces>
+        },
+        null
+    >
+    
     export type Possible_Value_Selection = temp_pareto_core.Refiner_With_Error_With_Source_Value_With_Values_And_Lookups<
         s_target.resolver.Possible_Value_Selection,
         s_error.Error,

@@ -2383,6 +2383,38 @@ export namespace resolver {
         
     }
     
+    export type Possible_Value_Branches = p_.Dictionary<s_self.resolver.Possible_Value_Branches.D>
+    
+    export namespace Possible_Value_Branches {
+        
+        export type D = {
+            readonly 'benchmark': s_self.resolver.Possible_Value_Branches.D.benchmark
+            readonly 'value': s_self.resolver.Possible_Value_Branches.D.value
+        }
+        
+        export namespace D {
+            
+            export type benchmark = s_self.structure.Value.type_.state.options.D
+            
+            export type value =
+                | readonly ['not set', s_self.resolver.Possible_Value_Branches.D.value.type_.not_set]
+                | readonly ['set', s_self.resolver.Possible_Value_Branches.D.value.type_.set_]
+            
+            export namespace value {
+                export namespace type_ {
+                    
+                    export type not_set = null
+                    
+                    export type set_ = s_self.resolver.Relative_Value_Selection
+                    
+                }
+                
+            }
+            
+        }
+        
+    }
+    
     export type Possible_Value_Selection = {
         readonly 'value': s_self.resolver.Possible_Value_Selection.value
         readonly 'result': s_self.resolver.Possible_Value_Selection.result
@@ -2391,12 +2423,48 @@ export namespace resolver {
     export namespace Possible_Value_Selection {
         
         export type value =
+            | readonly ['switch state', s_self.resolver.Possible_Value_Selection.value.type_.switch_state]
             | readonly ['optional value', s_self.resolver.Possible_Value_Selection.value.type_.optional_value]
             | readonly ['parameter', s_self.resolver.Possible_Value_Selection.value.type_.parameter]
             | readonly ['result', s_self.resolver.Possible_Value_Selection.value.type_.result]
         
         export namespace value {
             export namespace type_ {
+                
+                export type switch_state = {
+                    readonly 'target': s_self.resolver.Possible_Value_Selection.value.type_.switch_state.target
+                    readonly 'selection': s_self.resolver.Possible_Value_Selection.value.type_.switch_state.selection
+                    readonly 'options': s_self.resolver.Possible_Value_Selection.value.type_.switch_state.options
+                }
+                
+                export namespace switch_state {
+                    
+                    export type target = s_self.resolver.Value_Reference
+                    
+                    export type selection = {
+                        readonly 'constraints': s_self.resolver.Possible_Value_Selection.value.type_.switch_state.selection.constraints
+                        readonly 'value': s_self.resolver.Possible_Value_Selection.value.type_.switch_state.selection.value
+                    }
+                    
+                    export namespace selection {
+                        
+                        export type constraints = {
+                            readonly 'state': s_self.resolver.Possible_Value_Selection.value.type_.switch_state.selection.constraints.state
+                        }
+                        
+                        export namespace constraints {
+                            
+                            export type state = s_self.structure.Value.type_.state
+                            
+                        }
+                        
+                        export type value = s_self.resolver.Guaranteed_Value_Selection
+                        
+                    }
+                    
+                    export type options = s_self.resolver.Possible_Value_Branches
+                    
+                }
                 
                 export type optional_value = {
                     readonly 'selection': s_self.resolver.Possible_Value_Selection.value.type_.optional_value.selection

@@ -431,6 +431,13 @@ TODO:
                                 ] > > < | `acyclic` ~ _ > > >
                             } * < < | `sibling namespace` < 'structure' 'Dictionary' > > < [] > > > >
                         } >
+                        'Possible Value Branches': < | `private single use` ~ | `dictionary` < * < < < | `sibling namespace` < 'structure' 'Value' > > < [
+                            | `state` 'state'
+                            | `group` 'options'
+                        ] > > | `dense` ~ > | `state` < {
+                            'not set': < _ _ | `nothing` ~ >
+                            'set': < * "Select from this option's payload; the selected structural value must be identical to the switch's declared target" _ | `component` < | `simple` | `local` 'Relative Value Selection' _ > >
+                        } _ > > >
                         'Option Constraints': < | `private` ~ | `optional` < * {
                             'declarations': < < | `sibling namespace` < 'structure' 'Option Constraints' > > < [
                                 | `optional` ~
@@ -460,6 +467,24 @@ TODO:
                             'assert is set': < _ _ | `component` < | `simple` | `local` 'Possible Value Selection' _ > >
                         } * < < | `sibling namespace` < 'structure' 'Value' > > < [] > > > > _ > >
                         'Possible Value Selection': < | `private` ~ | `state` < {
+                            /* Naming follow-up: prefer 'state decide' or 'decide on state'; retain 'switch state' for this upgrade. */
+                            'switch state': < * "Select a state and handle every option; only the active branch determines presence" _ | `group` {
+                                'target': < * "Structural target shared by every present branch, including when all branches are absent" | `component` < | `simple` | `local` 'Value Reference' _ > >
+                                'selection': < _ | `component` < | `cyclic` 'Guaranteed Value Selection' * {
+                                    'state': (
+                                        `type`: (
+                                            `location`: | `sibling namespace` (
+                                                `namespace`: 'structure'
+                                                `type`: 'Value'
+                                            )
+                                        )
+                                        `path`: (
+                                            `tail`: [ | `state` 'state' ]
+                                        )
+                                    )
+                                } > >
+                                'options': < * "Exhaustive branches over the selected state's options" | `component` < | `simple` | `local` 'Possible Value Branches' _ > >
+                            } >
                             'optional value': < _ _ | `group` {
                                 'selection': < _ | `component` < | `cyclic` 'Guaranteed Value Selection' * {
                                     'optional': (
@@ -1012,6 +1037,13 @@ TODO:
                         `types`: {
                             'Guaranteed Value Selection': < | `same as` 'Value' >
                             'Lookup Selection': < | `same as` 'Value' >
+                            'Possible Value Branches': < | `local` < {
+                                'target': < < < | `sibling namespace` < 'structure' 'Value' > > < [] > > | `required` ~ >
+                                'options': < < < | `sibling namespace` < 'structure' 'Value' > > < [ | `state` 'state' | `group` 'options' ] > > | `required` ~ >
+                                'types': < < < | `sibling namespace` < 'structure' 'Types' > > < [] > > | `required` ~ >
+                                'child namespaces': < < < | `sibling namespace` < 'structure' 'Namespaces' > > < [] > > | `required` ~ >
+                                'sibling namespaces': < < < | `sibling namespace` < 'structure' 'Namespaces' > > < [] > > | `optional` ~ >
+                            } {} > >
                             'Option Constraints': < | `local` < {
                                 'constraints': < < < | `sibling namespace` < 'structure' 'Option Constraints' > > < [] > > | `required` ~ >
                                 'definition': < < < | `sibling namespace` < 'structure' 'Value' > > < [] > > | `required` ~ >
@@ -1863,6 +1895,27 @@ TODO:
                                     ] > _ >
                                 } > >
                             } >
+                            'Possible Value Branches': < | `dictionary` < | `state` < {
+                                'not set': < _ | `nothing` ~ _ _ >
+                                'set': < _ | `component` < | `local` 'Relative Value Selection' * < * {
+                                    'value': | `required` < | `linked entry` ~ < [
+                                        | `group` 'value'
+                                        | `cyclic component` ~
+                                    ] > >
+                                    'types': | `parameter` 'types'
+                                    'child namespaces': | `parameter` 'child namespaces'
+                                    'sibling namespaces': | `parameter` 'sibling namespaces'
+                                } * {} > _ > _ * {
+                                    'branch target': <
+                                        | `context` < | `parameter` 'target' < [] > >
+                                        | `value` < [
+                                            | `component` ~
+                                            | `group` 'path'
+                                            | `list result` ~
+                                        ] >
+                                    >
+                                } >
+                            } > * < < | `parameter` 'options' < [] > > > > >
                             'Option Constraints': < | `optional` < _ * {
                                 'declarations': | `assert is set` | `optional value` < < | `parameter` 'constraints' < [] > > < [] > >
                             } | `dictionary` < | `state` < {
@@ -1925,6 +1978,43 @@ TODO:
                                 'actual': < | `component` < | `local` 'Result Selection' * < _ _ > _ > >
                             } _ > _ _ _ > >
                             'Possible Value Selection': < | `state` < {
+                                'switch state': < _ | `group` {
+                                    'target': < | `component` < | `local` 'Value Reference' * < * {
+                                        'child namespaces': | `parameter` 'child namespaces'
+                                        'sibling namespaces': | `parameter` 'sibling namespaces'
+                                    } * {
+                                        'types': | `selection` < | `acyclic` | `resolved dictionary` < < | `parameter` 'types' < [] > > > >
+                                    } > _ > >
+                                    'selection': < | `component` < | `local` 'Guaranteed Value Selection' * < _ _ > * {
+                                        'state': < | `value` ~ < < [
+                                            | `group` 'tail'
+                                            | `component` ~
+                                            | `group` 'path'
+                                            | `list result` ~
+                                        ] > | `state` < 'state' > > >
+                                    } > >
+                                    'options': < | `component` < | `local` 'Possible Value Branches' * < * {
+                                        'target': | `required` < | `sibling property` 'target' < [
+                                            | `component` ~
+                                            | `group` 'path'
+                                            | `group` 'tail'
+                                            | `list result` ~
+                                        ] > >
+                                        'options': | `required` < | `sibling property` 'selection' < [
+                                            | `component constraint` < 'state' < < | `sibling namespace` < 'structure' 'Value' > > < [ | `state` 'state' ] > > >
+                                            | `group` 'options'
+                                        ] > >
+                                        'types': | `parameter` 'types'
+                                        'child namespaces': | `parameter` 'child namespaces'
+                                        'sibling namespaces': | `parameter` 'sibling namespaces'
+                                    } * {} > _ > >
+                                } * | `value` < [
+                                    | `group` 'target'
+                                    | `component` ~
+                                    | `group` 'path'
+                                    | `group` 'tail'
+                                    | `list result` ~
+                                ] > _ >
                                 'optional value': < _ | `group` {
                                     'selection': < | `component` < | `local` 'Guaranteed Value Selection' * < _ _ > * {
                                         'optional': < | `value` ~ < < [

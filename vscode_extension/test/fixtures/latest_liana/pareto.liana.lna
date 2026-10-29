@@ -43,22 +43,7 @@
                         } >
                         'Types': < | `private` ~ | `dictionary` < _ | `component` < | `cyclic` 'Type' _ > > >
                         'Component': < | `private single use` ~ | `state` < {
-                            'simple': < * "Use a component without exposing its target; local targets may be cyclic" _ | `state` < {
-                                'child namespace': < _ _ | `group` {
-                                    'namespace': < _ | `reference` < < < | `local` 'Schema' > < [
-                                        | `group` 'namespaces'
-                                    ] > > < | `acyclic` ~ _ > > >
-                                    'type': < _ | `reference` < < < | `local` 'Types' > < [] > > < | `acyclic` ~ _ > > >
-                                } >
-                                'local': < _ _ | `reference` < < < | `local` 'Types' > < [] > > < | `cyclic` ~ _ > > >
-                                'sibling namespace': < _ _ | `group` {
-                                    'namespace': < _ | `reference` < < < | `local` 'Schema' > < [
-                                        | `group` 'namespaces'
-                                    ] > > < | `acyclic` ~ _ > > >
-                                    'type': < _ | `reference` < < < | `local` 'Types' > < [] > > < | `acyclic` ~ _ > > >
-                                } >
-                            } _ > >
-                            'navigable': < * "Expose the component target for navigation; local targets must be acyclic" _ | `state` < {
+                            'simple': < * "Expose an acyclic component target for navigation" _ | `state` < {
                                 'child namespace': < _ _ | `group` {
                                     'namespace': < _ | `reference` < < < | `local` 'Schema' > < [
                                         | `group` 'namespaces'
@@ -73,6 +58,7 @@
                                     'type': < _ | `reference` < < < | `local` 'Types' > < [] > > < | `acyclic` ~ _ > > >
                                 } >
                             } * < < | `local` 'Type' > < [] > > > >
+                            'cyclic': < * "Use a cyclic local component without exposing its target" _ | `reference` < < < | `local` 'Types' > < [] > > < | `cyclic` ~ _ > > >
                         } _ > >
                         'Value': < | `private` ~ | `state` < {
                             'boolean': < _ _ | `nothing` ~ >
@@ -156,16 +142,44 @@
                                 'target value': < _ | `component` < | `simple` | `sibling namespace` < 'schema' 'Value Reference' > _ > >
                             } > >
                         } >
+                        'Downtransformer Imports': < | `private` ~ | `dictionary` < _ | `group` {
+                            'location': < _ | `state` < {
+                                'local': < _ _ | `reference` < < < | `local` 'Schema' > < [ | `group` 'downtransformers' ] > > < | `acyclic` ~ _ > > >
+                                'external': < _ _ | `group` {
+                                    'schema': < _ | `reference` < < < | `local` 'Declarations' > < [ | `group` 'schemas' ] > > < | `acyclic` ~ _ > > >
+                                    'transformer': < _ | `reference` < < < | `local` 'Schema' > < [ | `group` 'downtransformers' ] > > < | `acyclic` ~ _ > > >
+                                } >
+                            } * < < | `local` 'Schema' > < [ | `group` 'downtransformers' | `dictionary` ~ ] > > > >
+                            'purity': < _ | `state` < {
+                                'pure': < _ * {
+                                    'pure': < < | `local` 'Purity' > < [ | `state` 'pure' ] > >
+                                } | `nothing` ~ >
+                                'impure': < _ * {
+                                    'impure': < < | `local` 'Impure' > < [] > >
+                                } | `nothing` ~ >
+                            } _ > >
+                        } > >
+                        'Impure': < | `public` ~ | `nothing` ~ >
+                        'Purity': < | `private` ~ | `state` < {
+                            'pure': < _ _ | `nothing` ~ >
+                            'impure': < _ _ | `group` {
+                                'impure': < _ | `component` < | `simple` | `local` 'Impure' _ > >
+                            } >
+                        } _ > >
                         'Optional Type Reference': < | `private` ~ | `optional` < * {
                             'schema': < < | `sibling namespace` < 'schema' 'Schema' > > < [] > >
                         } | `component` < | `simple` | `sibling namespace` < 'schema' 'Type Reference' > _ > _ > >
                         'Schema': < | `private single use` ~ | `group` {
                             'downtransformers': < _ | `dictionary` < _ | `group` {
+                                'imports': < * "Named acyclic downtransformer dependencies; local recursive calls need no import" | `component` < | `cyclic` 'Downtransformer Imports' _ > >
+                                'purity': < * "All functions and shorthands inherit this classification" | `component` < | `simple` | `local` 'Purity' _ > >
                                 'directive schema': < _ | `optional` < _ | `component` < | `simple` | `local` 'Schema Reference' _ > _ > >
                                 'functions': < _ | `component` < | `simple` | `local` 'Downtransformer Functions' _ > >
                                 'target schema': < _ | `component` < | `simple` | `local` 'Schema Reference' _ > >
                             } > >
                             'uptransformers': < _ | `dictionary` < _ | `group` {
+                                'imports': < _ | `component` < | `cyclic` 'Downtransformer Imports' _ > >
+                                'impure': < * "Uptransformers always provide the impurity capability" | `component` < | `simple` | `local` 'Impure' _ > >
                                 'directive schema': < _ | `optional` < _ | `component` < | `simple` | `local` 'Schema Reference' _ > _ > >
                                 'error schema': < _ | `optional` < _ | `component` < | `simple` | `local` 'Schema Reference' _ > _ > >
                                 'functions': < _ | `component` < | `simple` | `local` 'Uptransformer Functions' _ > >
@@ -225,6 +239,12 @@
                         'text': < | `double quoted` ~ _ _ >
                     }
                     `types`: {
+                        'Downtransformer Selection': < | `private` ~ | `state` < {
+                            'local': < * "Call the current downtransformer, including recursive calls" * {
+                                'declaration': < < | `sibling namespace` < 'declarations' 'Schema' > > < [ | `group` 'downtransformers' | `dictionary` ~ ] > >
+                            } | `nothing` ~ >
+                            'import': < _ _ | `reference` < < < | `sibling namespace` < 'declarations' 'Downtransformer Imports' > > < [] > > < | `acyclic` ~ _ > > >
+                        } * < < | `sibling namespace` < 'declarations' 'Schema' > > < [ | `group` 'downtransformers' | `dictionary` ~ ] > > > >
                         'Captures': < | `private single use` ~ | `dictionary` < _ | `component` < | `cyclic` 'Value Selection' _ > > >
                         'Downtransformer Functions': < | `private` ~ | `group` {
                             'namespaces': < * "Dense over the corresponding declaration namespace tree" | `dictionary` < * < < < | `sibling namespace` < 'declarations' 'Downtransformer Functions' > > < [ | `group` 'namespaces' ] > > | `dense` ~ > | `component` < | `cyclic` 'Downtransformer Functions' _ > > >
@@ -238,6 +258,7 @@
                         'Implementations': < | `public` ~ | `group` {
                             'schemas': < * "Dense over declaration schemas, transformers, and functions" | `dictionary` < * < < < | `sibling namespace` < 'declarations' 'Declarations' > > < [ | `group` 'schemas' ] > > | `dense` ~ > | `group` {
                                 'downtransformers': < _ | `dictionary` < * < < < | `sibling namespace` < 'declarations' 'Schema' > > < [ | `group` 'downtransformers' ] > > | `dense` ~ > | `group` {
+                                    'shorthands': < * "Transformer-local target constructors, independent of source types; identifiers are not benchmarked" | `component` < | `simple` | `local` 'Shorthands' _ > >
                                     'functions': < _ | `component` < | `cyclic` 'Downtransformer Functions' _ > >
                                 } > >
                                 'uptransformers': < _ | `dictionary` < * < < < | `sibling namespace` < 'declarations' 'Schema' > > < [ | `group` 'uptransformers' ] > > | `dense` ~ > | `group` {
@@ -248,6 +269,12 @@
                         'List Cursor': < | `private` ~ | `group` {
                             'initial': < * "Select the seed in the enclosing context; its selected structural value defines the cursor type" | `component` < | `cyclic` 'Value Selection' _ > >
                         } >
+                        'Shorthand Parameters': < | `private` ~ | `dictionary` < _ | `component` < | `simple` | `sibling namespace` < 'schema' 'Value Reference' > _ > > >
+                        'Shorthands': < | `private` ~ | `dictionary` < _ | `group` {
+                            'target type': < * "Named type in the downtransformer's target schema; no target subselection" | `component` < | `simple` | `sibling namespace` < 'schema' 'Type Reference' > _ > >
+                            'parameters': < * "Named target values supplied by the caller" | `component` < | `simple` | `local` 'Shorthand Parameters' _ > >
+                            'expression': < * "Construct the target type using only shorthand parameters and local expression contexts" | `component` < | `cyclic` 'Value Expression' _ > >
+                        } > >
                         'Lookup Selection': < | `private` ~ | `state` < {
                             'acyclic siblings': < _ * {
                                 'dictionary': < < | `sibling namespace` < 'schema' 'Value' > > < [
@@ -317,7 +344,7 @@
                             } | `reference` < < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'group' | `group` 'properties' ] > > < | `acyclic` ~ _ > > >
                         } * < < | `sibling namespace` < 'schema' 'Value' > > < [] > > > >
                         'Text Expression': < | `private` ~ | `state` < {
-                            'dictionary entry identifier': < * "Use the current entry's identifier in the nearest enclosing resolve dictionary entry expression. Nested dictionary resolution introduces its own identifier. This is an operation argument, not a structural value selection." * {
+                            'dictionary entry identifier': < * "Use the current entry's identifier in the nearest enclosing map dictionary or resolve dictionary entry expression. Nested dictionary mapping introduces its own identifier. This is an operation argument, not a structural value selection." * {
                                 'dictionary': < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'dictionary' ] > >
                             } | `nothing` ~ >
                             'literal': < * "Produce literal text without selecting a structural value" _ | `simple` 'text' >
@@ -356,11 +383,14 @@
                         ] > > < | `acyclic` ~ _ > > * < < | `sibling namespace` < 'declarations' 'Uptransformer Functions' > > < [] > > > >
                         'Value Expression': < | `private` ~ | `state` < {
                             'abort': < * "Abort with an error initialized by the nested expression; requires an error type" * {
+                                'impure': < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > >
                                 'error type': < < | `sibling namespace` < 'schema' 'Type' > > < [] > >
                             } | `group` {
                                 'expression': < _ | `component` < | `cyclic` 'Value Expression' _ > >
                             } >
-                            'capture': < * "Remember selected values. Selections use the enclosing captures; the body sees only this block. Copy an outer capture explicitly to retain it." _ | `group` {
+                            'capture': < * "Remember selected values. Selections use the enclosing captures; the body sees only this block. Copy an outer capture explicitly to retain it." * {
+                                'impure': < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > >
+                            } | `group` {
                                 'captures': < _ | `component` < | `simple` | `local` 'Captures' _ > >
                                 'expression': < _ | `component` < | `cyclic` 'Value Expression' _ > >
                             } >
@@ -382,9 +412,13 @@
                                     'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                         | `state` 'component'
                                     ] > >
-                                    'navigable': < < | `sibling namespace` < 'schema' 'Component' > > < [
-                                        | `state` 'navigable'
+                                    'simple': < < | `sibling namespace` < 'schema' 'Component' > > < [
+                                        | `state` 'simple'
                                     ] > >
+                                } | `component` < | `cyclic` 'Value Expression' _ > >
+                                'cyclic component': < * "Initialize the root of a cyclic component using its already-resolved target" * {
+                                    'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'component' ] > >
+                                    'cyclic': < < | `sibling namespace` < 'schema' 'Component' > > < [ | `state` 'cyclic' ] > >
                                 } | `component` < | `cyclic` 'Value Expression' _ > >
                                 'dictionary': < * "Literal entries, each initialized against the dictionary's value definition" * {
                                     'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
@@ -409,6 +443,11 @@
                                         | `state` 'list'
                                     ] > >
                                 } | `list` < | `component` < | `cyclic` 'Value Expression' _ > _ > >
+                                'not set': < * "Initialize an absent optional value" * {
+                                    'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                        | `state` 'optional'
+                                    ] > >
+                                } | `nothing` ~ >
                                 'nothing': < _ * {
                                     'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                         | `state` 'nothing'
@@ -417,11 +456,6 @@
                                 'number': < * "Initialize a number using a number expression" * {
                                     'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'number' ] > >
                                 } | `component` < | `cyclic` 'Number Expression' _ > >
-                                'optional': < * "Initialize an absent optional value" * {
-                                    'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
-                                        | `state` 'optional'
-                                    ] > >
-                                } | `nothing` ~ >
                                 'reference from lookup': < * "Resolve an explicit identifier using a lookup. The target reference determines cyclicity. Lookup entry identity and cyclicity compatibility checks are deferred." * {
                                     'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'reference' ] > >
                                     'error type': < < | `sibling namespace` < 'schema' 'Type' > > < [] > >
@@ -443,6 +477,11 @@
                                         | `state` 'list'
                                     ] > >
                                 } | `list` < | `component` < | `cyclic` 'Value Expression' _ > _ > >
+                                'set': < * "Initialize a present optional value; initialize its payload against the optional's value definition while preserving all enclosing contexts" * {
+                                    'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                        | `state` 'optional'
+                                    ] > >
+                                } | `component` < | `cyclic` 'Value Expression' _ > >
                                 'state': < _ * {
                                     'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                         | `state` 'state'
@@ -465,10 +504,21 @@
                                     ] > >
                                 } | `nothing` ~ >
                             } _ > >
+                            'shorthand': < * "Construct a target value with a shorthand from the current downtransformer; arguments are evaluated in the caller's contexts" * {
+                                'shorthands': < < | `local` 'Shorthands' > < [] > >
+                            } | `group` {
+                                'shorthand': < _ | `reference` < < < | `local` 'Shorthands' > < [] > > < | `acyclic` ~ _ > > >
+                                'arguments': < * "Exactly one target-value expression per declared parameter" | `dictionary` < * < < < | `local` 'Shorthand Parameters' > < [] > > | `dense` ~ > | `component` < | `cyclic` 'Value Expression' _ > > >
+                            } >
+                            'shorthand parameter': < * "Reuse a target-side argument inside a shorthand body" * {
+                                'parameters': < < | `local` 'Shorthand Parameters' > < [] > >
+                            } | `reference` < < < | `local` 'Shorthand Parameters' > < [] > > < | `acyclic` ~ _ > > >
                             'variable': < * "Use a bound value as a whole; its declared structural target must be identical to the expected target, not merely have the same shape. Variables cannot be selected or traversed." * {
+                                'impure': < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > >
                                 'variables': < < | `local` 'Variables' > < [] > >
                             } | `reference` < < < | `local` 'Variables' > < [] > > < | `acyclic` ~ _ > > >
                             'variables': < * "Initialize typed bindings in the directive schema and enclosing variable scope, then evaluate the body in only the new scope. No sibling dependencies or recursive bindings; explicitly bind an outer variable to retain it." * {
+                                'impure': < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > >
                                 'directive schema': < < | `sibling namespace` < 'schema' 'Schema' > > < [] > >
                             } | `group` {
                                 'bindings': < _ | `component` < | `simple` | `local` 'Variables' _ > >
@@ -488,14 +538,11 @@
                                             | `group` 'types'
                                         ] > > < | `acyclic` ~ _ > > >
                                         'namespaces': < _ | `component` < | `simple` | `local` 'Downtransformer Namespace Selection' _ > >
-                                        'schema': < _ | `reference` < < < | `sibling namespace` < 'declarations' 'Declarations' > > < [
-                                            | `group` 'schemas'
-                                        ] > > < | `acyclic` ~ _ > > >
-                                        'transformer': < _ | `reference` < < < | `sibling namespace` < 'declarations' 'Schema' > > < [
-                                            | `group` 'downtransformers'
-                                        ] > > < | `acyclic` ~ _ > > >
+                                        'transformer': < _ | `component` < | `simple` | `local` 'Downtransformer Selection' _ > >
                                     } >
-                                    'call with value': < * "Call an uptransformer with the selected source value. Exact source/target value, directive, lookup and error compatibility checks are deferred." _ | `group` {
+                                    'call with value': < * "Call an uptransformer with the selected source value. Exact source/target value, directive, lookup and error compatibility checks are deferred." * {
+                                        'impure': < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > >
+                                    } | `group` {
                                         'arguments': < _ | `state` < {
                                             'production': < * "The selected source value supplies the iterator item" * {
                                                 'declaration': < < | `sibling namespace` < 'declarations' 'Uptransformer Functions' > > < [
@@ -618,6 +665,7 @@
                                     } >
                                     'change context': < * "Evaluate the body with the selected source value; preserve captures and all other contexts" _ | `component` < | `cyclic` 'Value Expression' _ > >
                                     'decide boolean': < * "Choose a branch without changing its source context; both branches produce the expected target" * {
+                                        'impure': < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > >
                                         'source': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                             | `state` 'boolean'
                                         ] > >
@@ -639,6 +687,7 @@
                                         ] > >
                                     } | `dictionary` < * < < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'state' | `group` 'options' ] > > | `dense` ~ > | `component` < | `cyclic` 'Value Expression' _ > > >
                                     'expect state option': < * "Handle one selected state option with its payload as source. All other options share one handler retaining the enclosing source; unexpected state option text exposes the actual option name. Both branches produce the expected target." * {
+                                        'impure': < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > >
                                         'source': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                             | `state` 'state'
                                         ] > >
@@ -649,6 +698,14 @@
                                         ] > > < | `acyclic` ~ _ > > >
                                         'if expected': < _ | `component` < | `cyclic` 'Value Expression' _ > >
                                         'if unexpected': < _ | `component` < | `cyclic` 'Value Expression' _ > >
+                                    } >
+                                    'get possible entry': < * "Look up an identifier in the selected dictionary. The found branch uses the entry as source; the missing branch retains the enclosing source. Both produce the expected target." * {
+                                        'impure': < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > >
+                                        'source': < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'dictionary' ] > >
+                                    } | `group` {
+                                        'identifier': < _ | `component` < | `cyclic` 'Text Expression' _ > >
+                                        'if found': < _ | `component` < | `cyclic` 'Value Expression' _ > >
+                                        'if missing': < _ | `component` < | `cyclic` 'Value Expression' _ > >
                                     } >
                                     'map boolean': < _ * {
                                         'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
@@ -666,13 +723,6 @@
                                             | `state` 'dictionary'
                                         ] > >
                                     } | `component` < | `cyclic` 'Value Expression' _ > >
-                                    'get possible entry': < * "Look up an identifier in the selected dictionary. The found branch uses the entry as source; the missing branch retains the enclosing source. Both produce the expected target." * {
-                                        'source': < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'dictionary' ] > >
-                                    } | `group` {
-                                        'identifier': < _ | `component` < | `cyclic` 'Text Expression' _ > >
-                                        'if found': < _ | `component` < | `cyclic` 'Value Expression' _ > >
-                                        'if missing': < _ | `component` < | `cyclic` 'Value Expression' _ > >
-                                    } >
                                     'map list': < * "Preserve order and map items independently; retain enclosing resolve contexts" * {
                                         'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                             | `state` 'list'
@@ -759,15 +809,18 @@
                                             | `state` 'text'
                                         ] > >
                                     } | `nothing` ~ >
-                                    'to state': < * "Convert selected text to the expected state. Each named branch produces its option payload; if unknown produces the whole target. All branches retain the enclosing source; the selected text remains available through the selection." * {
-                                        'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'state' ] > >
-                                        'source': < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'text' ] > >
+                                    'on has last item': < * "Choose a branch without resolving the list again. The present branch uses the last item as source; the absent branch retains the enclosing source. Preserve all other contexts." * {
+                                        'impure': < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > >
+                                        'source': < < | `sibling namespace` < 'schema' 'Value' > > < [
+                                            | `state` 'list'
+                                        ] > >
                                     } | `group` {
-                                        'options': < _ | `dictionary` < * < < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'state' | `group` 'options' ] > > | `dense` ~ > | `component` < | `cyclic` 'Value Expression' _ > > >
-                                        'if unknown': < _ | `component` < | `cyclic` 'Value Expression' _ > >
+                                        'if absent': < _ | `component` < | `cyclic` 'Value Expression' _ > >
+                                        'if present': < _ | `component` < | `cyclic` 'Value Expression' _ > >
                                     } >
-                                    'reuse': < * "Return the selected value unchanged, preserving identity. The compiler requires the exact same structural target, not merely matching shapes." _ | `nothing` ~ >
                                     'resolve dictionary': < * "Preserve identifiers and map entries with acyclic and cyclic lookups of resolved siblings" * {
+                                        'impure': < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > >
+                                        'uptransformer': < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > >
                                         'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                             | `state` 'dictionary'
                                         ] > >
@@ -785,15 +838,8 @@
                                         } _ > >
                                         'entry': < * "Resolve each entry with its identifier and sibling lookups" | `component` < | `cyclic` 'Value Expression' _ > >
                                     } >
-                                    'on has last item': < * "Choose a branch without resolving the list again. The present branch uses the last item as source; the absent branch retains the enclosing source. Preserve all other contexts." * {
-                                        'source': < < | `sibling namespace` < 'schema' 'Value' > > < [
-                                            | `state` 'list'
-                                        ] > >
-                                    } | `group` {
-                                        'if absent': < _ | `component` < | `cyclic` 'Value Expression' _ > >
-                                        'if present': < _ | `component` < | `cyclic` 'Value Expression' _ > >
-                                    } >
                                     'resolve list': < * "Seed the cursor from initial, then resolve each input item once in source order with the current cursor. Select next from the resolved item to advance the cursor. The seed is context, not an output item. Empty input produces an empty list. Result wrappers remain ordinary structural groups." * {
+                                        'impure': < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > >
                                         'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
                                             | `state` 'list'
                                         ] > >
@@ -805,10 +851,21 @@
                                         'item': < * "Initialize one target item with the input item as source and source iterator item, the current cursor, and the zero-based input index" | `component` < | `cyclic` 'Value Expression' _ > >
                                         'next': < * "Select the next cursor with the resolved target item as source. Must select the exact same structural value as initial; the compiler enforces identity." | `component` < | `cyclic` 'Value Selection' _ > >
                                     } >
+                                    'reuse': < * "Return the selected value unchanged, preserving identity. The compiler requires the exact same structural target, not merely matching shapes." _ | `nothing` ~ >
+                                    'to state': < * "Convert selected text to the expected state. Each named branch produces its option payload; if unknown produces the whole target. All branches retain the enclosing source; the selected text remains available through the selection." * {
+                                        'impure': < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > >
+                                        'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'state' ] > >
+                                        'source': < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'text' ] > >
+                                    } | `group` {
+                                        'options': < _ | `dictionary` < * < < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'state' | `group` 'options' ] > > | `dense` ~ > | `component` < | `cyclic` 'Value Expression' _ > > >
+                                        'if unknown': < _ | `component` < | `cyclic` 'Value Expression' _ > >
+                                    } >
                                 } _ > >
                                 'selection': < _ | `component` < | `simple` | `local` 'Value Selection' _ > >
                             } >
-                            'with optional value parameter': < * "Check an optional named value parameter; the present branch uses its underlying value as source, and the absent branch retains the enclosing source" _ | `group` {
+                            'with optional value parameter': < * "Check an optional named value parameter; the present branch uses its underlying value as source, and the absent branch retains the enclosing source" * {
+                                'impure': < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > >
+                            } | `group` {
                                 'if absent': < _ | `component` < | `cyclic` 'Value Expression' _ > >
                                 'if present': < _ | `component` < | `cyclic` 'Value Expression' _ > >
                                 'value': < _ | `component` < | `simple` | `local` 'Optional Value Selection' _ > >
@@ -867,9 +924,13 @@
                             'steps': < _ | `list` < | `state` < {
                                 'component': < * "Cross a component boundary; derive the target from the selected component" * {
                                     'component': < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'component' ] > >
-                                    'navigable': < < | `sibling namespace` < 'schema' 'Component' > > < [
-                                        | `state` 'navigable'
+                                    'simple': < < | `sibling namespace` < 'schema' 'Component' > > < [
+                                        | `state` 'simple'
                                     ] > >
+                                } | `nothing` ~ >
+                                'cyclic component': < * "Cross a cyclic component boundary using its already-resolved target" * {
+                                    'component': < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'component' ] > >
+                                    'definition': < < | `sibling namespace` < 'schema' 'Component' > > < [ | `state` 'cyclic' ] > >
                                 } | `nothing` ~ >
                                 'group': < _ * {
                                     'definition': < < | `sibling namespace` < 'schema' 'Value' > > < [
@@ -918,16 +979,24 @@
                                 'local schema': < < < | `sibling namespace` < 'schema' 'Schema' > > < [] > > | `required` ~ >
                                 'target schema': < < < | `sibling namespace` < 'schema' 'Schema' > > < [] > > | `required` ~ >
                             } {} > >
+                            'Impure': < | `local` < {} {} > >
+                            'Downtransformer Imports': < | `local` < {
+                                'impure': < < < | `local` 'Impure' > < [] > > | `optional` ~ >
+                            } {
+                                'schemas': < < < | `local` 'Declarations' > < [ | `group` 'schemas' ] > > | `acyclic` ~ | `required` ~ >
+                                'downtransformers': < < < | `local` 'Schema' > < [ | `group` 'downtransformers' ] > > | `acyclic` ~ | `required` ~ >
+                            } > >
+                            'Purity': < | `local` < {} {} > >
                             'Optional Type Reference': < | `local` < {
                                 'schema': < < < | `sibling namespace` < 'schema' 'Schema' > > < [] > > | `optional` ~ >
                             } {} > >
                             'Schema': < | `local` < {
                                 'schema': < < < | `sibling namespace` < 'schema' 'Schema' > > < [] > > | `required` ~ >
                                 'schemas': < < < | `sibling namespace` < 'schema' 'Schemas' > > < [] > > | `required` ~ >
-                            } {} > >
-                            'Schema Reference': < | `local` < {
-                                'schemas': < < < | `sibling namespace` < 'schema' 'Schemas' > > < [] > > | `required` ~ >
-                            } {} > >
+                            } {
+                                'declaration schemas': < < < | `local` 'Declarations' > < [ | `group` 'schemas' ] > > | `acyclic` ~ | `required` ~ >
+                            } > >
+                            'Schema Reference': < | `same as` 'Declarations' >
                             'Uptransformer Functions': < | `local` < {
                                 'directive schema': < < < | `sibling namespace` < 'schema' 'Schema' > > < [] > > | `optional` ~ >
                                 'error schema': < < < | `sibling namespace` < 'schema' 'Schema' > > < [] > > | `optional` ~ >
@@ -941,6 +1010,7 @@
                         `namespaces`: {}
                         `types`: {
                             'Captures': < | `local` < {
+                                'dictionary entry': < < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'dictionary' ] > > | `optional` ~ >
                                 'captures': < < < | `local` 'Captures' > < [] > > | `optional` ~ >
                                 'cursor': < < < | `local` 'List Cursor' > < [] > > | `optional` ~ >
                                 'dependencies': < < < | `local` 'Sibling Dependencies' > < [] > > | `optional` ~ >
@@ -958,7 +1028,12 @@
                                 ] > > | `optional` ~ >
                             } {} > >
                             'Downtransformer Functions': < | `local` < {
+                                'impure': < < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > > | `optional` ~ >
+                                'imports': < < < | `sibling namespace` < 'declarations' 'Downtransformer Imports' > > < [] > > | `required` ~ >
+                                'local downtransformer': < < < | `sibling namespace` < 'declarations' 'Schema' > > < [ | `group` 'downtransformers' | `dictionary` ~ ] > > | `optional` ~ >
+                                'uptransformer': < < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > > | `optional` ~ >
                                 'declaration': < < < | `sibling namespace` < 'declarations' 'Downtransformer Functions' > > < [] > > | `required` ~ >
+                                'shorthands': < < < | `local` 'Shorthands' > < [] > > | `required` ~ >
                                 'declarations': < < < | `sibling namespace` < 'declarations' 'Declarations' > > < [
                                     | `group` 'schemas'
                                 ] > > | `required` ~ >
@@ -968,25 +1043,31 @@
                             'Downtransformer Namespace Selection': < | `local` < {
                                 'functions': < < < | `sibling namespace` < 'declarations' 'Downtransformer Functions' > > < [] > > | `required` ~ >
                             } {} > >
+                            'Downtransformer Selection': < | `local` < {
+                                'imports': < < < | `sibling namespace` < 'declarations' 'Downtransformer Imports' > > < [] > > | `required` ~ >
+                                'local downtransformer': < < < | `sibling namespace` < 'declarations' 'Schema' > > < [ | `group` 'downtransformers' | `dictionary` ~ ] > > | `optional` ~ >
+                            } {} > >
                             'Implementations': < | `local` < {
                                 'maturity': < < < | `local` 'Maturity' > < [] > > | `required` ~ >
                                 'schemas': < < < | `sibling namespace` < 'declarations' 'Declarations' > > < [
                                     | `group` 'schemas'
                                 ] > > | `required` ~ >
                             } {} > >
-                            'List Cursor': < | `local` < {
-                                'captures': < < < | `local` 'Captures' > < [] > > | `optional` ~ >
-                                'cursor': < < < | `local` 'List Cursor' > < [] > > | `optional` ~ >
-                                'dependencies': < < < | `local` 'Sibling Dependencies' > < [] > > | `optional` ~ >
-                                'directive type': < < < | `sibling namespace` < 'schema' 'Type' > > < [] > > | `optional` ~ >
-                                'sibling properties': < < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'group' ] > > | `optional` ~ >
-                                'source iterator item': < < < | `sibling namespace` < 'schema' 'Value' > > < [] > > | `optional` ~ >
-                                'source value': < < < | `sibling namespace` < 'schema' 'Value' > > < [] > > | `optional` ~ >
-                                'values': < < < | `sibling namespace` < 'declarations' 'Uptransformer Functions' > > < [
-                                    | `group` 'types' | `dictionary` ~ | `group` 'type' | `state` 'refiner' | `group` 'values'
-                                ] > > | `optional` ~ >
+                            'List Cursor': < | `same as` 'Value Selection' >
+                            'Shorthand Parameters': < | `local` < {
+                                'target schema': < < < | `sibling namespace` < 'schema' 'Schema' > > < [] > > | `required` ~ >
+                            } {} > >
+                            'Shorthands': < | `local` < {
+                                'impure': < < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > > | `optional` ~ >
+                                'imports': < < < | `sibling namespace` < 'declarations' 'Downtransformer Imports' > > < [] > > | `required` ~ >
+                                'local downtransformer': < < < | `sibling namespace` < 'declarations' 'Schema' > > < [ | `group` 'downtransformers' | `dictionary` ~ ] > > | `optional` ~ >
+                                'uptransformer': < < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > > | `optional` ~ >
+                                'target schema': < < < | `sibling namespace` < 'schema' 'Schema' > > < [] > > | `required` ~ >
+                                'declarations': < < < | `sibling namespace` < 'declarations' 'Declarations' > > < [ | `group` 'schemas' ] > > | `required` ~ >
+                                'maturity': < < < | `local` 'Maturity' > < [] > > | `required` ~ >
                             } {} > >
                             'Lookup Selection': < | `local` < {
+                                'dictionary entry': < < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'dictionary' ] > > | `optional` ~ >
                                 'captures': < < < | `local` 'Captures' > < [] > > | `optional` ~ >
                                 'cursor': < < < | `local` 'List Cursor' > < [] > > | `optional` ~ >
                                 'dependencies': < < < | `local` 'Sibling Dependencies' > < [] > > | `optional` ~ >
@@ -1025,29 +1106,17 @@
                                     | `group` 'values'
                                 ] > > | `required` ~ >
                             } {} > >
-                            'Sibling Dependency': < | `local` < {
+                            'Sibling Dependency': < | `same as` 'Sibling Dependencies' >
+                            'Sibling Dependencies': < | `local` < {
                                 'dependencies': < < < | `local` 'Sibling Dependencies' > < [] > > | `optional` ~ >
                                 'sibling properties': < < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'group' ] > > | `optional` ~ >
                             } {} > >
-                            'Sibling Dependencies': < | `same as` 'Sibling Dependency' >
-                            'Text Expression': < | `local` < {
-                                'captures': < < < | `local` 'Captures' > < [] > > | `optional` ~ >
-                                'cursor': < < < | `local` 'List Cursor' > < [] > > | `optional` ~ >
-                                'dependencies': < < < | `local` 'Sibling Dependencies' > < [] > > | `optional` ~ >
-                                'dictionary resolve': < < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'dictionary' ] > > | `optional` ~ >
-                                'directive type': < < < | `sibling namespace` < 'schema' 'Type' > > < [] > > | `optional` ~ >
-                                'sibling properties': < < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'group' ] > > | `optional` ~ >
-                                'source iterator item': < < < | `sibling namespace` < 'schema' 'Value' > > < [] > > | `optional` ~ >
-                                'source value': < < < | `sibling namespace` < 'schema' 'Value' > > < [] > > | `optional` ~ >
-                                'values': < < < | `sibling namespace` < 'declarations' 'Uptransformer Functions' > > < [
-                                    | `group` 'types'
-                                    | `dictionary` ~
-                                    | `group` 'type'
-                                    | `state` 'refiner'
-                                    | `group` 'values'
-                                ] > > | `optional` ~ >
-                            } {} > >
+                            'Text Expression': < | `same as` 'Captures' >
                             'Uptransformer Functions': < | `local` < {
+                                'impure': < < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > > | `optional` ~ >
+                                'imports': < < < | `sibling namespace` < 'declarations' 'Downtransformer Imports' > > < [] > > | `required` ~ >
+                                'local downtransformer': < < < | `sibling namespace` < 'declarations' 'Schema' > > < [ | `group` 'downtransformers' | `dictionary` ~ ] > > | `optional` ~ >
+                                'uptransformer': < < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > > | `optional` ~ >
                                 'declaration': < < < | `sibling namespace` < 'declarations' 'Uptransformer Functions' > > < [] > > | `required` ~ >
                                 'declarations': < < < | `sibling namespace` < 'declarations' 'Declarations' > > < [
                                     | `group` 'schemas'
@@ -1059,6 +1128,13 @@
                                 'functions': < < < | `sibling namespace` < 'declarations' 'Uptransformer Functions' > > < [] > > | `required` ~ >
                             } {} > >
                             'Value Expression': < | `local` < {
+                                'dictionary entry': < < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'dictionary' ] > > | `optional` ~ >
+                                'impure': < < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > > | `optional` ~ >
+                                'imports': < < < | `sibling namespace` < 'declarations' 'Downtransformer Imports' > > < [] > > | `required` ~ >
+                                'local downtransformer': < < < | `sibling namespace` < 'declarations' 'Schema' > > < [ | `group` 'downtransformers' | `dictionary` ~ ] > > | `optional` ~ >
+                                'uptransformer': < < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > > | `optional` ~ >
+                                'shorthands': < < < | `local` 'Shorthands' > < [] > > | `optional` ~ >
+                                'shorthand parameters': < < < | `local` 'Shorthand Parameters' > < [] > > | `optional` ~ >
                                 'captures': < < < | `local` 'Captures' > < [] > > | `optional` ~ >
                                 'cursor': < < < | `local` 'List Cursor' > < [] > > | `optional` ~ >
                                 'declarations': < < < | `sibling namespace` < 'declarations' 'Declarations' > > < [
@@ -1112,6 +1188,13 @@
                                 ] > > | `optional` ~ >
                             } {} > >
                             'Variables': < | `local` < {
+                                'dictionary entry': < < < | `sibling namespace` < 'schema' 'Value' > > < [ | `state` 'dictionary' ] > > | `optional` ~ >
+                                'impure': < < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > > | `optional` ~ >
+                                'imports': < < < | `sibling namespace` < 'declarations' 'Downtransformer Imports' > > < [] > > | `required` ~ >
+                                'local downtransformer': < < < | `sibling namespace` < 'declarations' 'Schema' > > < [ | `group` 'downtransformers' | `dictionary` ~ ] > > | `optional` ~ >
+                                'uptransformer': < < < | `sibling namespace` < 'declarations' 'Impure' > > < [] > > | `optional` ~ >
+                                'shorthands': < < < | `local` 'Shorthands' > < [] > > | `optional` ~ >
+                                'shorthand parameters': < < < | `local` 'Shorthand Parameters' > < [] > > | `optional` ~ >
                                 'captures': < < < | `local` 'Captures' > < [] > > | `optional` ~ >
                                 'cursor': < < < | `local` 'List Cursor' > < [] > > | `optional` ~ >
                                 'declarations': < < < | `sibling namespace` < 'declarations' 'Declarations' > > < [
@@ -1161,7 +1244,7 @@
                                     | `group` 'namespaces'
                                 ] > > | `acyclic` ~ | `optional` ~ >
                             } > >
-                            'Schemas': < | `local` < {} {} > >
+                            'Schemas': < | `same as` 'Structure' >
                             'Structure': < | `local` < {} {} > >
                             'Type': < | `local` < {
                                 'child namespaces': < < < | `local` 'Schema' > < [
@@ -1219,7 +1302,9 @@
                                         | `cyclic component` ~
                                     ] > >
                                     'schemas': | `parameter` 'schemas'
-                                } * {} > _ > * < < | `parameter` 'schemas' < [] > > > > >
+                                } * {
+                                    'declaration schemas': | `selection` < | `acyclic` | `siblings` ~ >
+                                } > _ > * < < | `parameter` 'schemas' < [] > > > > >
                             } >
                             'Downtransformer Functions': < | `group` {
                                 'namespaces': < | `dictionary` < | `component` < | `local` 'Downtransformer Functions' * < * {
@@ -1256,8 +1341,54 @@
                                     | `cyclic component` ~
                                 ] > > > >
                             } > _ > _ _ _ > >
+                            'Impure': < | `nothing` ~ >
+                            'Downtransformer Imports': < | `dictionary` < | `group` {
+                                'location': < | `state` < {
+                                    'local': < _ | `reference` < < < | `parameter` 'downtransformers' > _ > > * | `value` < [ | `reference` < > ] > _ >
+                                    'external': < _ | `group` {
+                                        'schema': < | `reference` < < < | `parameter` 'schemas' > _ > > >
+                                        'transformer': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'schema' < [
+                                            | `reference` < >
+                                            | `component` ~
+                                            | `group` 'downtransformers'
+                                        ] > > > > _ > > >
+                                    } * | `value` < [ | `group` 'transformer' | `reference` < > ] > _ >
+                                } > >
+                                'purity': < | `state` < {
+                                    'pure': < * {
+                                        'pure': | `state` < < | `sibling property` 'location' < [
+                                            | `state result` ~
+                                            | `group` 'purity'
+                                            | `component` ~
+                                        ] > > 'pure' >
+                                    } | `nothing` ~ _ _ >
+                                    'impure': < * {
+                                        'impure': | `assert is set` | `parameter` 'impure'
+                                    } | `nothing` ~ _ _ >
+                                } > >
+                            } _ > >
+                            'Purity': < | `state` < {
+                                'pure': < _ | `nothing` ~ _ _ >
+                                'impure': < _ | `group` {
+                                    'impure': < | `component` < | `local` 'Impure' * < _ _ > _ > >
+                                } _ _ >
+                            } > >
                             'Schema': < | `group` {
                                 'downtransformers': < | `dictionary` < | `group` {
+                                    'imports': < | `component` < | `local` 'Downtransformer Imports' * < * {
+                                        'impure': | `optional` | `selection` | `switch state` <
+                                            < < | `local` 'Impure' > < [] > >
+                                            < | `sibling property` 'purity' < [ | `component` ~ ] > >
+                                            {
+                                                'pure': | `not set` ~
+                                                'impure': | `set` < [ | `group` 'impure' | `component` ~ ] >
+                                            }
+                                        >
+                                    } * {
+                                        'schemas': | `selection` < | `parameter` 'declaration schemas' >
+                                        'downtransformers': | `selection` < | `acyclic` | `siblings` ~ >
+                                    } > _ > >
+                                    'purity': < | `component` < | `local` 'Purity' * < _ _ > _ > >
                                     'directive schema': < | `optional` < _ _ | `component` < | `local` 'Schema Reference' * < * {
                                         'schemas': | `parameter` 'schemas'
                                     } * {} > _ > _ _ _ > >
@@ -1281,6 +1412,13 @@
                                     } * {} > _ > >
                                 } _ > >
                                 'uptransformers': < | `dictionary` < | `group` {
+                                    'imports': < | `component` < | `local` 'Downtransformer Imports' * < * {
+                                        'impure': | `optional` | `set` < | `sibling property` 'impure' < [ | `component` ~ ] > >
+                                    } * {
+                                        'schemas': | `selection` < | `parameter` 'declaration schemas' >
+                                        'downtransformers': | `selection` < | `acyclic` | `resolved dictionary` < < | `parent sibling` 'downtransformers' < [] > > > >
+                                    } > _ > >
+                                    'impure': < | `component` < | `local` 'Impure' * < _ _ > _ > >
                                     'directive schema': < | `optional` < _ _ | `component` < | `local` 'Schema Reference' * < * {
                                         'schemas': | `parameter` 'schemas'
                                     } * {} > _ > _ _ _ > >
@@ -1396,6 +1534,16 @@
                     'implementations': (
                         `namespaces`: {}
                         `types`: {
+                            'Downtransformer Selection': < | `state` < {
+                                'local': < * {
+                                    'declaration': | `assert is set` | `parameter` 'local downtransformer'
+                                } | `nothing` ~ * | `context` < | `option constraint` 'declaration' < [] > > _ >
+                                'import': < _ | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'imports' < [] > > > > _ > > * | `value` < [
+                                    | `reference` < >
+                                    | `group` 'location'
+                                    | `state result` ~
+                                ] > _ >
+                            } > >
                             'Captures': < | `dictionary` < | `component` < | `local` 'Value Selection' * < * {
                                 'captures': | `parameter` 'captures'
                                 'cursor': | `parameter` 'cursor'
@@ -1408,6 +1556,11 @@
                             } * {} > _ > _ > >
                             'Downtransformer Functions': < | `group` {
                                 'namespaces': < | `dictionary` < | `component` < | `local` 'Downtransformer Functions' * < * {
+                                    'shorthands': | `parameter` 'shorthands'
+                                    'impure': | `parameter` 'impure'
+                                    'imports': | `parameter` 'imports'
+                                    'local downtransformer': | `parameter` 'local downtransformer'
+                                    'uptransformer': | `parameter` 'uptransformer'
                                     'declaration': | `required` < | `linked entry` ~ < [
                                         | `cyclic component` ~
                                     ] > >
@@ -1419,6 +1572,13 @@
                                 ] > > > > >
                                 'types': < | `dictionary` < | `group` {
                                     'expression': < | `component` < | `local` 'Value Expression' * < * {
+                                        'dictionary entry': | `optional` | `not set` ~
+                                        'impure': | `parameter` 'impure'
+                                        'imports': | `parameter` 'imports'
+                                        'local downtransformer': | `parameter` 'local downtransformer'
+                                        'uptransformer': | `parameter` 'uptransformer'
+                                        'shorthands': | `optional` | `set` < | `parameter` 'shorthands' < [] > >
+                                        'shorthand parameters': | `optional` | `not set` ~
                                         'captures': | `optional` | `not set` ~
                                         'cursor': | `optional` | `not set` ~
                                         'declarations': | `parameter` 'declarations'
@@ -1471,7 +1631,47 @@
                             'Implementations': < | `group` {
                                 'schemas': < | `dictionary` < | `group` {
                                     'downtransformers': < | `dictionary` < | `group` {
+                                        'shorthands': < | `component` < | `local` 'Shorthands' * < * {
+                                            'imports': | `required` < | `linked entry` ~ < [ | `group` 'imports' | `cyclic component` ~ ] > >
+                                            'local downtransformer': | `optional` | `set` < | `linked entry` ~ < [] > >
+                                            'impure': | `optional` | `selection` | `switch state` (
+                                                `target`: (
+                                                    `type`: ( `location`: | `sibling namespace` ( `namespace`: 'declarations' `type`: 'Impure' ) )
+                                                    `path`: ( `tail`: [] )
+                                                )
+                                                `selection`: < | `linked entry` ~ < [ | `group` 'purity' | `component` ~ ] > >
+                                                `options`: {
+                                                    'pure': | `not set` ~
+                                                    'impure': | `set` < [ | `group` 'impure' | `component` ~ ] >
+                                                }
+                                            )
+                                            'uptransformer': | `optional` | `not set` ~
+                                            'declarations': | `parameter` 'schemas'
+                                            'maturity': | `parameter` 'maturity'
+                                            'target schema': | `required` < | `linked entry` ~ < [
+                                                | `group` 'target schema'
+                                                | `component` ~
+                                                | `group` 'root schema'
+                                                | `reference` < >
+                                                | `cyclic component` ~
+                                            ] > >
+                                        } * {} > _ > >
                                         'functions': < | `component` < | `local` 'Downtransformer Functions' * < * {
+                                            'imports': | `required` < | `linked entry` ~ < [ | `group` 'imports' | `cyclic component` ~ ] > >
+                                            'local downtransformer': | `optional` | `set` < | `linked entry` ~ < [] > >
+                                            'impure': | `optional` | `selection` | `switch state` (
+                                                `target`: (
+                                                    `type`: ( `location`: | `sibling namespace` ( `namespace`: 'declarations' `type`: 'Impure' ) )
+                                                    `path`: ( `tail`: [] )
+                                                )
+                                                `selection`: < | `linked entry` ~ < [ | `group` 'purity' | `component` ~ ] > >
+                                                `options`: {
+                                                    'pure': | `not set` ~
+                                                    'impure': | `set` < [ | `group` 'impure' | `component` ~ ] >
+                                                }
+                                            )
+                                            'uptransformer': | `optional` | `not set` ~
+                                            'shorthands': | `required` < | `sibling property` 'shorthands' < [ | `component` ~ ] > >
                                             'declaration': | `required` < | `linked entry` ~ < [
                                                 | `group` 'functions'
                                                 | `component` ~
@@ -1493,6 +1693,10 @@
                                     ] > > > > >
                                     'uptransformers': < | `dictionary` < | `group` {
                                         'functions': < | `component` < | `local` 'Uptransformer Functions' * < * {
+                                            'imports': | `required` < | `linked entry` ~ < [ | `group` 'imports' | `cyclic component` ~ ] > >
+                                            'local downtransformer': | `optional` | `not set` ~
+                                            'impure': | `optional` | `set` < | `linked entry` ~ < [ | `group` 'impure' | `component` ~ ] > >
+                                            'uptransformer': | `optional` | `set` < | `linked entry` ~ < [ | `group` 'impure' | `component` ~ ] > >
                                             'declaration': | `required` < | `linked entry` ~ < [
                                                 | `group` 'functions'
                                                 | `component` ~
@@ -1572,7 +1776,7 @@
                             } > >
                             'Text Expression': < | `state` < {
                                 'dictionary entry identifier': < * {
-                                    'dictionary': | `assert is set` | `parameter` 'dictionary resolve'
+                                    'dictionary': | `assert is set` | `parameter` 'dictionary entry'
                                 } | `nothing` ~ _ _ >
                                 'literal': < _ | `simple` ~ _ _ >
                                 'unexpected state option': < _ | `nothing` ~ _ _ >
@@ -1594,6 +1798,10 @@
                                     'declaration': | `required` < | `linked entry` ~ < [
                                         | `cyclic component` ~
                                     ] > >
+                                    'impure': | `parameter` 'impure'
+                                    'imports': | `parameter` 'imports'
+                                    'local downtransformer': | `parameter` 'local downtransformer'
+                                    'uptransformer': | `parameter` 'uptransformer'
                                     'declarations': | `parameter` 'declarations'
                                     'directive schema': | `parameter` 'directive schema'
                                     'maturity': | `parameter` 'maturity'
@@ -1607,6 +1815,13 @@
                                         ] > > 'production' >
                                     } | `group` {
                                         'expression': < | `component` < | `local` 'Value Expression' * < * {
+                                            'dictionary entry': | `optional` | `not set` ~
+                                            'impure': | `parameter` 'impure'
+                                            'imports': | `parameter` 'imports'
+                                            'local downtransformer': | `parameter` 'local downtransformer'
+                                            'uptransformer': | `parameter` 'uptransformer'
+                                            'shorthands': | `optional` | `not set` ~
+                                            'shorthand parameters': | `optional` | `not set` ~
                                             'captures': | `optional` | `not set` ~
                                             'cursor': | `optional` | `not set` ~
                                             'declarations': | `parameter` 'declarations'
@@ -1646,6 +1861,13 @@
                                         ] > > 'refiner' >
                                     } | `group` {
                                         'expression': < | `component` < | `local` 'Value Expression' * < * {
+                                            'dictionary entry': | `optional` | `not set` ~
+                                            'impure': | `parameter` 'impure'
+                                            'imports': | `parameter` 'imports'
+                                            'local downtransformer': | `parameter` 'local downtransformer'
+                                            'uptransformer': | `parameter` 'uptransformer'
+                                            'shorthands': | `optional` | `not set` ~
+                                            'shorthand parameters': | `optional` | `not set` ~
                                             'captures': | `optional` | `not set` ~
                                             'cursor': | `optional` | `not set` ~
                                             'declarations': | `parameter` 'declarations'
@@ -1707,11 +1929,113 @@
                                 | `reference` < >
                                 | `cyclic component` ~
                             ] > > > >
+                            'Shorthand Parameters': < | `dictionary` < | `component` < | `sibling namespace` < 'schema' 'Value Reference' > * < * {
+                                'schema': | `parameter` 'target schema'
+                            } * {} > _ > _ > >
+                            'Shorthands': < | `dictionary` < | `group` {
+                                'target type': < | `component` < | `sibling namespace` < 'schema' 'Type Reference' > * < * {
+                                    'child namespaces': | `required` < | `parameter` 'target schema' < [ | `group` 'namespaces' ] > >
+                                } * {
+                                    'sibling namespaces': | `acyclic` ~
+                                    'types': | `selection` < | `acyclic` | `resolved dictionary` < < | `parameter` 'target schema' < [ | `group` 'types' | `cyclic component` ~ ] > > > >
+                                } > _ > >
+                                'parameters': < | `component` < | `local` 'Shorthand Parameters' * < _ _ > _ > >
+                                'expression': < | `component` < | `local` 'Value Expression' * < * {
+                                    'dictionary entry': | `optional` | `not set` ~
+                                    'impure': | `parameter` 'impure'
+                                    'imports': | `parameter` 'imports'
+                                    'local downtransformer': | `parameter` 'local downtransformer'
+                                    'uptransformer': | `parameter` 'uptransformer'
+                                    'shorthands': | `optional` | `not set` ~
+                                    'shorthand parameters': | `optional` | `set` < | `sibling property` 'parameters' < [ | `component` ~ ] > >
+                                    'captures': | `optional` | `not set` ~
+                                    'cursor': | `optional` | `not set` ~
+                                    'declarations': | `parameter` 'declarations'
+                                    'dependencies': | `optional` | `not set` ~
+                                    'dictionary resolve': | `optional` | `not set` ~
+                                    'directive schema': | `optional` | `not set` ~
+                                    'directive type': | `optional` | `not set` ~
+                                    'error type': | `optional` | `not set` ~
+                                    'list resolve': | `optional` | `not set` ~
+                                    'lookups': | `optional` | `not set` ~
+                                    'maturity': | `parameter` 'maturity'
+                                    'sibling properties': | `optional` | `not set` ~
+                                    'source iterator item': | `optional` | `not set` ~
+                                    'source value': | `optional` | `not set` ~
+                                    'target value': | `required` < | `sibling property` 'target type' < [
+                                        | `component` ~ | `group` 'location' | `state result` ~ | `group` 'root' | `cyclic component` ~
+                                    ] > >
+                                    'values': | `optional` | `not set` ~
+                                    'variables': | `optional` | `not set` ~
+                                } * {} > _ > >
+                            } _ > >
                             'Value Expression': < | `state` < {
+                                'shorthand': < * {
+                                    'shorthands': | `assert is set` | `parameter` 'shorthands'
+                                } | `group` {
+                                    'shorthand': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'shorthands' < [] > > > > _ > > >
+                                    'arguments': < | `dictionary` < | `component` < | `local` 'Value Expression' * < * {
+                                        'dictionary entry': | `parameter` 'dictionary entry'
+                                        'impure': | `parameter` 'impure'
+                                        'imports': | `parameter` 'imports'
+                                        'local downtransformer': | `parameter` 'local downtransformer'
+                                        'uptransformer': | `parameter` 'uptransformer'
+                                        'shorthands': | `parameter` 'shorthands'
+                                        'shorthand parameters': | `parameter` 'shorthand parameters'
+                                        'captures': | `parameter` 'captures'
+                                        'cursor': | `parameter` 'cursor'
+                                        'declarations': | `parameter` 'declarations'
+                                        'dependencies': | `parameter` 'dependencies'
+                                        'dictionary resolve': | `parameter` 'dictionary resolve'
+                                        'directive schema': | `parameter` 'directive schema'
+                                        'directive type': | `parameter` 'directive type'
+                                        'error type': | `parameter` 'error type'
+                                        'list resolve': | `parameter` 'list resolve'
+                                        'lookups': | `parameter` 'lookups'
+                                        'maturity': | `parameter` 'maturity'
+                                        'sibling properties': | `parameter` 'sibling properties'
+                                        'source iterator item': | `parameter` 'source iterator item'
+                                        'source value': | `parameter` 'source value'
+                                        'target value': | `required` < | `linked entry` ~ < [
+                                            | `component` ~ | `group` 'subselection' | `cyclic component` ~ | `group` 'steps' | `list result` ~
+                                        ] > >
+                                        'values': | `parameter` 'values'
+                                        'variables': | `parameter` 'variables'
+                                    } * {} > _ > * < < | `sibling property` 'shorthand' < [
+                                        | `reference` < > | `group` 'parameters' | `component` ~
+                                    ] > > > > >
+                                } _ * {
+                                    'target': (
+                                        `expected`: | `context` < | `parameter` 'target value' < [] > >
+                                        `actual`: | `value` < [
+                                            | `group` 'shorthand' | `reference` < > | `group` 'target type' | `component` ~
+                                            | `group` 'location' | `state result` ~ | `group` 'root' | `cyclic component` ~
+                                        ] >
+                                    )
+                                } >
+                                'shorthand parameter': < * {
+                                    'parameters': | `assert is set` | `parameter` 'shorthand parameters'
+                                } | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'parameters' < [] > > > > _ > > _ * {
+                                    'target': (
+                                        `expected`: | `context` < | `parameter` 'target value' < [] > >
+                                        `actual`: | `value` < [
+                                            | `reference` < > | `component` ~ | `group` 'subselection' | `cyclic component` ~
+                                            | `group` 'steps' | `list result` ~
+                                        ] >
+                                    )
+                                } >
                                 'abort': < * {
+                                    'impure': | `assert is set` | `parameter` 'impure'
                                     'error type': | `assert is set` | `parameter` 'error type'
                                 } | `group` {
                                     'expression': < | `component` < | `local` 'Value Expression' * < * {
+                                        'dictionary entry': | `parameter` 'dictionary entry'
+                                        'impure': | `parameter` 'impure'
+                                        'imports': | `parameter` 'imports'
+                                        'local downtransformer': | `parameter` 'local downtransformer'
+                                        'uptransformer': | `parameter` 'uptransformer'
+                                        'shorthands': | `parameter` 'shorthands'
+                                        'shorthand parameters': | `parameter` 'shorthand parameters'
                                         'captures': | `parameter` 'captures'
                                         'cursor': | `parameter` 'cursor'
                                         'declarations': | `parameter` 'declarations'
@@ -1734,8 +2058,11 @@
                                         'variables': | `parameter` 'variables'
                                     } * {} > _ > >
                                 } _ _ >
-                                'capture': < _ | `group` {
+                                'capture': < * {
+                                    'impure': | `assert is set` | `parameter` 'impure'
+                                } | `group` {
                                     'captures': < | `component` < | `local` 'Captures' * < * {
+                                        'dictionary entry': | `parameter` 'dictionary entry'
                                         'captures': | `parameter` 'captures'
                                         'cursor': | `parameter` 'cursor'
                                         'dependencies': | `parameter` 'dependencies'
@@ -1747,6 +2074,13 @@
                                         'values': | `parameter` 'values'
                                     } * {} > _ > >
                                     'expression': < | `component` < | `local` 'Value Expression' * < * {
+                                        'dictionary entry': | `parameter` 'dictionary entry'
+                                        'impure': | `parameter` 'impure'
+                                        'imports': | `parameter` 'imports'
+                                        'local downtransformer': | `parameter` 'local downtransformer'
+                                        'uptransformer': | `parameter` 'uptransformer'
+                                        'shorthands': | `parameter` 'shorthands'
+                                        'shorthand parameters': | `parameter` 'shorthand parameters'
                                         'captures': | `optional` | `set` < | `sibling property` 'captures' < [
                                             | `component` ~
                                         ] > >
@@ -1778,6 +2112,13 @@
                                         'definition': | `state` < < | `parameter` 'target value' < [] > > 'list' >
                                     } | `group` {
                                         'item': < | `component` < | `local` 'Value Expression' * < * {
+                                            'dictionary entry': | `parameter` 'dictionary entry'
+                                            'impure': | `parameter` 'impure'
+                                            'imports': | `parameter` 'imports'
+                                            'local downtransformer': | `parameter` 'local downtransformer'
+                                            'uptransformer': | `parameter` 'uptransformer'
+                                            'shorthands': | `parameter` 'shorthands'
+                                            'shorthand parameters': | `parameter` 'shorthand parameters'
                                             'captures': | `parameter` 'captures'
                                             'cursor': | `parameter` 'cursor'
                                             'declarations': | `parameter` 'declarations'
@@ -1797,6 +2138,13 @@
                                             'variables': | `parameter` 'variables'
                                         } * {} > _ > >
                                         'list': < | `component` < | `local` 'Value Expression' * < * {
+                                            'dictionary entry': | `parameter` 'dictionary entry'
+                                            'impure': | `parameter` 'impure'
+                                            'imports': | `parameter` 'imports'
+                                            'local downtransformer': | `parameter` 'local downtransformer'
+                                            'uptransformer': | `parameter` 'uptransformer'
+                                            'shorthands': | `parameter` 'shorthands'
+                                            'shorthand parameters': | `parameter` 'shorthand parameters'
                                             'captures': | `parameter` 'captures'
                                             'cursor': | `parameter` 'cursor'
                                             'declarations': | `parameter` 'declarations'
@@ -1818,10 +2166,17 @@
                                     } _ _ >
                                     'component': < * {
                                         'definition': | `state` < < | `parameter` 'target value' < [] > > 'component' >
-                                        'navigable': | `state` < < | `sibling option constraint` 'definition' < [
+                                        'simple': | `state` < < | `sibling option constraint` 'definition' < [
                                             | `cyclic component` ~
-                                        ] > > 'navigable' >
+                                        ] > > 'simple' >
                                     } | `component` < | `local` 'Value Expression' * < * {
+                                        'dictionary entry': | `parameter` 'dictionary entry'
+                                        'impure': | `parameter` 'impure'
+                                        'imports': | `parameter` 'imports'
+                                        'local downtransformer': | `parameter` 'local downtransformer'
+                                        'uptransformer': | `parameter` 'uptransformer'
+                                        'shorthands': | `parameter` 'shorthands'
+                                        'shorthand parameters': | `parameter` 'shorthand parameters'
                                         'captures': | `parameter` 'captures'
                                         'cursor': | `parameter` 'cursor'
                                         'declarations': | `parameter` 'declarations'
@@ -1836,8 +2191,44 @@
                                         'sibling properties': | `parameter` 'sibling properties'
                                         'source iterator item': | `parameter` 'source iterator item'
                                         'source value': | `parameter` 'source value'
-                                        'target value': | `required` < | `option constraint` 'navigable' < [
+                                        'target value': | `required` < | `option constraint` 'simple' < [
                                             | `state result` ~ | `group` 'root' | `cyclic component` ~
+                                        ] > >
+                                        'values': | `parameter` 'values'
+                                        'variables': | `parameter` 'variables'
+                                    } * {} > _ > _ _ >
+                                    'cyclic component': < * {
+                                        'definition': | `state` < < | `parameter` 'target value' < [] > > 'component' >
+                                        'cyclic': | `state` < < | `sibling option constraint` 'definition' < [
+                                            | `cyclic component` ~
+                                        ] > > 'cyclic' >
+                                    } | `component` < | `local` 'Value Expression' * < * {
+                                        'dictionary entry': | `parameter` 'dictionary entry'
+                                        'impure': | `parameter` 'impure'
+                                        'imports': | `parameter` 'imports'
+                                        'local downtransformer': | `parameter` 'local downtransformer'
+                                        'uptransformer': | `parameter` 'uptransformer'
+                                        'shorthands': | `parameter` 'shorthands'
+                                        'shorthand parameters': | `parameter` 'shorthand parameters'
+                                        'captures': | `parameter` 'captures'
+                                        'cursor': | `parameter` 'cursor'
+                                        'declarations': | `parameter` 'declarations'
+                                        'dependencies': | `parameter` 'dependencies'
+                                        'dictionary resolve': | `parameter` 'dictionary resolve'
+                                        'directive schema': | `parameter` 'directive schema'
+                                        'directive type': | `parameter` 'directive type'
+                                        'error type': | `parameter` 'error type'
+                                        'list resolve': | `parameter` 'list resolve'
+                                        'lookups': | `parameter` 'lookups'
+                                        'maturity': | `parameter` 'maturity'
+                                        'sibling properties': | `parameter` 'sibling properties'
+                                        'source iterator item': | `parameter` 'source iterator item'
+                                        'source value': | `parameter` 'source value'
+                                        'target value': | `required` < | `option constraint` 'cyclic' < [
+                                            | `expect resolved` < >
+                                            | `cyclic component` ~
+                                            | `group` 'root'
+                                            | `cyclic component` ~
                                         ] > >
                                         'values': | `parameter` 'values'
                                         'variables': | `parameter` 'variables'
@@ -1845,6 +2236,13 @@
                                     'dictionary': < * {
                                         'definition': | `state` < < | `parameter` 'target value' < [] > > 'dictionary' >
                                     } | `dictionary` < | `component` < | `local` 'Value Expression' * < * {
+                                        'dictionary entry': | `parameter` 'dictionary entry'
+                                        'impure': | `parameter` 'impure'
+                                        'imports': | `parameter` 'imports'
+                                        'local downtransformer': | `parameter` 'local downtransformer'
+                                        'uptransformer': | `parameter` 'uptransformer'
+                                        'shorthands': | `parameter` 'shorthands'
+                                        'shorthand parameters': | `parameter` 'shorthand parameters'
                                         'captures': | `parameter` 'captures'
                                         'cursor': | `parameter` 'cursor'
                                         'declarations': | `parameter` 'declarations'
@@ -1872,6 +2270,13 @@
                                         'definition': | `state` < < | `parameter` 'target value' < [] > > 'group' >
                                     } | `group` {
                                         'properties': < | `dictionary` < | `component` < | `local` 'Value Expression' * < * {
+                                            'dictionary entry': | `parameter` 'dictionary entry'
+                                            'impure': | `parameter` 'impure'
+                                            'imports': | `parameter` 'imports'
+                                            'local downtransformer': | `parameter` 'local downtransformer'
+                                            'uptransformer': | `parameter` 'uptransformer'
+                                            'shorthands': | `parameter` 'shorthands'
+                                            'shorthand parameters': | `parameter` 'shorthand parameters'
                                             'captures': | `parameter` 'captures'
                                             'cursor': | `parameter` 'cursor'
                                             'declarations': | `parameter` 'declarations'
@@ -1902,6 +2307,13 @@
                                     'list': < * {
                                         'definition': | `state` < < | `parameter` 'target value' < [] > > 'list' >
                                     } | `list` < | `component` < | `local` 'Value Expression' * < * {
+                                        'dictionary entry': | `parameter` 'dictionary entry'
+                                        'impure': | `parameter` 'impure'
+                                        'imports': | `parameter` 'imports'
+                                        'local downtransformer': | `parameter` 'local downtransformer'
+                                        'uptransformer': | `parameter` 'uptransformer'
+                                        'shorthands': | `parameter` 'shorthands'
+                                        'shorthand parameters': | `parameter` 'shorthand parameters'
                                         'captures': | `parameter` 'captures'
                                         'cursor': | `parameter` 'cursor'
                                         'declarations': | `parameter` 'declarations'
@@ -1930,14 +2342,45 @@
                                     } | `component` < | `local` 'Number Expression' * < * {
                                         'list resolve': | `parameter` 'list resolve'
                                     } * {} > _ > _ _ >
-                                    'optional': < * {
+                                    'not set': < * {
                                         'definition': | `state` < < | `parameter` 'target value' < [] > > 'optional' >
                                     } | `nothing` ~ _ _ >
+                                    'set': < * {
+                                        'definition': | `state` < < | `parameter` 'target value' < [] > > 'optional' >
+                                    } | `component` < | `local` 'Value Expression' * < * {
+                                        'dictionary entry': | `parameter` 'dictionary entry'
+                                        'impure': | `parameter` 'impure'
+                                        'imports': | `parameter` 'imports'
+                                        'local downtransformer': | `parameter` 'local downtransformer'
+                                        'uptransformer': | `parameter` 'uptransformer'
+                                        'shorthands': | `parameter` 'shorthands'
+                                        'shorthand parameters': | `parameter` 'shorthand parameters'
+                                        'captures': | `parameter` 'captures'
+                                        'cursor': | `parameter` 'cursor'
+                                        'declarations': | `parameter` 'declarations'
+                                        'dependencies': | `parameter` 'dependencies'
+                                        'dictionary resolve': | `parameter` 'dictionary resolve'
+                                        'directive schema': | `parameter` 'directive schema'
+                                        'directive type': | `parameter` 'directive type'
+                                        'error type': | `parameter` 'error type'
+                                        'list resolve': | `parameter` 'list resolve'
+                                        'lookups': | `parameter` 'lookups'
+                                        'maturity': | `parameter` 'maturity'
+                                        'sibling properties': | `parameter` 'sibling properties'
+                                        'source iterator item': | `parameter` 'source iterator item'
+                                        'source value': | `parameter` 'source value'
+                                        'target value': | `required` < | `option constraint` 'definition' < [
+                                            | `cyclic component` ~
+                                        ] > >
+                                        'values': | `parameter` 'values'
+                                        'variables': | `parameter` 'variables'
+                                    } * {} > _ > _ _ >
                                     'reference from lookup': < * {
                                         'definition': | `state` < < | `parameter` 'target value' < [] > > 'reference' >
                                         'error type': | `assert is set` | `parameter` 'error type'
                                     } | `group` {
                                         'identifier': < | `component` < | `local` 'Text Expression' * < * {
+                                            'dictionary entry': | `parameter` 'dictionary entry'
                                             'captures': | `parameter` 'captures'
                                             'cursor': | `parameter` 'cursor'
                                             'dependencies': | `parameter` 'dependencies'
@@ -1949,6 +2392,7 @@
                                             'values': | `parameter` 'values'
                                         } * {} > _ > >
                                         'lookup': < | `component` < | `local` 'Lookup Selection' * < * {
+                                            'dictionary entry': | `parameter` 'dictionary entry'
                                             'captures': | `parameter` 'captures'
                                             'cursor': | `parameter` 'cursor'
                                             'dependencies': | `parameter` 'dependencies'
@@ -1961,6 +2405,13 @@
                                             'values': | `parameter` 'values'
                                         } * {} > _ > >
                                         'on cycle': < | `component` < | `local` 'Value Expression' * < * {
+                                            'dictionary entry': | `parameter` 'dictionary entry'
+                                            'impure': | `parameter` 'impure'
+                                            'imports': | `parameter` 'imports'
+                                            'local downtransformer': | `parameter` 'local downtransformer'
+                                            'uptransformer': | `parameter` 'uptransformer'
+                                            'shorthands': | `parameter` 'shorthands'
+                                            'shorthand parameters': | `parameter` 'shorthand parameters'
                                             'captures': | `parameter` 'captures'
                                             'cursor': | `parameter` 'cursor'
                                             'declarations': | `parameter` 'declarations'
@@ -1983,6 +2434,13 @@
                                             'variables': | `parameter` 'variables'
                                         } * {} > _ > >
                                         'on missing': < | `component` < | `local` 'Value Expression' * < * {
+                                            'dictionary entry': | `parameter` 'dictionary entry'
+                                            'impure': | `parameter` 'impure'
+                                            'imports': | `parameter` 'imports'
+                                            'local downtransformer': | `parameter` 'local downtransformer'
+                                            'uptransformer': | `parameter` 'uptransformer'
+                                            'shorthands': | `parameter` 'shorthands'
+                                            'shorthand parameters': | `parameter` 'shorthand parameters'
                                             'captures': | `parameter` 'captures'
                                             'cursor': | `parameter` 'cursor'
                                             'declarations': | `parameter` 'declarations'
@@ -2005,6 +2463,13 @@
                                             'variables': | `parameter` 'variables'
                                         } * {} > _ > >
                                         'on no context': < | `component` < | `local` 'Value Expression' * < * {
+                                            'dictionary entry': | `parameter` 'dictionary entry'
+                                            'impure': | `parameter` 'impure'
+                                            'imports': | `parameter` 'imports'
+                                            'local downtransformer': | `parameter` 'local downtransformer'
+                                            'uptransformer': | `parameter` 'uptransformer'
+                                            'shorthands': | `parameter` 'shorthands'
+                                            'shorthand parameters': | `parameter` 'shorthand parameters'
                                             'captures': | `parameter` 'captures'
                                             'cursor': | `parameter` 'cursor'
                                             'declarations': | `parameter` 'declarations'
@@ -2027,6 +2492,13 @@
                                             'variables': | `parameter` 'variables'
                                         } * {} > _ > >
                                         'on premature access': < | `component` < | `local` 'Value Expression' * < * {
+                                            'dictionary entry': | `parameter` 'dictionary entry'
+                                            'impure': | `parameter` 'impure'
+                                            'imports': | `parameter` 'imports'
+                                            'local downtransformer': | `parameter` 'local downtransformer'
+                                            'uptransformer': | `parameter` 'uptransformer'
+                                            'shorthands': | `parameter` 'shorthands'
+                                            'shorthand parameters': | `parameter` 'shorthand parameters'
                                             'captures': | `parameter` 'captures'
                                             'cursor': | `parameter` 'cursor'
                                             'declarations': | `parameter` 'declarations'
@@ -2071,6 +2543,13 @@
                                             | `group` 'options'
                                         ] > > > > _ > > >
                                         'value': < | `component` < | `local` 'Value Expression' * < * {
+                                            'dictionary entry': | `parameter` 'dictionary entry'
+                                            'impure': | `parameter` 'impure'
+                                            'imports': | `parameter` 'imports'
+                                            'local downtransformer': | `parameter` 'local downtransformer'
+                                            'uptransformer': | `parameter` 'uptransformer'
+                                            'shorthands': | `parameter` 'shorthands'
+                                            'shorthand parameters': | `parameter` 'shorthand parameters'
                                             'captures': | `parameter` 'captures'
                                             'cursor': | `parameter` 'cursor'
                                             'declarations': | `parameter` 'declarations'
@@ -2096,6 +2575,7 @@
                                     'text': < * {
                                         'definition': | `state` < < | `parameter` 'target value' < [] > > 'text' >
                                     } | `component` < | `local` 'Text Expression' * < * {
+                                        'dictionary entry': | `parameter` 'dictionary entry'
                                         'captures': | `parameter` 'captures'
                                         'cursor': | `parameter` 'cursor'
                                         'dependencies': | `parameter` 'dependencies'
@@ -2111,12 +2591,21 @@
                                     } | `nothing` ~ _ _ >
                                 } > _ _ >
                                 'variable': < * {
+                                    'impure': | `assert is set` | `parameter` 'impure'
                                     'variables': | `assert is set` | `parameter` 'variables'
                                 } | `reference` < < < | `acyclic` | `resolved dictionary` < < | `option constraint` 'variables' < [] > > > > _ > > _ _ >
                                 'variables': < * {
+                                    'impure': | `assert is set` | `parameter` 'impure'
                                     'directive schema': | `assert is set` | `parameter` 'directive schema'
                                 } | `group` {
                                     'bindings': < | `component` < | `local` 'Variables' * < * {
+                                        'dictionary entry': | `parameter` 'dictionary entry'
+                                        'impure': | `parameter` 'impure'
+                                        'imports': | `parameter` 'imports'
+                                        'local downtransformer': | `parameter` 'local downtransformer'
+                                        'uptransformer': | `parameter` 'uptransformer'
+                                        'shorthands': | `parameter` 'shorthands'
+                                        'shorthand parameters': | `parameter` 'shorthand parameters'
                                         'captures': | `parameter` 'captures'
                                         'cursor': | `parameter` 'cursor'
                                         'declarations': | `parameter` 'declarations'
@@ -2136,6 +2625,13 @@
                                         'variables': | `parameter` 'variables'
                                     } * {} > _ > >
                                     'expression': < | `component` < | `local` 'Value Expression' * < * {
+                                        'dictionary entry': | `parameter` 'dictionary entry'
+                                        'impure': | `parameter` 'impure'
+                                        'imports': | `parameter` 'imports'
+                                        'local downtransformer': | `parameter` 'local downtransformer'
+                                        'uptransformer': | `parameter` 'uptransformer'
+                                        'shorthands': | `parameter` 'shorthands'
+                                        'shorthand parameters': | `parameter` 'shorthand parameters'
                                         'captures': | `parameter` 'captures'
                                         'cursor': | `parameter` 'cursor'
                                         'declarations': | `parameter` 'declarations'
@@ -2183,6 +2679,13 @@
                                                     | `state result` ~
                                                 ] > >
                                             } | `component` < | `local` 'Value Expression' * < * {
+                                                'dictionary entry': | `parameter` 'dictionary entry'
+                                                'impure': | `parameter` 'impure'
+                                                'imports': | `parameter` 'imports'
+                                                'local downtransformer': | `parameter` 'local downtransformer'
+                                                'uptransformer': | `parameter` 'uptransformer'
+                                                'shorthands': | `parameter` 'shorthands'
+                                                'shorthand parameters': | `parameter` 'shorthand parameters'
                                                 'captures': | `parameter` 'captures'
                                                 'cursor': | `parameter` 'cursor'
                                                 'declarations': | `parameter` 'declarations'
@@ -2211,19 +2714,20 @@
                                             ] > > > > _ > > >
                                             'namespaces': < | `component` < | `local` 'Downtransformer Namespace Selection' * < * {
                                                 'functions': | `required` < | `sibling property` 'transformer' < [
-                                                    | `reference` < >
+                                                    | `component` ~
+                                                    | `state result` ~
                                                     | `group` 'functions'
                                                     | `component` ~
                                                 ] > >
                                             } * {} > _ > >
-                                            'schema': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'declarations' < [] > > > > _ > > >
-                                            'transformer': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'schema' < [
-                                                | `reference` < >
-                                                | `component` ~
-                                                | `group` 'downtransformers'
-                                            ] > > > > _ > > >
+                                            'transformer': < | `component` < | `local` 'Downtransformer Selection' * < * {
+                                                'imports': | `parameter` 'imports'
+                                                'local downtransformer': | `parameter` 'local downtransformer'
+                                            } * {} > _ > >
                                         } _ _ >
-                                        'call with value': < _ | `group` {
+                                        'call with value': < * {
+                                            'impure': | `assert is set` | `parameter` 'impure'
+                                        } | `group` {
                                             'arguments': < | `state` < {
                                                 'production': < * {
                                                     'declaration': | `state` < < | `sibling property` 'function' < [
@@ -2254,6 +2758,13 @@
                                                             | `state result` ~
                                                         ] > >
                                                     } | `component` < | `local` 'Value Expression' * < * {
+                                                        'dictionary entry': | `parameter` 'dictionary entry'
+                                                        'impure': | `parameter` 'impure'
+                                                        'imports': | `parameter` 'imports'
+                                                        'local downtransformer': | `parameter` 'local downtransformer'
+                                                        'uptransformer': | `parameter` 'uptransformer'
+                                                        'shorthands': | `parameter` 'shorthands'
+                                                        'shorthand parameters': | `parameter` 'shorthand parameters'
                                                         'captures': | `parameter` 'captures'
                                                         'cursor': | `parameter` 'cursor'
                                                         'declarations': | `parameter` 'declarations'
@@ -2287,6 +2798,7 @@
                                                                     | `group` 'presence'
                                                                 ] > > 'optional' >
                                                             } | `optional` < _ _ | `component` < | `local` 'Lookup Selection' * < * {
+                                                                'dictionary entry': | `parameter` 'dictionary entry'
                                                                 'captures': | `parameter` 'captures'
                                                                 'cursor': | `parameter` 'cursor'
                                                                 'dependencies': | `parameter` 'dependencies'
@@ -2303,6 +2815,7 @@
                                                                     | `group` 'presence'
                                                                 ] > > 'required' >
                                                             } | `component` < | `local` 'Lookup Selection' * < * {
+                                                                'dictionary entry': | `parameter` 'dictionary entry'
                                                                 'captures': | `parameter` 'captures'
                                                                 'cursor': | `parameter` 'cursor'
                                                                 'dependencies': | `parameter` 'dependencies'
@@ -2336,6 +2849,13 @@
                                                             | `state result` ~
                                                         ] > >
                                                     } | `component` < | `local` 'Value Expression' * < * {
+                                                        'dictionary entry': | `parameter` 'dictionary entry'
+                                                        'impure': | `parameter` 'impure'
+                                                        'imports': | `parameter` 'imports'
+                                                        'local downtransformer': | `parameter` 'local downtransformer'
+                                                        'uptransformer': | `parameter` 'uptransformer'
+                                                        'shorthands': | `parameter` 'shorthands'
+                                                        'shorthand parameters': | `parameter` 'shorthand parameters'
                                                         'captures': | `parameter` 'captures'
                                                         'cursor': | `parameter` 'cursor'
                                                         'declarations': | `parameter` 'declarations'
@@ -2426,6 +2946,13 @@
                                             ] > > > > _ > > >
                                         } _ _ >
                                         'change context': < _ | `component` < | `local` 'Value Expression' * < * {
+                                            'dictionary entry': | `parameter` 'dictionary entry'
+                                            'impure': | `parameter` 'impure'
+                                            'imports': | `parameter` 'imports'
+                                            'local downtransformer': | `parameter` 'local downtransformer'
+                                            'uptransformer': | `parameter` 'uptransformer'
+                                            'shorthands': | `parameter` 'shorthands'
+                                            'shorthand parameters': | `parameter` 'shorthand parameters'
                                             'captures': | `parameter` 'captures'
                                             'cursor': | `parameter` 'cursor'
                                             'declarations': | `parameter` 'declarations'
@@ -2449,6 +2976,7 @@
                                             'variables': | `parameter` 'variables'
                                         } * {} > _ > _ _ >
                                         'decide boolean': < * {
+                                            'impure': | `assert is set` | `parameter` 'impure'
                                             'source': | `state` < < | `sibling property` 'selection' < [
                                                 | `component` ~
                                                 | `group` 'steps'
@@ -2467,6 +2995,13 @@
                                         } | `group` {
                                             'if absent': < | `component` < | `local` 'Value Expression' * < _ _ > _ > >
                                             'if present': < | `component` < | `local` 'Value Expression' * < * {
+                                                'dictionary entry': | `parameter` 'dictionary entry'
+                                                'impure': | `parameter` 'impure'
+                                                'imports': | `parameter` 'imports'
+                                                'local downtransformer': | `parameter` 'local downtransformer'
+                                                'uptransformer': | `parameter` 'uptransformer'
+                                                'shorthands': | `parameter` 'shorthands'
+                                                'shorthand parameters': | `parameter` 'shorthand parameters'
                                                 'captures': | `parameter` 'captures'
                                                 'cursor': | `parameter` 'cursor'
                                                 'declarations': | `parameter` 'declarations'
@@ -2495,6 +3030,13 @@
                                                 | `list result` ~
                                             ] > > 'state' >
                                         } | `dictionary` < | `component` < | `local` 'Value Expression' * < * {
+                                            'dictionary entry': | `parameter` 'dictionary entry'
+                                            'impure': | `parameter` 'impure'
+                                            'imports': | `parameter` 'imports'
+                                            'local downtransformer': | `parameter` 'local downtransformer'
+                                            'uptransformer': | `parameter` 'uptransformer'
+                                            'shorthands': | `parameter` 'shorthands'
+                                            'shorthand parameters': | `parameter` 'shorthand parameters'
                                             'captures': | `parameter` 'captures'
                                             'cursor': | `parameter` 'cursor'
                                             'declarations': | `parameter` 'declarations'
@@ -2518,6 +3060,7 @@
                                             | `group` 'options'
                                         ] > > > > _ _ >
                                         'expect state option': < * {
+                                            'impure': | `assert is set` | `parameter` 'impure'
                                             'source': | `state` < < | `sibling property` 'selection' < [
                                                 | `component` ~
                                                 | `group` 'steps'
@@ -2528,6 +3071,13 @@
                                                 | `group` 'options'
                                             ] > > > > _ > > >
                                             'if expected': < | `component` < | `local` 'Value Expression' * < * {
+                                                'dictionary entry': | `parameter` 'dictionary entry'
+                                                'impure': | `parameter` 'impure'
+                                                'imports': | `parameter` 'imports'
+                                                'local downtransformer': | `parameter` 'local downtransformer'
+                                                'uptransformer': | `parameter` 'uptransformer'
+                                                'shorthands': | `parameter` 'shorthands'
+                                                'shorthand parameters': | `parameter` 'shorthand parameters'
                                                 'captures': | `parameter` 'captures'
                                                 'cursor': | `parameter` 'cursor'
                                                 'declarations': | `parameter` 'declarations'
@@ -2567,6 +3117,13 @@
                                                 | `list result` ~
                                             ] > > 'dictionary' >
                                         } | `component` < | `local` 'Value Expression' * < * {
+                                            'dictionary entry': | `optional` | `set` < | `option constraint` 'definition' < [] > >
+                                            'impure': | `parameter` 'impure'
+                                            'imports': | `parameter` 'imports'
+                                            'local downtransformer': | `parameter` 'local downtransformer'
+                                            'uptransformer': | `parameter` 'uptransformer'
+                                            'shorthands': | `parameter` 'shorthands'
+                                            'shorthand parameters': | `parameter` 'shorthand parameters'
                                             'captures': | `parameter` 'captures'
                                             'cursor': | `parameter` 'cursor'
                                             'declarations': | `parameter` 'declarations'
@@ -2590,6 +3147,7 @@
                                             'variables': | `parameter` 'variables'
                                         } * {} > _ > _ _ >
                                         'get possible entry': < * {
+                                            'impure': | `assert is set` | `parameter` 'impure'
                                             'source': | `state` < < | `sibling property` 'selection' < [
                                                 | `component` ~
                                                 | `group` 'steps'
@@ -2597,6 +3155,7 @@
                                             ] > > 'dictionary' >
                                         } | `group` {
                                             'identifier': < | `component` < | `local` 'Text Expression' * < * {
+                                                'dictionary entry': | `parameter` 'dictionary entry'
                                                 'captures': | `parameter` 'captures'
                                                 'cursor': | `parameter` 'cursor'
                                                 'dependencies': | `parameter` 'dependencies'
@@ -2608,6 +3167,13 @@
                                                 'values': | `parameter` 'values'
                                             } * {} > _ > >
                                             'if found': < | `component` < | `local` 'Value Expression' * < * {
+                                                'dictionary entry': | `parameter` 'dictionary entry'
+                                                'impure': | `parameter` 'impure'
+                                                'imports': | `parameter` 'imports'
+                                                'local downtransformer': | `parameter` 'local downtransformer'
+                                                'uptransformer': | `parameter` 'uptransformer'
+                                                'shorthands': | `parameter` 'shorthands'
+                                                'shorthand parameters': | `parameter` 'shorthand parameters'
                                                 'captures': | `parameter` 'captures'
                                                 'cursor': | `parameter` 'cursor'
                                                 'declarations': | `parameter` 'declarations'
@@ -2638,6 +3204,13 @@
                                                 | `list result` ~
                                             ] > > 'list' >
                                         } | `component` < | `local` 'Value Expression' * < * {
+                                            'dictionary entry': | `parameter` 'dictionary entry'
+                                            'impure': | `parameter` 'impure'
+                                            'imports': | `parameter` 'imports'
+                                            'local downtransformer': | `parameter` 'local downtransformer'
+                                            'uptransformer': | `parameter` 'uptransformer'
+                                            'shorthands': | `parameter` 'shorthands'
+                                            'shorthand parameters': | `parameter` 'shorthand parameters'
                                             'captures': | `parameter` 'captures'
                                             'cursor': | `parameter` 'cursor'
                                             'declarations': | `parameter` 'declarations'
@@ -2702,6 +3275,13 @@
                                                 | `list result` ~
                                             ] > > 'optional' >
                                         } | `component` < | `local` 'Value Expression' * < * {
+                                            'dictionary entry': | `parameter` 'dictionary entry'
+                                            'impure': | `parameter` 'impure'
+                                            'imports': | `parameter` 'imports'
+                                            'local downtransformer': | `parameter` 'local downtransformer'
+                                            'uptransformer': | `parameter` 'uptransformer'
+                                            'shorthands': | `parameter` 'shorthands'
+                                            'shorthand parameters': | `parameter` 'shorthand parameters'
                                             'captures': | `parameter` 'captures'
                                             'cursor': | `parameter` 'cursor'
                                             'declarations': | `parameter` 'declarations'
@@ -2733,6 +3313,7 @@
                                             ] > > 'text' >
                                         } | `nothing` ~ _ _ >
                                         'to state': < * {
+                                            'impure': | `assert is set` | `parameter` 'impure'
                                             'definition': | `state` < < | `parameter` 'target value' < [] > > 'state' >
                                             'source': | `state` < < | `sibling property` 'selection' < [
                                                 | `component` ~
@@ -2741,6 +3322,13 @@
                                             ] > > 'text' >
                                         } | `group` {
                                             'options': < | `dictionary` < | `component` < | `local` 'Value Expression' * < * {
+                                                'dictionary entry': | `parameter` 'dictionary entry'
+                                                'impure': | `parameter` 'impure'
+                                                'imports': | `parameter` 'imports'
+                                                'local downtransformer': | `parameter` 'local downtransformer'
+                                                'uptransformer': | `parameter` 'uptransformer'
+                                                'shorthands': | `parameter` 'shorthands'
+                                                'shorthand parameters': | `parameter` 'shorthand parameters'
                                                 'captures': | `parameter` 'captures'
                                                 'cursor': | `parameter` 'cursor'
                                                 'declarations': | `parameter` 'declarations'
@@ -2767,6 +3355,8 @@
                                         } _ _ >
                                         'reuse': < _ | `nothing` ~ _ _ >
                                         'resolve dictionary': < * {
+                                            'impure': | `assert is set` | `parameter` 'impure'
+                                            'uptransformer': | `assert is set` | `parameter` 'uptransformer'
                                             'definition': | `state` < < | `parameter` 'target value' < [] > > 'dictionary' >
                                             'source': | `state` < < | `sibling property` 'selection' < [
                                                 | `component` ~
@@ -2790,6 +3380,13 @@
                                                     'dictionary': < | `value` ~ < < [ | `group` 'steps' | `list result` ~ ] > | `state` < 'dictionary' > > >
                                                 } > >
                                                 'on missing': < | `component` < | `local` 'Value Expression' * < * {
+                                                    'dictionary entry': | `parameter` 'dictionary entry'
+                                                    'impure': | `parameter` 'impure'
+                                                    'imports': | `parameter` 'imports'
+                                                    'local downtransformer': | `parameter` 'local downtransformer'
+                                                    'uptransformer': | `parameter` 'uptransformer'
+                                                    'shorthands': | `parameter` 'shorthands'
+                                                    'shorthand parameters': | `parameter` 'shorthand parameters'
                                                     'captures': | `parameter` 'captures'
                                                     'cursor': | `parameter` 'cursor'
                                                     'declarations': | `parameter` 'declarations'
@@ -2812,6 +3409,13 @@
                                                 } * {} > _ > >
                                             } _ _ _ > >
                                             'entry': < | `component` < | `local` 'Value Expression' * < * {
+                                                'dictionary entry': | `optional` | `set` < | `option constraint` 'definition' < [] > >
+                                                'impure': | `parameter` 'impure'
+                                                'imports': | `parameter` 'imports'
+                                                'local downtransformer': | `parameter` 'local downtransformer'
+                                                'uptransformer': | `parameter` 'uptransformer'
+                                                'shorthands': | `parameter` 'shorthands'
+                                                'shorthand parameters': | `parameter` 'shorthand parameters'
                                                 'captures': | `parameter` 'captures'
                                                 'cursor': | `parameter` 'cursor'
                                                 'declarations': | `parameter` 'declarations'
@@ -2836,6 +3440,7 @@
                                             } * {} > _ > >
                                         } _ _ >
                                         'on has last item': < * {
+                                            'impure': | `assert is set` | `parameter` 'impure'
                                             'source': | `state` < < | `sibling property` 'selection' < [
                                                 | `component` ~
                                                 | `group` 'steps'
@@ -2844,6 +3449,13 @@
                                         } | `group` {
                                             'if absent': < | `component` < | `local` 'Value Expression' * < _ _ > _ > >
                                             'if present': < | `component` < | `local` 'Value Expression' * < * {
+                                                'dictionary entry': | `parameter` 'dictionary entry'
+                                                'impure': | `parameter` 'impure'
+                                                'imports': | `parameter` 'imports'
+                                                'local downtransformer': | `parameter` 'local downtransformer'
+                                                'uptransformer': | `parameter` 'uptransformer'
+                                                'shorthands': | `parameter` 'shorthands'
+                                                'shorthand parameters': | `parameter` 'shorthand parameters'
                                                 'captures': | `parameter` 'captures'
                                                 'cursor': | `parameter` 'cursor'
                                                 'declarations': | `parameter` 'declarations'
@@ -2866,6 +3478,7 @@
                                             } * {} > _ > >
                                         } _ _ >
                                         'resolve list': < * {
+                                            'impure': | `assert is set` | `parameter` 'impure'
                                             'definition': | `state` < < | `parameter` 'target value' < [] > > 'list' >
                                             'source': | `state` < < | `sibling property` 'selection' < [
                                                 | `component` ~
@@ -2875,6 +3488,13 @@
                                         } | `group` {
                                             'cursor': < | `component` < | `local` 'List Cursor' * < _ _ > _ > >
                                             'item': < | `component` < | `local` 'Value Expression' * < * {
+                                                'dictionary entry': | `parameter` 'dictionary entry'
+                                                'impure': | `parameter` 'impure'
+                                                'imports': | `parameter` 'imports'
+                                                'local downtransformer': | `parameter` 'local downtransformer'
+                                                'uptransformer': | `parameter` 'uptransformer'
+                                                'shorthands': | `parameter` 'shorthands'
+                                                'shorthand parameters': | `parameter` 'shorthand parameters'
                                                 'captures': | `parameter` 'captures'
                                                 'cursor': | `optional` | `set` < | `sibling property` 'cursor' < [
                                                     | `component` ~
@@ -2920,9 +3540,18 @@
                                         'values': | `parameter` 'values'
                                     } * {} > _ > >
                                 } _ _ >
-                                'with optional value parameter': < _ | `group` {
+                                'with optional value parameter': < * {
+                                    'impure': | `assert is set` | `parameter` 'impure'
+                                } | `group` {
                                     'if absent': < | `component` < | `local` 'Value Expression' * < _ _ > _ > >
                                     'if present': < | `component` < | `local` 'Value Expression' * < * {
+                                        'dictionary entry': | `parameter` 'dictionary entry'
+                                        'impure': | `parameter` 'impure'
+                                        'imports': | `parameter` 'imports'
+                                        'local downtransformer': | `parameter` 'local downtransformer'
+                                        'uptransformer': | `parameter` 'uptransformer'
+                                        'shorthands': | `parameter` 'shorthands'
+                                        'shorthand parameters': | `parameter` 'shorthand parameters'
                                         'captures': | `parameter` 'captures'
                                         'cursor': | `parameter` 'cursor'
                                         'declarations': | `parameter` 'declarations'
@@ -3005,11 +3634,22 @@
                                 'steps': < | `list` < | `state` < {
                                     'component': < * {
                                         'component': | `state` < < | `list cursor` ~ < [] > > 'component' >
-                                        'navigable': | `state` < < | `sibling option constraint` 'component' < [
+                                        'simple': | `state` < < | `sibling option constraint` 'component' < [
                                             | `cyclic component` ~
-                                        ] > > 'navigable' >
-                                    } | `nothing` ~ * | `context` < | `option constraint` 'navigable' < [
+                                        ] > > 'simple' >
+                                    } | `nothing` ~ * | `context` < | `option constraint` 'simple' < [
                                         | `state result` ~ | `group` 'root' | `cyclic component` ~
+                                    ] > > _ >
+                                    'cyclic component': < * {
+                                        'component': | `state` < < | `list cursor` ~ < [] > > 'component' >
+                                        'definition': | `state` < < | `sibling option constraint` 'component' < [
+                                            | `cyclic component` ~
+                                        ] > > 'cyclic' >
+                                    } | `nothing` ~ * | `context` < | `option constraint` 'definition' < [
+                                        | `expect resolved` < >
+                                        | `cyclic component` ~
+                                        | `group` 'root'
+                                        | `cyclic component` ~
                                     ] > > _ >
                                     'group': < * {
                                         'definition': | `state` < < | `list cursor` ~ < [] > > 'group' >
@@ -3037,6 +3677,13 @@
                             } >
                             'Variables': < | `dictionary` < | `group` {
                                 'expression': < | `component` < | `local` 'Value Expression' * < * {
+                                    'dictionary entry': | `parameter` 'dictionary entry'
+                                    'impure': | `parameter` 'impure'
+                                    'imports': | `parameter` 'imports'
+                                    'local downtransformer': | `parameter` 'local downtransformer'
+                                    'uptransformer': | `parameter` 'uptransformer'
+                                    'shorthands': | `parameter` 'shorthands'
+                                    'shorthand parameters': | `parameter` 'shorthand parameters'
                                     'captures': | `parameter` 'captures'
                                     'cursor': | `parameter` 'cursor'
                                     'declarations': | `parameter` 'declarations'
@@ -3152,27 +3799,6 @@
                                             | `group` 'types'
                                             | `cyclic component` ~
                                         ] > > > > _ > > >
-                                    } _ _ >
-                                    'local': < _ | `reference` < < < | `parameter` 'cyclic types' > _ > > _ _ >
-                                    'sibling namespace': < _ | `group` {
-                                        'namespace': < | `reference` < < < | `parameter` 'sibling namespaces' > _ > > >
-                                        'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespace' < [
-                                            | `reference` < >
-                                            | `cyclic component` ~
-                                            | `group` 'types'
-                                            | `cyclic component` ~
-                                        ] > > > > _ > > >
-                                    } _ _ >
-                                } > _ _ >
-                                'navigable': < _ | `state` < {
-                                    'child namespace': < _ | `group` {
-                                        'namespace': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'child namespaces' < [] > > > > _ > > >
-                                        'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'namespace' < [
-                                            | `reference` < >
-                                            | `cyclic component` ~
-                                            | `group` 'types'
-                                            | `cyclic component` ~
-                                        ] > > > > _ > > >
                                     } * | `value` < [ | `group` 'type' | `reference` < > | `cyclic component` ~ ] > _ >
                                     'local': < _ | `reference` < < < | `parameter` 'acyclic types' > _ > > * | `value` < [
                                         | `reference` < > | `cyclic component` ~
@@ -3187,6 +3813,7 @@
                                         ] > > > > _ > > >
                                     } * | `value` < [ | `group` 'type' | `reference` < > | `cyclic component` ~ ] > _ >
                                 } > _ _ >
+                                'cyclic': < _ | `reference` < < < | `parameter` 'cyclic types' > _ > > _ _ >
                             } > >
                             'Value': < | `state` < {
                                 'boolean': < _ | `nothing` ~ _ _ >
