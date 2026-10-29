@@ -102,14 +102,20 @@ For an entry that does not exist in its benchmark, use **Quick Fix → Add entry
 'foo' to benchmark dictionary**. This creates a schema-generated value in the
 actual benchmark dictionary, for both sparse and dense constraints.
 
-Generated dictionary entry names and renamed identifiers use escaped single quotes.
-Reference completions also insert single-quoted identifiers, escaping embedded
-apostrophes, backslashes and control characters.
+Generated dictionary entry names and renamed identifiers use escaped single
+quotation marks. Reference completions also insert identifiers enclosed in
+single quotation marks, escaping embedded single quotation marks, backslashes
+and control characters.
 
-All three string delimiters (double quotes, single quotes and backticks) support
-literal newlines as well as escaped `\n` and `\r`. Empty identifiers are valid
-ASTN too. Highlighting does not mark these as syntax errors. Files open as
-written; the extension does not normalize string contents when opening them.
+All three string delimiters (double quotation marks, single quotation marks and
+backticks) support literal newlines as well as escaped `\n` and `\r`. Empty
+identifiers are valid ASTN too. Highlighting does not mark these as syntax
+errors. Files open as written; the extension does not normalize string contents
+when opening them.
+
+Conversion to concise notation emits group values in schema property order,
+regardless of their order in verbose notation. Verbose groups with missing,
+duplicate or unknown properties retain their notation to avoid losing data.
 
 ## Tutorial: Creating Your First Language
 

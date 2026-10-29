@@ -32,6 +32,7 @@ const unmarshalCompletion = require('liana-authoring/schemas/unmarshall_result/t
 const unmarshal_diagnostics = require('liana-authoring/schemas/unmarshall_result/transformers/diagnostics')
 const found = require('liana-authoring/schemas/unmarshall_result/transformers/found')
 const authoring_target = require('liana-authoring/schemas/unmarshall_result/transformers/authoring_target')
+const serialized_authoring_target = require('astn/modules/authoring_target/schemas/authoring_target/transformers/serialized')
 const { matches_token } = require('liana-authoring/schemas/liana_schema/token_pattern')
 const p = require('pareto-core/transformer')
 
@@ -259,6 +260,52 @@ for (const visibility of ['private', 'private single use']) {
         })
     }
 }
+
+test('concise conversion follows schema order in reordered nested verbose groups', () => {
+    const schema = specification(`| \`group\` {
+        'first': (\`description\`: _ \`value\`: | \`nothing\` ~)
+        'nested': (\`description\`: _ \`value\`: | \`group\` {
+            'absent': (\`description\`: _ \`value\`: | \`optional\` (\`constraints\`: _ \`value\`: | \`nothing\` ~ \`result\`: _))
+            'last': (\`description\`: _ \`value\`: | \`nothing\` ~)
+        })
+    }`, `| \`group\` {
+        'first': (\`resolver\`: | \`nothing\` ~)
+        'nested': (\`resolver\`: | \`group\` {
+            'absent': (\`resolver\`: | \`optional\` (\`presence\`: _ \`constraints\`: _ \`checks\`: _ \`not set constraints\`: _ \`resolver\`: | \`nothing\` ~ \`result\`: _))
+            'last': (\`resolver\`: | \`nothing\` ~)
+        })
+    }`)
+    for (const impact of ['deep', 'shallow with entities']) {
+        const source = '(`nested`: (`last`: ~ `absent`: _) `first`: ~)'
+        const original = document(source, schema)
+        assert.deepEqual(unmarshal_diagnostics.Document(original).__get_raw(), [])
+        const converted = serialized_authoring_target.Value(
+            authoring_target.Document(original, { style: ['concise', null], impact: [impact, null] }).content,
+            { paragraph: { indentation: '    ' }, value: { 'write delimiters': true } },
+        ).__get_raw().join('\n')
+        assert.deepEqual(unmarshal_diagnostics.Document(document(converted, schema)).__get_raw(), [])
+        assert.equal(sealed(converted, schema), sealed(source, schema))
+        assert.equal(document(converted, schema).content['unmarshall result'][1][1].derived.style[0], 'concise')
+    }
+    for (const source of [
+        '(`first`: ~)',
+        '(`nested`: (`last`: ~ `absent`: _) `first`: ~ `first`: ~)',
+        '(`nested`: (`last`: ~ `absent`: _) `extra`: "keep me" `first`: ~)',
+    ]) {
+        const original = document(source, schema)
+        const converted = serialized_authoring_target.Value(
+            authoring_target.Document(original, { style: ['concise', null], impact: ['deep', null] }).content,
+            { paragraph: { indentation: '    ' }, value: { 'write delimiters': true } },
+        ).__get_raw().join('\n')
+        const reparsed = document(converted, schema)
+        assert.equal(reparsed.content['unmarshall result'][1][1].derived.style[0], 'verbose')
+        assert.deepEqual(
+            unmarshal_diagnostics.Document(reparsed).__get_raw().map(diagnostic => diagnostic.message).sort(),
+            unmarshal_diagnostics.Document(original).__get_raw().map(diagnostic => diagnostic.message).sort(),
+        )
+        if (source.includes('"keep me"')) assert.match(converted, /keep me/)
+    }
+})
 
 test('double quoted tokens complete with quotes and seal punctuation safely', () => {
     const schema = basic('| `double quoted` ~')
@@ -1921,7 +1968,7 @@ test('benchmark creation fixes require an unexpected nonduplicate key and an ava
     assert.equal((await actionsAt(source, benchmarkSchema(false), source.indexOf("'foo'") + 2, ['refactor'])).length, 7)
 })
 
-test('generated dictionary identifiers always use escaped single quotes', () => {
+test('generated dictionary identifiers always use escaped single quotation marks', () => {
     for (const [id, expected] of [
         ['foo', "'foo'"], ['', "''"], ["a'b", "'a\\'b'"], ['a"b', "'a\"b'"],
         ['a\\b', "'a\\\\b'"], ['a\nb\r\tc', "'a\\nb\\r\\tc'"],

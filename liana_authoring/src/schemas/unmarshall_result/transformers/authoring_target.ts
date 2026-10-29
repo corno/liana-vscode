@@ -1,5 +1,6 @@
 
 import * as p_ from 'pareto-core/transformer'
+import p_unreachable_code_path from 'pareto-core/transformer/specials/unreachable_code_path'
 
 //schemas
 import type * as s_in from "../../../schemas/unmarshall_result/schema.js"
@@ -136,6 +137,14 @@ export const Any_Value: declarations_.Any_Value = ($, $p) => {
                             }]))
                             case 'group': return p_.option($, ($) => {
                                 const $v_unmarsalled_group = $
+                                if ($p.style[0] === 'concise' && $.derived.style[0] === 'verbose') {
+                                    for (const [, property] of $.derived.properties.__get_raw()) {
+                                        if (property.result[0] === 'error') return t_parse_tree_to_authoring_target.Value(instance)
+                                    }
+                                    for (const property of $.derived.style[1].properties.__get_raw()) {
+                                        if (property['definition found'][0] === 'no') return t_parse_tree_to_authoring_target.Value(instance)
+                                    }
+                                }
                                 return temp_value(['concrete', {
                                     'type': ['group', p_.from.state($p.style).decide(
                                         ($): s_out.Value.data.concrete.type_.group => {
@@ -161,44 +170,13 @@ export const Any_Value: declarations_.Any_Value = ($, $p) => {
                                                                             })
                                                                     }))
                                                                 //convert verbose to concise
-                                                                case 'verbose': return p_.option($, ($) => p_.from.list($.properties).map(
+                                                                case 'verbose': return p_.option($, ($) => p_.from.dictionary($v_unmarsalled_group.derived.properties).convert_to_list(
                                                                     ($): s_out.Items.L => {
-                                                                        const item = $
-                                                                        return p_.from.state($['definition found']).decide(
-                                                                            ($) => {
-                                                                                switch ($[0]) {
-                                                                                    case 'yes': return p_.option($, ($): s_out.Items.L => p_.from.optional($['value']).decide(
-                                                                                        ($) => Non_Entity($, $p),
-                                                                                        () => temp_value(['concrete', {
-                                                                                            'type': ['nothing', {
-                                                                                                '~': {
-                                                                                                    'comments': p_.literal.list([])
-                                                                                                }
-                                                                                            }]
-                                                                                        }])
-                                                                                    ))
-                                                                                    case 'no': return p_.option($, ($): s_out.Items.L => p_.from.optional(item.intermediate['id value pair'].assignment).decide(
-                                                                                        ($): s_out.Items.L => p_.from.optional($.value).decide(
-                                                                                            ($) => t_parse_tree_to_authoring_target.Value($),
-                                                                                            () => temp_value(['concrete', {
-                                                                                                'type': ['nothing', {
-                                                                                                    '~': {
-                                                                                                        'comments': p_.literal.list([])
-                                                                                                    }
-                                                                                                }]
-                                                                                            }])
-                                                                                        ),
-                                                                                        (): s_out.Items.L => temp_value(['concrete', {
-                                                                                            'type': ['nothing', {
-                                                                                                '~': {
-                                                                                                    'comments': p_.literal.list([])
-                                                                                                }
-                                                                                            }]
-                                                                                        }])
-                                                                                    ))
-                                                                                    default: return p_.exhaustive($[0])
-                                                                                }
-                                                                            })
+                                                                        switch ($.result[0]) {
+                                                                            case 'success': return Non_Entity($.result[1], $p)
+                                                                            case 'error': return p_unreachable_code_path('invalid group cannot be converted to concise notation')
+                                                                            default: return p_.exhaustive($.result[0])
+                                                                        }
                                                                     }))
                                                                 default: return p_.exhaustive($[0])
                                                             }

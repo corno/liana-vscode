@@ -13,7 +13,7 @@
                     'root': < * "The type at the root of a document" | `reference` < < < | `local` 'Types' > < [] > > < | `acyclic` ~ _ > > >
                 } >
                 'Text Types': < | `private` ~ | `dictionary` < _ | `state` < {
-                    'double quoted': < * "Text enclosed in double quotes" _ | `nothing` ~ >
+                    'double quoted': < * "Text enclosed in double quotation marks" _ | `nothing` ~ >
                     'undelimited': < * "Undelimited text (for example; numbers, booleans, dates)" _ | `nothing` ~ >
                 } _ > > >
                 'Types': < | `private` ~ | `dictionary` < _ | `group` {
@@ -33,7 +33,7 @@
                             'value': < * "The type of this property" | `component` < | `cyclic` 'Value' _ > >
                         } > >
                     } >
-                    'identifier': < * "A value that uniquely identifies an entity (denoted with single quotes)" _ | `reference` < < < | `local` 'Text Types' > < [] > > < | `acyclic` ~ _ > > >
+                    'identifier': < * "A value that uniquely identifies an entity (denoted with single quotation marks)" _ | `reference` < < < | `local` 'Text Types' > < [] > > < | `acyclic` ~ _ > > >
                     'list': < * "Ordered sequence of values of the same type" _ | `component` < | `cyclic` 'Value' _ > >
                     'nothing': < * "Empty value (unit type, no data)" _ | `nothing` ~ >
                     'optional': < * "Value that may or may not be present" _ | `component` < | `cyclic` 'Value' _ > >
@@ -43,7 +43,7 @@
                             'value': < _ | `component` < | `cyclic` 'Value' _ > >
                         } > >
                     } >
-                    'text': < * "A text value (denoted with double quotes or no delimiter)" _ | `reference` < < < | `local` 'Text Types' > < [] > > < | `acyclic` ~ _ > > >
+                    'text': < * "A text value (denoted with double quotation marks or no delimiter)" _ | `reference` < < < | `local` 'Text Types' > < [] > > < | `acyclic` ~ _ > > >
                 } _ > >
             }
         )

@@ -165,13 +165,13 @@ export const Warning: declarations.Warning = ($) => sh.ph.composed(
         ($) => {
             switch ($[0]) {
                 case 'expected apostrophed text': return p_.option($, ($) => p_.literal.list([
-                    sh.ph.text("Expected a text with apostrophes (')")
+                    sh.ph.text("Expected a text with single quotation marks (')")
                 ]))
                 case 'expected backticked text': return p_.option($, ($) => p_.literal.list([
                     sh.ph.text("Expected a text with backticks (`)")
                 ]))
                 case 'expected quoted text': return p_.option($, ($) => p_.literal.list([
-                    sh.ph.text("Expected a text with quotes (\")")
+                    sh.ph.text("Expected a text with double quotation marks (\")")
                 ]))
                 case 'expected undelimited text': return p_.option($, ($) => p_.literal.list([
                     sh.ph.text("Expected a text without delimiters")
