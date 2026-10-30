@@ -48,14 +48,15 @@ const contains = (range: vscode.Range, position: vscode.Position): boolean =>
 export const symbol_at = (index: Reference_Index, position: vscode.Position): {
     symbol: Symbol
     range: vscode.Range
+    is_declaration: boolean
 } | undefined => {
     for (const symbol of index.symbols) {
         const range = create_range_from_range(symbol.declaration.range)
-        if (contains(range, position)) return { symbol, range }
+        if (contains(range, position)) return { symbol, range, is_declaration: true }
     }
     for (const { reference, symbol } of index.references) {
         const range = create_range_from_range(reference.range)
-        if (symbol !== undefined && contains(range, position)) return { symbol, range }
+        if (symbol !== undefined && contains(range, position)) return { symbol, range, is_declaration: false }
     }
     return undefined
 }

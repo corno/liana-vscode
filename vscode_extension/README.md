@@ -248,10 +248,15 @@ on a reference to navigate to its target dictionary entry in the same document.
 Navigation follows the resolved lookup, including dependent and forwarded
 acyclic/cyclic lookups. Missing or unresolved references have no navigation target;
 derived `~` values are not editable references.
+On a benchmarked dictionary entry name, Go to Definition navigates to the
+same-named entry in its immediate benchmark dictionary, for both dense and sparse
+benchmarks. Missing or unavailable benchmark entries have no navigation target.
 
 Within the current document:
 - **Shift+F12** finds references from either a dictionary entry or one of its
-  resolved references.
+  resolved references. Results also include same-named entry keys in dictionaries
+  directly benchmarked against that entry's dictionary, but not transitive
+  benchmark dependents.
 - Placing the cursor on either highlights the declaration and related references.
 - **F2** renames an entry and its resolved references together. Entries with the
   same name in dictionaries that are benchmarked (densely or sparsely) against the

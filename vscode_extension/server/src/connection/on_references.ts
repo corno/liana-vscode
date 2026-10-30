@@ -3,6 +3,7 @@ import type { Connection_Context } from '../connection_context'
 import { reference_document } from '../helpers/reference_document'
 import { symbol_at } from '../helpers/reference_index'
 import { create_range_from_range } from '../helpers/range'
+import { benchmark_reference_ranges } from '../helpers/benchmark_links'
 
 export const create_on_references = (
     context: Connection_Context,
@@ -11,7 +12,10 @@ export const create_on_references = (
     if (loaded === null) return []
     const target = symbol_at(loaded.index, params.position)
     if (target === undefined) return []
-    const ranges = target.symbol.references.map((reference) => reference.range)
+    const ranges = [
+        ...target.symbol.references.map((reference) => reference.range),
+        ...benchmark_reference_ranges(loaded.resolved, target.symbol),
+    ]
     if (params.context.includeDeclaration) ranges.unshift(target.symbol.declaration.range)
     return ranges.map((range) => vscode.Location.create(loaded.document.uri, create_range_from_range(range)))
 }

@@ -668,6 +668,62 @@ test('safe rename follows benchmark links and rejects invalid rename positions e
     await assert.rejects(renameAt(invalid, dependentReferenceSchema(), invalid.indexOf("'missing'") + 2, 'valid'), /requires a dictionary entry/)
 })
 
+test('definition on benchmarked entry names navigates to the matching benchmark entry', async () => {
+    for (const dense of [true, false]) {
+        for (const name of ["'a'", "''", "'a\\'b'"]) {
+            const source = `< { ${name}: ~ } { 'other': ~ ${name}: ~ } >`
+            const origin = source.indexOf(name) + 1
+            const destination = source.lastIndexOf(name)
+            const links = await definitionAt(source, benchmarkSchema(dense), origin)
+            assert.equal(links.length, 1)
+            const doc = TextDocument.create('file:///test.lna', 'liana', 1, source)
+            const range = { start: doc.positionAt(destination), end: doc.positionAt(destination + name.length) }
+            assert.deepEqual(links[0].targetSelectionRange, range)
+            assert.deepEqual(links[0].targetRange, range)
+            assert.deepEqual(links[0].originSelectionRange, {
+                start: doc.positionAt(source.indexOf(name)), end: doc.positionAt(source.indexOf(name) + name.length),
+            })
+            const benchmark = await definitionAt(source, benchmarkSchema(dense), destination + 1)
+            assert.deepEqual(benchmark[0].targetSelectionRange, range)
+        }
+        for (const source of ["< { 'missing': ~ } {} >", "< { 'a': ~ } # >"]) {
+            assert.equal(await definitionAt(source, benchmarkSchema(dense), source.indexOf("'") + 1), null)
+        }
+    }
+})
+
+test('references include directly benchmarked entry keys without treating the benchmark as a reference', async () => {
+    for (const dense of [true, false]) {
+        for (const name of ["'a'", "''", "'a\\'b'"]) {
+            const source = `< { ${name}: ~ } { ${name}: ~ 'unrelated': ~ } >`
+            const doc = TextDocument.create('file:///test.lna', 'liana', 1, source)
+            const dependent = source.indexOf(name)
+            const benchmark = source.lastIndexOf(name)
+            const offsets = refs => refs.map(ref => doc.offsetAt(ref.range.start))
+            assert.deepEqual(offsets(await referencesAt(source, benchmarkSchema(dense), benchmark + 1)), [dependent])
+            assert.deepEqual(offsets(await referencesAt(source, benchmarkSchema(dense), benchmark + 1, true)), [benchmark, dependent])
+            assert.deepEqual(await referencesAt(source, benchmarkSchema(dense), dependent + 1), [])
+            assert.deepEqual(await referencesAt(source, benchmarkSchema(dense), source.indexOf("'unrelated'") + 1), [])
+        }
+        const source = "< { 'missing': ~ } {} >"
+        assert.deepEqual(await referencesAt(source, benchmarkSchema(dense), source.indexOf("'missing'") + 1), [])
+    }
+})
+
+test('references exclude transitive benchmark entries in schema resolver implementations', async () => {
+    const source = specification()
+    const structural = source.indexOf("'Root':")
+    const declaration = source.indexOf("'Root':", structural + 1)
+    const implementation = source.indexOf("'Root':", declaration + 1)
+    const doc = TextDocument.create('file:///test.lna', 'liana', 1, source)
+    const references = await referencesAt(source, template(), structural + 2)
+    const offsets = references.map(reference => doc.offsetAt(reference.range.start))
+    assert.ok(offsets.includes(declaration))
+    assert.ok(!offsets.includes(implementation))
+    const declarationReferences = await referencesAt(source, template(), declaration + 2)
+    assert.ok(declarationReferences.some(reference => doc.offsetAt(reference.range.start) === implementation))
+})
+
 test('rename renames benchmark-linked entries in dense and sparse dependents from either side', async () => {
     for (const dense of [true, false]) {
         const schema = benchmarkSchema(dense)
@@ -767,9 +823,13 @@ test('references and highlights follow cyclic and acyclic targets without traver
         const name = mode === 'local cyclic' ? "'Root'" : "'Other'"
         const offset = source.indexOf(name, source.indexOf(`\`${componentKind(mode)}\``))
         const refs = await referencesAt(source, template(), offset + 2)
-        assert.equal(refs.length, mode === 'local cyclic' ? 2 : 1)
+        assert.equal(refs.length, mode === 'local cyclic' ? 3 : 1)
         const doc = TextDocument.create('file:///test.lna', 'liana', 1, source)
         assert.equal(doc.offsetAt(refs[0].range.start), offset)
+        if (mode === 'local cyclic') {
+            const declaration = source.indexOf("'Root':", source.indexOf('`declarations`:'))
+            assert.equal(doc.offsetAt(refs[2].range.start), declaration)
+        }
         const highlights = await requestAt(source, template(), offset + 2, create_on_document_highlight)
         assert.equal(highlights.length, mode === 'local cyclic' ? 3 : 2)
     }

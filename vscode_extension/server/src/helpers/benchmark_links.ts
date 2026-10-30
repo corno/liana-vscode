@@ -20,10 +20,27 @@ export const benchmark_of = (dictionary: resolved.Dictionary): resolved.Dictiona
     return selection[0] === 'resolved' ? as_dictionary(selection[1]) : undefined
 }
 
-const key_range = (dictionary: resolved.Dictionary, name: string): s_location.Range | undefined => {
+export const key_range = (dictionary: resolved.Dictionary, name: string): s_location.Range | undefined => {
     const entry = dictionary.unmarshalled.derived.entries.__get_raw().find(([id]) => id === name)
     return entry === undefined || entry[1].result[0] !== 'success'
         ? undefined : entry[1].result[1].intermediate['id value pair'].id.range
+}
+
+export const benchmark_reference_ranges = (
+    document: resolved.Document,
+    symbol: Symbol,
+): s_location.Range[] => {
+    const ranges: s_location.Range[] = []
+    const visited = new Set<resolved.Dictionary>()
+    for (const value of values.Values(document.content).__get_raw()) {
+        const dictionary = as_dictionary(value)
+        if (dictionary === undefined || visited.has(dictionary)) continue
+        visited.add(dictionary)
+        if (dictionary === symbol.declaration.dictionary || benchmark_of(dictionary) !== symbol.declaration.dictionary) continue
+        const range = key_range(dictionary, symbol.declaration.name)
+        if (range !== undefined) ranges.push(range)
+    }
+    return ranges
 }
 
 /**
