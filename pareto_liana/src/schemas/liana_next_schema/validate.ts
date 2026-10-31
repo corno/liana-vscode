@@ -42,14 +42,14 @@ export const Validate = (schema: s.Type_Specification, abort: Abort): void => {
             guaranteed(value[1].selection.value, abort)
             relative(value[1].tail, value[1].selection.constraints.optional.value, abort)
         }
-        if (value[0] === 'switch state') {
+        if (value[0] === 'decide state') {
             guaranteed(value[1].selection.value, abort)
             const target = value[1].target.path.tail.result
             p.from.dictionary(value[1].options).map((branch, option) => {
                 const selected = branch.value
                 if (selected[0] === 'set') {
                     relative(selected[1], branch.benchmark.value, abort)
-                    same(selected[1].path.result, target, `switch state branch ${option} target`, abort)
+                    same(selected[1].path.result, target, `decide state branch ${option} target`, abort)
                 }
                 return null
             })

@@ -8,9 +8,12 @@
   targets; cyclic components use local references. Relative selections use
   `component`, `cyclic component`, and `expect resolved`; ordinary `reference`
   traversal requires an acyclic dependency. Older component notation is rejected.
-- Upgraded to the Liana schema with `switch state` possible selections: every
+- Upgraded to the Liana schema with `decide state` possible selections: every
   state option needs a branch, only the active branch decides presence, and every
   `set` branch must select the declared structural target.
+- Adopted the `decide state` name in place of `switch state` and the renamed
+  declaration namespace model. Optional producer results are possible selections
+  only; guaranteed result selections no longer accept `optional value`.
 
 ### Added
 - Same-document Find All References, declaration/reference highlights, and safe

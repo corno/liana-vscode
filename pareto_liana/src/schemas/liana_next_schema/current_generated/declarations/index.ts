@@ -25,7 +25,7 @@ export type API = {
                     readonly 'Reference Constraints': unresolved_uptransformers_unmarshal.structure.Reference_Constraints
                     readonly 'Regular Expression': unresolved_uptransformers_unmarshal.structure.Regular_Expression
                     readonly 'Structure': unresolved_uptransformers_unmarshal.structure.Structure
-                    readonly 'Value Result': unresolved_uptransformers_unmarshal.structure.Value_Result
+                    readonly 'Optional Result': unresolved_uptransformers_unmarshal.structure.Optional_Result
                 }
                 readonly 'declarations': {
                     readonly 'Presence': unresolved_uptransformers_unmarshal.declarations.Presence
@@ -34,7 +34,7 @@ export type API = {
                     readonly 'Declarations': unresolved_uptransformers_unmarshal.declarations.Declarations
                     readonly 'Declaration': unresolved_uptransformers_unmarshal.declarations.Declaration
                     readonly 'Namespaces': unresolved_uptransformers_unmarshal.declarations.Namespaces
-                    readonly 'Declaration Namespace': unresolved_uptransformers_unmarshal.declarations.Declaration_Namespace
+                    readonly 'Namespace': unresolved_uptransformers_unmarshal.declarations.Namespace
                 }
                 readonly 'resolver': {
                     readonly 'Value Reference': unresolved_uptransformers_unmarshal.resolver.Value_Reference
@@ -71,7 +71,7 @@ export type API = {
                     readonly 'Reference Constraints': unresolved_downtransformers_marshal.structure.Reference_Constraints
                     readonly 'Regular Expression': unresolved_downtransformers_marshal.structure.Regular_Expression
                     readonly 'Structure': unresolved_downtransformers_marshal.structure.Structure
-                    readonly 'Value Result': unresolved_downtransformers_marshal.structure.Value_Result
+                    readonly 'Optional Result': unresolved_downtransformers_marshal.structure.Optional_Result
                 }
                 readonly 'declarations': {
                     readonly 'Presence': unresolved_downtransformers_marshal.declarations.Presence
@@ -80,7 +80,7 @@ export type API = {
                     readonly 'Declarations': unresolved_downtransformers_marshal.declarations.Declarations
                     readonly 'Declaration': unresolved_downtransformers_marshal.declarations.Declaration
                     readonly 'Namespaces': unresolved_downtransformers_marshal.declarations.Namespaces
-                    readonly 'Declaration Namespace': unresolved_downtransformers_marshal.declarations.Declaration_Namespace
+                    readonly 'Namespace': unresolved_downtransformers_marshal.declarations.Namespace
                 }
                 readonly 'resolver': {
                     readonly 'Value Reference': unresolved_downtransformers_marshal.resolver.Value_Reference
@@ -107,42 +107,42 @@ export type API = {
                 readonly 'Type Specification': resolved_uptransformers_resolve.Type_Specification
                 readonly 'structure': {
                     readonly 'Basic Types': resolved_uptransformers_resolve.structure.Basic_Types
-                    readonly 'Types': resolved_uptransformers_resolve.structure.Types
-                    readonly 'Namespaces': resolved_uptransformers_resolve.structure.Namespaces
-                    readonly 'Type': resolved_uptransformers_resolve.structure.Type
-                    readonly 'Group': resolved_uptransformers_resolve.structure.Group
-                    readonly 'Value': resolved_uptransformers_resolve.structure.Value
                     readonly 'Dictionary': resolved_uptransformers_resolve.structure.Dictionary
+                    readonly 'Group': resolved_uptransformers_resolve.structure.Group
+                    readonly 'Namespaces': resolved_uptransformers_resolve.structure.Namespaces
                     readonly 'Value Reference': resolved_uptransformers_resolve.structure.Value_Reference
                     readonly 'Option Constraints': resolved_uptransformers_resolve.structure.Option_Constraints
+                    readonly 'Value': resolved_uptransformers_resolve.structure.Value
                     readonly 'Reference': resolved_uptransformers_resolve.structure.Reference
                     readonly 'Reference Constraints': resolved_uptransformers_resolve.structure.Reference_Constraints
                     readonly 'Regular Expression': resolved_uptransformers_resolve.structure.Regular_Expression
                     readonly 'Structure': resolved_uptransformers_resolve.structure.Structure
-                    readonly 'Value Result': resolved_uptransformers_resolve.structure.Value_Result
+                    readonly 'Type': resolved_uptransformers_resolve.structure.Type
+                    readonly 'Types': resolved_uptransformers_resolve.structure.Types
+                    readonly 'Optional Result': resolved_uptransformers_resolve.structure.Optional_Result
                 }
                 readonly 'declarations': {
                     readonly 'Presence': resolved_uptransformers_resolve.declarations.Presence
-                    readonly 'Signature Value Reference': resolved_uptransformers_resolve.declarations.Signature_Value_Reference
+                    readonly 'Declaration': resolved_uptransformers_resolve.declarations.Declaration
                     readonly 'Signature': resolved_uptransformers_resolve.declarations.Signature
                     readonly 'Declarations': resolved_uptransformers_resolve.declarations.Declarations
-                    readonly 'Declaration': resolved_uptransformers_resolve.declarations.Declaration
+                    readonly 'Signature Value Reference': resolved_uptransformers_resolve.declarations.Signature_Value_Reference
                     readonly 'Namespaces': resolved_uptransformers_resolve.declarations.Namespaces
-                    readonly 'Declaration Namespace': resolved_uptransformers_resolve.declarations.Declaration_Namespace
+                    readonly 'Namespace': resolved_uptransformers_resolve.declarations.Namespace
                 }
                 readonly 'resolver': {
-                    readonly 'Value Reference': resolved_uptransformers_resolve.resolver.Value_Reference
-                    readonly 'Relative Value Selection': resolved_uptransformers_resolve.resolver.Relative_Value_Selection
-                    readonly 'Possible Value Branches': resolved_uptransformers_resolve.resolver.Possible_Value_Branches
-                    readonly 'Possible Value Selection': resolved_uptransformers_resolve.resolver.Possible_Value_Selection
-                    readonly 'Option Constraints': resolved_uptransformers_resolve.resolver.Option_Constraints
+                    readonly 'Value': resolved_uptransformers_resolve.resolver.Value
                     readonly 'Guaranteed Value Selection': resolved_uptransformers_resolve.resolver.Guaranteed_Value_Selection
                     readonly 'Lookup Selection': resolved_uptransformers_resolve.resolver.Lookup_Selection
+                    readonly 'Possible Value Branches': resolved_uptransformers_resolve.resolver.Possible_Value_Branches
+                    readonly 'Option Constraints': resolved_uptransformers_resolve.resolver.Option_Constraints
+                    readonly 'Possible Value Selection': resolved_uptransformers_resolve.resolver.Possible_Value_Selection
                     readonly 'Reference Constraints': resolved_uptransformers_resolve.resolver.Reference_Constraints
+                    readonly 'Relative Value Selection': resolved_uptransformers_resolve.resolver.Relative_Value_Selection
                     readonly 'Resolver': resolved_uptransformers_resolve.resolver.Resolver
                     readonly 'Result Selection': resolved_uptransformers_resolve.resolver.Result_Selection
                     readonly 'Checks': resolved_uptransformers_resolve.resolver.Checks
-                    readonly 'Value': resolved_uptransformers_resolve.resolver.Value
+                    readonly 'Value Reference': resolved_uptransformers_resolve.resolver.Value_Reference
                 }
             }
         }
@@ -165,7 +165,7 @@ export type API = {
                     readonly 'Reference Constraints': resolved_downtransformers_unresolve.structure.Reference_Constraints
                     readonly 'Regular Expression': resolved_downtransformers_unresolve.structure.Regular_Expression
                     readonly 'Structure': resolved_downtransformers_unresolve.structure.Structure
-                    readonly 'Value Result': resolved_downtransformers_unresolve.structure.Value_Result
+                    readonly 'Optional Result': resolved_downtransformers_unresolve.structure.Optional_Result
                 }
                 readonly 'declarations': {
                     readonly 'Presence': resolved_downtransformers_unresolve.declarations.Presence
@@ -174,7 +174,7 @@ export type API = {
                     readonly 'Declarations': resolved_downtransformers_unresolve.declarations.Declarations
                     readonly 'Declaration': resolved_downtransformers_unresolve.declarations.Declaration
                     readonly 'Namespaces': resolved_downtransformers_unresolve.declarations.Namespaces
-                    readonly 'Declaration Namespace': resolved_downtransformers_unresolve.declarations.Declaration_Namespace
+                    readonly 'Namespace': resolved_downtransformers_unresolve.declarations.Namespace
                 }
                 readonly 'resolver': {
                     readonly 'Value Reference': resolved_downtransformers_unresolve.resolver.Value_Reference

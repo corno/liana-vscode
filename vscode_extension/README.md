@@ -227,7 +227,7 @@ A guaranteed selection may start with `optional fallback`. Both branches must
 select the exact same structural target. The fallback is evaluated only when the
 possible selection is absent, never for an invalid, unavailable or cyclic value.
 
-A possible selection may use `switch state` to select a state value and supply a
+A possible selection may use `decide state` to select a state value and supply a
 branch for every option. Only the active option's branch is evaluated: `not set`
 makes the selection absent, and `set` selects relative to that option's payload.
 Every `set` branch must select the exact structural value declared as the

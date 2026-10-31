@@ -118,7 +118,7 @@ export namespace Type_Specification {
         
         export namespace resolver {
             
-            export type declarations = s_self.declarations.Declaration_Namespace
+            export type declarations = s_self.declarations.Namespace
             
             export type implementations = s_self.resolver.Resolver
             
@@ -466,7 +466,7 @@ export namespace structure {
                 
                 export type value = s_self.structure.Value
                 
-                export type result = s_self.structure.Value_Result
+                export type result = s_self.structure.Optional_Result
                 
             }
             
@@ -516,7 +516,7 @@ export namespace structure {
                 
                 export type value = s_self.structure.Value
                 
-                export type result = s_self.structure.Value_Result
+                export type result = s_self.structure.Optional_Result
                 
             }
             
@@ -557,7 +557,7 @@ export namespace structure {
                     
                 }
                 
-                export type result = s_self.structure.Value_Result
+                export type result = s_self.structure.Optional_Result
                 
             }
             
@@ -780,7 +780,6 @@ export namespace structure {
                         export namespace value {
                             
                             export type value =
-                                | readonly ['benchmark', s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.benchmark]
                                 | readonly ['dictionary', s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.dictionary]
                                 | readonly ['group', s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.group]
                                 | readonly ['list', s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.list]
@@ -789,27 +788,6 @@ export namespace structure {
                             
                             export namespace value {
                                 export namespace type_ {
-                                    
-                                    export type benchmark = {
-                                        readonly 'constraints': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.benchmark.constraints
-                                        readonly 'value': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.benchmark.value
-                                    }
-                                    
-                                    export namespace benchmark {
-                                        
-                                        export type constraints = {
-                                            readonly 'definition': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.benchmark.constraints.definition
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type definition = s_self.structure.Value.type_.dictionary
-                                            
-                                        }
-                                        
-                                        export type value = null
-                                        
-                                    }
                                     
                                     export type dictionary = {
                                         readonly 'constraints': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.dictionary.constraints
@@ -1126,9 +1104,9 @@ export namespace structure {
         
     }
     
-    export type Value_Result = p_.Optional_Value<s_self.structure.Value_Result.O>
+    export type Optional_Result = p_.Optional_Value<s_self.structure.Optional_Result.O>
     
-    export namespace Value_Result {
+    export namespace Optional_Result {
         
         export type O = s_self.structure.Value_Reference
         
@@ -1623,18 +1601,18 @@ export namespace declarations {
             
             export type benchmark = s_self.structure.Namespaces.D
             
-            export type value = s_self.declarations.Declaration_Namespace
+            export type value = s_self.declarations.Namespace
             
         }
         
     }
     
-    export type Declaration_Namespace = {
-        readonly 'namespaces': s_self.declarations.Declaration_Namespace.namespaces
-        readonly 'types': s_self.declarations.Declaration_Namespace.types
+    export type Namespace = {
+        readonly 'namespaces': s_self.declarations.Namespace.namespaces
+        readonly 'types': s_self.declarations.Namespace.types
     }
     
-    export namespace Declaration_Namespace {
+    export namespace Namespace {
         
         export type namespaces = s_self.declarations.Namespaces
         
@@ -2423,7 +2401,7 @@ export namespace resolver {
     export namespace Possible_Value_Selection {
         
         export type value =
-            | readonly ['switch state', s_self.resolver.Possible_Value_Selection.value.type_.switch_state]
+            | readonly ['decide state', s_self.resolver.Possible_Value_Selection.value.type_.decide_state]
             | readonly ['optional value', s_self.resolver.Possible_Value_Selection.value.type_.optional_value]
             | readonly ['parameter', s_self.resolver.Possible_Value_Selection.value.type_.parameter]
             | readonly ['result', s_self.resolver.Possible_Value_Selection.value.type_.result]
@@ -2431,25 +2409,25 @@ export namespace resolver {
         export namespace value {
             export namespace type_ {
                 
-                export type switch_state = {
-                    readonly 'target': s_self.resolver.Possible_Value_Selection.value.type_.switch_state.target
-                    readonly 'selection': s_self.resolver.Possible_Value_Selection.value.type_.switch_state.selection
-                    readonly 'options': s_self.resolver.Possible_Value_Selection.value.type_.switch_state.options
+                export type decide_state = {
+                    readonly 'target': s_self.resolver.Possible_Value_Selection.value.type_.decide_state.target
+                    readonly 'selection': s_self.resolver.Possible_Value_Selection.value.type_.decide_state.selection
+                    readonly 'options': s_self.resolver.Possible_Value_Selection.value.type_.decide_state.options
                 }
                 
-                export namespace switch_state {
+                export namespace decide_state {
                     
                     export type target = s_self.resolver.Value_Reference
                     
                     export type selection = {
-                        readonly 'constraints': s_self.resolver.Possible_Value_Selection.value.type_.switch_state.selection.constraints
-                        readonly 'value': s_self.resolver.Possible_Value_Selection.value.type_.switch_state.selection.value
+                        readonly 'constraints': s_self.resolver.Possible_Value_Selection.value.type_.decide_state.selection.constraints
+                        readonly 'value': s_self.resolver.Possible_Value_Selection.value.type_.decide_state.selection.value
                     }
                     
                     export namespace selection {
                         
                         export type constraints = {
-                            readonly 'state': s_self.resolver.Possible_Value_Selection.value.type_.switch_state.selection.constraints.state
+                            readonly 'state': s_self.resolver.Possible_Value_Selection.value.type_.decide_state.selection.constraints.state
                         }
                         
                         export namespace constraints {
@@ -2547,7 +2525,7 @@ export namespace resolver {
                                         
                                         export type state = s_self.structure.Value.type_.state
                                         
-                                        export type result = s_self.structure.Value_Result.O
+                                        export type result = s_self.structure.Optional_Result.O
                                         
                                     }
                                     
@@ -2590,7 +2568,7 @@ export namespace resolver {
                                         
                                         export type optional = s_self.structure.Value.type_.optional
                                         
-                                        export type result = s_self.structure.Value_Result.O
+                                        export type result = s_self.structure.Optional_Result.O
                                         
                                     }
                                     
@@ -2862,7 +2840,7 @@ export namespace resolver {
                         
                         export namespace constraints {
                             
-                            export type result = s_self.structure.Value_Result.O
+                            export type result = s_self.structure.Optional_Result.O
                             
                         }
                         
@@ -3044,7 +3022,6 @@ export namespace resolver {
                         export type value =
                             | readonly ['list', s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.list]
                             | readonly ['state', s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.state]
-                            | readonly ['optional value', s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.optional_value]
                         
                         export namespace value {
                             export namespace type_ {
@@ -3071,7 +3048,7 @@ export namespace resolver {
                                             
                                             export type list = s_self.structure.Value.type_.list
                                             
-                                            export type result = s_self.structure.Value_Result.O
+                                            export type result = s_self.structure.Optional_Result.O
                                             
                                         }
                                         
@@ -3114,56 +3091,13 @@ export namespace resolver {
                                             
                                             export type state = s_self.structure.Value.type_.state
                                             
-                                            export type result = s_self.structure.Value_Result.O
+                                            export type result = s_self.structure.Optional_Result.O
                                             
                                         }
                                         
                                         export type value = {
                                             readonly 'l entry': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.state.property.value.l_entry
                                             readonly 'l id': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.state.property.value.l_id
-                                        }
-                                        
-                                        export namespace value {
-                                            
-                                            export type l_entry = s_self.structure.Group.D
-                                            
-                                            export type l_id = string
-                                            
-                                        }
-                                        
-                                    }
-                                    
-                                }
-                                
-                                export type optional_value = {
-                                    readonly 'property': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.optional_value.property
-                                }
-                                
-                                export namespace optional_value {
-                                    
-                                    export type property = {
-                                        readonly 'constraints': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.optional_value.property.constraints
-                                        readonly 'value': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.optional_value.property.value
-                                    }
-                                    
-                                    export namespace property {
-                                        
-                                        export type constraints = {
-                                            readonly 'optional': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.optional_value.property.constraints.optional
-                                            readonly 'result': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.optional_value.property.constraints.result
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type optional = s_self.structure.Value.type_.optional
-                                            
-                                            export type result = s_self.structure.Value_Result.O
-                                            
-                                        }
-                                        
-                                        export type value = {
-                                            readonly 'l entry': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.optional_value.property.value.l_entry
-                                            readonly 'l id': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.optional_value.property.value.l_id
                                         }
                                         
                                         export namespace value {
@@ -4152,7 +4086,7 @@ export namespace resolver {
                                 
                                 export type definition = s_self.structure.Value.type_.list
                                 
-                                export type result = s_self.structure.Value_Result.O
+                                export type result = s_self.structure.Optional_Result.O
                                 
                             }
                             
@@ -4293,7 +4227,7 @@ export namespace resolver {
                                 
                                 export type definition = s_self.structure.Value.type_.optional
                                 
-                                export type result = s_self.structure.Value_Result.O
+                                export type result = s_self.structure.Optional_Result.O
                                 
                             }
                             
@@ -4415,7 +4349,7 @@ export namespace resolver {
                                         
                                         export namespace constraints {
                                             
-                                            export type result = s_self.structure.Value_Result.O
+                                            export type result = s_self.structure.Optional_Result.O
                                             
                                         }
                                         

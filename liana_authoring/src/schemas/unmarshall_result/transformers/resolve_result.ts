@@ -331,7 +331,7 @@ const Possible = (
             value[0] === 'optional'
                 ? value[1].status[0] === 'set' ? ['resolved', value[1].status[1]['child value']] : value[1].status
                 : Unavailable()))
-        case 'switch state': {
+        case 'decide state': {
             const branches = selection[1].options
             return Select_Constraint(Guaranteed(selection[1].selection.value, context), (value) => {
                 if (value[0] !== 'state') return ['constraint failed', 'expected a state value']
@@ -448,9 +448,6 @@ const Guaranteed = (
                 return Select(selected, (value) => {
                     switch (result[0]) {
                         case 'list': return value[0] === 'list' ? value[1].result : Unavailable()
-                        case 'optional value': return value[0] === 'optional'
-                            ? value[1].result
-                            : Unavailable()
                         default: return p_.exhaustive(result[0])
                     }
                 })

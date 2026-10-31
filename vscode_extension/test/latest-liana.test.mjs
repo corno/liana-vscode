@@ -352,9 +352,9 @@ test('optional fallback is lazy and only handles absence, not failures or unavai
     }
 })
 
-test('switch state selects only the active branch and propagates unavailable inputs', () => {
+test('decide state selects only the active branch and propagates unavailable inputs', () => {
     const empty = { path: { value: p.literal.list([]), result: null } }
-    const selection = ['switch state', {
+    const selection = ['decide state', {
         target: null,
         selection: { constraints: { state: null }, value: { start: { value: ['parameter', { 'l id': 'input' }], result: null }, tail: empty } },
         options: p.literal.dictionary({
@@ -650,7 +650,7 @@ for (const name of ['astn_schema', 'boekhouding', 'liana', 'pareto']) {
     })
 }
 
-test('switch state branches are exhaustive and must select the declared target', () => {
+test('decide state branches are exhaustive and must select the declared target', () => {
     const context = readFileSync(new URL('./fixtures/latest_liana/.liana/schema.slna', import.meta.url), 'utf8')
     const source = readFileSync(new URL('./fixtures/latest_liana/pareto.liana.lna', import.meta.url), 'utf8')
     const type = selected(parse(context), [], 'pareto.liana.lna')['l entry']
@@ -660,6 +660,7 @@ test('switch state branches are exhaustive and must select the declared target',
     const branch = "'impure': | `set` < [ | `group` 'impure' | `component` ~ ] >"
     assert.ok(source.includes(branch))
     assert.doesNotThrow(() => sealed(source))
-    assert.throws(() => sealed(source.replace(branch, "'impure': | `set` < [ | `group` 'impure' ] >")), /switch state branch impure target/)
+    assert.throws(() => sealed(source.replace('| `selection` | `decide state`', '| `selection` | `switch state`')), /unknown option/)
+    assert.throws(() => sealed(source.replace(branch, "'impure': | `set` < [ | `group` 'impure' ] >")), /decide state branch impure target/)
     assert.throws(() => sealed(source.replace(/\n\s*'pure': \| `not set` ~/, '')))
 })
