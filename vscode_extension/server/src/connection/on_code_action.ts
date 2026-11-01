@@ -3,6 +3,7 @@ import * as vscode_textdocument from 'vscode-languageserver-textdocument'
 import { Connection_Context } from '../connection_context'
 import { missing_entry_actions } from '../helpers/missing_entry_actions'
 import { missing_reference_actions } from '../helpers/missing_reference_actions'
+import { include_refactor_actions } from '../helpers/include_refactor_actions'
 
 export const create_on_code_action: (
 	connection_context: Connection_Context,
@@ -53,6 +54,7 @@ export const create_on_code_action: (
 		return [
 			...await missing_entry_actions(connection_context, params),
 			...await missing_reference_actions(connection_context, params),
+			...await include_refactor_actions(connection_context, params),
 			...refactorings.filter(() => !params.context.only || params.context.only.some((kind) =>
 				vscode_node.CodeActionKind.Refactor === kind || vscode_node.CodeActionKind.Refactor.startsWith(kind + '.'))),
 		]

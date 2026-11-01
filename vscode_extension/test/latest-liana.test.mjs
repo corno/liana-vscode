@@ -16,6 +16,7 @@ const { error_message } = require('pareto-liana/schemas/temp_type_specifier/read
 const { load_document } = require('../server/out/to_be_backend/load_document.js')
 const { load_applicable_schema, load_directory_schema } = require('../client/out/to_be_backend/load_applicable_schema.js')
 const { file_choices, new_file_name, validate_new_file } = require('../client/out/helpers/new_file_name.js')
+const { validate_extract_target } = require('../client/out/helpers/extract_target.js')
 const { create_cache } = require('../server/out/core/cache.js')
 const unmarshal_diagnostics = require('liana-authoring/schemas/unmarshall_result/transformers/diagnostics')
 const resolve_diagnostics = require('liana-authoring/schemas/resolve_result/transformers/diagnostics')
@@ -26,6 +27,7 @@ const { $$: convert_to_json } = require('../client/out/helpers/convert_to_json.j
 const { create_on_document_formatting } = require('../server/out/connection/on_document_formatting.js')
 const { create_on_diagnostics } = require('../server/out/connection/on_diagnostics.js')
 const { invalidate_resolved_includers } = require('../server/out/core/include_cache.js')
+const { include_refactor_actions } = require('../server/out/helpers/include_refactor_actions.js')
 
 const fail = error => { throw new Error(JSON.stringify(error)) }
 const chars = source => p.literal.list(Array.from(source, c => c.codePointAt(0)))
@@ -56,6 +58,13 @@ const tree = `| \`group\` (\`nodes\`: {
 const include_tree = mainType => `| \`group\` (\`nodes\`: {
     'main': | \`file\` (\`file extension\`: "data" \`type\`: '${mainType}')
     'piece': | \`file\` (\`file extension\`: "part" \`type\`: 'Text')
+    'base': | \`file\` (\`file extension\`: "leaf" \`type\`: 'Text')
+})`
+const nested_include_tree = `| \`group\` (\`nodes\`: {
+    'main': | \`file\` (\`file extension\`: "data" \`type\`: 'Text')
+    'nested': | \`directory\` | \`group\` (\`nodes\`: {
+        'piece': | \`file\` (\`file extension\`: "part" \`type\`: 'Text')
+    })
     'base': | \`file\` (\`file extension\`: "leaf" \`type\`: 'Text')
 })`
 const specification = (directory = tree) => `(
@@ -172,6 +181,76 @@ test('includes reject a target whose declared type differs from the include-site
     }
 })
 
+test('include refactor offers inlining at include values and export only at declared root values', async () => {
+    const directory = mkdtempSync(join(tmpdir(), 'liana-include-refactor-'))
+    try {
+        mkdirSync(join(directory, '.liana'))
+        writeFileSync(join(directory, '.liana/schema.slna'), specification(include_tree('Text')))
+        const source = join(directory, 'main.data.lna')
+        const target = join(directory, 'piece.part.lna')
+        writeFileSync(target, '"piece"')
+        const cache = fresh_cache()
+        const context_for = document => ({
+            documents: { get: uri => uri === document.uri ? document : undefined },
+            cache,
+        })
+
+        const include_document = TextDocument.create(pathToFileURL(source).href, 'liana', 1, '@ "piece.part.lna"')
+        const include_actions = await include_refactor_actions(context_for(include_document), {
+            textDocument: { uri: include_document.uri },
+            range: { start: { line: 0, character: 4 }, end: { line: 0, character: 4 } },
+            context: { diagnostics: [] },
+        })
+        const inline = include_actions.find(action => action.title === 'Inline include')
+        assert.ok(inline)
+        assert.equal(inline.command.command, 'liana.inline_include')
+        assert.equal(inline.command.arguments[0].targetUri, pathToFileURL(target).href)
+        assert.equal(inline.command.arguments[0].targetRange.start.character, 0)
+        const target_document = TextDocument.create(pathToFileURL(target).href, 'liana', 1, '"piece"')
+        assert.equal(target_document.getText(inline.command.arguments[0].targetRange), '"piece"')
+
+        const root_document = TextDocument.create(pathToFileURL(source).href, 'liana', 2, '"root"')
+        const export_actions = await include_refactor_actions(context_for(root_document), {
+            textDocument: { uri: root_document.uri },
+            range: { start: { line: 0, character: 2 }, end: { line: 0, character: 2 } },
+            context: { diagnostics: [] },
+        })
+        const extract_action = export_actions.find(action => action.title === 'Extract root value to a file…')
+        assert.ok(extract_action)
+        assert.equal(extract_action.command.command, 'liana.extract_root_value')
+        assert.ok(extract_action.command.arguments[0].candidates.some(candidate => candidate.name === 'piece'))
+    } finally {
+        rmSync(directory, { recursive: true, force: true })
+    }
+})
+
+test('inline refactors rebase nested include paths to the destination document', async () => {
+    const directory = mkdtempSync(join(tmpdir(), 'liana-include-rebase-'))
+    try {
+        mkdirSync(join(directory, '.liana'))
+        mkdirSync(join(directory, 'nested'))
+        writeFileSync(join(directory, '.liana/schema.slna'), specification(nested_include_tree))
+        const source = join(directory, 'main.data.lna')
+        const target = join(directory, 'nested', 'piece.part.lna')
+        writeFileSync(target, '@ "../base.leaf.lna"')
+        writeFileSync(join(directory, 'base.leaf.lna'), '"base"')
+        const document = TextDocument.create(pathToFileURL(source).href, 'liana', 1, '@ "nested/piece.part.lna"')
+        const actions = await include_refactor_actions({
+            documents: { get: uri => uri === document.uri ? document : undefined },
+            cache: fresh_cache(),
+        }, {
+            textDocument: { uri: document.uri },
+            range: { start: { line: 0, character: 4 }, end: { line: 0, character: 4 } },
+            context: { diagnostics: [] },
+        })
+        const inline = actions.find(action => action.title === 'Inline include')
+        assert.ok(inline)
+        assert.deepEqual(inline.command.arguments[0].nestedIncludes.map(include => include.path), ['base.leaf.lna'])
+    } finally {
+        rmSync(directory, { recursive: true, force: true })
+    }
+})
+
 test('include cycles are reported during resolution even when both files load concurrently', { timeout: 5000 }, async () => {
     const directory = mkdtempSync(join(tmpdir(), 'liana-include-cycle-'))
     try {
@@ -229,6 +308,25 @@ test('new-file names use the selected directory extension without duplicating su
     assert.deepEqual(file_choices(schema, p.literal.list(['nested']), fail), [{ name: 'empty', extension: '' }])
     assert.throws(() => file_choices(parse(specification(`| \`dictionary\` (\`node\`: | \`directory\` ${dictionary('', 'Nothing')})`)), p.literal.list([]), fail), /subdirectories/)
     assert.throws(() => file_choices(schema, p.literal.list(['unknown']), fail), /No such directory/)
+})
+
+test('extraction destinations must match a declared file root and stay inside its schema directory', () => {
+    const schema = parse(specification())
+    const schema_root = '/workspace/project'
+    const candidates = [{ directories: ['nested', 'items'], name: null, extension: 'item' }]
+    assert.equal(
+        validate_extract_target(schema, schema_root, schema_root, 'nested/items/new.item.lna', 'Text', candidates),
+        join(schema_root, 'nested', 'items', 'new.item.lna'),
+    )
+    assert.throws(() => validate_extract_target(
+        schema, schema_root, schema_root, 'nested/empty.lna', 'Nothing', candidates,
+    ), /not declared for the selected root type/)
+    assert.throws(() => validate_extract_target(
+        schema, schema_root, schema_root, '../outside.item.lna', 'Text', candidates,
+    ), /inside the active schema directory/)
+    assert.throws(() => validate_extract_target(
+        schema, schema_root, schema_root, 'nested/items/new.other.lna', 'Text', candidates,
+    ), /File extension mismatch/)
 })
 
 test('new-file command loads ancestor schemas, creates matching filenames and never overwrites files', async () => {

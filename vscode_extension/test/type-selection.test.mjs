@@ -1795,7 +1795,7 @@ test('one quick fix inserts every missing dense entry without rewriting supplied
     assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, benchmarkSchema(true))).__get_raw(), [])
     assert.deepEqual(await create_on_code_action_resolve({})(actions[0]), actions[0])
     assert.deepEqual(await actionsAt(updated, benchmarkSchema(true), updated.indexOf('{'), ['quickfix']), [])
-    assert.equal((await actionsAt(source, benchmarkSchema(true), source.indexOf('{'), ['refactor'])).length, 7)
+    assert.equal((await actionsAt(source, benchmarkSchema(true), source.indexOf('{'), ['refactor'])).length, 8)
 })
 
 test('missing-entry fixes ignore sparse, unavailable, and duplicate benchmark keys', async () => {
@@ -2032,7 +2032,7 @@ test('benchmark creation fixes require an unexpected nonduplicate key and an ava
     }
     const source = "< { 'foo': ~ } {} >"
     assert.deepEqual(await actionsAt(source, benchmarkSchema(false), source.lastIndexOf('}'), ['quickfix']), [])
-    assert.equal((await actionsAt(source, benchmarkSchema(false), source.indexOf("'foo'") + 2, ['refactor'])).length, 7)
+    assert.equal((await actionsAt(source, benchmarkSchema(false), source.indexOf("'foo'") + 2, ['refactor'])).length, 8)
 })
 
 test('generated dictionary identifiers always use escaped single quotation marks', () => {

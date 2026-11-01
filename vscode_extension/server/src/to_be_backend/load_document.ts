@@ -60,7 +60,7 @@ const schema_root = async (document: TextDocument): Promise<string> => {
 	}
 }
 
-const validate_include_target = async (
+export const validate_include_target = async (
 	document: TextDocument,
 	prepared: d_deserialize.Constrained_Result,
 	include_path: string,
@@ -139,7 +139,7 @@ const prepare_document = (
 	)
 })
 
-const source_document = async (
+export const source_document = async (
 	uri: string,
 	cache: Cache_Context,
 ): Promise<TextDocument> => {

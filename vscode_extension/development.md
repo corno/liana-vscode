@@ -31,6 +31,11 @@ include site. Include cycles and unreadable or type-mismatched targets produce
 include diagnostics. The server caches unmarshalled documents separately from
 their resolved results, so changing an included file re-resolves direct and
 transitive includers without unmarshalling those documents again.
+Code actions can inline an include by replacing it with the included root value,
+then ask whether to delete the source file. Extract actions move a value only
+when its structural type is a file root declared in the Type Specification.
+The export wizard suggests matching locations, rejects paths outside those
+declared locations, and never overwrites an existing file.
 The schema has separate `structure` and `resolver` trees:
 
 - Structure nodes contain `namespaces`, `basic types`, and `types`.
