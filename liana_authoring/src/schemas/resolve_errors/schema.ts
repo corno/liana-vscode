@@ -6,6 +6,7 @@ export type Error = {
     'range': s_location.Range
     'type':
     | ['constraint failed', string]
+    | ['include error', string]
     | ['to be implemented', null]
     | ['missing reference', string]
     | ['reference cycle', p_.List<string>]

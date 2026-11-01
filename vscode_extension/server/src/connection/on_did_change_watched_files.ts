@@ -8,6 +8,7 @@ import { Connection_Context } from '../connection_context'
 import p_unreachable_code_path from "pareto-core/transformer/specials/unreachable_code_path"
 import * as deser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/deserializers"
 import * as ser_path from "pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/serializers"
+import { invalidate_resolved_includers } from '../core/include_cache'
 
 export const create_on_did_change_watched_files: (
 	connection_context: Connection_Context,
@@ -19,6 +20,10 @@ export const create_on_did_change_watched_files: (
 		// Invalidate schema cache for any changed files and re-validate affected documents
 		for (const change of _change.changes) {
 			const file_path = url.fileURLToPath(change.uri)
+			const invalidated_uris = invalidate_resolved_includers(connection_context.cache, change.uri)
+			for (const key of connection_context.cache.documents.map.keys()) {
+				if (key.startsWith(`${change.uri}@`)) connection_context.cache.documents.map.delete(key)
+			}
 			// Check if this is a schema file
 			if (file_path.endsWith(path.join('.liana', 'schema.slna'))) {
 				// The schemas cache is keyed by the same serialized Node_Path format used
@@ -58,15 +63,34 @@ export const create_on_did_change_watched_files: (
 				// different schema would otherwise return the old cached result)
 				for (const doc of affected_documents) {
 					connection_context.connection.console.log(`-${doc.uri}`)
-
-					for (const key of connection_context['cache']['documents'].map.keys()) {
-						if (key.startsWith(doc.uri + '@')) {
-							connection_context['cache']['documents'].map.delete(key)
+				}
+				for (const key of connection_context.cache.documents.map.keys()) {
+					const uri = key.slice(0, key.lastIndexOf('@'))
+					if (uri.startsWith('file:')) {
+						const cached_path = url.fileURLToPath(uri)
+						if (cached_path.startsWith(project_dir + path.sep)) {
+							connection_context.cache.documents.map.delete(key)
+						}
+					}
+				}
+				for (const key of connection_context.cache['resolved documents'].map.keys()) {
+					const uri = key.slice(0, key.lastIndexOf('@'))
+					if (uri.startsWith('file:')) {
+						const cached_path = url.fileURLToPath(uri)
+						if (cached_path.startsWith(project_dir + path.sep)) {
+							connection_context.cache['resolved documents'].map.delete(key)
 						}
 					}
 				}
 
 				// Trigger diagnostic refresh for affected documents
+				if (affected_documents.length > 0) {
+					connection_context.connection.languages.diagnostics.refresh()
+				}
+			} else {
+				const affected_documents = connection_context.documents.all().filter(doc =>
+					invalidated_uris.has(doc.uri),
+				)
 				if (affected_documents.length > 0) {
 					connection_context.connection.languages.diagnostics.refresh()
 				}

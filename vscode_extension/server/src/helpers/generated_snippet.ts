@@ -9,8 +9,8 @@ import { Missing_Benchmark_Entries } from 'liana-authoring/schemas/resolve_resul
 import * as serialize from 'astn/modules/authoring_target/schemas/authoring_target/transformers/serialized'
 import * as full_range from 'astn-runtime/modules/deserialization/schemas/parse_tree/transformers/full_value_range'
 import type { Connection_Context } from '../connection_context'
-import { create_cache } from '../core/cache'
 import { load_document } from '../to_be_backend/load_document'
+import { create_isolated_document_cache } from '../core/include_cache'
 import { create_range_from_range } from './range'
 import { quote_identifier } from './quote_identifier'
 
@@ -49,7 +49,7 @@ export const generated_snippet = async (
         const proposed = TextDocument.create(document.uri, document.languageId, ++version,
             document.getText().slice(0, start) + text + document.getText().slice(document.offsetAt(edit.range.end)))
         const loaded = await new Promise<resolved.Document | null>((resolve, reject) => load_document(
-            proposed, { schemas: context.cache.schemas, documents: create_cache() },
+            proposed, create_isolated_document_cache(context.cache, proposed),
             (error) => { reject(new vscode.ResponseError(vscode.ErrorCodes.InternalError,
                 'Cannot resolve generated snippet: ' + JSON.stringify(error))); return null },
             (instance) => instance[0] === 'constrained' ? instance[1] : null,

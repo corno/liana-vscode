@@ -18,6 +18,7 @@ export const Error: declarations.Error = ($) => p_.from.state($.type).decide(
     ($) => {
         switch ($[0]) {
             case 'constraint failed': return sh.ph.text(`Constraint failed: ${$[1]}.`)
+            case 'include error': return sh.ph.text(`Include error: ${$[1]}.`)
             case 'missing reference': return sh.ph.text(`Reference '${$[1]}' does not exist.`)
             case 'reference cycle': return sh.ph.text("Cyclic reference dependency.")
             case 'unexpected benchmark entry': return sh.ph.text(`Entry '${$[1]}' does not exist in the benchmark dictionary.`)

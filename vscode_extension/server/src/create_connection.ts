@@ -39,6 +39,19 @@ export const create_connection = (
 		'cache': cache_context,
 	}
 
+	documents.onDidChangeContent(change => {
+		const invalidated = cache_context['include dependents'].get(change.document.uri)
+		if (invalidated !== undefined && invalidated.size > 0) {
+			connection.languages.diagnostics.refresh()
+		}
+	})
+	documents.onDidClose(event => {
+		const dependents = cache_context['include dependents'].get(event.document.uri)
+		if (dependents !== undefined && dependents.size > 0) {
+			connection.languages.diagnostics.refresh()
+		}
+	})
+
 	connection.onInitialize(
 		create_on_initialize(connection_context)
 	)

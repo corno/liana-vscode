@@ -7,8 +7,8 @@ import type { Connection_Context } from '../connection_context'
 import { reference_document } from '../helpers/reference_document'
 import { reference_index, symbol_at } from '../helpers/reference_index'
 import { create_range_from_range, create_range_from_possible_range } from '../helpers/range'
-import { create_cache } from '../core/cache'
 import { load_document } from '../to_be_backend/load_document'
+import { create_isolated_document_cache } from '../core/include_cache'
 import { quote_identifier } from '../helpers/quote_identifier'
 import { benchmark_linked_entries } from '../helpers/benchmark_links'
 
@@ -62,7 +62,7 @@ export const create_on_rename = (
         TextDocument.applyEdits(loaded.document, edits),
     )
     const checked = await new Promise<resolved.Document | null>((resolve) => load_document(
-        proposed, { schemas: context.cache.schemas, documents: create_cache() },
+        proposed, create_isolated_document_cache(context.cache, proposed),
         () => null,
         (instance) => instance[0] === 'constrained' ? instance[1] : null,
         resolve,

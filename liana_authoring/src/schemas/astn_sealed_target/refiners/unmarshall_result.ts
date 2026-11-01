@@ -23,6 +23,7 @@ namespace declarations_ {
 
 //dependencies
 import * as t_astn_parse_tree_to_start_token_location from "astn-runtime/modules/deserialization/schemas/parse_tree/transformers/start_token_range"
+import p_unreachable_code_path from 'pareto-core/transformer/specials/unreachable_code_path'
 
 
 export const Found: declarations_.Found = ($) => p_.from.state($.type).decide(
@@ -116,6 +117,9 @@ export const Value: declarations_.Value = ($, abort) => {
                     ($): s_out.Value => {
                         switch ($[0]) {
                             case 'component': return p_.option($, ($) => Value($.value, abort))
+                            case 'include': return p_.option($, ($) => p_unreachable_code_path(
+                                'ASTN includes must be resolved before sealing',
+                            ))
                             case 'dictionary': return p_.option($, ($) => {
 
                                 const dictionary_range = $.intermediate.instance['{'].range

@@ -182,6 +182,10 @@ export const Value: declarations_.Value = ($) => {
                                 'kind': ['string', null],
                                 'children': p_.literal.list([]),
                             }))
+                            case 'include': return p_.option($, ($) => ({
+                                'kind': ['string', null],
+                                'children': p_.literal.list([]),
+                            }))
                             default: return p_.exhaustive($[0])
                         }
                     }))

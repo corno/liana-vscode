@@ -309,6 +309,7 @@ export const Value: declarations_.Value = ($) => {
                                     })
                             })
                             case 'text': return p_.option($, ($) => p_.literal.list([]))
+                            case 'include': return p_.option($, ($) => p_.literal.list([]))
                             default: return p_.exhaustive($[0])
                         }
                     }))

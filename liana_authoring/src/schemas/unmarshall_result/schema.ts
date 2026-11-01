@@ -70,6 +70,7 @@ export type Unmarshalled_Value =
     | ['reference', Reference]
     | ['state', State]
     | ['text', Text]
+    | ['include', { 'path': string }]
 
 export type Component = {
     'definition': s_schema.namespaces.structure.types.Value.component

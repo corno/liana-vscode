@@ -255,6 +255,7 @@ export const Value: declarations_.Value = ($, $p) => {
                                     })
                             })
                             case 'text': return p_.option($, ($) => this_value())
+                            case 'include': return p_.option($, ($) => this_value())
                             default: return p_.exhaustive($[0])
                         }
                     }))

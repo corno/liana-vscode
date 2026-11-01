@@ -685,7 +685,15 @@ export const Value: declarations.Value = ($, $p) => {
                         'optional parent range stack': $p['parent range stack']
                     }
                 })
-                case 'include': return p_.option($, ($) => p_implement_me("include node deserialization")) //TODO
+                case 'include': return p_.option($, ($): s_out.Value => ({
+                    'definition': $p.definition,
+                    'property path': $p['property path'],
+                    'instance': value,
+                    'unmarshall result': ['success', ['include', {
+                        'path': $.path.token.value,
+                    }]],
+                    'optional parent range stack': $p['parent range stack'],
+                }))
                 case 'missing': return p_.option($, ($): s_out.Value => {
                     return {
                         'definition': $p.definition,

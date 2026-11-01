@@ -9,6 +9,9 @@ import * as d_deserialize from "liana-authoring/schemas/deserialization/schema"
 export type Cache_Context = {
 	'schemas': Cache<d_get_schema.Result, d_get_schema.Error>
 	'documents': Cache<d_deserialize.Result, d_deserialize.Error>
+	'resolved documents': Cache<d_deserialize.Result, d_deserialize.Error>
+	'open documents': Map<string, vscode_textdocument.TextDocument>
+	'include dependents': Map<string, Set<string>>
 }
 
 export type Connection_Context = {

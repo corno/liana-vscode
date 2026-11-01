@@ -58,6 +58,7 @@ namespace temp {
 
     export type Lookups = {
         'implementations'?: p_di.List<Implementation>
+        'includes'?: { get(path: string): ['resolved', s_out.Value] | ['error', string] | undefined }
         'parameters': Lookup_Parameters
         'siblings': {
             'acyclic': p_i.lookup.Acyclic<s_out.Entry>
@@ -709,6 +710,26 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
         'type parameters': p_di.Dictionary<temp.Type_Parameter_Resolve_Status>
     }
 > = ($, $l, $p) => {
+    const unmarshalled_result = $['unmarshall result']
+    if (unmarshalled_result[0] === 'success' && unmarshalled_result[1][0] === 'include') {
+        const path = unmarshalled_result[1][1].path
+        const included = $l.includes?.get(path)
+        if (included !== undefined && included[0] === 'resolved' && included[1].definition === $p.definition) {
+            return included[1]
+        }
+        const message = included === undefined
+            ? `Include was not resolved: ${path}`
+            : included[0] === 'error'
+                ? included[1]
+                : `Included file has a different type: ${path}`
+        return {
+            'constraints': p_.literal.dictionary({}),
+            'definition': $p.definition,
+            'unmarshalled': $,
+            'include error': message,
+            'unmarshall result': ['error', ['missing', null]],
+        }
+    }
     const context: temp.Context = { 'lookups': $l, 'types': $p['type parameters'] }
     const presence_failure: s_out.Selection | null = (() => {
         const definition = $p.definition

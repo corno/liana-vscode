@@ -110,6 +110,7 @@ export const Value: declarations_.Value = ($) => p_.from.state($['unmarshall res
                             }
                         ))
                         case 'text': return p_.option($, ($) => p_.literal.list([]))
+                        case 'include': return p_.option($, ($) => p_.literal.list([]))
                         default: return p_.exhaustive($[0])
                     }
                 }

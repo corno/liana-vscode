@@ -10,6 +10,7 @@ export type Document = {
 }
 
 export type Value = {
+    'include error'?: string
     'presence check'?: Selection
     'benchmark link'?: Selection
     'reference candidates'?: p_.Optional_Value<p_.List<string>>

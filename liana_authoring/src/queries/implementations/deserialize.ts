@@ -12,6 +12,55 @@ import { document_header } from 'pareto-liana/schemas/temp_type_specifier/docume
 import { file_type, type File_Path } from 'pareto-liana/schemas/temp_type_specifier/file_type'
 import * as unmarshal from '../../schemas/astn_parse_tree/transformers/unmarshall_result.js'
 import * as resolve from '../../schemas/unmarshall_result/transformers/resolve_result.js'
+import p_unreachable_code_path from 'pareto-core/transformer/specials/unreachable_code_path'
+import type * as s_resolve_result from '../../schemas/resolve_result/schema.js'
+import type * as s_schema from 'pareto-liana/schemas/liana_next_schema/authoring_schema'
+
+export type Include_Results = { get(path: string): ['resolved', s_resolve_result.Value] | ['error', string] | undefined }
+
+const resolve_document = (
+    unmarshalled: import('../../schemas/unmarshall_result/schema.js').Document,
+    specification: s_schema.Type_Specification,
+    root_type: s_schema.Node.type_.file.type_.value,
+    includes: Include_Results,
+): s_resolve_result.Document => {
+    const root_resolver = transform.from.dictionary(specification.schema.resolver.implementations.types).get_possible_entry(
+        root_type['l id'], $ => $, () => p_unreachable_code_path(`missing resolver for root type: ${root_type['l id']}`),
+    )
+    const signature = root_resolver.benchmark.value.signature.result
+    return resolve.Document(unmarshalled, {
+        parameters: {
+            acyclic: dictionary.map_value_dictionary_to_generic_dictionary(
+                transform.from.dictionary(signature.lookups).filter($ => $.type[0] === 'acyclic'),
+                () => ['not found because of root', null],
+            ),
+            cyclic: dictionary.map_value_dictionary_to_generic_dictionary(
+                transform.from.dictionary(signature.lookups).filter($ => $.type[0] === 'cyclic'),
+                () => ['not found because of root', null],
+            ),
+        },
+        siblings: { acyclic: lookup.acyclic.not_set(), cyclic: lookup.cyclic.not_set() },
+        includes,
+    }, {
+        definition: root_resolver,
+        resolvers: specification.schema,
+        'type parameters': transform.from.dictionary(signature.values).map(() => ['not found because of root', null]),
+    })
+}
+
+export const resolve_cached_document = (
+    prepared: result.Constrained_Result,
+    includes: Include_Results,
+): result.Constrained_Result => ({
+    ...resolve_document(
+        prepared.unmarshalled,
+        prepared['type specification'],
+        prepared['root type'],
+        includes,
+    ),
+    'type specification': prepared['type specification'],
+    'root type': prepared['root type'],
+})
 
 const skip_directories = (path: core.List<string>, count: number): core.List<string> => count === 0 ? path
     : transform.from.list(path).on_has_first_item(
@@ -50,34 +99,27 @@ export const $$: p.Query_Implementation<
             directories: skip_directories($d.deprecated['file path'].context.subpath, schema_depth),
             'file name': $d.deprecated['file path'].node,
         }
-        return { document: prepared.document, specification: loaded.specification[1], path }
+        return {
+            document: prepared.document,
+            specification: loaded.specification[1],
+            path,
+        }
     })
 }).refine((prepared, abort): result.Result => {
     const specification = prepared.specification
     const root_type = file_type(specification, prepared.path, message => abort(['file type', message]))
-    const root_resolver = transform.from.dictionary(specification.schema.resolver.implementations.types).get_possible_entry(
-        root_type['l id'], $ => $, () => abort(['file type', `No resolver for root type: ${root_type['l id']}`]),
-    )
-    const signature = root_resolver.benchmark.value.signature.result
     const unmarshalled = unmarshal.Document(prepared.document, {
         definition: root_type['l entry'],
         'property path': transform.literal.list([]),
     })
-    return ['constrained', resolve.Document(unmarshalled, {
-        parameters: {
-            acyclic: dictionary.map_value_dictionary_to_generic_dictionary(
-                transform.from.dictionary(signature.lookups).filter($ => $.type[0] === 'acyclic'),
-                () => ['not found because of root', null],
-            ),
-            cyclic: dictionary.map_value_dictionary_to_generic_dictionary(
-                transform.from.dictionary(signature.lookups).filter($ => $.type[0] === 'cyclic'),
-                () => ['not found because of root', null],
-            ),
-        },
-        siblings: { acyclic: lookup.acyclic.not_set(), cyclic: lookup.cyclic.not_set() },
-    }, {
-        definition: root_resolver,
-        resolvers: specification.schema,
-        'type parameters': transform.from.dictionary(signature.values).map(() => ['not found because of root', null]),
-    })]
+    return ['constrained', {
+        ...resolve_document(
+            unmarshalled,
+            specification,
+            root_type,
+            { get: () => undefined },
+        ),
+        'type specification': specification,
+        'root type': root_type,
+    }]
 }))

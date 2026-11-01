@@ -4,8 +4,8 @@ import * as values from 'liana-authoring/schemas/resolve_result/transformers/fin
 import { Missing_Benchmark_Entries } from 'liana-authoring/schemas/resolve_result/transformers/resolve_errors'
 import type { Connection_Context } from '../connection_context'
 import { load_document } from '../to_be_backend/load_document'
+import { create_isolated_document_cache } from '../core/include_cache'
 import { dictionary_entry_edit, generated_snippet } from './generated_snippet'
-import { create_cache } from '../core/cache'
 import { create_position_from_location } from './range'
 
 export const missing_entry_actions = async (
@@ -23,7 +23,7 @@ export const missing_entry_actions = async (
     const insertions: { offset: number, text: string }[] = []
     for (;;) {
         const loaded = await new Promise<import('liana-authoring/schemas/resolve_result/schema').Document | null>((resolve, reject) => load_document(
-            proposed, { schemas: context.cache.schemas, documents: create_cache() },
+            proposed, create_isolated_document_cache(context.cache, proposed),
             (error) => {
                 // Source syntax errors and missing `.liana` schema directories are reported by diagnostics,
                 // not failed code-action requests.

@@ -20,6 +20,13 @@ const resolveErrors = require('liana-authoring/schemas/resolve_result/transforme
 const resolver = require('liana-authoring/schemas/unmarshall_result/transformers/resolve_result')
 const { $$: seal } = require('../client/out/helpers/seal.js')
 const { create_cache } = require('../server/out/core/cache.js')
+const freshCache = () => ({
+    schemas: create_cache(),
+    documents: create_cache(),
+    'resolved documents': create_cache(),
+    'open documents': new Map(),
+    'include dependents': new Map(),
+})
 const { create_on_completion } = require('../server/out/connection/on_completion.js')
 const { create_on_hover } = require('../server/out/connection/on_hover.js')
 const { create_on_definition } = require('../server/out/connection/on_definition.js')
@@ -72,7 +79,7 @@ const loadWithSchema = async (source, schema) => {
         writeFileSync(join(dir, '.liana', 'schema.slna'), schema)
         const result = await new Promise(resolve => load_document(
             TextDocument.create(pathToFileURL(join(dir, 'document.liana.lna')).href, 'liana', 1, source),
-            { schemas: create_cache(), documents: create_cache() },
+            freshCache(),
             error => ['error', error], value => ['success', value], resolve,
         ))
         if (result[0] === 'error') assert.fail(JSON.stringify(result[1]))
@@ -91,7 +98,7 @@ const requestAt = async (source, schema, offset, createHandler, parameters = {})
         const doc = TextDocument.create(pathToFileURL(join(dir, 'document.liana.lna')).href, 'liana', 1, source)
         return await createHandler({
             documents: { get: () => doc },
-            cache: { schemas: create_cache(), documents: create_cache() },
+            cache: freshCache(),
             'document notation styles': new Map(),
         })({ textDocument: { uri: doc.uri }, position: doc.positionAt(offset), ...parameters })
     } finally {
@@ -366,7 +373,7 @@ test('nested components pass through whole categories or explicitly bind every t
             writeFileSync(join(dir, '.liana', 'schema.slna'), schema)
             const result = await new Promise(resolve => {
                 const doc = TextDocument.create(pathToFileURL(join(dir, 'document.liana.lna')).href, 'liana', index, '~')
-                load_document(doc, { schemas: create_cache(), documents: create_cache() },
+                load_document(doc, freshCache(),
                     error => ['error', error], value => ['success', value], resolve)
             })
             if (result[0] === 'error') assert.fail(`argument variant ${index}: ${JSON.stringify(result[1])}`)
@@ -1656,7 +1663,7 @@ test('document loading uses Next root selection, preserves caching and reports s
         mkdirSync(join(dir, '.liana'))
         const schemaPath = join(dir, '.liana', 'schema.slna')
         writeFileSync(schemaPath, basic('| `double quoted` ~'))
-        const cache = { schemas: create_cache(), documents: create_cache() }
+        const cache = freshCache()
         const load = (version, caches = cache) => new Promise(resolve => {
             const doc = TextDocument.create(pathToFileURL(join(dir, 'document.liana.lna')).href, 'liana', version, '"hello (world)"')
             load_document(doc, caches, error => ['error', error], result => ['success', result], resolve)
@@ -1669,7 +1676,7 @@ test('document loading uses Next root selection, preserves caching and reports s
         assert.equal(cache.schemas.map.size, 1)
         assert.equal(cache.documents.map.size, 2)
         writeFileSync(schemaPath, specification(undefined, undefined, undefined, 'missing'))
-        const error = await load(3, { schemas: create_cache(), documents: create_cache() })
+        const error = await load(3, freshCache())
         assert.equal(error[0], 'error')
         assert.equal(error[1][0], 'schema')
         assert.deepEqual(error[1][1].error.type[1][1].type, ['missing reference', { identifier: 'missing' }])
@@ -1734,7 +1741,7 @@ test('code actions skip structural fixes when no .liana schema directory is foun
         const doc = TextDocument.create(pathToFileURL(join(dir, 'document.liana.lna')).href, 'liana', 1, '< {} >')
         const context = {
             documents: { get: () => doc },
-            cache: { schemas: create_cache(), documents: create_cache() },
+            cache: freshCache(),
             'document notation styles': new Map(),
         }
         const params = {

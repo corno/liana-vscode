@@ -25,11 +25,18 @@ const { $$: seal } = require('../client/out/helpers/seal.js')
 const { $$: convert_to_json } = require('../client/out/helpers/convert_to_json.js')
 const { create_on_document_formatting } = require('../server/out/connection/on_document_formatting.js')
 const { create_on_diagnostics } = require('../server/out/connection/on_diagnostics.js')
+const { invalidate_resolved_includers } = require('../server/out/core/include_cache.js')
 
 const fail = error => { throw new Error(JSON.stringify(error)) }
 const chars = source => p.literal.list(Array.from(source, c => c.codePointAt(0)))
 const parse = source => Type_Specifier(chars(source), fail, { 'tab size': 1 })[1]
-const fresh_cache = () => ({ schemas: create_cache(), documents: create_cache() })
+const fresh_cache = () => ({
+    schemas: create_cache(),
+    documents: create_cache(),
+    'resolved documents': create_cache(),
+    'open documents': new Map(),
+    'include dependents': new Map(),
+})
 const load = (file, source, cache = fresh_cache()) => new Promise(resolve => load_document(
     TextDocument.create(pathToFileURL(file).href, 'liana', 1, source), cache,
     error => ['error', error], value => ['success', value], resolve,
@@ -45,6 +52,11 @@ const tree = `| \`group\` (\`nodes\`: {
         'empty': | \`file\` (\`file extension\`: "" \`type\`: 'Nothing')
         'items': | \`directory\` ${dictionary('item', 'Text')}
     })
+})`
+const include_tree = mainType => `| \`group\` (\`nodes\`: {
+    'main': | \`file\` (\`file extension\`: "data" \`type\`: '${mainType}')
+    'piece': | \`file\` (\`file extension\`: "part" \`type\`: 'Text')
+    'base': | \`file\` (\`file extension\`: "leaf" \`type\`: 'Text')
 })`
 const specification = (directory = tree) => `(
     \`schema\`: (
@@ -97,6 +109,89 @@ test('diagnostics settle after an edit invalidates an in-flight document load', 
         assert.deepEqual(new_diagnostics.items, [])
         assert.equal(cache.documents.map.has(`${uri}@1`), false)
         assert.equal(cache.documents.map.get(`${uri}@2`)[0], 'success')
+    } finally {
+        rmSync(directory, { recursive: true, force: true })
+    }
+})
+
+test('includes resolve relative files by declared type and reuse the parent unmarshalled cache', async () => {
+    const directory = mkdtempSync(join(tmpdir(), 'liana-include-'))
+    try {
+        mkdirSync(join(directory, '.liana'))
+        writeFileSync(join(directory, '.liana/schema.slna'), specification(include_tree('Text')))
+        const main = join(directory, 'main.data.lna')
+        const piece = join(directory, 'piece.part.lna')
+        const base = join(directory, 'base.leaf.lna')
+        writeFileSync(piece, '@ "base.leaf.lna"')
+        writeFileSync(base, '"first"')
+        const cache = fresh_cache()
+        const uri = pathToFileURL(main).href
+
+        const first = await load(main, '@ "piece.part.lna"', cache)
+        assert.equal(first[0], 'success')
+        assert.equal(first[1][0], 'constrained')
+        const value = first[1][1].content
+        assert.equal(value.unmarshalled.instance.type[1][0], 'text')
+        assert.equal(value.unmarshalled.instance.type[1][1].token.value, 'first')
+
+        const prepared = cache.documents.map.get(`${uri}@1`)
+        assert.ok(prepared)
+        writeFileSync(base, '"second"')
+        const base_uri = pathToFileURL(base).href
+        const invalidated = invalidate_resolved_includers(cache, base_uri)
+        assert.ok(invalidated.has(uri))
+        assert.ok(invalidated.has(pathToFileURL(piece).href))
+        for (const key of cache.documents.map.keys()) {
+            if (key.startsWith(`${base_uri}@`)) cache.documents.map.delete(key)
+        }
+
+        const second = await load(main, '@ "piece.part.lna"', cache)
+        assert.equal(second[0], 'success')
+        assert.equal(cache.documents.map.get(`${uri}@1`), prepared)
+        assert.equal(second[1][1].content.unmarshalled.instance.type[1][1].token.value, 'second')
+    } finally {
+        rmSync(directory, { recursive: true, force: true })
+    }
+})
+
+test('includes reject a target whose declared type differs from the include-site type', async () => {
+    const directory = mkdtempSync(join(tmpdir(), 'liana-include-type-'))
+    try {
+        mkdirSync(join(directory, '.liana'))
+        writeFileSync(join(directory, '.liana/schema.slna'), specification(include_tree('Nothing')))
+        writeFileSync(join(directory, 'piece.part.lna'), '"text"')
+        const result = await load(join(directory, 'main.data.lna'), '@ "piece.part.lna"')
+        assert.equal(result[0], 'success')
+        assert.equal(result[1][0], 'constrained')
+        assert.match(result[1][1].content['include error'], /different type/)
+        assert.ok(resolve_diagnostics.Document(result[1][1]).__get_raw().some(diagnostic =>
+            diagnostic.message.includes('Include error') && diagnostic.message.includes('different type'),
+        ))
+    } finally {
+        rmSync(directory, { recursive: true, force: true })
+    }
+})
+
+test('include cycles are reported during resolution even when both files load concurrently', { timeout: 5000 }, async () => {
+    const directory = mkdtempSync(join(tmpdir(), 'liana-include-cycle-'))
+    try {
+        mkdirSync(join(directory, '.liana'))
+        writeFileSync(join(directory, '.liana/schema.slna'), specification(include_tree('Text')))
+        writeFileSync(join(directory, 'piece.part.lna'), '@ "main.data.lna"')
+        const cache = fresh_cache()
+        const [main, piece] = await Promise.all([
+            load(join(directory, 'main.data.lna'), '@ "piece.part.lna"', cache),
+            load(join(directory, 'piece.part.lna'), '@ "main.data.lna"', cache),
+        ])
+        for (const result of [main, piece]) {
+            assert.equal(result[0], 'success')
+            assert.equal(result[1][0], 'constrained')
+        }
+        assert.ok([main, piece].some(result =>
+            resolve_diagnostics.Document(result[1][1]).__get_raw().some(diagnostic =>
+                diagnostic.message.includes('Include cycle detected'),
+            ),
+        ))
     } finally {
         rmSync(directory, { recursive: true, force: true })
     }

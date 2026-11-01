@@ -117,6 +117,7 @@ export const Any_Value: declarations_.Any_Value = ($, $p) => {
                     ($) => {
                         switch ($[0]) {
                             case 'component': return p_.option($, ($) => Any_Value($.value, $p))
+                            case 'include': return p_.option($, ($) => t_parse_tree_to_authoring_target.Value(instance))
                             case 'dictionary': return p_.option($, ($) => temp_value(['concrete', {
                                 'type': ['dictionary', {
                                     '{': Structural_Token($.intermediate.instance['{']),

@@ -24,6 +24,13 @@ The backend and bundled authoring template use the promoted, namespace-aware
 Liana contract exclusively. `Type Specification` contains `schema` and a recursive
 `directory` file tree. Each file node declares its `file extension` and selects
 an entry in `schema.structure.types`.
+Data values may use ASTN includes (`@ "relative/path"`). The path is relative to
+the including file and is resolved through the same directory specification.
+The included file's resolved root type must be the exact type required at the
+include site. Include cycles and unreadable or type-mismatched targets produce
+include diagnostics. The server caches unmarshalled documents separately from
+their resolved results, so changing an included file re-resolves direct and
+transitive includers without unmarshalling those documents again.
 The schema has separate `structure` and `resolver` trees:
 
 - Structure nodes contain `namespaces`, `basic types`, and `types`.

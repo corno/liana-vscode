@@ -46,6 +46,11 @@ const Selection = ($: s_in.Selection, range: s_location.Range): s_out.Errors => 
 }
 
 export const Value: declarations_.Value = ($) => p_.literal.segmented_list([
+    $['include error'] === undefined ? p_.literal.list([]) : p_.literal.list([{
+        'range': full_range.Value($.unmarshalled.instance),
+        'severity': ['error', null],
+        'type': ['include error', $['include error']],
+    }]),
     $['presence check'] === undefined ? p_.literal.list([]) : Selection($['presence check'], full_range.Value($.unmarshalled.instance)),
     p_.from.dictionary($.constraints).flatten_to_list(
         (selection) => Selection(selection, full_range.Value($.unmarshalled.instance))
@@ -102,7 +107,7 @@ const Benchmark = ($: s_in.Dictionary, range: s_location.Range): s_out.Errors =>
 const Content: declarations_.Value = (value) => p_.from.state(value['unmarshall result']).decide(
     ($) => {
         switch ($[0]) {
-            case 'error': return p_.option($, ($) => p_.literal.list([])) //reported by the unmarshaller, it is not the responsibility of this transformer to report them
+            case 'error': return p_.option($, ($) => p_.literal.list([])) //reported by the unmarshaller
             case 'success': return p_.option($, ($) => p_.from.state($).decide(
                 ($) => {
                     switch ($[0]) {
