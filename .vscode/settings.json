@@ -6,11 +6,11 @@
 		"source.fixAll.eslint": "explicit"
 	},
     "workbench.colorCustomizations": {
-        "titleBar.activeBackground": "#8f243b",
-        "titleBar.inactiveBackground": "#631828",
+        "titleBar.activeBackground": "#245b8f",
+        "titleBar.inactiveBackground": "#183f63",
         "titleBar.activeForeground": "#ffffff",
         "titleBar.inactiveForeground": "#cccccc",
-        "statusBar.background": "#631828",
+        "statusBar.background": "#183f63",
         "statusBar.foreground": "#ffffff"
     }
 }
