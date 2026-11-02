@@ -1,3 +1,4 @@
+import { show_error_message } from '../helpers/error_report'
 import * as p_schema from 'pareto-core/schema'
 import p_create_refinement_context from "pareto-core/__internal/sync/create_refinement_context"
 
@@ -46,7 +47,7 @@ export default ((deps) => () => {
 			})
 		},
 		($) => {
-			vscode.window.showErrorMessage('Cannot save as JSON because the file is not valid ASTN.')
+			show_error_message('Cannot save as JSON because the file is not valid ASTN.')
 		}
 	)
 }) satisfies types.Register_Command

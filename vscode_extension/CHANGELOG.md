@@ -8,6 +8,9 @@
   Schema-independent refactorings remain available.
 
 ### Changed
+- Add a Copy error report action to extension error notifications and a
+  "Liana: Copy error report" command for active-document error diagnostics.
+  Reports include the error, versions, and schema keys; nothing is sent.
 - Show schema Deploy/Publish commands only for the current Authoring Specification
   governing signature, independent of filenames. Recheck identity and diagnostics
   on execution; Explorer targets the verified clicked document.

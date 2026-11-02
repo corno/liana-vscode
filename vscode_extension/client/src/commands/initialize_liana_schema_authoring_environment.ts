@@ -1,3 +1,4 @@
+import { show_error_message } from '../helpers/error_report'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as vscode from 'vscode'
@@ -31,7 +32,7 @@ export default ((deps) => async () => {
 			const template_path = deps!.context.asAbsolutePath("liana_authoring_environment_template")
 
 			if (!fs.existsSync(template_path)) {
-				vscode.window.showErrorMessage('Liana authoring environment template not found in extension.')
+				show_error_message('Liana authoring environment template not found in extension.')
 				console.error('Template not found at:', template_path)
 				return
 			}
@@ -81,6 +82,6 @@ export default ((deps) => async () => {
 		} catch (error) {
 			console.error('Error initializing authoring environment:', error)
 			const message = error instanceof Error ? error.message : String(error)
-			vscode.window.showErrorMessage(`Failed to initialize authoring environment: ${message}`)
+			show_error_message(`Failed to initialize authoring environment: ${message}`)
 		}
 }) satisfies types.Register_Command

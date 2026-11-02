@@ -119,6 +119,19 @@ duplicate or unknown properties retain their notation to avoid losing data.
 
 ## Tutorial: Creating Your First Language
 
+### Copying an error report
+
+When an extension error notification appears, choose **Copy error report** to
+copy its message, extension/VS Code versions, and bundled schema SHA keys.
+For errors shown only in Problems, run **Liana: Copy error report** from the
+Command Palette to copy the active document's error diagnostics. This does not
+add popups for validation errors.
+
+Nothing is sent to GitHub or another server. Paste the report into your support
+conversation. Document contents are not attached and common local paths are
+redacted, but error messages can contain identifiers or values: review the
+copied text before sharing.
+
 ### Current Liana schemas
 
 The extension supports only the latest deployed Liana format. An Authoring Specification

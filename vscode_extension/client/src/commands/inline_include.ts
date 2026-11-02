@@ -1,3 +1,4 @@
+import { show_error_message } from '../helpers/error_report'
 import * as vscode from 'vscode'
 import type * as types from '../types'
 
@@ -59,6 +60,6 @@ export default ((_deps) => async (parameters: Inline_Include_Parameters) => {
     }
     await vscode.workspace.fs.delete(target_uri)
   } catch (error) {
-    vscode.window.showErrorMessage(`Failed to inline include: ${error instanceof Error ? error.message : String(error)}`)
+    show_error_message(`Failed to inline include: ${error instanceof Error ? error.message : String(error)}`)
   }
 }) satisfies types.Register_Command

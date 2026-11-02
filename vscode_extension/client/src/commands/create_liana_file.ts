@@ -1,3 +1,4 @@
+import { show_error_message } from '../helpers/error_report'
 import * as path from 'path'
 import * as vscode from 'vscode'
 import { writeFile } from 'fs/promises'
@@ -21,7 +22,7 @@ export default ((deps) => async (uri: vscode.Uri) => {
 			} else if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
 				target_folder = vscode.workspace.workspaceFolders[0].uri
 			} else {
-				vscode.window.showErrorMessage('No workspace folder found')
+				show_error_message('No workspace folder found')
 				return
 			}
 
@@ -69,6 +70,6 @@ export default ((deps) => async (uri: vscode.Uri) => {
 			await vscode.window.showTextDocument(document)
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error)
-			vscode.window.showErrorMessage(`Failed to create Liana file: ${message}`)
+			show_error_message(`Failed to create Liana file: ${message}`)
 		}
 }) satisfies types.Register_Command

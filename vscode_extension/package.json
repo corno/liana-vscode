@@ -116,6 +116,11 @@
 		},
 		"commands": [
 			{
+				"command": "liana.copy_error_report",
+				"category": "Liana",
+				"title": "Copy error report"
+			},
+			{
 				"command": "liana.initialize_liana_schema_authoring_environment",
 				"category": "Liana",
 				"title": "initialize Liana schema authoring environment"

@@ -1,3 +1,4 @@
+import { show_error_message } from '../helpers/error_report'
 import create_refinement_context from 'pareto-core/__internal/sync/create_refinement_context'
 import p_schema from 'pareto-core/schema'
 
@@ -41,7 +42,7 @@ export default ((deps) => () => {
 			})
 		},
 		($) => {
-			vscode.window.showErrorMessage('Cannot convert to JSON because the file is not valid ASTN.')
+			show_error_message('Cannot convert to JSON because the file is not valid ASTN.')
 		}
 	)
 

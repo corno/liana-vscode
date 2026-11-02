@@ -1,3 +1,4 @@
+import { show_error_message } from '../helpers/error_report'
 import * as p_ from "pareto-core/transformer"
 import p_create_refinement_context from "pareto-core/__internal/sync/create_refinement_context"
 
@@ -24,11 +25,11 @@ export default ((deps) => () => {
 			p_.from.state($.type).decide(($): null => {
 				switch ($[0]) {
 					case 'read file': return p_.option($, ($) => {
-						vscode.window.showErrorMessage('Cannot seal because no .liana/schema.slna file could be found in an ancestor directory of the Liana file: ' + $.error.message)
+						show_error_message('Cannot seal because no .liana/schema.slna file could be found in an ancestor directory of the Liana file: ' + $.error.message)
 						return null
 					})
 					case 'parse schema': return p_.option($, ($) => {
-						vscode.window.showErrorMessage('Cannot seal because the .liana/schema.slna file is not a valid schema: ' + $.error)
+						show_error_message('Cannot seal because the .liana/schema.slna file is not a valid schema: ' + $.error)
 						return null
 					})
 					default: return p_.exhaustive($[0])
@@ -75,7 +76,7 @@ export default ((deps) => () => {
 					})
 				},
 				($) => {
-					vscode.window.showErrorMessage(`Cannot seal: ${$}`)
+					show_error_message(`Cannot seal: ${$}`)
 				}
 			)
 		}

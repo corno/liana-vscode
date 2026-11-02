@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 
 import collapse_all_entries from './commands/collapse_all_entries'
+import copy_error_report from './commands/copy_error_report'
 import convert_to_json from './commands/convert_to_json'
 import create_liana_file from './commands/create_liana_file'
 import extract_root_value from './commands/extract_root_value'
@@ -20,6 +21,7 @@ import * as types from './types'
 
 export function register_commands(deps: types.Command_Dependencies): void {
 	deps.context.subscriptions.push(
+		vscode.commands.registerCommand('liana.copy_error_report', copy_error_report(deps)),
 		vscode.commands.registerCommand('liana.collapse_all_entries', collapse_all_entries(deps)),
 		vscode.commands.registerCommand('liana.convert_to_json', convert_to_json(deps)),
 		vscode.commands.registerCommand('liana.create_liana_file', create_liana_file(deps)),

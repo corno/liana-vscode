@@ -1,3 +1,4 @@
+import { show_error_message } from '../helpers/error_report'
 import * as vscode from 'vscode'
 import { get_client } from '../extension'
 
@@ -34,7 +35,7 @@ const order_choices: (vscode.QuickPickItem & { 'order': Sort_Order })[] = [
 export default ((_deps) => async (argument?: unknown) => {
 	const client = get_client()
 	if (!client) {
-		vscode.window.showErrorMessage('The Liana language server is not running')
+		show_error_message('The Liana language server is not running')
 		return
 	}
 	let document: vscode.TextDocument
@@ -42,7 +43,7 @@ export default ((_deps) => async (argument?: unknown) => {
 	let scope: Sort_Scope = 'shallow'
 	if (is_sort_arguments(argument)) {
 		const found = vscode.workspace.textDocuments.find(($) => $.uri.toString() === argument.uri)
-		if (found === undefined) return vscode.window.showErrorMessage('Cannot sort: the document is not open')
+		if (found === undefined) return show_error_message('Cannot sort: the document is not open')
 		document = found
 		position = client.protocol2CodeConverter.asPosition(argument.position)
 		scope = argument.scope
@@ -66,7 +67,7 @@ export default ((_deps) => async (argument?: unknown) => {
 			? 'The document contains no dictionaries'
 			: 'Place the cursor inside a dictionary ({ ... }) to sort its entries')
 		case 'parse error': return vscode.window.showInformationMessage('Cannot sort: the document has syntax errors')
-		case 'document not found': return vscode.window.showErrorMessage('Cannot sort: the language server does not know this document')
+		case 'document not found': return show_error_message('Cannot sort: the language server does not know this document')
 		case 'found': break
 	}
 

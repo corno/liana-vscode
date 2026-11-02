@@ -1,3 +1,4 @@
+import { show_error_message } from './error_report'
 import * as vscode from 'vscode'
 import create_refinement_context from 'pareto-core/__internal/sync/create_refinement_context'
 import list_from_text from 'pareto-core/refiner/specials/list_from_text'
@@ -19,11 +20,11 @@ export const schema_command_document = async (operation: string, uri?: vscode.Ur
         ? vscode.window.activeTextEditor?.document
         : await vscode.workspace.openTextDocument(uri)
     if (document === undefined || !is_authoring_schema(document.getText())) {
-        vscode.window.showErrorMessage(`Cannot ${operation}: this document must declare the current Liana Authoring Specification schema-signature.`)
+        show_error_message(`Cannot ${operation}: this document must declare the current Liana Authoring Specification schema-signature.`)
         return undefined
     }
     if (vscode.languages.getDiagnostics(document.uri).some(diagnostic => diagnostic.severity === vscode.DiagnosticSeverity.Error)) {
-        vscode.window.showErrorMessage(`Cannot ${operation} because the document has errors. Fix them first.`)
+        show_error_message(`Cannot ${operation} because the document has errors. Fix them first.`)
         return undefined
     }
     return document

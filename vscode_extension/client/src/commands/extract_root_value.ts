@@ -1,3 +1,4 @@
+import { show_error_message } from '../helpers/error_report'
 import * as path from 'node:path'
 import * as vscode from 'vscode'
 import type * as specification from 'pareto-liana/schemas/temp_type_specifier/schema'
@@ -113,6 +114,6 @@ export default ((_deps) => async (parameters: Export_Parameters) => {
     edit.replace(source_uri, parameters.range, `@ ${JSON.stringify(include_path)}`)
     if (!await vscode.workspace.applyEdit(edit)) throw new Error('VS Code could not apply the export edit')
   } catch (error) {
-    vscode.window.showErrorMessage(`Failed to extract root value: ${error instanceof Error ? error.message : String(error)}`)
+    show_error_message(`Failed to extract root value: ${error instanceof Error ? error.message : String(error)}`)
   }
 }) satisfies types.Register_Command

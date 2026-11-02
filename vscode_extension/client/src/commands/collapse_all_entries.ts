@@ -1,3 +1,4 @@
+import { show_error_message } from '../helpers/error_report'
 import * as vscode from 'vscode'
 
 import * as types from "../types"
@@ -90,6 +91,6 @@ export default ((deps) => async () => {
 		vscode.window.showInformationMessage(`Collapsed ${childRanges.length} entries`)
 	} catch (error) {
 		console.error('Error collapsing entries:', error)
-		vscode.window.showErrorMessage('Failed to collapse entries')
+		show_error_message('Failed to collapse entries')
 	}
 }) satisfies types.Register_Command
