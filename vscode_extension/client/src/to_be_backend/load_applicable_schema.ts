@@ -13,6 +13,7 @@ import * as parser_error from 'astn-runtime/modules/deserialization/schemas/pars
 import * as fs from 'fs'
 import path from 'path'
 import type { TextDocument } from 'vscode'
+import type * as tree from 'astn-runtime/modules/deserialization/schemas/parse_tree/schema'
 
 export type Load_Schema_Error = {
     'schema path': string
@@ -24,7 +25,7 @@ export type Load_Schema_Error = {
 export function load_directory_schema(
     target_directory: string,
     on_error: ($: Load_Schema_Error) => void,
-    on_success: ($: specification.Temp_Type_Specifier, directories: core.List<string>, schema_path: string) => void,
+    on_success: ($: specification.Temp_Type_Specifier, directories: core.List<string>, schema_path: string, schema_body: tree.Value) => void,
 ): undefined {
     const find_schema = (directory: string): void => {
         const schema_path = path.join(directory, '.liana', 'schema.slna')
@@ -50,12 +51,18 @@ export function load_directory_schema(
                 p_create_refinement_context<{
                     specification: specification.Temp_Type_Specifier,
                     directories: core.List<string>,
+                    schema_body: tree.Value,
                 }, string>(abort => {
                     const parsed = Type_Specifier(p_list_from_text(data, $ => $), $ => abort(error_message($)), { 'tab size': 4 })
                     const relative = path.relative(directory, target_directory)
-                    return { specification: parsed, directories: p.literal.list(relative === '' ? [] : relative.split(path.sep)) }
+                    return {
+                        specification: parsed,
+                        directories: p.literal.list(relative === '' ? [] : relative.split(path.sep)),
+                        schema_body: parse_document(p_list_from_text(data, $ => $),
+                            error => abort(parser_error.Error(error)), { 'tab size': 4 }).content,
+                    }
                 }).__extract_data(
-                    $ => { on_success($.specification, $.directories, schema_path); return undefined },
+                    $ => { on_success($.specification, $.directories, schema_path, $.schema_body); return undefined },
                     error => { on_error({ 'schema path': schema_path, type: ['parse schema', { error }] }); return undefined },
                 )
             })
@@ -68,7 +75,7 @@ export function load_directory_schema(
 export function load_applicable_schema(
     text_document: TextDocument,
     on_error: ($: Load_Schema_Error) => void,
-    on_success: ($: specification.Temp_Type_Specifier, root_type: schema.namespaces.structure.types.Type) => void,
+    on_success: ($: specification.Temp_Type_Specifier, root_type: schema.namespaces.structure.types.Type, schema_body: tree.Value) => void,
 ): undefined {
     p_create_refinement_context<core.Optional_Value<Document_Header>, string>(abort => document_header(
         parse_document(
@@ -83,17 +90,17 @@ export function load_applicable_schema(
             if (embedded === null) load_directory_schema(
                 path.dirname(text_document.uri.fsPath),
                 on_error,
-                (specification, directories, schema_path) => p_create_refinement_context<schema.namespaces.structure.types.Type, string>(abort =>
+                (specification, directories, schema_path, schema_body) => p_create_refinement_context<schema.namespaces.structure.types.Type, string>(abort =>
                     file_type(specification[1], { directories, 'file name': path.basename(text_document.uri.fsPath) }, abort)['l entry'],
                 ).__extract_data(
-                    type => { on_success(specification, type); return undefined },
+                    type => { on_success(specification, type, schema_body); return undefined },
                     error => { on_error({ 'schema path': schema_path, type: ['parse schema', { error }] }); return undefined },
                 ),
             )
             else p_create_refinement_context<schema.namespaces.structure.types.Type, string>(abort =>
                 file_type(embedded[0].specification, embedded[0].path, abort)['l entry'],
             ).__extract_data(
-                type => { on_success(['constrained', embedded[0].specification], type); return undefined },
+                type => { on_success(['constrained', embedded[0].specification], type, embedded[0].schema_body); return undefined },
                 error => { on_error({ 'schema path': text_document.uri.fsPath, type: ['parse schema', { error }] }); return undefined },
             )
             return undefined

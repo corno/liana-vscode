@@ -51,7 +51,7 @@ export const file_directory = (specification: schema.Type_Specification, directo
     return directory
 }
 
-export const file_type = (specification: schema.Type_Specification, path: File_Path, abort: Abort): schema.Node.type_.file.type_.value => {
+export const file_type = (specification: schema.Type_Specification, path: File_Path, abort: Abort): schema.Node.file.type_.value => {
     const directory = file_directory(specification, path.directories, abort)
     valid_segment(path['file name'], abort)
     const file_name = path['file name']

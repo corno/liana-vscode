@@ -1,8 +1,7 @@
 import * as p_ from "pareto-core/transformer"
-import * as p_di from 'pareto-core/schema'
 import p_create_refinement_context from "pareto-core/__internal/sync/create_refinement_context"
 
-import { $$ as ttt_seal } from "../helpers/seal"
+import { seal_artifact } from "../helpers/seal"
 
 import * as fs from 'fs'
 import * as path from 'path'
@@ -36,11 +35,12 @@ export default ((deps) => () => {
 				}
 			})
 		},
-		($, root_type) => {
-			p_create_refinement_context<p_di.List<string>, string>(
-				(abort) => ttt_seal(
+		($, root_type, schema_body) => {
+			p_create_refinement_context<string, string>(
+				(abort) => seal_artifact(
 					editor.document.getText(),
-					($) => abort("Sealing failed because the file is not valid Liana."),
+					schema_body,
+					abort,
 					{
 						'unmarshall': {
 							'type': root_type,
@@ -70,12 +70,12 @@ export default ((deps) => () => {
 							return
 						}
 
-						fs.writeFileSync(file_infos.fsPath, $.__get_raw().join(""), 'utf8')
+						fs.writeFileSync(file_infos.fsPath, $, 'utf8')
 						vscode.window.showInformationMessage('File saved as sealed Liana')
 					})
 				},
 				($) => {
-					vscode.window.showErrorMessage('Cannot seal because the file is not valid Liana.')
+					vscode.window.showErrorMessage(`Cannot seal: ${$}`)
 				}
 			)
 		}

@@ -5,11 +5,15 @@ import type * as errors from '../../../modules/schema.generated/schemas/reader_e
 import * as read from '../../liana_next_schema/load.js'
 import * as tree from '../../../temp/astn_document.js'
 import * as location from 'astn-runtime/modules/deserialization/schemas/parse_tree/transformers/start_token_range'
+import { validate_schema_signature } from '../schema_signature.js'
 
 export const Type_Specifier: p_.Refiner_With_Parameter<
     s_out.Temp_Type_Specifier, errors.types.Resolved_Error, s_in.List_Of_Characters, { 'tab size': number }
 > = ($, abort, parameters) => {
-    const document = tree.Document($, error => abort(['unresolved document deserialization', ['parse tree deserialization', error]]), parameters)
+    const document = tree.Document_With_Header_Validation(
+        $, error => abort(['unresolved document deserialization', ['parse tree deserialization', error]]),
+        parameters, header => validate_schema_signature(header, abort),
+    )
     return ['constrained', read.Type_Specification(document.content, error => abort([
         'resolving',
         {

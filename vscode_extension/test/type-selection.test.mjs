@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { createRequire } from 'node:module'
 import test from 'node:test'
+import { signed_schema } from './helpers/schema-signature.mjs'
 
 const require = createRequire(import.meta.url)
 const serverRequire = createRequire(new URL('../server/package.json', import.meta.url))
@@ -47,7 +48,7 @@ const chars = source => p.literal.list(Array.from(source, c => c.codePointAt(0))
 const snippetText = text => text.replace(/^\$0/, '').replace(/\\([\\$}])/g, '$1')
 const { quote_identifier } = require('../server/out/helpers/quote_identifier.js')
 const fail = error => { throw error }
-const parse = source => Type_Specifier(chars(source), fail, { 'tab size': 4 })
+const parse = source => Type_Specifier(chars(signed_schema(source)), fail, { 'tab size': 4 })
 const signature = (values = '{}', lookups = '{}') =>
     `(\`signature\`: | \`local\` (\`values\`: ${values} \`lookups\`: ${lookups}))`
 const signature_value = (type, presence = 'required', tail = '[]') =>
@@ -76,7 +77,7 @@ const loadWithSchema = async (source, schema) => {
     const dir = mkdtempSync(join(tmpdir(), 'liana-server-references-'))
     try {
         mkdirSync(join(dir, '.liana'))
-        writeFileSync(join(dir, '.liana', 'schema.slna'), schema)
+        writeFileSync(join(dir, '.liana', 'schema.slna'), signed_schema(schema))
         const result = await new Promise(resolve => load_document(
             TextDocument.create(pathToFileURL(join(dir, 'document.liana.lna')).href, 'liana', 1, source),
             freshCache(),
@@ -90,11 +91,26 @@ const loadWithSchema = async (source, schema) => {
     }
 }
 
+test('sealed signature headers use the authoring environment for type selection', async () => {
+    const loaded = await loadWithSchema(
+        '!(`schema-signature`:"4d1d444c8a80a96ac874d7288075afa7c460f08e3ccff6ed5d640e2fc588739d")~',
+        specification(),
+    )
+    assert.equal(loaded['root type']['l id'], 'Root')
+})
+
+test('sealed signature headers reject extra properties', async () => {
+    await assert.rejects(loadWithSchema(
+        '!(`schema-signature`:"4d1d444c8a80a96ac874d7288075afa7c460f08e3ccff6ed5d640e2fc588739d"`extra`:~)~',
+        specification(),
+    ), /unexpected properties/)
+})
+
 const requestAt = async (source, schema, offset, createHandler, parameters = {}) => {
     const dir = mkdtempSync(join(tmpdir(), 'liana-completion-'))
     try {
         mkdirSync(join(dir, '.liana'))
-        writeFileSync(join(dir, '.liana', 'schema.slna'), schema)
+        writeFileSync(join(dir, '.liana', 'schema.slna'), signed_schema(schema))
         const doc = TextDocument.create(pathToFileURL(join(dir, 'document.liana.lna')).href, 'liana', 1, source)
         return await createHandler({
             documents: { get: () => doc },
@@ -198,7 +214,7 @@ test('missing file-tree root type returns a structured schema diagnostic', () =>
     assert.throws(() => parse(source), error => {
         assert.equal(error[0], 'resolving')
         assert.deepEqual(error[1].type, ['missing reference', { identifier: 'missing' }])
-        assert.equal(error[1].location.start.absolute, 0)
+        assert.equal(error[1].location.start.absolute, signed_schema(source).indexOf(source))
         return true
     })
 })
@@ -370,7 +386,7 @@ test('nested components pass through whole categories or explicitly bind every t
                     })
                 )) \`directory\`: | \`dictionary\` (\`node\`: | \`file\` (\`file extension\`: "" \`type\`: 'Root'))
             )`
-            writeFileSync(join(dir, '.liana', 'schema.slna'), schema)
+            writeFileSync(join(dir, '.liana', 'schema.slna'), signed_schema(schema))
             const result = await new Promise(resolve => {
                 const doc = TextDocument.create(pathToFileURL(join(dir, 'document.liana.lna')).href, 'liana', index, '~')
                 load_document(doc, freshCache(),
@@ -1662,7 +1678,7 @@ test('document loading uses Next root selection, preserves caching and reports s
     try {
         mkdirSync(join(dir, '.liana'))
         const schemaPath = join(dir, '.liana', 'schema.slna')
-        writeFileSync(schemaPath, basic('| `double quoted` ~'))
+        writeFileSync(schemaPath, signed_schema(basic('| `double quoted` ~')))
         const cache = freshCache()
         const load = (version, caches = cache) => new Promise(resolve => {
             const doc = TextDocument.create(pathToFileURL(join(dir, 'document.liana.lna')).href, 'liana', version, '"hello (world)"')
@@ -1675,7 +1691,7 @@ test('document loading uses Next root selection, preserves caching and reports s
         assert.equal((await load(2))[0], 'success')
         assert.equal(cache.schemas.map.size, 1)
         assert.equal(cache.documents.map.size, 2)
-        writeFileSync(schemaPath, specification(undefined, undefined, undefined, 'missing'))
+        writeFileSync(schemaPath, signed_schema(specification(undefined, undefined, undefined, 'missing')))
         const error = await load(3, freshCache())
         assert.equal(error[0], 'error')
         assert.equal(error[1][0], 'schema')
@@ -1729,7 +1745,7 @@ test('schema parse errors point at LSP character columns, counting a tab as one 
     const report = await requestAt('~', '\t\t)', 0, context => () => create_on_diagnostics(context)({ textDocument: { uri: context.documents.get().uri } }))
     assert.equal(report.items.length, 1)
     assert.deepEqual(report.items[0].relatedInformation[0].location.range, {
-        start: { line: 0, character: 2 }, end: { line: 0, character: 3 },
+        start: { line: 1, character: 2 }, end: { line: 1, character: 3 },
     })
 })
 

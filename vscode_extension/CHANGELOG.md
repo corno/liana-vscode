@@ -3,6 +3,15 @@
 ## [Unreleased]
 
 ### Changed
+- Share the canonical sealed-artifact core with `clean_start`, copying it during
+  Liana upgrades. Seal and Deploy now emit the same canonical envelope using the
+  actual governing schema body's SHA-256, rather than stamping the extension's
+  compatibility key. The upgrade derives that compatibility key from the
+  promoted deployed Liana schema's canonical body instead of its header text.
+- Require loaded schema files to carry the current Liana `schema-signature`.
+  The upgrade script records the promoted version key. Unsigned or incompatible schemas report "Schema does not conform
+  to the current Liana version" before their body is interpreted.
+
 - Renamed schema deployment to "Deploy this Liana schema to an authoring
   environment..." with command id `liana.deploy_schema_to_authoring_environment`.
   Deployment still seals the schema into a read-only `.liana/schema.slna`.

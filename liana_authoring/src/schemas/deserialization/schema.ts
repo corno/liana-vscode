@@ -9,7 +9,7 @@ import type * as schema_errors from "pareto-liana/modules/schema.generated/schem
 
 export type Constrained_Result = s_resolve_result.Document & {
     'type specification': s_schema.Type_Specification
-    'root type': s_schema.Node.type_.file.type_.value
+    'root type': s_schema.Node.file.type_.value
 }
 
 export type Result =

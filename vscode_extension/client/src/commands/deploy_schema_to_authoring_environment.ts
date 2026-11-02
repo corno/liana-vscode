@@ -1,8 +1,7 @@
-import * as p_schema from 'pareto-core/schema'
 import * as p_ from "pareto-core/transformer"
 import p_create_refinement_context from "pareto-core/__internal/sync/create_refinement_context"
 
-import { $$ as ttt_seal } from "../helpers/seal"
+import { seal_artifact } from "../helpers/seal"
 
 import * as fs from 'fs'
 import * as path from 'path'
@@ -44,11 +43,12 @@ export default ((deps) => async () => {
 				}
 			})
 		},
-		($, root_type) => {
-			p_create_refinement_context<p_schema.List<string>, string>(
-				(abort) => ttt_seal(
+		($, root_type, schema_body) => {
+			p_create_refinement_context<string, string>(
+				(abort) => seal_artifact(
 					editor.document.getText(),
-					($) => abort("Cannot deploy schema because the file is not valid Liana."),
+					schema_body,
+					abort,
 					{
 						'unmarshall': {
 							'type': root_type,
@@ -101,7 +101,7 @@ export default ((deps) => async () => {
 
 						fs.writeFileSync(
 							schema_file_path,
-							new_text.__get_raw().join(""),
+							new_text,
 							'utf8'
 						)
 

@@ -14,7 +14,14 @@ export const Document: p_.Refiner_With_Parameter<
     s_deserialization.Error,
     s_characters.List_Of_Characters,
     s_deserialization.Parameters
-> = ($, abort, $p) => {
+> = ($, abort, $p) => Document_With_Header_Validation($, abort, $p, () => {})
+
+export const Document_With_Header_Validation = (
+    $: s_characters.List_Of_Characters,
+    abort: (error: s_deserialization.Error) => never,
+    $p: s_deserialization.Parameters,
+    validate_header: (header: s_document.Document.header) => void,
+): s_document.Document => {
     const characters = r_characters.Annotated_Characters($, $p)
     const tokens = iterate({
         list: characters.characters,
@@ -29,9 +36,9 @@ export const Document: p_.Refiner_With_Parameter<
     return iterate({
         list: tokens.tokens,
         end_info: tokens.end,
-        assign: (iterator): s_document.Document => ({
+        assign: (iterator): s_document.Document => {
             // Consume "!" once; the runtime's Document parser consumes the next token too.
-            'header': iterator.peek(
+            const header: s_document.Document.header = iterator.peek(
                 () => p_.literal.not_set(),
                 ($) => $['type'][0] === '!'
                     ? p_.literal.set({
@@ -43,9 +50,13 @@ export const Document: p_.Refiner_With_Parameter<
                         'value': r_value.Value(iterator, ($) => abort({ 'type': ['parser', $] })),
                     })
                     : p_.literal.not_set(),
-            ),
-            'content': r_value.Value(iterator, ($) => abort({ 'type': ['parser', $] })),
-        }),
+            )
+            validate_header(header)
+            return {
+                header,
+                'content': r_value.Value(iterator, ($) => abort({ 'type': ['parser', $] })),
+            }
+        },
         on_dangling_item: null,
     })
 }

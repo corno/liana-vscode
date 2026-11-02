@@ -150,7 +150,19 @@ trees, and a file tree selecting the root type for each document:
 )
 ```
 
-Place this bare specification in `.liana/schema.slna`. Files such as
+Deploy this specification as `.liana/schema.slna` using the schema deployment
+command. Deployed schemas must start with this header:
+
+```astn
+!(`schema-signature`:"<current Liana SHA-256 key>")
+```
+
+The extension compares this key with the version recorded by `upgrade_liana.sh`
+before interpreting the schema body. Missing, invalid, or mismatched signatures produce
+"Schema does not conform to the current Liana version"; regenerate and redeploy
+the schema using the current Liana tooling. The signature is a compatibility
+identifier, not a checksum of the deployed schema's content.
+Files such as
 `document.example.lna` and `document.example.slna` use its `Root` type.
 The nearest ancestor `.liana` directory is authoritative: a missing or invalid
 schema there is an error, not a reason to search farther. Named `group`
@@ -340,13 +352,28 @@ with a verbatim copy of
 `clean_start/test_results/expected/generate_typescript_from_liana_via_pareto/liana`.
 It also copies `clean_start/instance/liana/.liana/schema.slna` into the bundled
 authoring template and the maintained-schema test context.
+It also copies `clean_start/meta/shared/src/sealed_artifact` verbatim into
+`pareto_liana/src/shared/sealed_artifact`. This directory is maintained in
+`clean_start`; do not edit the local copy. It supplies canonical serialization,
+body-only SHA-256, and the signature envelope used by both Seal and Deploy.
+Before replacing any files, the script computes the promoted Liana schema's
+canonical body hash with that shared core and records it in
+`pareto_liana/src/schemas/liana_next_schema/schema_signature.ts`. Its existing
+header identifies its governing schema, not necessarily its own body; the script
+does not scrape the header, hash source formatting, or use a Git SHA.
+Client and server use the recorded body key for schema compatibility checks.
+Sealed artifacts instead carry the hash of their actual governing schema body;
+deployment never substitutes the extension's compatibility key.
 Stale compiled copies of the generated schema trees are deleted as well, so they
 cannot hide missing source files.
 
 The script deliberately overwrites these destinations on every run. Do not edit
 the copied generated code: adapt its handwritten consumers, fix compilation
 errors, then run `npm run compile` and `node --test test/*.test.mjs` from
-`vscode_extension`. It does not build, install, commit, or modify `clean_start`.
+`vscode_extension`. Install the extension's dependencies before running the
+upgrade: its existing esbuild dependency compiles a temporary signature adapter,
+which is executed and removed automatically. The script does not build the
+extension, install dependencies, commit, or modify `clean_start`.
 
 Below is a step-by-step guide to creating your first Liana language.
 

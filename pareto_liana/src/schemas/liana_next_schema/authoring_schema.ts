@@ -19,22 +19,22 @@ export namespace namespaces {
             }
             export type Value = current.structure.Value
             export namespace Value {
-                export type component = current.structure.Value.type_.component
+                export type component = current.structure.Value.component
                 export namespace component {
-                    export type type_ = current.structure.Value.type_.component.type_
+                    export type type_ = current.structure.Value.component.type_
                 }
-                export type dictionary = current.structure.Value.type_.dictionary
-                export type group = current.structure.Value.type_.group
-                export type list = current.structure.Value.type_.list
-                export type nothing = current.structure.Value.type_.nothing
-                export type optional = current.structure.Value.type_.optional
-                export type reference = current.structure.Value.type_.reference
-                export type simple = current.structure.Value.type_.simple
-                export type state = current.structure.Value.type_.state
+                export type dictionary = current.structure.Value.dictionary
+                export type group = current.structure.Value.group
+                export type list = current.structure.Value.list
+                export type nothing = current.structure.Value.nothing
+                export type optional = current.structure.Value.optional
+                export type reference = current.structure.Value.reference
+                export type simple = current.structure.Value.simple
+                export type state = current.structure.Value.state
                 export namespace state {
-                    export type options = current.structure.Value.type_.state.options
+                    export type options = current.structure.Value.state.options
                     export namespace options {
-                        export type D = current.structure.Value.type_.state.options.D
+                        export type D = current.structure.Value.state.options.D
                     }
                 }
             }
@@ -111,22 +111,22 @@ export namespace namespaces {
             }
             export type Value = current.resolver.Value
             export namespace Value {
-                export type component = current.resolver.Value.type_.component
+                export type component = current.resolver.Value.component
                 export namespace component {
-                    export type value = current.resolver.Value.type_.component.value
+                    export type value = current.resolver.Value.component.value
                     export namespace value {
-                        export type arguments_ = current.resolver.Value.type_.component.value.arguments_
+                        export type arguments_ = current.resolver.Value.component.value.arguments_
                         export namespace arguments_ {
-                            export type O = current.resolver.Value.type_.component.value.arguments_.O
+                            export type O = current.resolver.Value.component.value.arguments_.O
                             export namespace O {
-                                export type types = current.resolver.Value.type_.component.value.arguments_.O.types
+                                export type types = current.resolver.Value.component.value.arguments_.O.types
                                 export namespace types {
-                                    export type O = current.resolver.Value.type_.component.value.arguments_.O.types.O
+                                    export type O = current.resolver.Value.component.value.arguments_.O.types.O
                                     export namespace O {
-                                        export type D = current.resolver.Value.type_.component.value.arguments_.O.types.O.D
+                                        export type D = current.resolver.Value.component.value.arguments_.O.types.O.D
                                         export namespace D {
                                             export namespace value {
-                                                export type optional = current.resolver.Value.type_.component.value.arguments_.O.types.O.D.value.type_.optional
+                                                export type optional = current.resolver.Value.component.value.arguments_.O.types.O.D.value.optional
                                             }
                                         }
                                     }

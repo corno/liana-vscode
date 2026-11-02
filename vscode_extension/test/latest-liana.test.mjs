@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import Module, { createRequire } from 'node:module'
 import test from 'node:test'
+import { signed_schema, schema_signature_header } from './helpers/schema-signature.mjs'
 
 const require = createRequire(import.meta.url)
 const server_require = createRequire(new URL('../server/package.json', import.meta.url))
@@ -31,7 +32,7 @@ const { include_refactor_actions } = require('../server/out/helpers/include_refa
 
 const fail = error => { throw new Error(JSON.stringify(error)) }
 const chars = source => p.literal.list(Array.from(source, c => c.codePointAt(0)))
-const parse = source => Type_Specifier(chars(source), fail, { 'tab size': 1 })[1]
+const parse = source => Type_Specifier(chars(signed_schema(source)), fail, { 'tab size': 1 })[1]
 const fresh_cache = () => ({
     schemas: create_cache(),
     documents: create_cache(),
@@ -98,7 +99,7 @@ const header = (schema, directories, file, body) =>
 
 test('schema signature headers preserve the schema body during direct and filesystem loading', async () => {
     const schema = specification(dictionary('data', 'Text'))
-    const signed = `!(\`schema-signature\`:"${'8'.repeat(64)}")${schema}`
+    const signed = `${schema_signature_header}${schema}`
     assert.deepEqual(sealed_target.Directory(parse(signed).directory), sealed_target.Directory(parse(schema).directory))
     const directory = mkdtempSync(join(tmpdir(), 'liana-signed-schema-'))
     try {
@@ -129,11 +130,54 @@ test('schema signature headers preserve the schema body during direct and filesy
     }
 })
 
+test('incompatible schema signatures are rejected before interpreting the schema body', async () => {
+    const { schema_signature } = require('pareto-liana/schemas/liana_next_schema/schema_signature')
+    const other = schema_signature === '0'.repeat(64) ? '1'.repeat(64) : '0'.repeat(64)
+    const incompatible = [
+        specification(),
+        `!(\`schema-signature\`:"${other}")${specification()}`,
+        `!(\`schema-signature\`:"${other}") )`,
+        '!()~',
+        '!(\`schema-signature\`:~)~',
+        '!(\`schema-signature\`:"invalid")~',
+        `${schema_signature_header.replace(')', '\`extra\`:~)')}~`,
+    ]
+    for (const source of incompatible) {
+        assert.throws(() => Type_Specifier(chars(source), fail, { 'tab size': 1 }),
+            /Schema does not conform to the current Liana version/)
+    }
+    assert.throws(() => Type_Specifier(chars(`${schema_signature_header})`), fail, { 'tab size': 1 }),
+        /parse tree deserialization/)
+    const directory = mkdtempSync(join(tmpdir(), 'liana-incompatible-schema-'))
+    try {
+        mkdirSync(join(directory, '.liana'))
+        const file = join(directory, 'document.data.lna')
+        for (const source of incompatible) {
+            writeFileSync(join(directory, '.liana/schema.slna'), source)
+            const server = await load(file, '"hello"')
+            assert.equal(server[0], 'error')
+            assert.match(error_message(server[1][1].error.type[1]), /Schema does not conform to the current Liana version/)
+            const client = await client_load(file, '"hello"')
+            assert.equal(client[0], 'error')
+            assert.match(client[1].type[1].error, /Schema does not conform to the current Liana version/)
+            const document = TextDocument.create(pathToFileURL(file).href, 'liana', 1, '"hello"')
+            const report = await create_on_diagnostics({
+                documents: { get: () => document }, cache: fresh_cache(),
+            })({ textDocument: { uri: document.uri } })
+            assert.equal(report.items.length, 1)
+            assert.equal(report.items[0].source, 'schema')
+            assert.match(JSON.stringify(report.items), /Schema does not conform to the current Liana version/)
+        }
+    } finally {
+        rmSync(directory, { recursive: true, force: true })
+    }
+})
+
 test('diagnostics settle after an edit invalidates an in-flight document load', { timeout: 5000 }, async () => {
     const directory = mkdtempSync(join(tmpdir(), 'liana-diagnostics-'))
     try {
         mkdirSync(join(directory, '.liana'))
-        writeFileSync(join(directory, '.liana/schema.slna'), specification(dictionary('data', 'Text')))
+        writeFileSync(join(directory, '.liana/schema.slna'), signed_schema(specification(dictionary('data', 'Text'))))
         const uri = pathToFileURL(join(directory, 'document.data.lna')).href
         const cache = fresh_cache()
         let document = TextDocument.create(uri, 'liana', 1, '~')
@@ -160,7 +204,7 @@ test('includes resolve relative files by declared type and reuse the parent unma
     const directory = mkdtempSync(join(tmpdir(), 'liana-include-'))
     try {
         mkdirSync(join(directory, '.liana'))
-        writeFileSync(join(directory, '.liana/schema.slna'), specification(include_tree('Text')))
+        writeFileSync(join(directory, '.liana/schema.slna'), signed_schema(specification(include_tree('Text'))))
         const main = join(directory, 'main.data.lna')
         const piece = join(directory, 'piece.part.lna')
         const base = join(directory, 'base.leaf.lna')
@@ -200,7 +244,7 @@ test('includes reject a target whose declared type differs from the include-site
     const directory = mkdtempSync(join(tmpdir(), 'liana-include-type-'))
     try {
         mkdirSync(join(directory, '.liana'))
-        writeFileSync(join(directory, '.liana/schema.slna'), specification(include_tree('Nothing')))
+        writeFileSync(join(directory, '.liana/schema.slna'), signed_schema(specification(include_tree('Nothing'))))
         writeFileSync(join(directory, 'piece.part.lna'), '"text"')
         const result = await load(join(directory, 'main.data.lna'), '@ "piece.part.lna"')
         assert.equal(result[0], 'success')
@@ -218,7 +262,7 @@ test('include refactor offers inlining at include values and export only at decl
     const directory = mkdtempSync(join(tmpdir(), 'liana-include-refactor-'))
     try {
         mkdirSync(join(directory, '.liana'))
-        writeFileSync(join(directory, '.liana/schema.slna'), specification(include_tree('Text')))
+        writeFileSync(join(directory, '.liana/schema.slna'), signed_schema(specification(include_tree('Text'))))
         const source = join(directory, 'main.data.lna')
         const target = join(directory, 'piece.part.lna')
         writeFileSync(target, '"piece"')
@@ -262,7 +306,7 @@ test('inline refactors rebase nested include paths to the destination document',
     try {
         mkdirSync(join(directory, '.liana'))
         mkdirSync(join(directory, 'nested'))
-        writeFileSync(join(directory, '.liana/schema.slna'), specification(nested_include_tree))
+        writeFileSync(join(directory, '.liana/schema.slna'), signed_schema(specification(nested_include_tree)))
         const source = join(directory, 'main.data.lna')
         const target = join(directory, 'nested', 'piece.part.lna')
         writeFileSync(target, '@ "../base.leaf.lna"')
@@ -288,7 +332,7 @@ test('include cycles are reported during resolution even when both files load co
     const directory = mkdtempSync(join(tmpdir(), 'liana-include-cycle-'))
     try {
         mkdirSync(join(directory, '.liana'))
-        writeFileSync(join(directory, '.liana/schema.slna'), specification(include_tree('Text')))
+        writeFileSync(join(directory, '.liana/schema.slna'), signed_schema(specification(include_tree('Text'))))
         writeFileSync(join(directory, 'piece.part.lna'), '@ "main.data.lna"')
         const cache = fresh_cache()
         const [main, piece] = await Promise.all([
@@ -400,7 +444,7 @@ test('new-file command loads ancestor schemas, creates matching filenames and ne
     try {
         mkdirSync(join(dir, '.liana'))
         mkdirSync(join(dir, 'nested', 'items'), { recursive: true })
-        writeFileSync(join(dir, '.liana', 'schema.slna'), specification())
+        writeFileSync(join(dir, '.liana', 'schema.slna'), signed_schema(specification()))
         const folder = { fsPath: join(dir, 'nested', 'items') }
         await create_file(folder)
         const created = join(folder.fsPath, 'my_file.item.lna')
@@ -422,7 +466,7 @@ test('new-file command loads ancestor schemas, creates matching filenames and ne
             "'settings': | `file` (`file extension`: \"cfg\" `type`: 'Text')",
             "'settings': | `file` (`file extension`: \"cfg\" `type`: 'Text') 'other': | `file` (`file extension`: \"txt\" `type`: 'Text')",
         ))
-        writeFileSync(join(dir, '.liana', 'schema.slna'), grouped)
+        writeFileSync(join(dir, '.liana', 'schema.slna'), signed_schema(grouped))
         await create_file({ fsPath: dir })
         assert.equal(readFileSync(join(dir, 'settings.cfg.lna'), 'utf8'), '#')
         selected = undefined
@@ -444,7 +488,7 @@ test('directory schema loading does not fall back past an invalid nearest contex
     try {
         mkdirSync(join(dir, '.liana'))
         mkdirSync(join(dir, 'nested', '.liana'), { recursive: true })
-        writeFileSync(join(dir, '.liana', 'schema.slna'), specification())
+        writeFileSync(join(dir, '.liana', 'schema.slna'), signed_schema(specification()))
         writeFileSync(join(dir, 'nested', '.liana', 'schema.slna'), 'invalid')
         const result = await new Promise(resolve => load_directory_schema(
             join(dir, 'nested'), error => resolve(['error', error]), () => resolve(['success']),
@@ -480,7 +524,7 @@ test('server and client choose distinct roots per file while the server caches o
     try {
         mkdirSync(join(dir, '.liana'))
         mkdirSync(join(dir, 'nested'))
-        writeFileSync(join(dir, '.liana', 'schema.slna'), specification())
+        writeFileSync(join(dir, '.liana', 'schema.slna'), signed_schema(specification()))
         const cache = fresh_cache()
         for (const [relative, body, kind] of [
             ['settings.cfg.lna', '"hello"', 'simple'], ['nested/empty.slna', '~', 'nothing'],
@@ -507,7 +551,7 @@ test('the nearest schema context is authoritative, including missing and malform
         try {
             mkdirSync(join(dir, '.liana'))
             mkdirSync(join(dir, 'nested'))
-            writeFileSync(join(dir, '.liana', 'schema.slna'), specification())
+            writeFileSync(join(dir, '.liana', 'schema.slna'), signed_schema(specification()))
             const marker = join(dir, 'nested', '.liana')
             if (nearest === 'file') writeFileSync(marker, '')
             else {
@@ -812,11 +856,11 @@ test('optional fallback branches must resolve to the exact same structural targe
 })
 
 test('current generated schema diagnostics describe invalid token syntax explicitly', () => {
-    assert.throws(() => Type_Specifier(chars(specification().replace('"cfg"', "'cfg'")), error => {
+    assert.throws(() => Type_Specifier(chars(signed_schema(specification().replace('"cfg"', "'cfg'"))), error => {
         assert.match(error_message(error), /Expected text, found reference/)
         throw error
     }, { 'tab size': 1 }))
-    assert.throws(() => Type_Specifier(chars(specification().replace('`directory`:', '`root type`:')), error => {
+    assert.throws(() => Type_Specifier(chars(signed_schema(specification().replace('`directory`:', '`root type`:'))), error => {
         assert.match(error_message(error), /Unexpected properties: "root type"; expected properties: "schema", "directory"/)
         assert.doesNotMatch(error_message(error), /FIXME/)
         throw error

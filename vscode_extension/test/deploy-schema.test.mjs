@@ -29,6 +29,7 @@ test('deployment keeps validation, sealing, remembered destinations and read-onl
     const errors = []
     const directories = {}
     const rootType = {}
+    const schemaBody = {}
     const vscode = {
         window: {
             get activeTextEditor() { return editor },
@@ -49,13 +50,14 @@ test('deployment keeps validation, sealing, remembered destinations and read-onl
         Module._load = function (id, ...args) {
             if (id === 'vscode') return vscode
             if (id === '../to_be_backend/load_applicable_schema') return {
-                load_applicable_schema: (document, abort, success) => success({}, rootType),
+                load_applicable_schema: (document, abort, success) => success({}, rootType, schemaBody),
             }
             if (id === '../helpers/seal') return {
-                $$: (source, abort, parameters) => {
+                seal_artifact: (source, governing, abort, parameters) => {
                     assert.equal(source, 'schema source')
+                    assert.equal(governing, schemaBody)
                     assert.equal(parameters.unmarshall.type, rootType)
-                    return { __get_raw: () => ['sealed schema'] }
+                    return 'sealed artifact'
                 },
             }
             return originalLoad.call(this, id, ...args)
@@ -86,7 +88,7 @@ test('deployment keeps validation, sealing, remembered destinations and read-onl
         for (let attempt = 0; attempt < 2; attempt += 1) {
             await run()
             const target = join(directory, '.liana', 'schema.slna')
-            assert.equal(readFileSync(target, 'utf8'), 'sealed schema')
+            assert.equal(readFileSync(target, 'utf8'), 'sealed artifact')
             assert.equal(statSync(target).mode & 0o777, 0o444)
             assert.equal(dialog.openLabel, 'Deploy')
             assert.equal(dialog.title, 'Select authoring environment directory to deploy .liana/schema.slna to')
