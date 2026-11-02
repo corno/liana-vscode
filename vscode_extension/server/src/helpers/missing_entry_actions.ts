@@ -25,9 +25,8 @@ export const missing_entry_actions = async (
         const loaded = await new Promise<import('liana-authoring/schemas/resolve_result/schema').Document | null>((resolve, reject) => load_document(
             proposed, create_isolated_document_cache(context.cache, proposed),
             (error) => {
-                // Source syntax errors and missing `.liana` schema directories are reported by diagnostics,
-                // not failed code-action requests.
-                if (proposed === document && (error[0] === 'deserialize parse tree' || error[0] === 'schema path')) return null
+                // Diagnostics report loading errors in the original document; generated edits must still load.
+                if (proposed === document) return null
                 reject(new vscode.ResponseError(vscode.ErrorCodes.InternalError,
                     'Cannot load document for missing-entry fixes: ' + JSON.stringify(error)))
                 return null

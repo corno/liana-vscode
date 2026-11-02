@@ -1735,9 +1735,36 @@ test('code actions skip structural fixes for source parse errors while diagnosti
     }
 })
 
-test('code actions still report schema loading failures rather than suppressing them', async () => {
-    await assert.rejects(actionsAt('#', 'invalid schema', 0, ['quickfix']),
-        error => error.code === -32603 && error.message.startsWith('Cannot load document for missing-entry fixes:'))
+test('schema loading failures remain diagnostics without failing code-action requests', async () => {
+    const { create_on_diagnostics } = require('../server/out/connection/on_diagnostics.js')
+    const { missing_entry_actions } = require('../server/out/helpers/missing_entry_actions.js')
+    const { missing_reference_actions } = require('../server/out/helpers/missing_reference_actions.js')
+    const { schema_signature } = require('pareto-liana/schemas/liana_next_schema/schema_signature')
+    const mismatched = signed_schema(specification()).replace(schema_signature,
+        schema_signature === '0'.repeat(64) ? '1'.repeat(64) : '0'.repeat(64))
+    for (const [source, schema, message] of [
+        ['#', 'invalid schema', undefined],
+        ['#', mismatched, /Schema does not conform to the current Liana version/],
+        ['#', specification(undefined, undefined, undefined, 'missing'), undefined],
+        ['!()~', specification(), undefined],
+    ]) {
+        assert.deepEqual(await actionsAt(source, schema, 0, ['quickfix']), [])
+        assert.equal((await actionsAt(source, schema, 0)).length, 7)
+        await requestAt(source, schema, 0, context => async params => {
+            const actions = {
+                ...params, range: { start: params.position, end: params.position },
+                context: { diagnostics: [] },
+            }
+            assert.deepEqual(await missing_entry_actions(context, actions), [])
+            assert.deepEqual(await missing_reference_actions(context, actions), [])
+            const report = await create_on_diagnostics(context)(params)
+            assert.equal(report.items.length, 1)
+            assert.equal(report.items[0].severity, 1)
+            assert.equal(report.items[0].source, 'schema')
+            assert.ok(report.items[0].message.length > 0)
+            if (message !== undefined) assert.match(JSON.stringify(report.items), message)
+        })
+    }
 })
 
 test('schema parse errors point at LSP character columns, counting a tab as one character', async () => {

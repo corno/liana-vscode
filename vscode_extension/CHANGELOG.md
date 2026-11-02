@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Fixed
+- Schema-loading failures, including incompatible Liana signatures, remain
+  diagnostics without failing code-action requests or triggering error popups.
+  Schema-independent refactorings remain available.
+
 ### Changed
 - Share the canonical sealed-artifact core with `clean_start`, copying it during
   Liana upgrades. Seal and Deploy now emit the same canonical envelope using the

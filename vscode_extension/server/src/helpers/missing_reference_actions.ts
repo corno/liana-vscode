@@ -15,16 +15,10 @@ export const missing_reference_actions = async (
         kind === vscode.CodeActionKind.QuickFix || vscode.CodeActionKind.QuickFix.startsWith(kind + '.'))) return []
     const document = context.documents.get(params.textDocument.uri)
     if (document === undefined) return []
-    const loaded = await new Promise<resolved.Document | null>((resolve, reject) => load_document(
+    const loaded = await new Promise<resolved.Document | null>((resolve) => load_document(
         document, context.cache,
-        (error) => {
-            // Source syntax errors and missing `.liana` schema directories are reported by diagnostics,
-            // not failed code-action requests.
-            if (error[0] === 'deserialize parse tree' || error[0] === 'schema path') return null
-            reject(new vscode.ResponseError(vscode.ErrorCodes.InternalError,
-                'Cannot load document for reference creation: ' + JSON.stringify(error)))
-            return null
-        },
+        // Diagnostics report loading errors; no reference fix is available until the document loads.
+        () => null,
         (instance) => instance[0] === 'constrained' ? instance[1] : null,
         resolve,
     ))
