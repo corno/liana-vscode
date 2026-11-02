@@ -6,6 +6,7 @@ import * as t_resolved_completion from "liana-authoring/schemas/resolve_result/t
 
 import { load_document } from '../to_be_backend/load_document'
 import { generated_snippet } from '../helpers/generated_snippet'
+import { completion_documentation } from '../helpers/completion_documentation'
 
 import * as vscode_node from 'vscode-languageserver/node'
 import * as vscode_textdocument from 'vscode-languageserver-textdocument'
@@ -84,6 +85,7 @@ export const create_on_completion: (
 
 
 						items = $.suggestions.__get_raw().map(($): vscode_node.CompletionItem => {
+							const documentation = completion_documentation($)
 							const completionItem: vscode_node.CompletionItem = {
 								'label': $.label,
 								...($['invalid reason'] === undefined ? {} : { tags: [vscode_node.CompletionItemTag.Deprecated] }),
@@ -98,12 +100,10 @@ export const create_on_completion: (
 										default: return p_.exhaustive($[0])
 									}
 								}),
-								'documentation': {
-									kind: vscode_node.MarkupKind.PlainText,
-									value: $.documentation
-								},
+								'documentation': documentation,
 								'data': {
-									'documentation': $.documentation
+									'documentation': $.documentation,
+									'markup': documentation,
 								}
 							}
 

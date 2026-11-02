@@ -79,6 +79,14 @@ bar stay unchanged; subsequent completions use the selected style again.
 Hovering over a property's value, including an explicit not-set optional (`_`),
 shows its schema description in both verbose and concise notation.
 
+For blocked state options and reference candidates, open the selected completion
+item's **details** panel. It explains the failed constraints and offers **Go to
+blocker** (the document value causing the failure) and **Constraint definition**
+(the rule in the schema). Links open the relevant file at its source position,
+including blockers in included documents. Unknown locations are not guessed.
+Blocked suggestions remain selectable; their insertion behavior is unchanged.
+These are links in completion details, not hover actions on completion list rows.
+
 **New Liana File...** uses the nearest ancestor `.liana/schema.slna` and follows
 its file tree to the selected directory. For dictionary file nodes, the entered
 filename is used unchanged; `my_file.lna` is a suggestion, not a requirement.

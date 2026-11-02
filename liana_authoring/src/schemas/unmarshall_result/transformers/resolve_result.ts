@@ -10,6 +10,7 @@ import type * as s_in from "../../../schemas/unmarshall_result/schema.js"
 import type * as s_in_definition from "pareto-liana/schemas/liana_next_schema/authoring_schema"
 import type * as s_out from "../../../schemas/resolve_result/schema.js"
 import { component_type } from '../../liana_schema/select_component.js'
+import { blocker, with_blocker } from '../../resolve_result/blockers.js'
 
 namespace p_i_temp {
 
@@ -198,16 +199,17 @@ const Entry = ($: s_out.Entry): s_out.Selection => {
 const Reference = ($: s_out.Reference): s_out.Selection => {
     switch ($[0]) {
         case 'derived': return $[1]
-        case 'selected': {
-            const status = $[1]['resolve status']
-            switch (status[0]) {
-                case 'selected': return status[1]
-                case 'missing': return Unavailable()
-                case 'cyclic': return p_.from.optional(status[1].get_circular_dependent()).decide(Entry, Unavailable)
-                default: return p_.exhaustive(status[0])
-            }
-        }
+        case 'selected': return Reference_Status($[1]['resolve status'])
         default: return p_.exhaustive($[0])
+    }
+}
+
+const Reference_Status = (status: s_out.Reference_Status): s_out.Selection => {
+    switch (status[0]) {
+        case 'selected': return status[1]
+        case 'missing': return Unavailable()
+        case 'cyclic': return p_.from.optional(status[1].get_circular_dependent()).decide(Entry, Unavailable)
+        default: return p_.exhaustive(status[0])
     }
 }
 
@@ -328,10 +330,13 @@ const Possible = (
 ): s_out.Selection => {
     const selection = $.value
     switch (selection[0]) {
-        case 'optional value': return Relative(selection[1].tail, Select(Guaranteed(selection[1].selection.value, context), value =>
-            value[0] === 'optional'
+        case 'optional value': {
+            const selected = Guaranteed(selection[1].selection.value, context)
+            const result = Select(selected, value => value[0] === 'optional'
                 ? value[1].status[0] === 'set' ? ['resolved', value[1].status[1]['child value']] : value[1].status
-                : Unavailable()))
+                : Unavailable())
+            return Relative(selection[1].tail, with_blocker(result, selected[0] === 'resolved' ? { value: selected[1] } : {}))
+        }
         case 'decide state': {
             const branches = selection[1].options
             return Select_Constraint(Guaranteed(selection[1].selection.value, context), (value) => {
@@ -372,11 +377,11 @@ const Possible = (
 }
 
 const Select_Constraint = (
-    $: s_out.Selection,
+    selection: s_out.Selection,
     select: ($: s_out.Resolved_Value_Type) => s_out.Selection
-): s_out.Selection => Select($, ($) => $[0] === 'component'
+): s_out.Selection => Select(selection, ($) => $[0] === 'component'
     ? Select_Constraint(['resolved', $[1].value], select)
-    : select($)
+    : with_blocker(select($), selection[0] === 'resolved' ? { value: selection[1] } : {})
 )
 
 const Constraint = (
@@ -384,21 +389,21 @@ const Constraint = (
     start: s_out.Selection
 ): s_out.Selection => {
     const constraint = $.type.value
-    return Select_Constraint(Relative($.selection, start), (value) => {
-    switch (constraint[0]) {
-        case 'state': return value[0] === 'state' ? p_.from.optional(value[1].option).decide(
-            (option) => value[1].unmarshalled.derived['option status'][0] === 'set'
-                && value[1].unmarshalled.derived['option status'][1].option === constraint[1].value.option['l id']
-                ? ['resolved', option] : ['constraint failed', `expected state option '${constraint[1].value.option['l id']}'`],
-            Unavailable
-        ) : ['constraint failed', 'expected a state value']
-        case 'optional value': return value[0] === 'optional'
-            ? value[1].status[0] === 'set' ? ['resolved', value[1].status[1]['child value']]
-                : value[1].status[0] === 'unavailable' ? Unavailable() : ['constraint failed', 'expected an optional value to be set']
-            : ['constraint failed', 'expected an optional value']
-        default: return p_.exhaustive(constraint[0])
-    }
-    })
+    return with_blocker(Select_Constraint(Relative($.selection, start), (value) => {
+        switch (constraint[0]) {
+            case 'state': return value[0] === 'state' ? p_.from.optional(value[1].option).decide(
+                (option) => value[1].unmarshalled.derived['option status'][0] === 'set'
+                    && value[1].unmarshalled.derived['option status'][1].option === constraint[1].value.option['l id']
+                    ? ['resolved', option] : ['constraint failed', `expected state option '${constraint[1].value.option['l id']}'`],
+                Unavailable
+            ) : ['constraint failed', 'expected a state value']
+            case 'optional value': return value[0] === 'optional'
+                ? value[1].status[0] === 'set' ? ['resolved', value[1].status[1]['child value']]
+                    : value[1].status[0] === 'unavailable' ? Unavailable() : ['constraint failed', 'expected an optional value to be set']
+                : ['constraint failed', 'expected an optional value']
+            default: return p_.exhaustive(constraint[0])
+        }
+    }), { definition: $ })
 }
 
 const Constraints = (
@@ -598,18 +603,20 @@ const Option_Constraints = (
     switch ($[0]) {
         case 'assert is set': {
             const selection = Possible($[1], sibling_context)
-            return selection[0] === 'not set' ? ['constraint failed', 'expected an optional value to be set'] : selection
+            return selection[0] === 'not set'
+                ? with_blocker(['constraint failed', 'expected an optional value to be set'], { ...blocker(selection), definition: $ })
+                : selection
         }
         case 'state': {
             const constraint = $[1]
-            return Select_Constraint(Guaranteed(constraint.selection.value, sibling_context), (value) => value[0] === 'state'
+            return with_blocker(Select_Constraint(Guaranteed(constraint.selection.value, sibling_context), (value) => value[0] === 'state'
                 ? p_.from.optional(value[1].option).decide(
                     (option) => value[1].unmarshalled.derived['option status'][0] === 'set'
                         && value[1].unmarshalled.derived['option status'][1].option === constraint.option['l id']
                         ? ['resolved', option] : ['constraint failed', `expected state option '${constraint.option['l id']}'`],
                     Unavailable
                 ) : ['constraint failed', 'expected a state value']
-            )
+            ), { definition: $ })
         }
         default: return p_.exhaustive($[0])
     }
@@ -799,6 +806,18 @@ export const Value: p_i_temp.Transformer_With_Lookups_And_Parameter<
                 return lookup[0] === 'acyclic' || lookup[0] === 'cyclic'
                     ? p_.literal.set(lookup[2] ?? p_.literal.list<string>([]))
                     : p_.literal.not_set<p_di.List<string>>()
+        },
+        get 'reference candidate constraints'() {
+            const definition = $p.definition
+            if (definition[0] !== 'reference') return p_.literal.list<{ id: string, checks: p_di.Dictionary<s_out.Selection> }>([])
+            const lookup = Lookup(definition[1].value.type.lookup, context)
+            if (lookup[0] !== 'acyclic' && lookup[0] !== 'cyclic') return p_.literal.list<{ id: string, checks: p_di.Dictionary<s_out.Selection> }>([])
+            return p_.from.list(lookup[2] ?? p_.literal.list<string>([])).map(
+                id => ({ id, checks: p_.from.optional(definition[1].value.type.constraints).decide(
+                    constraints => Constraints(constraints.value, Reference_Status(Resolve_Reference(lookup, id))),
+                    () => p_.literal.dictionary<s_out.Selection>({}),
+                ) }),
+            )
         },
         'constraints': checks,
         'definition': $p.definition,

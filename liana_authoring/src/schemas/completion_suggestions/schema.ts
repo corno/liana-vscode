@@ -47,6 +47,11 @@ export namespace Completion_Suggestions_ {
             export type L = {
                 readonly 'label': L.label
                 readonly 'invalid reason'?: string
+                readonly 'blockers'?: p_di.List<{
+                    readonly reason: string
+                    readonly value?: import('../resolve_result/schema.js').Value
+                    readonly definition?: p_di.Value & object
+                }>
                 readonly 'reference identifier'?: string
                 readonly 'insert lines': L.insert_lines
                 readonly 'documentation': L.documentation

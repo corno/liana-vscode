@@ -8,6 +8,9 @@
   Schema-independent refactorings remain available.
 
 ### Changed
+- Add blocker and constraint-definition navigation links to completion details
+  for failed state-option and reference-candidate constraints. Preserve source
+  ownership across includes and keep blocked suggestions selectable.
 - Add "Convert to concise from dictionaries" to notation refactorings: groups
   remain verbose until the first dictionary on each branch, then all descendants
   use concise notation. Existing shallow/deep conversion and formatting remain unchanged.

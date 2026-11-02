@@ -28,6 +28,8 @@ import {
 import { include_paths } from '../helpers/include_paths'
 import { Cache_Context } from '../connection_context'
 import { file_type } from 'pareto-liana/schemas/temp_type_specifier/file_type'
+import { register_completion_sources } from '../helpers/completion_documentation'
+import { schema_source, set_schema_source } from 'pareto-liana/schemas/liana_next_schema/source_locations'
 
 type Load_Result =
 	| ['success', d_deserialize.Result]
@@ -161,6 +163,10 @@ const resolve_prepared_document = async (
 	if (prepared[0] !== 'constrained') {
 		replace_include_dependents(cache, document.uri, [])
 		return ['success', prepared]
+	}
+	register_completion_sources(prepared[1].content, document.uri)
+	if (schema_source(prepared[1]['type specification']) === undefined) {
+		set_schema_source(prepared[1]['type specification'], document_path(document))
 	}
 
 	const paths = include_paths(prepared[1].unmarshalled)

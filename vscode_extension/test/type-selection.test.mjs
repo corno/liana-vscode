@@ -1331,6 +1331,11 @@ test('state completion marks failed entry constraints without removing selectabl
         for (const item of result.items.filter(item => item.label !== valid)) {
             assert.deepEqual(item.tags, [1])
             assert.match(item.documentation.value, /Unavailable in this context: definition: expected state option/)
+            assert.equal(item.documentation.kind, 'markdown')
+            assert.match(item.documentation.value, /\[Go to blocker\]\(<file:\/\/\/.*document\.liana\.lna#L\d+,\d+>\)/)
+            assert.match(item.documentation.value, /\[Constraint definition\]\(<file:\/\/\/.*\.liana\/schema\.slna#L\d+,\d+>\)/)
+            const { create_on_completion_resolve } = require('../server/out/connection/on_completion_resolve.js')
+            assert.deepEqual(create_on_completion_resolve({})(JSON.parse(JSON.stringify(item))).documentation, item.documentation)
             assert.ok(item.textEdit.newText.length > 0)
         }
         const updated = source.replace('#', snippetText(allowed.textEdit.newText))
@@ -1360,6 +1365,7 @@ test('state completion reuses presence and state checks but leaves unknown const
         const content = resolver.Value(unmarshalled.content, {}, {
             definition, 'type parameters': p.literal.dictionary({ input, gate: ['resolved', gate] }),
         })
+
         const result = completion.Document({ unmarshalled, content }, {
             position: { line: 0, character: 2 }, indent: '    ', style: ['verbose', null],
         }).__get_raw()[0]
@@ -1368,8 +1374,75 @@ test('state completion reuses presence and state checks but leaves unknown const
         assert.equal(items[0]['invalid reason'] !== undefined, marked)
         if (marked) assert.match(items[0]['invalid reason'], /present: expected an optional value to be set/)
         assert.match(items[1]['invalid reason'], /gate: expected state option 'right'/)
+        assert.equal(items[1].blockers.__get_raw()[0].value, gate)
+        if (marked) assert.equal(items[0].blockers.__get_raw()[0].value, undefined)
         assert.deepEqual(resolveDiagnostics.Document({ content }).__get_raw(), [])
     }
+})
+
+test('reference completion links a failed candidate constraint to its actual value and schema definition', async () => {
+    const source = specification().replace('`visibility`: | `public`', '`visibility`: | `private`')
+        .replace("`type`: 'Root'", '`type`: #')
+    const result = await complete(source, template(), source.indexOf('#'))
+    const item = result.items.find(item => item.label === 'Root')
+    assert.ok(item)
+    assert.deepEqual(item.tags, [1])
+    assert.equal(item.documentation.kind, 'markdown')
+    assert.match(item.documentation.value, /Constraint definition/)
+    const match = item.documentation.value.match(/\[Go to blocker\]\(<(file:[^>]+)#L(\d+),(\d+)>\)/)
+    assert.ok(match, item.documentation.value)
+    const doc = TextDocument.create(match[1], 'liana', 1, source)
+    assert.equal(doc.offsetAt({ line: Number(match[2]) - 1, character: Number(match[3]) - 1 }), source.indexOf('| `private`'))
+    assert.equal(item.textEdit.newText, "'Root'")
+    const allowed = await complete(source.replace('`private`', '`public`'), template(), source.indexOf('#'))
+    assert.equal(allowed.items.find(item => item.label === 'Root').tags, undefined)
+})
+
+test('completion blocker links keep included source ownership and escape Markdown without command trust', () => {
+    const { completion_documentation, register_completion_sources } = require('../server/out/helpers/completion_documentation.js')
+    const gate = resolveState('| `left` ~', stateDefinition())
+    register_completion_sources(gate, 'file:///workspace/included%20gate.lna')
+    const details = completion_documentation({
+        label: 'right', documentation: '[untrusted](command:danger) <b> & *literal*',
+        'insert lines': p.literal.list([]),
+        blockers: p.literal.list([{ reason: 'gate [blocked]', value: gate }]),
+    })
+    assert.equal(details.kind, 'markdown')
+    assert.match(details.value, /\[Go to blocker\]\(<file:\/\/\/workspace\/included%20gate\.lna#L1,1>\)/)
+    assert.match(details.value, /\\\[untrusted\\\]\\\(command:danger\\\)/)
+    assert.match(details.value, /gate \\\[blocked\\\]/)
+    assert.doesNotMatch(details.value, /Constraint definition/)
+    const unknown = completion_documentation({
+        label: 'unknown', documentation: 'Unresolved', 'insert lines': p.literal.list([]),
+        blockers: p.literal.list([{ reason: 'no source' }]),
+    })
+    assert.match(unknown.value, /Source location unavailable/)
+    assert.doesNotMatch(unknown.value, /\]\(</)
+})
+
+test('assert-is-set completion blockers retain the actual absent optional value', () => {
+    const schema = specification('| `optional` (`result`: _ `constraints`: _ `value`: | `nothing` ~)',
+        '| `optional` (`presence`: _ `checks`: _ `result`: _ `not set constraints`: _ `constraints`: _ `resolver`: | `nothing` ~)')
+    const absent = resolver.Value(document('_', schema).content, {}, {
+        definition: resolved_value('optional', {
+            presence: p.literal.not_set(), constraints: p.literal.not_set(), 'not set constraints': p.literal.not_set(),
+            resolver: resolved_value('nothing', null), result: p.literal.not_set(),
+        }),
+        'type parameters': p.literal.dictionary({}),
+    })
+    const unmarshalled = document('| #', specification(stateValueType, stateResolverText))
+    const content = resolver.Value(unmarshalled.content, {}, {
+        definition: stateDefinition(p.literal.not_set(), undefined, () => p.literal.dictionary({
+            present: ['assert is set', { value: ['optional value', {
+                selection: { value: guaranteed(['parameter', { 'l id': 'input' }]) }, tail: relative(),
+            }] }],
+        })),
+        'type parameters': p.literal.dictionary({ input: ['resolved', absent] }),
+    })
+    const suggestions = completion.Document({ unmarshalled, content }, {
+        position: { line: 0, character: 2 }, indent: '    ', style: ['verbose', null],
+    }).__get_raw()[0].suggestions.__get_raw()
+    assert.ok(suggestions.every(item => item.blockers.__get_raw()[0].value === absent))
 })
 
 test('optional value constraints require optional nodes, matching the handwritten resolver', async () => {

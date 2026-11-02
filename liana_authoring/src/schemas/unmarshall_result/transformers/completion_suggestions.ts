@@ -12,7 +12,14 @@ import type * as s_outx from "../../../schemas/found/schema.js"
 namespace declarations_ {
 
     export type Parameters = {
-        'invalid state options'?: p_di.Dictionary<string>
+        'invalid state options'?: p_di.Dictionary<{
+            reason: string
+            blockers: p_di.List<{
+                reason: string
+                value?: import('../../resolve_result/schema.js').Value
+                definition?: p_di.Value & object
+            }>
+        }>
         'position': s_location.Position
         'indent': string
         'style':
@@ -218,9 +225,10 @@ export const Found: declarations_.Found = ($, $p) => {
                                                 ($, id) => {
                                                     const desc = $.description
                                                     const invalid = $p['invalid state options']
-                                                    const reason = invalid === undefined ? '' : p_.from.dictionary(invalid).get_possible_entry(
-                                                        id, ($) => $, () => '',
+                                                    const status = invalid === undefined ? undefined : p_.from.dictionary(invalid).get_possible_entry(
+                                                        id, ($) => $, () => ({ reason: '', blockers: p_.literal.list([]) }),
                                                     )
+                                                    const reason = status?.reason ?? ''
                                                     return p_.from.list(s_schema_Value(
                                                         $.value,
                                                         $p,
@@ -228,6 +236,7 @@ export const Found: declarations_.Found = ($, $p) => {
                                                         ($): s_out.Completion_Suggestions.O.suggestions.L => ({
                                                             'label': id + $.label,
                                                             ...(reason === '' ? {} : { 'invalid reason': reason }),
+                                                            ...(status?.blockers === undefined ? {} : { blockers: status.blockers }),
                                                             'documentation': p_.from.optional(desc).decide<string>(
                                                                 ($) => $,
                                                                 () => ""

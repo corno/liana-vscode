@@ -8,6 +8,8 @@ import * as d from "../../schemas/retrieval_of_schema/schema.js"
 
 //depencencies
 import * as r_temp_type_specifier_from_loc from "pareto-liana/schemas/temp_type_specifier/refiners/list_of_characters"
+import { set_schema_source } from 'pareto-liana/schemas/liana_next_schema/source_locations'
+import { Node_Path } from 'pareto-filesystem-unrestricted-api/modules/unrestricted/schemas/path/serializers'
 
 export const $$: p_.Query_Implementation<
     query_interfaces.get_schema,
@@ -39,5 +41,8 @@ export const $$: p_.Query_Implementation<
                 }
 
             )})
-        )
+        ).transform(result => {
+            set_schema_source(result.specification[1], Node_Path(result['schema path']))
+            return result
+        })
 )

@@ -6,6 +6,7 @@ import type * as s_unmarshalling from './current_generated/structure/schemas/unm
 import type * as s_resolved from './current_generated/structure/schemas/resolved.js'
 import { Authoring_Specification as Resolve } from './resolve.js'
 import type { Resolving_Error } from './resolving_error.js'
+import { register_schema_locations } from './source_locations.js'
 
 const Value_Type = (type: s_unmarshalling.Value_Type): string => type[0]
 
@@ -28,5 +29,7 @@ export const Authoring_Specification = (
     const unresolved = Unmarshal.Authoring_Specification(normalized, error => abort({
         type: ['schema validation', { message: Unmarshal_Error(error) }],
     }))
-    return Resolve(unresolved, abort)
+    const specification = Resolve(unresolved, abort)
+    register_schema_locations(specification, value)
+    return specification
 }
