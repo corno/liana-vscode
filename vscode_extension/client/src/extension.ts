@@ -18,6 +18,7 @@ import * as vscode from 'vscode'
 
 import { register_commands } from './register_commands'
 import { Completion_Style } from './helpers/completion_style'
+import { register_schema_command_context } from './helpers/schema_commands'
 
 let client: LanguageClient
 
@@ -52,6 +53,7 @@ function update_status_bar(context: ExtensionContext, status_bar_item: vscode.St
 }
 
 export function activate(context: ExtensionContext) {
+	register_schema_command_context(context)
 	const completion_style = new Completion_Style()
 	// Register file decoration provider for .liana folders
 

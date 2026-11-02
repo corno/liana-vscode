@@ -1,1 +1,2 @@
 export const schema_signature = '8e63bc9d414ee6f6ae84b46aa8b91607afbbfc2020acaea254f8cafbec2f6f0d'
+export const authoring_schema_signature = 'b712c6086e192d6b2e20527d991a4615470e489839c054365d73873b6a588205'

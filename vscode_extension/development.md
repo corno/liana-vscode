@@ -95,11 +95,15 @@ reader validates that header's structure and uses the local authoring environmen
 to select the document type, rather than treating it as a preseal `path`/`schema`
 header. Ordinary document signatures do not retrieve schemas or select their
 type. Schema files loaded from `.liana/schema.slna`, however, must carry the
-Liana version signature recorded by `upgrade_liana.sh` in
+Liana Authoring Specification's governing Document Specification signature recorded by `upgrade_liana.sh` in
 `pareto_liana/src/schemas/liana_next_schema/schema_signature.ts`. Their headers
 are checked before parsing the body; unsigned or mismatched schema files report
 "Schema does not conform to the current Liana version". Deployment adds the
-governing schema's computed body signature to the sealed schema. This is a version compatibility check,
+governing Document Specification's computed body signature to the sealed schema.
+The Liana authoring body's own identity (`schema_signature`) is separate from
+the expected governing identity (`authoring_schema_signature`). They need not
+coincide; the deployed context is intentionally not self-linked.
+This is a version compatibility check,
 not verification of the deployed schema's content hash.
 
 The canonical artifact core is copied verbatim from
@@ -107,11 +111,17 @@ The canonical artifact core is copied verbatim from
 `pareto_liana/src/shared/sealed_artifact` by `upgrade_liana.sh`. Changes belong
 in the authoritative directory, not the vendored copy. The upgrade computes
 the Liana compatibility key with `Inspect_Schema` against the promoted deployed
-Liana schema's body. Its temporary esbuild adapter needs installed extension
+Liana schema's body, separately deriving the governing Authoring Specification
+Document Specification key with the generated codecs. Its temporary esbuild adapter needs installed extension
 dependencies but no `clean_start/dist` imports or special TypeScript loader.
 
 Seal and Deploy use the same editor `seal_artifact` adapter and the copied core's
-canonical serialization, governing-body signature, and header emission. Path
+canonical serialization and header emission. The editor constructs a resolved
+`Document Specification` from the authoring schema's shared `schema` and full
+selected root reference, then uses generated unresolve/marshal codecs and shared
+sealed-target conversion before hashing. This matches the CLI's
+`meta/tools/seal/src/schema/document_specification.ts` construction. The root id
+is hashed; the authoring directory is not. Path
 selection and filesystem/UI operations remain outside the core. The low-level
 `$$` sealing helper remains a body-only API for existing callers.
 Canonical-body fingerprints are tested against the four maintained CLI schema

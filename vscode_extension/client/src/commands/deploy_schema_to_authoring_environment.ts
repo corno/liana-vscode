@@ -10,23 +10,14 @@ import * as vscode from 'vscode'
 import { load_applicable_schema } from '../to_be_backend/load_applicable_schema'
 
 import * as types from "../types"
+import { schema_command_document } from '../helpers/schema_commands'
 
-export default ((deps) => async () => {
-	const editor = vscode.window.activeTextEditor
-	if (!editor) {
-		vscode.window.showInformationMessage('Open a Liana schema file first to deploy it to an authoring environment')
-		return
-	}
-	const has_errors = vscode.languages.getDiagnostics(editor.document.uri).some(diagnostic =>
-		diagnostic.severity === vscode.DiagnosticSeverity.Error
-	)
-	if (has_errors) {
-		vscode.window.showErrorMessage('Cannot deploy schema because the document has errors. Fix them first.')
-		return
-	}
-	const schema_file_uri = editor.document.uri.toString()
+export default ((deps) => async (uri?: vscode.Uri) => {
+	const document = await schema_command_document('deploy schema', uri)
+	if (document === undefined) return
+	const schema_file_uri = document.uri.toString()
 	load_applicable_schema(
-		editor.document,
+		document,
 		($) => {
 
 			p_.from.state($.type).decide(($): null => {
@@ -43,11 +34,11 @@ export default ((deps) => async () => {
 				}
 			})
 		},
-		($, root_type, schema_body) => {
+		($, root_type, _schema_body, root) => {
 			p_create_refinement_context<string, string>(
 				(abort) => seal_artifact(
-					editor.document.getText(),
-					schema_body,
+					document.getText(),
+					{ schema: $[1].schema, 'root type': root },
 					abort,
 					{
 						'unmarshall': {

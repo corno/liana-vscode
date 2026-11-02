@@ -10,7 +10,8 @@ const core = require('pareto-liana/shared/sealed_artifact/index')
 const { Document } = require('pareto-liana/temp/astn_document')
 const { document_header } = require('pareto-liana/schemas/temp_type_specifier/document_header')
 const { Type_Specifier } = require('pareto-liana/schemas/temp_type_specifier/refiners/list_of_characters')
-const { file_type } = require('pareto-liana/schemas/temp_type_specifier/file_type')
+const { file_root } = require('pareto-liana/schemas/temp_type_specifier/file_type')
+const { document_specification_signature } = require('pareto-liana/schemas/liana_next_schema/document_specification')
 const { load_applicable_schema } = require('../client/out/to_be_backend/load_applicable_schema.js')
 const { seal_artifact } = require('../client/out/helpers/seal.js')
 const fail = error => { throw new Error(JSON.stringify(error)) }
@@ -42,6 +43,25 @@ test('the selected path does not enter the governing-schema hash', () => {
     }
 })
 
+test('Document Specification identity includes the selected root, not authoring directory metadata', () => {
+    const text = readFileSync(new URL('./fixtures/latest_liana/.liana/schema.slna', import.meta.url), 'utf8')
+    const authoring = Type_Specifier(chars(text), fail, { 'tab size': 1 })[1]
+    const first = file_root(authoring, { directories: p.literal.list([]), 'file name': 'one' }, fail)
+    const second = file_root(authoring, { directories: p.literal.list([]), 'file name': 'two.slna' }, fail)
+    const specification = { schema: authoring.schema, 'root type': first }
+    const key = document_specification_signature(specification)
+    assert.equal(key, 'b712c6086e192d6b2e20527d991a4615470e489839c054365d73873b6a588205')
+    assert.equal(key, document_specification_signature({ schema: authoring.schema, 'root type': second }))
+    assert.notEqual(key, core.Schema_Signature(parse(text).content, fail))
+    const other = p.from.dictionary(authoring.schema.structure.types).get_possible_entry('Document Specification',
+        type => ({ value: { 'l id': 'Document Specification', 'l entry': type }, constraints: { public: null } }),
+        () => assert.fail('Missing Document Specification type'))
+    assert.notEqual(key, document_specification_signature({ schema: authoring.schema, 'root type': other }))
+    assert.throws(() => seal_artifact('~', specification, fail, {
+        unmarshall: { type: other.value['l entry'], 'tab size': 1 }, target: { indentation: '', newline: '' },
+    }), /root type does not match/)
+})
+
 // Current CLI invocation outputs; owner-managed expected snapshots are not yet promoted.
 const cliFixtures = [
     ['astn_schema', 12471, '28b991928416c1804eaaf3a465aebf5a7cb3571c3715d34367345998cd4f7bc1'],
@@ -55,24 +75,25 @@ for (const [name, bytes, digest] of cliFixtures) {
         const context = readFileSync(new URL('./fixtures/latest_liana/.liana/schema.slna', import.meta.url), 'utf8')
         const source = readFileSync(new URL(`./fixtures/latest_liana/${name}.liana.lna`, import.meta.url), 'utf8')
         const specification = Type_Specifier(chars(context), fail, { 'tab size': 1 })[1]
-        const type = file_type(specification, {
+        const root = file_root(specification, {
             directories: p.literal.list([]), 'file name': `${name}.liana.lna`,
-        }, fail)['l entry']
-        const governing = parse(context).content
+        }, fail)
+        const type = root.value['l entry']
+        const governing = { schema: specification.schema, 'root type': root }
         const parameters = { unmarshall: { type, 'tab size': 1 }, target: { indentation: '', newline: '' } }
         const artifact = seal_artifact(source, governing, fail, parameters)
         const body = artifact.slice(artifact.indexOf(')') + 1)
         assert.equal(Buffer.byteLength(body), bytes)
         assert.equal(createHash('sha256').update(body).digest('hex'), digest)
         assert.equal(core.Inspect_Schema(artifact, fail)['declared schema signature'],
-            core.Schema_Signature(governing, fail))
+            document_specification_signature(governing))
         assert.equal(seal_artifact(artifact, governing, fail, parameters), artifact)
         const presealed = `!(\`path\`:(\`directories\`:[]\`file name\`:"${name}.liana.lna")\`schema\`:${context.slice(context.indexOf(')') + 1)})${source}`
         const selected = await new Promise((resolve, reject) => load_applicable_schema(
             { uri: { fsPath: `/unused/${name}.liana.lna` }, getText: () => presealed },
             reject, (specification, selectedType, schemaBody) => resolve({ selectedType, schemaBody }),
         ))
-        assert.equal(core.Schema_Signature(selected.schemaBody, fail), core.Schema_Signature(governing, fail))
+        assert.equal(core.Schema_Signature(selected.schemaBody, fail), core.Schema_Signature(parse(context).content, fail))
         assert.equal(selected.selectedType['root value'][0], type['root value'][0])
     })
 }

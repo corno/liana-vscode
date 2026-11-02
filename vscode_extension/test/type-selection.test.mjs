@@ -1740,7 +1740,7 @@ test('schema loading failures remain diagnostics without failing code-action req
     const { create_on_diagnostics } = require('../server/out/connection/on_diagnostics.js')
     const { missing_entry_actions } = require('../server/out/helpers/missing_entry_actions.js')
     const { missing_reference_actions } = require('../server/out/helpers/missing_reference_actions.js')
-    const { schema_signature } = require('pareto-liana/schemas/liana_next_schema/schema_signature')
+    const { authoring_schema_signature: schema_signature } = require('pareto-liana/schemas/liana_next_schema/schema_signature')
     const mismatched = signed_schema(specification()).replace(schema_signature,
         schema_signature === '0'.repeat(64) ? '1'.repeat(64) : '0'.repeat(64))
     for (const [source, schema, message] of [

@@ -30,7 +30,7 @@ export const file_directory = (specification: schema.Authoring_Specification, di
     return directory
 }
 
-export const file_type = (specification: schema.Authoring_Specification, path: File_Path, abort: Abort): schema.Node.file.type_.value => {
+export const file_root = (specification: schema.Authoring_Specification, path: File_Path, abort: Abort): schema.Node.file.type_ => {
     const directory = file_directory(specification, path.directories, abort)
     valid_segment(path['file name'], abort)
     const file_name = path['file name']
@@ -40,5 +40,8 @@ export const file_type = (specification: schema.Authoring_Specification, path: F
             () => abort(`No such file node: ${file_name}`),
         )
     if (file[0] !== 'file') return abort(`Expected file node: ${file_name}`)
-    return file[1].type.value
+    return file[1].type
 }
+
+export const file_type = (specification: schema.Authoring_Specification, path: File_Path, abort: Abort): schema.Node.file.type_.value =>
+    file_root(specification, path, abort).value

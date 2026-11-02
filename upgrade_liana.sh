@@ -28,4 +28,4 @@ cp -a -- "$ARTIFACT_SOURCE" "$ARTIFACT_DEST"
 
 cp -- "$SCHEMA_SOURCE" "$SCHEMA_TEMPLATE"
 cp -- "$SCHEMA_SOURCE" "$SCHEMA_TEST_FIXTURE"
-printf "export const schema_signature = '%s'\n" "$SCHEMA_SIGNATURE" > "$SIGNATURE_DEST"
+printf '%s\n' "$SCHEMA_SIGNATURE" > "$SIGNATURE_DEST"

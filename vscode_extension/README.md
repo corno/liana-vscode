@@ -154,14 +154,16 @@ Deploy this specification as `.liana/schema.slna` using the schema deployment
 command. Deployed schemas must start with this header:
 
 ```astn
-!(`schema-signature`:"<current Liana SHA-256 key>")
+!(`schema-signature`:"<current Liana Authoring Specification Document Specification key>")
 ```
 
-The extension compares this key with the version recorded by `upgrade_liana.sh`
+The extension compares this key with the governing Document Specification key recorded by `upgrade_liana.sh`
 before interpreting the schema body. Missing, invalid, or mismatched signatures produce
 "Schema does not conform to the current Liana version"; regenerate and redeploy
 the schema using the current Liana tooling. The signature is a compatibility
-identifier, not a checksum of the deployed schema's content.
+identifier, not a checksum of the deployed schema's content. The deployed Liana
+authoring body's own key is recorded separately; it is not required to equal
+its governing key.
 Files such as
 `document.example.lna` and `document.example.slna` use its `Root` type.
 The nearest ancestor `.liana` directory is authoritative: a missing or invalid
@@ -374,13 +376,36 @@ It also copies `clean_start/meta/shared/src/sealed_artifact` verbatim into
 `clean_start`; do not edit the local copy. It supplies canonical serialization,
 body-only SHA-256, and the signature envelope used by both Seal and Deploy.
 Before replacing any files, the script computes the promoted Liana schema's
-canonical body hash with that shared core and records it in
-`pareto_liana/src/schemas/liana_next_schema/schema_signature.ts`. Its existing
-header identifies its governing schema, not necessarily its own body; the script
-does not scrape the header, hash source formatting, or use a Git SHA.
-Client and server use the recorded body key for schema compatibility checks.
-Sealed artifacts instead carry the hash of their actual governing schema body;
-deployment never substitutes the extension's compatibility key.
+canonical body hash with that shared core and records it as `schema_signature` in
+`pareto_liana/src/schemas/liana_next_schema/schema_signature.ts`. It separately
+constructs the governing `Document Specification` for the public root
+`Authoring Specification`, using generated resolve/unresolve/marshal codecs,
+and records its canonical hash as `authoring_schema_signature`.
+Client and server compare loaded schema headers with this latter key.
+The existing header is not used to derive either identity, and equality of the
+two keys is not required.
+
+**Deploy** and **Publish this Liana schema...** are shown only for documents
+whose structurally parsed `schema-signature` matches the current Authoring
+Specification governing key. Filenames do not classify schemas: a misleading
+`.liana.lna` suffix, the Liana body hash, or the Document Specification governing
+key does not enable these commands. Missing or malformed headers do not qualify.
+Visibility updates as documents are opened, edited, closed, or switched.
+Explorer entries are offered only for already-open, verified schema documents;
+they act on the clicked resource, not a different active editor. Errors disable
+execution, and command handlers recheck identity and diagnostics.
+
+Publication is a placeholder hook: it explicitly reports that publication is
+not implemented and will be implemented when the repository is hosted. It
+does not publish anything or write to filesystem repository storage. Deploy
+remains the separate operation for writing an authoring environment context.
+
+Seal and Deploy construct the governing `Document Specification` as
+`{schema: authoring.schema, 'root type': selected root reference}`. They use the
+generated resolved-to-unresolve-to-marshal pipeline, convert to a sealed target,
+and hash its canonical body using the shared core. The authoring directory is
+excluded, but the selected root id is part of the identity. Deployment never
+substitutes a version constant. No editor publication integration is performed.
 Stale compiled copies of the generated schema trees are deleted as well, so they
 cannot hide missing source files.
 

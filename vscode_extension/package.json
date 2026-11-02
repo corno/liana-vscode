@@ -168,7 +168,14 @@
 			{
 				"command": "liana.deploy_schema_to_authoring_environment",
 				"category": "Liana",
-				"title": "Deploy this Liana schema to an authoring environment..."
+				"title": "Deploy this Liana schema to an authoring environment...",
+				"enablement": "(liana.is_authoring_schema && !liana.has_errors) || resource in liana.valid_authoring_schema_resources"
+			},
+			{
+				"command": "liana.publish_schema",
+				"category": "Liana",
+				"title": "Publish this Liana schema...",
+				"enablement": "(liana.is_authoring_schema && !liana.has_errors) || resource in liana.valid_authoring_schema_resources"
 			},
 			{
 				"command": "liana.create_liana_file",
@@ -230,6 +237,14 @@
 				{
 					"command": "liana.extract_root_value",
 					"when": "false"
+				},
+				{
+					"command": "liana.deploy_schema_to_authoring_environment",
+					"when": "liana.is_authoring_schema"
+				},
+				{
+					"command": "liana.publish_schema",
+					"when": "liana.is_authoring_schema"
 				}
 			],
 			"editor/context": [
@@ -260,7 +275,12 @@
 				},
 				{
 					"command": "liana.deploy_schema_to_authoring_environment",
-					"when": "editorLangId == liana && !liana.has_errors",
+					"when": "liana.is_authoring_schema && !liana.has_errors",
+					"group": "1_liana"
+				},
+				{
+					"command": "liana.publish_schema",
+					"when": "liana.is_authoring_schema && !liana.has_errors",
 					"group": "1_liana"
 				}
 			],
@@ -272,7 +292,12 @@
 				},
 				{
 					"command": "liana.deploy_schema_to_authoring_environment",
-					"when": "resourceLangId == liana",
+					"when": "resource in liana.authoring_schema_resources",
+					"group": "liana@1"
+				},
+				{
+					"command": "liana.publish_schema",
+					"when": "resource in liana.authoring_schema_resources",
 					"group": "liana@1"
 				}
 			]

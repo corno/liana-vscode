@@ -131,7 +131,7 @@ test('schema signature headers preserve the schema body during direct and filesy
 })
 
 test('incompatible schema signatures are rejected before interpreting the schema body', async () => {
-    const { schema_signature } = require('pareto-liana/schemas/liana_next_schema/schema_signature')
+    const { authoring_schema_signature: schema_signature } = require('pareto-liana/schemas/liana_next_schema/schema_signature')
     const other = schema_signature === '0'.repeat(64) ? '1'.repeat(64) : '0'.repeat(64)
     const incompatible = [
         specification(),

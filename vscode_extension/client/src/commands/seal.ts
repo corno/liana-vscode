@@ -35,11 +35,11 @@ export default ((deps) => () => {
 				}
 			})
 		},
-		($, root_type, schema_body) => {
+		($, root_type, _schema_body, root) => {
 			p_create_refinement_context<string, string>(
 				(abort) => seal_artifact(
 					editor.document.getText(),
-					schema_body,
+					{ schema: $[1].schema, 'root type': root },
 					abort,
 					{
 						'unmarshall': {

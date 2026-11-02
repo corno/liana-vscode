@@ -8,6 +8,15 @@
   Schema-independent refactorings remain available.
 
 ### Changed
+- Show schema Deploy/Publish commands only for the current Authoring Specification
+  governing signature, independent of filenames. Recheck identity and diagnostics
+  on execution; Explorer targets the verified clicked document.
+- Add a Publish schema placeholder that explicitly reports publication is not
+  implemented until the repository is hosted; it performs no publication or storage.
+- Seal and Deploy now identify the root-specific canonical Document Specification,
+  using the same generated unresolve/marshal construction as the CLI. Keep the
+  deployed Liana authoring body's identity separate from its governing key;
+  schema compatibility checks use the latter without requiring self-linkage.
 - Upgrade to the deployed shared `Schema`, `Authoring Specification`, and
   `Document Specification` model. Vendor the maintained shared generated API,
   independently of unpromoted expected snapshots, and refresh the canonical
@@ -18,9 +27,9 @@
   Recognize `.slna` and allow schema deployment without a `.liana.lna` filename.
 - Share the canonical sealed-artifact core with `clean_start`, copying it during
   Liana upgrades. Seal and Deploy now emit the same canonical envelope using the
-  actual governing schema body's SHA-256, rather than stamping the extension's
-  compatibility key. The upgrade derives that compatibility key from the
-  promoted deployed Liana schema's canonical body instead of its header text.
+  actual governing Document Specification body's SHA-256, rather than stamping
+  the extension's compatibility key. The upgrade derives body and governing
+  identities from the deployed Liana schema and generated codecs, not header text.
 - Require loaded schema files to carry the current Liana `schema-signature`.
   The upgrade script records the promoted version key. Unsigned or incompatible schemas report "Schema does not conform
   to the current Liana version" before their body is interpreted.

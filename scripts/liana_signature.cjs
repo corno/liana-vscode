@@ -11,7 +11,11 @@ try {
     const output = path.join(temporary, 'signature.cjs')
     esbuild.buildSync({
         entryPoints: [path.join(__dirname, 'liana_signature.ts')],
-        alias: { 'sealed-artifact': path.join(path.resolve(core), 'index.ts') },
+        alias: {
+            'sealed-artifact': path.join(path.resolve(core), 'index.ts'),
+            'artifact-source': path.resolve(core),
+            'liana-generated': path.resolve(core, '../liana/liana'),
+        },
         nodePaths: [path.join(__dirname, '../pareto_liana/node_modules')],
         outfile: output,
         bundle: true,

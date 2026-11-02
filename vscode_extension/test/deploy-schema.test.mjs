@@ -12,6 +12,7 @@ test('schema deployment is contributed and registered under the deploy command',
     const manifest = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'))
     assert.deepEqual(manifest.contributes.commands.find(entry => entry.command === command), {
         command, category: 'Liana', title: 'Deploy this Liana schema to an authoring environment...',
+        enablement: '(liana.is_authoring_schema && !liana.has_errors) || resource in liana.valid_authoring_schema_resources',
     })
     for (const menu of ['editor/context', 'explorer/context']) {
         assert.equal(manifest.contributes.menus[menu].filter(entry => entry.command === command).length, 1)
@@ -32,7 +33,11 @@ test('deployment keeps validation, sealing, remembered destinations and read-onl
     const errors = []
     const directories = {}
     const rootType = {}
+    const { schema_signature_header } = require('pareto-liana/schemas/temp_type_specifier/schema_signature')
+    const source = `${schema_signature_header}~`
     const schemaBody = {}
+    const root = { value: { 'l id': 'Root', 'l entry': rootType } }
+    const schema = {}
     const vscode = {
         window: {
             get activeTextEditor() { return editor },
@@ -53,12 +58,12 @@ test('deployment keeps validation, sealing, remembered destinations and read-onl
         Module._load = function (id, ...args) {
             if (id === 'vscode') return vscode
             if (id === '../to_be_backend/load_applicable_schema') return {
-                load_applicable_schema: (document, abort, success) => success({}, rootType, schemaBody),
+                load_applicable_schema: (document, abort, success) => success(['constrained', { schema }], rootType, schemaBody, root),
             }
             if (id === '../helpers/seal') return {
                 seal_artifact: (source, governing, abort, parameters) => {
-                    assert.equal(source, 'schema source')
-                    assert.equal(governing, schemaBody)
+                    assert.equal(source, `${schema_signature_header}~`)
+                    assert.deepEqual(governing, { schema, 'root type': root })
                     assert.equal(parameters.unmarshall.type, rootType)
                     return 'sealed artifact'
                 },
@@ -78,10 +83,10 @@ test('deployment keeps validation, sealing, remembered destinations and read-onl
             update: async (key, value) => assert.equal(value, directories),
         } } })
         await run()
-        assert.equal(messages.pop(), 'Open a Liana schema file first to deploy it to an authoring environment')
+        assert.match(errors.pop(), /must declare the current Liana Authoring Specification schema-signature/)
         editor = { document: {
             uri: { toString: () => 'file:///schema.liana.lna' },
-            getText: () => 'schema source',
+            getText: () => source,
         } }
         diagnostics = [{ severity: vscode.DiagnosticSeverity.Error }]
         await run()

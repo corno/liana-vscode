@@ -4,7 +4,7 @@ import * as p from 'pareto-core/transformer'
 import type * as specification from 'pareto-liana/schemas/temp_type_specifier/schema'
 import type * as schema from 'pareto-liana/schemas/liana_next_schema/authoring_schema'
 import { Type_Specifier } from 'pareto-liana/schemas/temp_type_specifier/refiners/list_of_characters'
-import { file_type } from 'pareto-liana/schemas/temp_type_specifier/file_type'
+import { file_root } from 'pareto-liana/schemas/temp_type_specifier/file_type'
 import { error_message } from 'pareto-liana/schemas/temp_type_specifier/reader_error'
 import { Document as parse_document } from 'pareto-liana/temp/astn_document'
 import { document_header, type Document_Header } from 'pareto-liana/schemas/temp_type_specifier/document_header'
@@ -75,7 +75,7 @@ export function load_directory_schema(
 export function load_applicable_schema(
     text_document: TextDocument,
     on_error: ($: Load_Schema_Error) => void,
-    on_success: ($: specification.Temp_Type_Specifier, root_type: schema.namespaces.structure.types.Type, schema_body: tree.Value) => void,
+    on_success: ($: specification.Temp_Type_Specifier, root_type: schema.namespaces.structure.types.Type, schema_body: tree.Value, root: schema.Document_Specification.root_type) => void,
 ): undefined {
     p_create_refinement_context<core.Optional_Value<Document_Header>, string>(abort => document_header(
         parse_document(
@@ -90,17 +90,17 @@ export function load_applicable_schema(
             if (embedded === null) load_directory_schema(
                 path.dirname(text_document.uri.fsPath),
                 on_error,
-                (specification, directories, schema_path, schema_body) => p_create_refinement_context<schema.namespaces.structure.types.Type, string>(abort =>
-                    file_type(specification[1], { directories, 'file name': path.basename(text_document.uri.fsPath) }, abort)['l entry'],
+                (specification, directories, schema_path, schema_body) => p_create_refinement_context<schema.Document_Specification.root_type, string>(abort =>
+                    file_root(specification[1], { directories, 'file name': path.basename(text_document.uri.fsPath) }, abort),
                 ).__extract_data(
-                    type => { on_success(specification, type, schema_body); return undefined },
+                    root => { on_success(specification, root.value['l entry'], schema_body, root); return undefined },
                     error => { on_error({ 'schema path': schema_path, type: ['parse schema', { error }] }); return undefined },
                 ),
             )
-            else p_create_refinement_context<schema.namespaces.structure.types.Type, string>(abort =>
-                file_type(embedded[0].specification, embedded[0].path, abort)['l entry'],
+            else p_create_refinement_context<schema.Document_Specification.root_type, string>(abort =>
+                file_root(embedded[0].specification, embedded[0].path, abort),
             ).__extract_data(
-                type => { on_success(['constrained', embedded[0].specification], type, embedded[0].schema_body); return undefined },
+                root => { on_success(['constrained', embedded[0].specification], root.value['l entry'], embedded[0].schema_body, root); return undefined },
                 error => { on_error({ 'schema path': text_document.uri.fsPath, type: ['parse schema', { error }] }); return undefined },
             )
             return undefined

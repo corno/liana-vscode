@@ -1,7 +1,7 @@
 import type * as tree from 'astn-runtime/modules/deserialization/schemas/parse_tree/schema'
 import * as location from 'astn-runtime/modules/deserialization/schemas/parse_tree/transformers/start_token_range'
 import type * as errors from '../../modules/schema.generated/schemas/reader_errors/schema.js'
-import { schema_signature } from '../liana_next_schema/schema_signature.js'
+import { authoring_schema_signature as schema_signature } from '../liana_next_schema/schema_signature.js'
 import { Header } from '../../shared/sealed_artifact/index.js'
 import * as serializer from 'pareto-fountain-pen/modules/paragraph/schemas/paragraph/serializers'
 import * as sh from 'pareto-fountain-pen/modules/paragraph/schemas/paragraph/shorthands/deprecated'
@@ -23,7 +23,8 @@ export const validate_schema_signature = (
         const properties = value.type[1][1][1].properties.__get_raw()
         if (properties.length === 1 && properties[0]?.id.token.value === 'schema-signature') {
             const text = properties[0].assignment.__get_raw()?.[0].value.__get_raw()?.[0]
-            if (text?.type[0] === 'concrete' && text.type[1][0] === 'text') found = text.type[1][1].token.value
+            if (text?.type[0] === 'concrete' && text.type[1][0] === 'text' &&
+                text.type[1][1].token.type[0] === 'quoted') found = text.type[1][1].token.value
         }
     }
     if (found !== schema_signature) {
