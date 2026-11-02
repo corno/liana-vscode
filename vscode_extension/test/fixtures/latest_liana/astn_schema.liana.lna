@@ -7,23 +7,50 @@
                 'text': < | `double quoted` ~ _ _ >
             }
             `types`: {
-                'Schema': < | `public` ~ | `group` {
-                    'text types': < _ | `component` < | `simple` | `local` 'Text Types' _ > >
-                    'types': < _ | `component` < | `simple` | `local` 'Types' _ > >
-                    'root': < * "The type at the root of a document" | `reference` < < < | `local` 'Types' > < [] > > < | `acyclic` ~ _ > > >
+                'Document Schema': < | `public` ~ | `group` {
+                    'schema': < _ | `component` < | `simple` | `local` 'Schema' _ > >
+                    'root': < * "The document root type, selected from the root schema" | `reference` < < < | `local` 'Schema' > < [
+                        | `group` 'types'
+                    ] > > < | `acyclic` ~ _ > > >
                 } >
+                'Schema': < | `public` ~ | `group` {
+                    'child schemas': < _ | `component` < | `simple` | `local` 'Schemas' _ > >
+                    'text types': < _ | `component` < | `simple` | `local` 'Text Types' _ > >
+                    'types': < _ | `dictionary` < _ | `group` {
+                        'root value': < _ | `component` < | `cyclic` 'Value' _ > >
+                    } > >
+                } >
+                'Schemas': < | `private` ~ | `dictionary` < _ | `component` < | `cyclic` 'Schema' _ > > >
                 'Text Types': < | `private` ~ | `dictionary` < _ | `state` < {
-                    'double quoted': < * "Text enclosed in double quotation marks" _ | `nothing` ~ >
+                    'double quoted': < * "Text enclosed in double quotes" _ | `nothing` ~ >
                     'undelimited': < * "Undelimited text (for example; numbers, booleans, dates)" _ | `nothing` ~ >
                 } _ > > >
-                'Types': < | `private` ~ | `dictionary` < _ | `group` {
-                    'root value': < _ | `component` < | `cyclic` 'Value' _ > >
-                } > >
                 'Value': < | `private` ~ | `state` < {
                     'component': < * "Reference to another named type" _ | `group` {
                         'type': < _ | `state` < {
-                            'acyclic': < * "Reference a type within the same schema (no cycles)" _ | `reference` < < < | `local` 'Types' > < [] > > < | `acyclic` ~ _ > > >
-                            'cyclic': < * "Reference a type within the same schema (allows cycles)" _ | `reference` < < < | `local` 'Types' > < [] > > < | `cyclic` ~ _ > > >
+                            'cyclic': < * "Reference a type within the current schema (allows cycles)" _ | `reference` < < < | `local` 'Schema' > < [
+                                | `group` 'types'
+                            ] > > < | `cyclic` ~ _ > > >
+                            'simple': < * "Reference an acyclic local, child schema, or sibling schema type" _ | `state` < {
+                                'local': < * "Type in the current schema" _ | `reference` < < < | `local` 'Schema' > < [
+                                    | `group` 'types'
+                                ] > > < | `acyclic` ~ _ > > >
+                                'child schema': < _ _ | `group` {
+                                    'schema': < _ | `reference` < < < | `local` 'Schemas' > < [] > > < | `acyclic` ~ _ > > >
+                                    'type': < _ | `reference` < < < | `local` 'Schema' > < [
+                                        | `group` 'types'
+                                    ] > > < | `acyclic` ~ _ > > >
+                                } >
+                                'sibling schema': < _ _ | `group` {
+                                    'schema': < _ | `reference` < < < | `local` 'Schemas' > < [] > > < | `acyclic` ~ _ > > >
+                                    'type': < _ | `reference` < < < | `local` 'Schema' > < [
+                                        | `group` 'types'
+                                    ] > > < | `acyclic` ~ _ > > >
+                                } >
+                            } * < < | `local` 'Schema' > < [
+                                | `group` 'types'
+                                | `dictionary` ~
+                            ] > > > >
                         } _ > >
                     } >
                     'dictionary': < * "Indexed collection of named values (like a map or hash table)" _ | `component` < | `cyclic` 'Value' _ > >
@@ -33,7 +60,7 @@
                             'value': < * "The type of this property" | `component` < | `cyclic` 'Value' _ > >
                         } > >
                     } >
-                    'identifier': < * "A value that uniquely identifies an entity (denoted with single quotation marks)" _ | `reference` < < < | `local` 'Text Types' > < [] > > < | `acyclic` ~ _ > > >
+                    'identifier': < * "A value that uniquely identifies an entity (denoted with single quotes)" _ | `reference` < < < | `local` 'Text Types' > < [] > > < | `acyclic` ~ _ > > >
                     'list': < * "Ordered sequence of values of the same type" _ | `component` < | `cyclic` 'Value' _ > >
                     'nothing': < * "Empty value (unit type, no data)" _ | `nothing` ~ >
                     'optional': < * "Value that may or may not be present" _ | `component` < | `cyclic` 'Value' _ > >
@@ -43,7 +70,7 @@
                             'value': < _ | `component` < | `cyclic` 'Value' _ > >
                         } > >
                     } >
-                    'text': < * "A text value (denoted with double quotation marks or no delimiter)" _ | `reference` < < < | `local` 'Text Types' > < [] > > < | `acyclic` ~ _ > > >
+                    'text': < * "A text value (denoted with double quotes or no delimiter)" _ | `reference` < < < | `local` 'Text Types' > < [] > > < | `acyclic` ~ _ > > >
                 } _ > >
             }
         )
@@ -51,66 +78,106 @@
             `declarations`: (
                 `namespaces`: {}
                 `types`: {
-                    'Schema': < | `local` < {} {} > >
+                    'Document Schema': < | `local` < {} {} > >
+                    'Schema': < | `local` < {} {
+                        'sibling schemas': < < < | `local` 'Schemas' > < [] > > | `acyclic` ~ | `optional` ~ >
+                    } > >
+                    'Schemas': < | `local` < {} {} > >
                     'Text Types': < | `local` < {} {} > >
-                    'Types': < | `local` < {
-                        'text types': < < < | `local` 'Text Types' > < [] > > | `required` ~ >
-                    } {} > >
                     'Value': < | `local` < {
                         'text types': < < < | `local` 'Text Types' > < [] > > | `required` ~ >
+                        'child schemas': < < < | `local` 'Schemas' > < [] > > | `required` ~ >
                     } {
-                        'non-recursive sibling types': < < < | `local` 'Types' > < [] > > | `acyclic` ~ | `required` ~ >
-                        'recursive dependent sibling types': < < < | `local` 'Types' > < [] > > | `cyclic` ~ | `required` ~ >
+                        'non-recursive sibling types': < < < | `local` 'Schema' > < [ | `group` 'types' ] > > | `acyclic` ~ | `required` ~ >
+                        'recursive dependent sibling types': < < < | `local` 'Schema' > < [ | `group` 'types' ] > > | `cyclic` ~ | `required` ~ >
+                        'sibling schemas': < < < | `local` 'Schemas' > < [] > > | `acyclic` ~ | `optional` ~ >
                     } > >
                 }
             )
             `implementations`: (
                 `namespaces`: {}
                 `types`: {
-                    'Schema': < | `group` {
-                        'text types': < | `component` < | `local` 'Text Types' * < * {} * {} > _ > >
-                        'types': < | `component` < | `local` 'Types' * < * {
-                            'text types': | `required` < | `sibling property` 'text types' < [
+                    'Document Schema': < | `group` {
+                        'schema': < | `component` < | `local` 'Schema' * < * {} * {
+                            'sibling schemas': | `acyclic` ~
+                        } > _ > >
+                        'root': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'schema' < [
                                 | `component` ~
-                            ] > >
-                        } * {} > _ > >
-                        'root': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'types' < [
-                            | `component` ~
-                        ] > > > > _ > > >
+                                | `group` 'types'
+                            ] > > > > _ > > >
                     } >
+                    'Schema': < | `group` {
+                        'child schemas': < | `component` < | `local` 'Schemas' * < * {} * {} > _ > >
+                        'text types': < | `component` < | `local` 'Text Types' * < * {} * {} > _ > >
+                        'types': < | `dictionary` < | `group` {
+                            'root value': < | `component` < | `local` 'Value' * < * {
+                                'text types': | `required` < | `parent sibling` 'text types' < [ | `component` ~ ] > >
+                                'child schemas': | `required` < | `parent sibling` 'child schemas' < [ | `component` ~ ] > >
+                            } * {
+                                'non-recursive sibling types': | `selection` < | `acyclic` | `siblings` ~ >
+                                'recursive dependent sibling types': | `selection` < | `cyclic` | `siblings` ~ >
+                                'sibling schemas': | `selection` < | `parameter` 'sibling schemas' >
+                            } > _ > >
+                        } _ > >
+                    } >
+                    'Schemas': < | `dictionary` < | `component` < | `local` 'Schema' * < * {} * {
+                        'sibling schemas': | `selection` < | `acyclic` | `siblings` ~ >
+                    } > _ > _ > >
                     'Text Types': < | `dictionary` < | `state` < {
                         'double quoted': < _ | `nothing` ~ _ _ >
                         'undelimited': < _ | `nothing` ~ _ _ >
                     } > _ > >
-                    'Types': < | `dictionary` < | `group` {
-                        'root value': < | `component` < | `local` 'Value' * < * {
-                            'text types': | `parameter` 'text types'
-                        } * {
-                            'non-recursive sibling types': | `selection` < | `acyclic` | `siblings` ~ >
-                            'recursive dependent sibling types': | `selection` < | `cyclic` | `siblings` ~ >
-                        } > _ > >
-                    } _ > >
                     'Value': < | `state` < {
                         'component': < _ | `group` {
                             'type': < | `state` < {
-                                'acyclic': < _ | `reference` < < < | `parameter` 'non-recursive sibling types' > _ > > _ _ >
+                                'simple': < _ | `state` < {
+                                    'local': < _ | `reference` < < < | `parameter` 'non-recursive sibling types' > _ > > * | `value` < [
+                                        | `reference` < >
+                                    ] > _ >
+                                    'child schema': < _ | `group` {
+                                        'schema': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'child schemas' < [] > > > > _ > > >
+                                        'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'schema' < [
+                                            | `reference` < >
+                                            | `cyclic component` ~
+                                            | `group` 'types'
+                                        ] > > > > _ > > >
+                                    } * | `value` < [
+                                        | `group` 'type'
+                                        | `reference` < >
+                                    ] > _ >
+                                    'sibling schema': < _ | `group` {
+                                        'schema': < | `reference` < < < | `parameter` 'sibling schemas' > _ > > >
+                                        'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'schema' < [
+                                            | `reference` < >
+                                            | `cyclic component` ~
+                                            | `group` 'types'
+                                        ] > > > > _ > > >
+                                    } * | `value` < [
+                                        | `group` 'type'
+                                        | `reference` < >
+                                    ] > _ >
+                                } > _ _ >
                                 'cyclic': < _ | `reference` < < < | `parameter` 'recursive dependent sibling types' > _ > > _ _ >
                             } > >
                         } _ _ >
                         'dictionary': < _ | `component` < | `local` 'Value' * < * {
                             'text types': | `parameter` 'text types'
+                            'child schemas': | `parameter` 'child schemas'
                         } * {
                             'non-recursive sibling types': | `selection` < | `parameter` 'non-recursive sibling types' >
                             'recursive dependent sibling types': | `selection` < | `parameter` 'recursive dependent sibling types' >
+                            'sibling schemas': | `selection` < | `parameter` 'sibling schemas' >
                         } > _ > _ _ >
                         'group': < _ | `group` {
                             'properties': < | `dictionary` < | `group` {
                                 'description': < | `optional` < _ _ | `simple` ~ _ _ _ > >
                                 'value': < | `component` < | `local` 'Value' * < * {
                                     'text types': | `parameter` 'text types'
+                                    'child schemas': | `parameter` 'child schemas'
                                 } * {
                                     'non-recursive sibling types': | `selection` < | `parameter` 'non-recursive sibling types' >
                                     'recursive dependent sibling types': | `selection` < | `parameter` 'recursive dependent sibling types' >
+                                    'sibling schemas': | `selection` < | `parameter` 'sibling schemas' >
                                 } > _ > >
                             } _ > >
                         } _ _ >
@@ -130,5 +197,8 @@
             )
         )
     )
-    `directory`: | `dictionary` < | `file` < "astn" 'Schema' > >
+    `directory`: | `group` < {
+        'document_schemas': | `directory` | `dictionary` < | `file` < "astn_d" 'Document Schema' > >
+        'schemas': | `directory` | `dictionary` < | `file` < "astn_s" 'Schema' > >
+    } >
 )

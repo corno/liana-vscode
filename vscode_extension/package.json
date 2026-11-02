@@ -165,9 +165,9 @@
 				"title": "seal document (n/a due to errors)"
 			},
 			{
-				"command": "liana.publish_schema_to_authoring_environment",
+				"command": "liana.deploy_schema_to_authoring_environment",
 				"category": "Liana",
-				"title": "Publish this Liana schema to an authoring environment..."
+				"title": "Deploy this Liana schema to an authoring environment..."
 			},
 			{
 				"command": "liana.create_liana_file",
@@ -258,7 +258,7 @@
 					"group": "1_liana"
 				},
 				{
-					"command": "liana.publish_schema_to_authoring_environment",
+					"command": "liana.deploy_schema_to_authoring_environment",
 					"when": "editorLangId == liana && !liana.has_errors && resourceFilename =~ /\\.liana\\.lna$/",
 					"group": "1_liana"
 				}
@@ -270,7 +270,7 @@
 					"group": "navigation@1"
 				},
 				{
-					"command": "liana.publish_schema_to_authoring_environment",
+					"command": "liana.deploy_schema_to_authoring_environment",
 					"when": "resourceExtname == .lna && resourceFilename =~ /\\.liana\\.lna$/",
 					"group": "liana@1"
 				}

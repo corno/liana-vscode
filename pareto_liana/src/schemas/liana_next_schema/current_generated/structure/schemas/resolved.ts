@@ -1,4378 +1,3857 @@
-import type * as p_ from 'pareto-core/schema'
+import type * as p_ from "pareto-core/schema"
 
-import type * as s_self from "./resolved.js"
+import type * as self from "./resolved.js"
 
-export type Directory =
-    | readonly ['group', s_self.Directory.type_.group]
-    | readonly ['dictionary', s_self.Directory.type_.dictionary]
-
-export namespace Directory {
-    export namespace type_ {
-        
-        export type group = {
-            readonly 'nodes': s_self.Directory.type_.group.nodes
-        }
-        
-        export namespace group {
-            
-            export type nodes = p_.Dictionary<s_self.Directory.type_.group.nodes.D>
-            
-            export namespace nodes {
-                
-                export type D = s_self.Node
-                
-            }
-            
-        }
-        
-        export type dictionary = {
-            readonly 'node': s_self.Directory.type_.dictionary.node
-        }
-        
-        export namespace dictionary {
-            
-            export type node = s_self.Node
-            
-        }
-        
-    }
-    
-}
-
-export type Node =
-    | readonly ['file', s_self.Node.type_.file]
-    | readonly ['directory', s_self.Node.type_.directory]
-
-export namespace Node {
-    export namespace type_ {
-        
-        export type file = {
-            readonly 'file extension': s_self.Node.type_.file.file_extension
-            readonly 'type': s_self.Node.type_.file.type_
-        }
-        
-        export namespace file {
-            
-            export type file_extension = string
-            
-            export type type_ = {
-                readonly 'constraints': s_self.Node.type_.file.type_.constraints
-                readonly 'value': s_self.Node.type_.file.type_.value
-            }
-            
-            export namespace type_ {
-                
-                export type constraints = {
-                    readonly 'public': s_self.Node.type_.file.type_.constraints.public_
-                }
-                
-                export namespace constraints {
-                    
-                    export type public_ = s_self.structure.Type.visibility.type_.public_
-                    
-                }
-                
-                export type value = {
-                    readonly 'l entry': s_self.Node.type_.file.type_.value.l_entry
-                    readonly 'l id': s_self.Node.type_.file.type_.value.l_id
-                }
-                
-                export namespace value {
-                    
-                    export type l_entry = s_self.structure.Types.D
-                    
-                    export type l_id = string
-                    
-                }
-                
-            }
-            
-        }
-        
-        export type directory = s_self.Directory
-        
-    }
-    
-}
-
-export type Type_Specification = {
-    readonly 'schema': s_self.Type_Specification.schema
-    readonly 'directory': s_self.Type_Specification.directory
-}
-
-export namespace Type_Specification {
-    
-    export type schema = {
-        readonly 'structure': s_self.Type_Specification.schema.structure
-        readonly 'resolver': s_self.Type_Specification.schema.resolver
-    }
-    
-    export namespace schema {
-        
-        export type structure = s_self.structure.Structure
-        
-        export type resolver = {
-            readonly 'declarations': s_self.Type_Specification.schema.resolver.declarations
-            readonly 'implementations': s_self.Type_Specification.schema.resolver.implementations
-        }
-        
-        export namespace resolver {
-            
-            export type declarations = s_self.declarations.Namespace
-            
-            export type implementations = s_self.resolver.Resolver
-            
-        }
-        
-    }
-    
-    export type directory = s_self.Directory
-    
-}
 
 export namespace structure {
     
-    export type Basic_Types = p_.Dictionary<s_self.structure.Basic_Types.D>
-    
     export namespace Basic_Types {
-        
-        export type D = {
-            readonly 'type': s_self.structure.Basic_Types.D.type_
-            readonly 'regular expression': s_self.structure.Basic_Types.D.regular_expression
-            readonly 'hyperlink': s_self.structure.Basic_Types.D.hyperlink
-        }
         
         export namespace D {
             
-            export type type_ =
-                | readonly ['double quoted', s_self.structure.Basic_Types.D.type_.type_.double_quoted]
-                | readonly ['undelimited', s_self.structure.Basic_Types.D.type_.type_.undelimited]
-            
             export namespace type_ {
-                export namespace type_ {
-                    
-                    export type double_quoted = null
-                    
-                    export type undelimited = null
-                    
-                }
                 
+                export type double_quoted = null
+                
+                export type undelimited = null
             }
             
-            export type regular_expression = p_.Optional_Value<s_self.structure.Basic_Types.D.regular_expression.O>
+            export type type_ =
+                | readonly ['double quoted', self.structure.Basic_Types.D.type_.double_quoted]
+                | readonly ['undelimited', self.structure.Basic_Types.D.type_.undelimited]
             
             export namespace regular_expression {
                 
-                export type O = s_self.structure.Regular_Expression
-                
+                export type O = self.structure.Regular_Expression
             }
             
-            export type hyperlink = p_.Optional_Value<s_self.structure.Basic_Types.D.hyperlink.O>
+            export type regular_expression = p_.Optional_Value<self.structure.Basic_Types.D.regular_expression.O>
             
             export namespace hyperlink {
-                
-                export type O = {
-                    readonly 'prefix': s_self.structure.Basic_Types.D.hyperlink.O.prefix
-                    readonly 'suffix': s_self.structure.Basic_Types.D.hyperlink.O.suffix
-                }
                 
                 export namespace O {
                     
                     export type prefix = string
                     
                     export type suffix = string
-                    
                 }
                 
+                export type O = {
+                    readonly 'prefix': self.structure.Basic_Types.D.hyperlink.O.prefix
+                    readonly 'suffix': self.structure.Basic_Types.D.hyperlink.O.suffix
+                }
             }
             
+            export type hyperlink = p_.Optional_Value<self.structure.Basic_Types.D.hyperlink.O>
         }
         
+        export type D = {
+            readonly 'type': self.structure.Basic_Types.D.type_
+            readonly 'regular expression': self.structure.Basic_Types.D.regular_expression
+            readonly 'hyperlink': self.structure.Basic_Types.D.hyperlink
+        }
     }
     
-    export type Types = p_.Dictionary<s_self.structure.Types.D>
+    export type Basic_Types = p_.Dictionary<self.structure.Basic_Types.D>
     
     export namespace Types {
         
-        export type D = s_self.structure.Type
-        
+        export type D = self.structure.Type
     }
     
-    export type Namespaces = p_.Dictionary<s_self.structure.Namespaces.D>
+    export type Types = p_.Dictionary<self.structure.Types.D>
     
     export namespace Namespaces {
         
-        export type D = s_self.structure.Structure
-        
+        export type D = self.structure.Structure
     }
     
-    export type Type = {
-        readonly 'visibility': s_self.structure.Type.visibility
-        readonly 'root value': s_self.structure.Type.root_value
-    }
+    export type Namespaces = p_.Dictionary<self.structure.Namespaces.D>
     
     export namespace Type {
         
-        export type visibility =
-            | readonly ['private', s_self.structure.Type.visibility.type_.private_]
-            | readonly ['private single use', s_self.structure.Type.visibility.type_.private_single_use]
-            | readonly ['public', s_self.structure.Type.visibility.type_.public_]
-        
         export namespace visibility {
-            export namespace type_ {
-                
-                export type private_ = null
-                
-                export type private_single_use = null
-                
-                export type public_ = null
-                
-            }
             
+            export type private_ = null
+            
+            export type private_single_use = null
+            
+            export type public_ = null
         }
         
-        export type root_value = s_self.structure.Value
+        export type visibility =
+            | readonly ['private', self.structure.Type.visibility.private_]
+            | readonly ['private single use', self.structure.Type.visibility.private_single_use]
+            | readonly ['public', self.structure.Type.visibility.public_]
         
+        export type root_value = self.structure.Value
     }
     
-    export type Group = p_.Dictionary<s_self.structure.Group.D>
+    export type Type = {
+        readonly 'visibility': self.structure.Type.visibility
+        readonly 'root value': self.structure.Type.root_value
+    }
     
     export namespace Group {
         
-        export type D = {
-            readonly 'description': s_self.structure.Group.D.description
-            readonly 'value': s_self.structure.Group.D.value
-        }
-        
         export namespace D {
-            
-            export type description = p_.Optional_Value<s_self.structure.Group.D.description.O>
             
             export namespace description {
                 
                 export type O = string
-                
             }
             
-            export type value = s_self.structure.Value
+            export type description = p_.Optional_Value<self.structure.Group.D.description.O>
             
+            export type value = self.structure.Value
         }
         
+        export type D = {
+            readonly 'description': self.structure.Group.D.description
+            readonly 'value': self.structure.Group.D.value
+        }
     }
     
-    export type Value =
-        | readonly ['component', s_self.structure.Value.type_.component]
-        | readonly ['dictionary', s_self.structure.Value.type_.dictionary]
-        | readonly ['group', s_self.structure.Value.type_.group]
-        | readonly ['list', s_self.structure.Value.type_.list]
-        | readonly ['nothing', s_self.structure.Value.type_.nothing]
-        | readonly ['simple', s_self.structure.Value.type_.simple]
-        | readonly ['optional', s_self.structure.Value.type_.optional]
-        | readonly ['reference', s_self.structure.Value.type_.reference]
-        | readonly ['state', s_self.structure.Value.type_.state]
+    export type Group = p_.Dictionary<self.structure.Group.D>
     
     export namespace Value {
-        export namespace type_ {
-            
-            export type component = {
-                readonly 'type': s_self.structure.Value.type_.component.type_
-                readonly 'constraints': s_self.structure.Value.type_.component.constraints
-            }
-            
-            export namespace component {
-                
-                export type type_ =
-                    | readonly ['simple', s_self.structure.Value.type_.component.type_.type_.simple]
-                    | readonly ['cyclic', s_self.structure.Value.type_.component.type_.type_.cyclic]
-                
-                export namespace type_ {
-                    export namespace type_ {
-                        
-                        export type simple = {
-                            readonly 'value': s_self.structure.Value.type_.component.type_.type_.simple.value
-                            readonly 'result': s_self.structure.Value.type_.component.type_.type_.simple.result
-                        }
-                        
-                        export namespace simple {
-                            
-                            export type value =
-                                | readonly ['local', s_self.structure.Value.type_.component.type_.type_.simple.value.type_.local]
-                                | readonly ['child namespace', s_self.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace]
-                                | readonly ['sibling namespace', s_self.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace]
-                            
-                            export namespace value {
-                                export namespace type_ {
-                                    
-                                    export type local = {
-                                        readonly 'l entry': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.local.l_entry
-                                        readonly 'l id': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.local.l_id
-                                    }
-                                    
-                                    export namespace local {
-                                        
-                                        export type l_entry = s_self.structure.Types.D
-                                        
-                                        export type l_id = string
-                                        
-                                    }
-                                    
-                                    export type child_namespace = {
-                                        readonly 'namespace': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.namespace
-                                        readonly 'type': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.type_
-                                    }
-                                    
-                                    export namespace child_namespace {
-                                        
-                                        export type namespace = {
-                                            readonly 'l entry': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.namespace.l_entry
-                                            readonly 'l id': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.namespace.l_id
-                                        }
-                                        
-                                        export namespace namespace {
-                                            
-                                            export type l_entry = s_self.structure.Namespaces.D
-                                            
-                                            export type l_id = string
-                                            
-                                        }
-                                        
-                                        export type type_ = {
-                                            readonly 'constraints': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.type_.constraints
-                                            readonly 'value': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.type_.value
-                                        }
-                                        
-                                        export namespace type_ {
-                                            
-                                            export type constraints = {
-                                                readonly 'public': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.type_.constraints.public_
-                                            }
-                                            
-                                            export namespace constraints {
-                                                
-                                                export type public_ = s_self.structure.Type.visibility.type_.public_
-                                                
-                                            }
-                                            
-                                            export type value = {
-                                                readonly 'l entry': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.type_.value.l_entry
-                                                readonly 'l id': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.child_namespace.type_.value.l_id
-                                            }
-                                            
-                                            export namespace value {
-                                                
-                                                export type l_entry = s_self.structure.Types.D
-                                                
-                                                export type l_id = string
-                                                
-                                            }
-                                            
-                                        }
-                                        
-                                    }
-                                    
-                                    export type sibling_namespace = {
-                                        readonly 'namespace': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.namespace
-                                        readonly 'type': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.type_
-                                    }
-                                    
-                                    export namespace sibling_namespace {
-                                        
-                                        export type namespace = {
-                                            readonly 'l entry': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.namespace.l_entry
-                                            readonly 'l id': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.namespace.l_id
-                                        }
-                                        
-                                        export namespace namespace {
-                                            
-                                            export type l_entry = s_self.structure.Namespaces.D
-                                            
-                                            export type l_id = string
-                                            
-                                        }
-                                        
-                                        export type type_ = {
-                                            readonly 'constraints': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.type_.constraints
-                                            readonly 'value': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.type_.value
-                                        }
-                                        
-                                        export namespace type_ {
-                                            
-                                            export type constraints = {
-                                                readonly 'public': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.type_.constraints.public_
-                                            }
-                                            
-                                            export namespace constraints {
-                                                
-                                                export type public_ = s_self.structure.Type.visibility.type_.public_
-                                                
-                                            }
-                                            
-                                            export type value = {
-                                                readonly 'l entry': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.type_.value.l_entry
-                                                readonly 'l id': s_self.structure.Value.type_.component.type_.type_.simple.value.type_.sibling_namespace.type_.value.l_id
-                                            }
-                                            
-                                            export namespace value {
-                                                
-                                                export type l_entry = s_self.structure.Types.D
-                                                
-                                                export type l_id = string
-                                                
-                                            }
-                                            
-                                        }
-                                        
-                                    }
-                                    
-                                }
-                                
-                            }
-                            
-                            export type result = s_self.structure.Type
-                            
-                        }
-                        
-                        export type cyclic = {
-                            readonly 'l entry': s_self.structure.Value.type_.component.type_.type_.cyclic.l_entry
-                            readonly 'l id': s_self.structure.Value.type_.component.type_.type_.cyclic.l_id
-                        }
-                        
-                        export namespace cyclic {
-                            
-                            export type l_entry = p_.Circular_Dependency<s_self.structure.Types.D>
-                            
-                            export type l_id = string
-                            
-                        }
-                        
-                    }
-                    
-                }
-                
-                export type constraints = s_self.structure.Reference_Constraints
-                
-            }
-            
-            export type dictionary = s_self.structure.Dictionary
-            
-            export type group = s_self.structure.Group
-            
-            export type list = {
-                readonly 'value': s_self.structure.Value.type_.list.value
-                readonly 'result': s_self.structure.Value.type_.list.result
-            }
-            
-            export namespace list {
-                
-                export type value = s_self.structure.Value
-                
-                export type result = s_self.structure.Optional_Result
-                
-            }
-            
-            export type nothing = null
-            
-            export type simple = {
-                readonly 'constraints': s_self.structure.Value.type_.simple.constraints
-                readonly 'value': s_self.structure.Value.type_.simple.value
-            }
-            
-            export namespace simple {
-                
-                export type constraints = {
-                    readonly 'basic types': s_self.structure.Value.type_.simple.constraints.basic_types
-                }
-                
-                export namespace constraints {
-                    
-                    export type basic_types = s_self.structure.Basic_Types
-                    
-                }
-                
-                export type value = {
-                    readonly 'l entry': s_self.structure.Value.type_.simple.value.l_entry
-                    readonly 'l id': s_self.structure.Value.type_.simple.value.l_id
-                }
-                
-                export namespace value {
-                    
-                    export type l_entry = s_self.structure.Basic_Types.D
-                    
-                    export type l_id = string
-                    
-                }
-                
-            }
-            
-            export type optional = {
-                readonly 'constraints': s_self.structure.Value.type_.optional.constraints
-                readonly 'value': s_self.structure.Value.type_.optional.value
-                readonly 'result': s_self.structure.Value.type_.optional.result
-            }
-            
-            export namespace optional {
-                
-                export type constraints = s_self.structure.Option_Constraints
-                
-                export type value = s_self.structure.Value
-                
-                export type result = s_self.structure.Optional_Result
-                
-            }
-            
-            export type reference = s_self.structure.Reference
-            
-            export type state = {
-                readonly 'options': s_self.structure.Value.type_.state.options
-                readonly 'result': s_self.structure.Value.type_.state.result
-            }
-            
-            export namespace state {
-                
-                export type options = p_.Dictionary<s_self.structure.Value.type_.state.options.D>
-                
-                export namespace options {
-                    
-                    export type D = {
-                        readonly 'description': s_self.structure.Value.type_.state.options.D.description
-                        readonly 'constraints': s_self.structure.Value.type_.state.options.D.constraints
-                        readonly 'value': s_self.structure.Value.type_.state.options.D.value
-                    }
-                    
-                    export namespace D {
-                        
-                        export type description = p_.Optional_Value<s_self.structure.Value.type_.state.options.D.description.O>
-                        
-                        export namespace description {
-                            
-                            export type O = string
-                            
-                        }
-                        
-                        export type constraints = s_self.structure.Option_Constraints
-                        
-                        export type value = s_self.structure.Value
-                        
-                    }
-                    
-                }
-                
-                export type result = s_self.structure.Optional_Result
-                
-            }
-            
-        }
         
-    }
-    
-    export type Dictionary = {
-        readonly 'benchmark': s_self.structure.Dictionary.benchmark
-        readonly 'value': s_self.structure.Dictionary.value
-    }
-    
-    export namespace Dictionary {
-        
-        export type benchmark = p_.Optional_Value<s_self.structure.Dictionary.benchmark.O>
-        
-        export namespace benchmark {
+        export namespace component {
             
-            export type O = {
-                readonly 'selection': s_self.structure.Dictionary.benchmark.O.selection
-                readonly 'coverage': s_self.structure.Dictionary.benchmark.O.coverage
-            }
-            
-            export namespace O {
+            export namespace type_ {
                 
-                export type selection = {
-                    readonly 'constraints': s_self.structure.Dictionary.benchmark.O.selection.constraints
-                    readonly 'value': s_self.structure.Dictionary.benchmark.O.selection.value
-                }
-                
-                export namespace selection {
-                    
-                    export type constraints = {
-                        readonly 'dictionary': s_self.structure.Dictionary.benchmark.O.selection.constraints.dictionary
-                    }
-                    
-                    export namespace constraints {
-                        
-                        export type dictionary = s_self.structure.Value.type_.dictionary
-                        
-                    }
-                    
-                    export type value = s_self.structure.Value_Reference
-                    
-                }
-                
-                export type coverage =
-                    | readonly ['dense', s_self.structure.Dictionary.benchmark.O.coverage.type_.dense]
-                    | readonly ['sparse', s_self.structure.Dictionary.benchmark.O.coverage.type_.sparse]
-                
-                export namespace coverage {
-                    export namespace type_ {
-                        
-                        export type dense = null
-                        
-                        export type sparse = null
-                        
-                    }
-                    
-                }
-                
-            }
-            
-        }
-        
-        export type value = s_self.structure.Value
-        
-    }
-    
-    export type Value_Reference = {
-        readonly 'type': s_self.structure.Value_Reference.type_
-        readonly 'path': s_self.structure.Value_Reference.path
-    }
-    
-    export namespace Value_Reference {
-        
-        export type type_ = {
-            readonly 'location': s_self.structure.Value_Reference.type_.location
-        }
-        
-        export namespace type_ {
-            
-            export type location = {
-                readonly 'value': s_self.structure.Value_Reference.type_.location.value
-                readonly 'result': s_self.structure.Value_Reference.type_.location.result
-            }
-            
-            export namespace location {
-                
-                export type value =
-                    | readonly ['local', s_self.structure.Value_Reference.type_.location.value.type_.local]
-                    | readonly ['child namespace', s_self.structure.Value_Reference.type_.location.value.type_.child_namespace]
-                    | readonly ['sibling namespace', s_self.structure.Value_Reference.type_.location.value.type_.sibling_namespace]
-                
-                export namespace value {
-                    export namespace type_ {
-                        
-                        export type local = {
-                            readonly 'l entry': s_self.structure.Value_Reference.type_.location.value.type_.local.l_entry
-                            readonly 'l id': s_self.structure.Value_Reference.type_.location.value.type_.local.l_id
-                        }
-                        
-                        export namespace local {
-                            
-                            export type l_entry = s_self.structure.Types.D
-                            
-                            export type l_id = string
-                            
-                        }
-                        
-                        export type child_namespace = {
-                            readonly 'namespace': s_self.structure.Value_Reference.type_.location.value.type_.child_namespace.namespace
-                            readonly 'type': s_self.structure.Value_Reference.type_.location.value.type_.child_namespace.type_
-                        }
-                        
-                        export namespace child_namespace {
-                            
-                            export type namespace = {
-                                readonly 'l entry': s_self.structure.Value_Reference.type_.location.value.type_.child_namespace.namespace.l_entry
-                                readonly 'l id': s_self.structure.Value_Reference.type_.location.value.type_.child_namespace.namespace.l_id
-                            }
-                            
-                            export namespace namespace {
-                                
-                                export type l_entry = s_self.structure.Namespaces.D
-                                
-                                export type l_id = string
-                                
-                            }
-                            
-                            export type type_ = {
-                                readonly 'l entry': s_self.structure.Value_Reference.type_.location.value.type_.child_namespace.type_.l_entry
-                                readonly 'l id': s_self.structure.Value_Reference.type_.location.value.type_.child_namespace.type_.l_id
-                            }
-                            
-                            export namespace type_ {
-                                
-                                export type l_entry = s_self.structure.Types.D
-                                
-                                export type l_id = string
-                                
-                            }
-                            
-                        }
-                        
-                        export type sibling_namespace = {
-                            readonly 'namespace': s_self.structure.Value_Reference.type_.location.value.type_.sibling_namespace.namespace
-                            readonly 'type': s_self.structure.Value_Reference.type_.location.value.type_.sibling_namespace.type_
-                        }
-                        
-                        export namespace sibling_namespace {
-                            
-                            export type namespace = {
-                                readonly 'l entry': s_self.structure.Value_Reference.type_.location.value.type_.sibling_namespace.namespace.l_entry
-                                readonly 'l id': s_self.structure.Value_Reference.type_.location.value.type_.sibling_namespace.namespace.l_id
-                            }
-                            
-                            export namespace namespace {
-                                
-                                export type l_entry = s_self.structure.Namespaces.D
-                                
-                                export type l_id = string
-                                
-                            }
-                            
-                            export type type_ = {
-                                readonly 'l entry': s_self.structure.Value_Reference.type_.location.value.type_.sibling_namespace.type_.l_entry
-                                readonly 'l id': s_self.structure.Value_Reference.type_.location.value.type_.sibling_namespace.type_.l_id
-                            }
-                            
-                            export namespace type_ {
-                                
-                                export type l_entry = s_self.structure.Types.D
-                                
-                                export type l_id = string
-                                
-                            }
-                            
-                        }
-                        
-                    }
-                    
-                }
-                
-                export type result = s_self.structure.Type
-                
-            }
-            
-        }
-        
-        export type path = {
-            readonly 'tail': s_self.structure.Value_Reference.path.tail
-        }
-        
-        export namespace path {
-            
-            export type tail = {
-                readonly 'value': s_self.structure.Value_Reference.path.tail.value
-                readonly 'result': s_self.structure.Value_Reference.path.tail.result
-            }
-            
-            export namespace tail {
-                
-                export type value = p_.List<s_self.structure.Value_Reference.path.tail.value.L>
-                
-                export namespace value {
-                    
-                    export type L = {
-                        readonly 'value': s_self.structure.Value_Reference.path.tail.value.L.value
-                        readonly 'result': s_self.structure.Value_Reference.path.tail.value.L.result
-                    }
-                    
-                    export namespace L {
-                        
-                        export type value = {
-                            readonly 'value': s_self.structure.Value_Reference.path.tail.value.L.value.value
-                            readonly 'result': s_self.structure.Value_Reference.path.tail.value.L.value.result
-                        }
-                        
-                        export namespace value {
-                            
-                            export type value =
-                                | readonly ['dictionary', s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.dictionary]
-                                | readonly ['group', s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.group]
-                                | readonly ['list', s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.list]
-                                | readonly ['optional', s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.optional]
-                                | readonly ['state', s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.state]
-                            
-                            export namespace value {
-                                export namespace type_ {
-                                    
-                                    export type dictionary = {
-                                        readonly 'constraints': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.dictionary.constraints
-                                        readonly 'value': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.dictionary.value
-                                    }
-                                    
-                                    export namespace dictionary {
-                                        
-                                        export type constraints = {
-                                            readonly 'definition': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.dictionary.constraints.definition
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type definition = s_self.structure.Value.type_.dictionary
-                                            
-                                        }
-                                        
-                                        export type value = null
-                                        
-                                    }
-                                    
-                                    export type group = {
-                                        readonly 'constraints': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.group.constraints
-                                        readonly 'value': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.group.value
-                                    }
-                                    
-                                    export namespace group {
-                                        
-                                        export type constraints = {
-                                            readonly 'definition': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.group.constraints.definition
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type definition = s_self.structure.Value.type_.group
-                                            
-                                        }
-                                        
-                                        export type value = {
-                                            readonly 'l entry': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.group.value.l_entry
-                                            readonly 'l id': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.group.value.l_id
-                                        }
-                                        
-                                        export namespace value {
-                                            
-                                            export type l_entry = s_self.structure.Group.D
-                                            
-                                            export type l_id = string
-                                            
-                                        }
-                                        
-                                    }
-                                    
-                                    export type list = {
-                                        readonly 'constraints': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.list.constraints
-                                        readonly 'value': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.list.value
-                                    }
-                                    
-                                    export namespace list {
-                                        
-                                        export type constraints = {
-                                            readonly 'definition': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.list.constraints.definition
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type definition = s_self.structure.Value.type_.list
-                                            
-                                        }
-                                        
-                                        export type value = null
-                                        
-                                    }
-                                    
-                                    export type optional = {
-                                        readonly 'constraints': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.optional.constraints
-                                        readonly 'value': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.optional.value
-                                    }
-                                    
-                                    export namespace optional {
-                                        
-                                        export type constraints = {
-                                            readonly 'definition': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.optional.constraints.definition
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type definition = s_self.structure.Value.type_.optional
-                                            
-                                        }
-                                        
-                                        export type value = null
-                                        
-                                    }
-                                    
-                                    export type state = {
-                                        readonly 'constraints': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.state.constraints
-                                        readonly 'value': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.state.value
-                                    }
-                                    
-                                    export namespace state {
-                                        
-                                        export type constraints = {
-                                            readonly 'definition': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.state.constraints.definition
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type definition = s_self.structure.Value.type_.state
-                                            
-                                        }
-                                        
-                                        export type value = {
-                                            readonly 'l entry': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.state.value.l_entry
-                                            readonly 'l id': s_self.structure.Value_Reference.path.tail.value.L.value.value.type_.state.value.l_id
-                                        }
-                                        
-                                        export namespace value {
-                                            
-                                            export type l_entry = s_self.structure.Value.type_.state.options.D
-                                            
-                                            export type l_id = string
-                                            
-                                        }
-                                        
-                                    }
-                                    
-                                }
-                                
-                            }
-                            
-                            export type result = s_self.structure.Value
-                            
-                        }
-                        
-                        export type result = s_self.structure.Value
-                        
-                    }
-                    
-                }
-                
-                export type result = s_self.structure.Value
-                
-            }
-            
-        }
-        
-    }
-    
-    export type Option_Constraints = p_.Optional_Value<s_self.structure.Option_Constraints.O>
-    
-    export namespace Option_Constraints {
-        
-        export type O = p_.Dictionary<s_self.structure.Option_Constraints.O.D>
-        
-        export namespace O {
-            
-            export type D = s_self.structure.Value_Reference
-            
-        }
-        
-    }
-    
-    export type Reference = {
-        readonly 'referent': s_self.structure.Reference.referent
-        readonly 'type': s_self.structure.Reference.type_
-    }
-    
-    export namespace Reference {
-        
-        export type referent = {
-            readonly 'constraints': s_self.structure.Reference.referent.constraints
-            readonly 'value': s_self.structure.Reference.referent.value
-        }
-        
-        export namespace referent {
-            
-            export type constraints = {
-                readonly 'dictionary': s_self.structure.Reference.referent.constraints.dictionary
-            }
-            
-            export namespace constraints {
-                
-                export type dictionary = s_self.structure.Value.type_.dictionary
-                
-            }
-            
-            export type value = s_self.structure.Value_Reference
-            
-        }
-        
-        export type type_ = {
-            readonly 'dependency': s_self.structure.Reference.type_.dependency
-            readonly 'constraints': s_self.structure.Reference.type_.constraints
-        }
-        
-        export namespace type_ {
-            
-            export type dependency =
-                | readonly ['acyclic', s_self.structure.Reference.type_.dependency.type_.acyclic]
-                | readonly ['cyclic', s_self.structure.Reference.type_.dependency.type_.cyclic]
-            
-            export namespace dependency {
-                export namespace type_ {
-                    
-                    export type acyclic = null
-                    
-                    export type cyclic = null
-                    
-                }
-                
-            }
-            
-            export type constraints = s_self.structure.Reference_Constraints
-            
-        }
-        
-    }
-    
-    export type Reference_Constraints = p_.Optional_Value<s_self.structure.Reference_Constraints.O>
-    
-    export namespace Reference_Constraints {
-        
-        export type O = p_.Dictionary<s_self.structure.Reference_Constraints.O.D>
-        
-        export namespace O {
-            
-            export type D = s_self.structure.Value_Reference
-            
-        }
-        
-    }
-    
-    export type Regular_Expression =
-        | readonly ['any character', s_self.structure.Regular_Expression.type_.any_character]
-        | readonly ['literal', s_self.structure.Regular_Expression.type_.literal]
-        | readonly ['character set', s_self.structure.Regular_Expression.type_.character_set]
-        | readonly ['sequence', s_self.structure.Regular_Expression.type_.sequence]
-        | readonly ['choice', s_self.structure.Regular_Expression.type_.choice]
-        | readonly ['repetition', s_self.structure.Regular_Expression.type_.repetition]
-    
-    export namespace Regular_Expression {
-        export namespace type_ {
-            
-            export type any_character = null
-            
-            export type literal = string
-            
-            export type character_set = string
-            
-            export type sequence = p_.List<s_self.structure.Regular_Expression.type_.sequence.L>
-            
-            export namespace sequence {
-                
-                export type L = s_self.structure.Regular_Expression
-                
-            }
-            
-            export type choice = p_.List<s_self.structure.Regular_Expression.type_.choice.L>
-            
-            export namespace choice {
-                
-                export type L = s_self.structure.Regular_Expression
-                
-            }
-            
-            export type repetition = {
-                readonly 'expression': s_self.structure.Regular_Expression.type_.repetition.expression
-                readonly 'quantity': s_self.structure.Regular_Expression.type_.repetition.quantity
-            }
-            
-            export namespace repetition {
-                
-                export type expression = s_self.structure.Regular_Expression
-                
-                export type quantity =
-                    | readonly ['optional', s_self.structure.Regular_Expression.type_.repetition.quantity.type_.optional]
-                    | readonly ['zero or more', s_self.structure.Regular_Expression.type_.repetition.quantity.type_.zero_or_more]
-                    | readonly ['one or more', s_self.structure.Regular_Expression.type_.repetition.quantity.type_.one_or_more]
-                
-                export namespace quantity {
-                    export namespace type_ {
-                        
-                        export type optional = null
-                        
-                        export type zero_or_more = null
-                        
-                        export type one_or_more = null
-                        
-                    }
-                    
-                }
-                
-            }
-            
-        }
-        
-    }
-    
-    export type Structure = {
-        readonly 'namespaces': s_self.structure.Structure.namespaces
-        readonly 'basic types': s_self.structure.Structure.basic_types
-        readonly 'types': s_self.structure.Structure.types
-    }
-    
-    export namespace Structure {
-        
-        export type namespaces = s_self.structure.Namespaces
-        
-        export type basic_types = s_self.structure.Basic_Types
-        
-        export type types = s_self.structure.Types
-        
-    }
-    
-    export type Optional_Result = p_.Optional_Value<s_self.structure.Optional_Result.O>
-    
-    export namespace Optional_Result {
-        
-        export type O = s_self.structure.Value_Reference
-        
-    }
-    
-}
-
-export namespace declarations {
-    
-    export type Presence =
-        | readonly ['optional', s_self.declarations.Presence.type_.optional]
-        | readonly ['required', s_self.declarations.Presence.type_.required]
-    
-    export namespace Presence {
-        export namespace type_ {
-            
-            export type optional = null
-            
-            export type required = null
-            
-        }
-        
-    }
-    
-    export type Signature_Value_Reference = {
-        readonly 'type': s_self.declarations.Signature_Value_Reference.type_
-        readonly 'subselection': s_self.declarations.Signature_Value_Reference.subselection
-    }
-    
-    export namespace Signature_Value_Reference {
-        
-        export type type_ = {
-            readonly 'location': s_self.declarations.Signature_Value_Reference.type_.location
-        }
-        
-        export namespace type_ {
-            
-            export type location = {
-                readonly 'value': s_self.declarations.Signature_Value_Reference.type_.location.value
-                readonly 'result': s_self.declarations.Signature_Value_Reference.type_.location.result
-            }
-            
-            export namespace location {
-                
-                export type value =
-                    | readonly ['local', s_self.declarations.Signature_Value_Reference.type_.location.value.type_.local]
-                    | readonly ['child namespace', s_self.declarations.Signature_Value_Reference.type_.location.value.type_.child_namespace]
-                    | readonly ['sibling namespace', s_self.declarations.Signature_Value_Reference.type_.location.value.type_.sibling_namespace]
-                
-                export namespace value {
-                    export namespace type_ {
-                        
-                        export type local = {
-                            readonly 'l entry': s_self.declarations.Signature_Value_Reference.type_.location.value.type_.local.l_entry
-                            readonly 'l id': s_self.declarations.Signature_Value_Reference.type_.location.value.type_.local.l_id
-                        }
-                        
-                        export namespace local {
-                            
-                            export type l_entry = s_self.structure.Types.D
-                            
-                            export type l_id = string
-                            
-                        }
-                        
-                        export type child_namespace = {
-                            readonly 'namespace': s_self.declarations.Signature_Value_Reference.type_.location.value.type_.child_namespace.namespace
-                            readonly 'type': s_self.declarations.Signature_Value_Reference.type_.location.value.type_.child_namespace.type_
-                        }
-                        
-                        export namespace child_namespace {
-                            
-                            export type namespace = {
-                                readonly 'l entry': s_self.declarations.Signature_Value_Reference.type_.location.value.type_.child_namespace.namespace.l_entry
-                                readonly 'l id': s_self.declarations.Signature_Value_Reference.type_.location.value.type_.child_namespace.namespace.l_id
-                            }
-                            
-                            export namespace namespace {
-                                
-                                export type l_entry = s_self.structure.Namespaces.D
-                                
-                                export type l_id = string
-                                
-                            }
-                            
-                            export type type_ = {
-                                readonly 'l entry': s_self.declarations.Signature_Value_Reference.type_.location.value.type_.child_namespace.type_.l_entry
-                                readonly 'l id': s_self.declarations.Signature_Value_Reference.type_.location.value.type_.child_namespace.type_.l_id
-                            }
-                            
-                            export namespace type_ {
-                                
-                                export type l_entry = s_self.structure.Types.D
-                                
-                                export type l_id = string
-                                
-                            }
-                            
-                        }
-                        
-                        export type sibling_namespace = {
-                            readonly 'namespace': s_self.declarations.Signature_Value_Reference.type_.location.value.type_.sibling_namespace.namespace
-                            readonly 'type': s_self.declarations.Signature_Value_Reference.type_.location.value.type_.sibling_namespace.type_
-                        }
-                        
-                        export namespace sibling_namespace {
-                            
-                            export type namespace = {
-                                readonly 'l entry': s_self.declarations.Signature_Value_Reference.type_.location.value.type_.sibling_namespace.namespace.l_entry
-                                readonly 'l id': s_self.declarations.Signature_Value_Reference.type_.location.value.type_.sibling_namespace.namespace.l_id
-                            }
-                            
-                            export namespace namespace {
-                                
-                                export type l_entry = s_self.structure.Namespaces.D
-                                
-                                export type l_id = string
-                                
-                            }
-                            
-                            export type type_ = {
-                                readonly 'l entry': s_self.declarations.Signature_Value_Reference.type_.location.value.type_.sibling_namespace.type_.l_entry
-                                readonly 'l id': s_self.declarations.Signature_Value_Reference.type_.location.value.type_.sibling_namespace.type_.l_id
-                            }
-                            
-                            export namespace type_ {
-                                
-                                export type l_entry = s_self.structure.Types.D
-                                
-                                export type l_id = string
-                                
-                            }
-                            
-                        }
-                        
-                    }
-                    
-                }
-                
-                export type result = s_self.structure.Type
-                
-            }
-            
-        }
-        
-        export type subselection = {
-            readonly 'tail': s_self.declarations.Signature_Value_Reference.subselection.tail
-        }
-        
-        export namespace subselection {
-            
-            export type tail = {
-                readonly 'value': s_self.declarations.Signature_Value_Reference.subselection.tail.value
-                readonly 'result': s_self.declarations.Signature_Value_Reference.subselection.tail.result
-            }
-            
-            export namespace tail {
-                
-                export type value = p_.List<s_self.declarations.Signature_Value_Reference.subselection.tail.value.L>
-                
-                export namespace value {
-                    
-                    export type L = {
-                        readonly 'value': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value
-                        readonly 'result': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.result
-                    }
-                    
-                    export namespace L {
-                        
-                        export type value = {
-                            readonly 'value': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value
-                            readonly 'result': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.result
-                        }
-                        
-                        export namespace value {
-                            
-                            export type value =
-                                | readonly ['dictionary', s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.dictionary]
-                                | readonly ['group', s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.group]
-                                | readonly ['list', s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.list]
-                                | readonly ['optional', s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.optional]
-                                | readonly ['state', s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.state]
-                            
-                            export namespace value {
-                                export namespace type_ {
-                                    
-                                    export type dictionary = {
-                                        readonly 'constraints': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.dictionary.constraints
-                                        readonly 'value': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.dictionary.value
-                                    }
-                                    
-                                    export namespace dictionary {
-                                        
-                                        export type constraints = {
-                                            readonly 'definition': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.dictionary.constraints.definition
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type definition = s_self.structure.Value.type_.dictionary
-                                            
-                                        }
-                                        
-                                        export type value = null
-                                        
-                                    }
-                                    
-                                    export type group = {
-                                        readonly 'constraints': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.group.constraints
-                                        readonly 'value': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.group.value
-                                    }
-                                    
-                                    export namespace group {
-                                        
-                                        export type constraints = {
-                                            readonly 'definition': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.group.constraints.definition
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type definition = s_self.structure.Value.type_.group
-                                            
-                                        }
-                                        
-                                        export type value = {
-                                            readonly 'l entry': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.group.value.l_entry
-                                            readonly 'l id': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.group.value.l_id
-                                        }
-                                        
-                                        export namespace value {
-                                            
-                                            export type l_entry = s_self.structure.Group.D
-                                            
-                                            export type l_id = string
-                                            
-                                        }
-                                        
-                                    }
-                                    
-                                    export type list = {
-                                        readonly 'constraints': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.list.constraints
-                                        readonly 'value': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.list.value
-                                    }
-                                    
-                                    export namespace list {
-                                        
-                                        export type constraints = {
-                                            readonly 'definition': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.list.constraints.definition
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type definition = s_self.structure.Value.type_.list
-                                            
-                                        }
-                                        
-                                        export type value = null
-                                        
-                                    }
-                                    
-                                    export type optional = {
-                                        readonly 'constraints': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.optional.constraints
-                                        readonly 'value': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.optional.value
-                                    }
-                                    
-                                    export namespace optional {
-                                        
-                                        export type constraints = {
-                                            readonly 'definition': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.optional.constraints.definition
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type definition = s_self.structure.Value.type_.optional
-                                            
-                                        }
-                                        
-                                        export type value = null
-                                        
-                                    }
-                                    
-                                    export type state = {
-                                        readonly 'constraints': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.state.constraints
-                                        readonly 'value': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.state.value
-                                    }
-                                    
-                                    export namespace state {
-                                        
-                                        export type constraints = {
-                                            readonly 'definition': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.state.constraints.definition
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type definition = s_self.structure.Value.type_.state
-                                            
-                                        }
-                                        
-                                        export type value = {
-                                            readonly 'l entry': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.state.value.l_entry
-                                            readonly 'l id': s_self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.type_.state.value.l_id
-                                        }
-                                        
-                                        export namespace value {
-                                            
-                                            export type l_entry = s_self.structure.Value.type_.state.options.D
-                                            
-                                            export type l_id = string
-                                            
-                                        }
-                                        
-                                    }
-                                    
-                                }
-                                
-                            }
-                            
-                            export type result = s_self.structure.Value
-                            
-                        }
-                        
-                        export type result = s_self.structure.Value
-                        
-                    }
-                    
-                }
-                
-                export type result = s_self.structure.Value
-                
-            }
-            
-        }
-        
-    }
-    
-    export type Signature = {
-        readonly 'values': s_self.declarations.Signature.values
-        readonly 'lookups': s_self.declarations.Signature.lookups
-    }
-    
-    export namespace Signature {
-        
-        export type values = p_.Dictionary<s_self.declarations.Signature.values.D>
-        
-        export namespace values {
-            
-            export type D = {
-                readonly 'value': s_self.declarations.Signature.values.D.value
-                readonly 'presence': s_self.declarations.Signature.values.D.presence
-            }
-            
-            export namespace D {
-                
-                export type value = s_self.declarations.Signature_Value_Reference
-                
-                export type presence = s_self.declarations.Presence
-                
-            }
-            
-        }
-        
-        export type lookups = p_.Dictionary<s_self.declarations.Signature.lookups.D>
-        
-        export namespace lookups {
-            
-            export type D = {
-                readonly 'referent': s_self.declarations.Signature.lookups.D.referent
-                readonly 'type': s_self.declarations.Signature.lookups.D.type_
-                readonly 'presence': s_self.declarations.Signature.lookups.D.presence
-            }
-            
-            export namespace D {
-                
-                export type referent = {
-                    readonly 'constraints': s_self.declarations.Signature.lookups.D.referent.constraints
-                    readonly 'value': s_self.declarations.Signature.lookups.D.referent.value
-                }
-                
-                export namespace referent {
-                    
-                    export type constraints = {
-                        readonly 'dictionary': s_self.declarations.Signature.lookups.D.referent.constraints.dictionary
-                    }
-                    
-                    export namespace constraints {
-                        
-                        export type dictionary = s_self.structure.Value.type_.dictionary
-                        
-                    }
-                    
-                    export type value = s_self.declarations.Signature_Value_Reference
-                    
-                }
-                
-                export type type_ =
-                    | readonly ['cyclic', s_self.declarations.Signature.lookups.D.type_.type_.cyclic]
-                    | readonly ['acyclic', s_self.declarations.Signature.lookups.D.type_.type_.acyclic]
-                
-                export namespace type_ {
-                    export namespace type_ {
-                        
-                        export type cyclic = null
-                        
-                        export type acyclic = null
-                        
-                    }
-                    
-                }
-                
-                export type presence = s_self.declarations.Presence
-                
-            }
-            
-        }
-        
-    }
-    
-    export type Declarations = p_.Dictionary<s_self.declarations.Declarations.D>
-    
-    export namespace Declarations {
-        
-        export type D = {
-            readonly 'benchmark': s_self.declarations.Declarations.D.benchmark
-            readonly 'value': s_self.declarations.Declarations.D.value
-        }
-        
-        export namespace D {
-            
-            export type benchmark = s_self.structure.Types.D
-            
-            export type value = s_self.declarations.Declaration
-            
-        }
-        
-    }
-    
-    export type Declaration = {
-        readonly 'signature': s_self.declarations.Declaration.signature
-    }
-    
-    export namespace Declaration {
-        
-        export type signature = {
-            readonly 'value': s_self.declarations.Declaration.signature.value
-            readonly 'result': s_self.declarations.Declaration.signature.result
-        }
-        
-        export namespace signature {
-            
-            export type value =
-                | readonly ['local', s_self.declarations.Declaration.signature.value.type_.local]
-                | readonly ['same as', s_self.declarations.Declaration.signature.value.type_.same_as]
-            
-            export namespace value {
-                export namespace type_ {
-                    
-                    export type local = s_self.declarations.Signature
-                    
-                    export type same_as = {
-                        readonly 'l entry': s_self.declarations.Declaration.signature.value.type_.same_as.l_entry
-                        readonly 'l id': s_self.declarations.Declaration.signature.value.type_.same_as.l_id
-                    }
-                    
-                    export namespace same_as {
-                        
-                        export type l_entry = s_self.declarations.Declarations.D
-                        
-                        export type l_id = string
-                        
-                    }
-                    
-                }
-                
-            }
-            
-            export type result = s_self.declarations.Signature
-            
-        }
-        
-    }
-    
-    export type Namespaces = p_.Dictionary<s_self.declarations.Namespaces.D>
-    
-    export namespace Namespaces {
-        
-        export type D = {
-            readonly 'benchmark': s_self.declarations.Namespaces.D.benchmark
-            readonly 'value': s_self.declarations.Namespaces.D.value
-        }
-        
-        export namespace D {
-            
-            export type benchmark = s_self.structure.Namespaces.D
-            
-            export type value = s_self.declarations.Namespace
-            
-        }
-        
-    }
-    
-    export type Namespace = {
-        readonly 'namespaces': s_self.declarations.Namespace.namespaces
-        readonly 'types': s_self.declarations.Namespace.types
-    }
-    
-    export namespace Namespace {
-        
-        export type namespaces = s_self.declarations.Namespaces
-        
-        export type types = s_self.declarations.Declarations
-        
-    }
-    
-}
-
-export namespace resolver {
-    
-    export type Value_Reference = {
-        readonly 'type': s_self.resolver.Value_Reference.type_
-        readonly 'path': s_self.resolver.Value_Reference.path
-    }
-    
-    export namespace Value_Reference {
-        
-        export type type_ = {
-            readonly 'location': s_self.resolver.Value_Reference.type_.location
-        }
-        
-        export namespace type_ {
-            
-            export type location = {
-                readonly 'value': s_self.resolver.Value_Reference.type_.location.value
-                readonly 'result': s_self.resolver.Value_Reference.type_.location.result
-            }
-            
-            export namespace location {
-                
-                export type value =
-                    | readonly ['local', s_self.resolver.Value_Reference.type_.location.value.type_.local]
-                    | readonly ['child namespace', s_self.resolver.Value_Reference.type_.location.value.type_.child_namespace]
-                    | readonly ['sibling namespace', s_self.resolver.Value_Reference.type_.location.value.type_.sibling_namespace]
-                
-                export namespace value {
-                    export namespace type_ {
-                        
-                        export type local = {
-                            readonly 'l entry': s_self.resolver.Value_Reference.type_.location.value.type_.local.l_entry
-                            readonly 'l id': s_self.resolver.Value_Reference.type_.location.value.type_.local.l_id
-                        }
-                        
-                        export namespace local {
-                            
-                            export type l_entry = s_self.structure.Types.D
-                            
-                            export type l_id = string
-                            
-                        }
-                        
-                        export type child_namespace = {
-                            readonly 'namespace': s_self.resolver.Value_Reference.type_.location.value.type_.child_namespace.namespace
-                            readonly 'type': s_self.resolver.Value_Reference.type_.location.value.type_.child_namespace.type_
-                        }
-                        
-                        export namespace child_namespace {
-                            
-                            export type namespace = {
-                                readonly 'l entry': s_self.resolver.Value_Reference.type_.location.value.type_.child_namespace.namespace.l_entry
-                                readonly 'l id': s_self.resolver.Value_Reference.type_.location.value.type_.child_namespace.namespace.l_id
-                            }
-                            
-                            export namespace namespace {
-                                
-                                export type l_entry = s_self.structure.Namespaces.D
-                                
-                                export type l_id = string
-                                
-                            }
-                            
-                            export type type_ = {
-                                readonly 'l entry': s_self.resolver.Value_Reference.type_.location.value.type_.child_namespace.type_.l_entry
-                                readonly 'l id': s_self.resolver.Value_Reference.type_.location.value.type_.child_namespace.type_.l_id
-                            }
-                            
-                            export namespace type_ {
-                                
-                                export type l_entry = s_self.structure.Types.D
-                                
-                                export type l_id = string
-                                
-                            }
-                            
-                        }
-                        
-                        export type sibling_namespace = {
-                            readonly 'namespace': s_self.resolver.Value_Reference.type_.location.value.type_.sibling_namespace.namespace
-                            readonly 'type': s_self.resolver.Value_Reference.type_.location.value.type_.sibling_namespace.type_
-                        }
-                        
-                        export namespace sibling_namespace {
-                            
-                            export type namespace = {
-                                readonly 'l entry': s_self.resolver.Value_Reference.type_.location.value.type_.sibling_namespace.namespace.l_entry
-                                readonly 'l id': s_self.resolver.Value_Reference.type_.location.value.type_.sibling_namespace.namespace.l_id
-                            }
-                            
-                            export namespace namespace {
-                                
-                                export type l_entry = s_self.structure.Namespaces.D
-                                
-                                export type l_id = string
-                                
-                            }
-                            
-                            export type type_ = {
-                                readonly 'l entry': s_self.resolver.Value_Reference.type_.location.value.type_.sibling_namespace.type_.l_entry
-                                readonly 'l id': s_self.resolver.Value_Reference.type_.location.value.type_.sibling_namespace.type_.l_id
-                            }
-                            
-                            export namespace type_ {
-                                
-                                export type l_entry = s_self.structure.Types.D
-                                
-                                export type l_id = string
-                                
-                            }
-                            
-                        }
-                        
-                    }
-                    
-                }
-                
-                export type result = s_self.structure.Type
-                
-            }
-            
-        }
-        
-        export type path = {
-            readonly 'tail': s_self.resolver.Value_Reference.path.tail
-        }
-        
-        export namespace path {
-            
-            export type tail = {
-                readonly 'value': s_self.resolver.Value_Reference.path.tail.value
-                readonly 'result': s_self.resolver.Value_Reference.path.tail.result
-            }
-            
-            export namespace tail {
-                
-                export type value = p_.List<s_self.resolver.Value_Reference.path.tail.value.L>
-                
-                export namespace value {
-                    
-                    export type L = {
-                        readonly 'value': s_self.resolver.Value_Reference.path.tail.value.L.value
-                        readonly 'result': s_self.resolver.Value_Reference.path.tail.value.L.result
-                    }
-                    
-                    export namespace L {
-                        
-                        export type value = {
-                            readonly 'value': s_self.resolver.Value_Reference.path.tail.value.L.value.value
-                            readonly 'result': s_self.resolver.Value_Reference.path.tail.value.L.value.result
-                        }
-                        
-                        export namespace value {
-                            
-                            export type value =
-                                | readonly ['dictionary', s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.dictionary]
-                                | readonly ['group', s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.group]
-                                | readonly ['list', s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.list]
-                                | readonly ['optional', s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.optional]
-                                | readonly ['state', s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.state]
-                            
-                            export namespace value {
-                                export namespace type_ {
-                                    
-                                    export type dictionary = {
-                                        readonly 'constraints': s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.dictionary.constraints
-                                        readonly 'value': s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.dictionary.value
-                                    }
-                                    
-                                    export namespace dictionary {
-                                        
-                                        export type constraints = {
-                                            readonly 'definition': s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.dictionary.constraints.definition
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type definition = s_self.structure.Value.type_.dictionary
-                                            
-                                        }
-                                        
-                                        export type value = null
-                                        
-                                    }
-                                    
-                                    export type group = {
-                                        readonly 'constraints': s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.group.constraints
-                                        readonly 'value': s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.group.value
-                                    }
-                                    
-                                    export namespace group {
-                                        
-                                        export type constraints = {
-                                            readonly 'definition': s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.group.constraints.definition
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type definition = s_self.structure.Value.type_.group
-                                            
-                                        }
-                                        
-                                        export type value = {
-                                            readonly 'l entry': s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.group.value.l_entry
-                                            readonly 'l id': s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.group.value.l_id
-                                        }
-                                        
-                                        export namespace value {
-                                            
-                                            export type l_entry = s_self.structure.Group.D
-                                            
-                                            export type l_id = string
-                                            
-                                        }
-                                        
-                                    }
-                                    
-                                    export type list = {
-                                        readonly 'constraints': s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.list.constraints
-                                        readonly 'value': s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.list.value
-                                    }
-                                    
-                                    export namespace list {
-                                        
-                                        export type constraints = {
-                                            readonly 'definition': s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.list.constraints.definition
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type definition = s_self.structure.Value.type_.list
-                                            
-                                        }
-                                        
-                                        export type value = null
-                                        
-                                    }
-                                    
-                                    export type optional = {
-                                        readonly 'constraints': s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.optional.constraints
-                                        readonly 'value': s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.optional.value
-                                    }
-                                    
-                                    export namespace optional {
-                                        
-                                        export type constraints = {
-                                            readonly 'definition': s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.optional.constraints.definition
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type definition = s_self.structure.Value.type_.optional
-                                            
-                                        }
-                                        
-                                        export type value = null
-                                        
-                                    }
-                                    
-                                    export type state = {
-                                        readonly 'constraints': s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.state.constraints
-                                        readonly 'value': s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.state.value
-                                    }
-                                    
-                                    export namespace state {
-                                        
-                                        export type constraints = {
-                                            readonly 'definition': s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.state.constraints.definition
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type definition = s_self.structure.Value.type_.state
-                                            
-                                        }
-                                        
-                                        export type value = {
-                                            readonly 'l entry': s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.state.value.l_entry
-                                            readonly 'l id': s_self.resolver.Value_Reference.path.tail.value.L.value.value.type_.state.value.l_id
-                                        }
-                                        
-                                        export namespace value {
-                                            
-                                            export type l_entry = s_self.structure.Value.type_.state.options.D
-                                            
-                                            export type l_id = string
-                                            
-                                        }
-                                        
-                                    }
-                                    
-                                }
-                                
-                            }
-                            
-                            export type result = s_self.structure.Value
-                            
-                        }
-                        
-                        export type result = s_self.structure.Value
-                        
-                    }
-                    
-                }
-                
-                export type result = s_self.structure.Value
-                
-            }
-            
-        }
-        
-    }
-    
-    export type Relative_Value_Selection = {
-        readonly 'path': s_self.resolver.Relative_Value_Selection.path
-    }
-    
-    export namespace Relative_Value_Selection {
-        
-        export type path = {
-            readonly 'value': s_self.resolver.Relative_Value_Selection.path.value
-            readonly 'result': s_self.resolver.Relative_Value_Selection.path.result
-        }
-        
-        export namespace path {
-            
-            export type value = p_.List<s_self.resolver.Relative_Value_Selection.path.value.L>
-            
-            export namespace value {
-                
-                export type L = {
-                    readonly 'value': s_self.resolver.Relative_Value_Selection.path.value.L.value
-                    readonly 'result': s_self.resolver.Relative_Value_Selection.path.value.L.result
-                }
-                
-                export namespace L {
-                    
-                    export type value = {
-                        readonly 'value': s_self.resolver.Relative_Value_Selection.path.value.L.value.value
-                        readonly 'result': s_self.resolver.Relative_Value_Selection.path.value.L.value.result
-                    }
+                export namespace simple {
                     
                     export namespace value {
                         
-                        export type value =
-                            | readonly ['benchmark link', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.benchmark_link]
-                            | readonly ['component constraint', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component_constraint]
-                            | readonly ['component', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component]
-                            | readonly ['cyclic component', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component]
-                            | readonly ['group', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.group]
-                            | readonly ['list result', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.list_result]
-                            | readonly ['option constraint', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.option_constraint]
-                            | readonly ['optional', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.optional]
-                            | readonly ['optional value constraint', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.optional_value_constraint]
-                            | readonly ['reference constraint', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.reference_constraint]
-                            | readonly ['reference', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.reference]
-                            | readonly ['expect resolved', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved]
-                            | readonly ['state result', s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.state_result]
+                        export namespace local {
+                            
+                            export type l_entry = self.structure.Types.D
+                            
+                            export type l_id = string
+                        }
                         
-                        export namespace value {
+                        export type local = {
+                            readonly 'l entry': self.structure.Value.component.type_.simple.value.local.l_entry
+                            readonly 'l id': self.structure.Value.component.type_.simple.value.local.l_id
+                        }
+                        
+                        export namespace child_namespace {
+                            
+                            export namespace namespace {
+                                
+                                export type l_entry = self.structure.Namespaces.D
+                                
+                                export type l_id = string
+                            }
+                            
+                            export type namespace = {
+                                readonly 'l entry': self.structure.Value.component.type_.simple.value.child_namespace.namespace.l_entry
+                                readonly 'l id': self.structure.Value.component.type_.simple.value.child_namespace.namespace.l_id
+                            }
+                            
                             export namespace type_ {
                                 
-                                export type benchmark_link = s_self.resolver.Value_Reference
-                                
-                                export type component_constraint = {
-                                    readonly 'constraints': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component_constraint.constraints
-                                    readonly 'value': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component_constraint.value
+                                export namespace constraints {
+                                    
+                                    export type public_ = self.structure.Type.visibility.public_
                                 }
                                 
-                                export namespace component_constraint {
+                                export type constraints = {
+                                    readonly 'public': self.structure.Value.component.type_.simple.value.child_namespace.type_.constraints.public_
+                                }
+                                
+                                export namespace value {
                                     
-                                    export type constraints = {
-                                        readonly 'definition': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component_constraint.constraints.definition
-                                        readonly 'constraints': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component_constraint.constraints.constraints
-                                    }
+                                    export type l_entry = self.structure.Types.D
+                                    
+                                    export type l_id = string
+                                }
+                                
+                                export type value = {
+                                    readonly 'l entry': self.structure.Value.component.type_.simple.value.child_namespace.type_.value.l_entry
+                                    readonly 'l id': self.structure.Value.component.type_.simple.value.child_namespace.type_.value.l_id
+                                }
+                            }
+                            
+                            export type type_ = {
+                                readonly 'constraints': self.structure.Value.component.type_.simple.value.child_namespace.type_.constraints
+                                readonly 'value': self.structure.Value.component.type_.simple.value.child_namespace.type_.value
+                            }
+                        }
+                        
+                        export type child_namespace = {
+                            readonly 'namespace': self.structure.Value.component.type_.simple.value.child_namespace.namespace
+                            readonly 'type': self.structure.Value.component.type_.simple.value.child_namespace.type_
+                        }
+                        
+                        export namespace sibling_namespace {
+                            
+                            export namespace namespace {
+                                
+                                export type l_entry = self.structure.Namespaces.D
+                                
+                                export type l_id = string
+                            }
+                            
+                            export type namespace = {
+                                readonly 'l entry': self.structure.Value.component.type_.simple.value.sibling_namespace.namespace.l_entry
+                                readonly 'l id': self.structure.Value.component.type_.simple.value.sibling_namespace.namespace.l_id
+                            }
+                            
+                            export namespace type_ {
+                                
+                                export namespace constraints {
+                                    
+                                    export type public_ = self.structure.Type.visibility.public_
+                                }
+                                
+                                export type constraints = {
+                                    readonly 'public': self.structure.Value.component.type_.simple.value.sibling_namespace.type_.constraints.public_
+                                }
+                                
+                                export namespace value {
+                                    
+                                    export type l_entry = self.structure.Types.D
+                                    
+                                    export type l_id = string
+                                }
+                                
+                                export type value = {
+                                    readonly 'l entry': self.structure.Value.component.type_.simple.value.sibling_namespace.type_.value.l_entry
+                                    readonly 'l id': self.structure.Value.component.type_.simple.value.sibling_namespace.type_.value.l_id
+                                }
+                            }
+                            
+                            export type type_ = {
+                                readonly 'constraints': self.structure.Value.component.type_.simple.value.sibling_namespace.type_.constraints
+                                readonly 'value': self.structure.Value.component.type_.simple.value.sibling_namespace.type_.value
+                            }
+                        }
+                        
+                        export type sibling_namespace = {
+                            readonly 'namespace': self.structure.Value.component.type_.simple.value.sibling_namespace.namespace
+                            readonly 'type': self.structure.Value.component.type_.simple.value.sibling_namespace.type_
+                        }
+                    }
+                    
+                    export type value =
+                        | readonly ['local', self.structure.Value.component.type_.simple.value.local]
+                        | readonly ['child namespace', self.structure.Value.component.type_.simple.value.child_namespace]
+                        | readonly ['sibling namespace', self.structure.Value.component.type_.simple.value.sibling_namespace]
+                    
+                    export type result = self.structure.Type
+                }
+                
+                export type simple = {
+                    readonly 'value': self.structure.Value.component.type_.simple.value
+                    readonly 'result': self.structure.Value.component.type_.simple.result
+                }
+                
+                export namespace cyclic {
+                    
+                    export type l_entry = p_.Circular_Dependency<self.structure.Types.D>
+                    
+                    export type l_id = string
+                }
+                
+                export type cyclic = {
+                    readonly 'l entry': self.structure.Value.component.type_.cyclic.l_entry
+                    readonly 'l id': self.structure.Value.component.type_.cyclic.l_id
+                }
+            }
+            
+            export type type_ =
+                | readonly ['simple', self.structure.Value.component.type_.simple]
+                | readonly ['cyclic', self.structure.Value.component.type_.cyclic]
+            
+            export type constraints = self.structure.Reference_Constraints
+        }
+        
+        export type component = {
+            readonly 'type': self.structure.Value.component.type_
+            readonly 'constraints': self.structure.Value.component.constraints
+        }
+        
+        export type dictionary = self.structure.Dictionary
+        
+        export type group = self.structure.Group
+        
+        export namespace list {
+            
+            export type value = self.structure.Value
+            
+            export type result = self.structure.Optional_Result
+        }
+        
+        export type list = {
+            readonly 'value': self.structure.Value.list.value
+            readonly 'result': self.structure.Value.list.result
+        }
+        
+        export type nothing = null
+        
+        export namespace simple {
+            
+            export namespace constraints {
+                
+                export type basic_types = self.structure.Basic_Types
+            }
+            
+            export type constraints = {
+                readonly 'basic types': self.structure.Value.simple.constraints.basic_types
+            }
+            
+            export namespace value {
+                
+                export type l_entry = self.structure.Basic_Types.D
+                
+                export type l_id = string
+            }
+            
+            export type value = {
+                readonly 'l entry': self.structure.Value.simple.value.l_entry
+                readonly 'l id': self.structure.Value.simple.value.l_id
+            }
+        }
+        
+        export type simple = {
+            readonly 'constraints': self.structure.Value.simple.constraints
+            readonly 'value': self.structure.Value.simple.value
+        }
+        
+        export namespace optional {
+            
+            export type constraints = self.structure.Option_Constraints
+            
+            export type value = self.structure.Value
+            
+            export type result = self.structure.Optional_Result
+        }
+        
+        export type optional = {
+            readonly 'constraints': self.structure.Value.optional.constraints
+            readonly 'value': self.structure.Value.optional.value
+            readonly 'result': self.structure.Value.optional.result
+        }
+        
+        export type reference = self.structure.Reference
+        
+        export namespace state {
+            
+            export namespace options {
+                
+                export namespace D {
+                    
+                    export namespace description {
+                        
+                        export type O = string
+                    }
+                    
+                    export type description = p_.Optional_Value<self.structure.Value.state.options.D.description.O>
+                    
+                    export type constraints = self.structure.Option_Constraints
+                    
+                    export type value = self.structure.Value
+                }
+                
+                export type D = {
+                    readonly 'description': self.structure.Value.state.options.D.description
+                    readonly 'constraints': self.structure.Value.state.options.D.constraints
+                    readonly 'value': self.structure.Value.state.options.D.value
+                }
+            }
+            
+            export type options = p_.Dictionary<self.structure.Value.state.options.D>
+            
+            export type result = self.structure.Optional_Result
+        }
+        
+        export type state = {
+            readonly 'options': self.structure.Value.state.options
+            readonly 'result': self.structure.Value.state.result
+        }
+    }
+    
+    export type Value =
+        | readonly ['component', self.structure.Value.component]
+        | readonly ['dictionary', self.structure.Value.dictionary]
+        | readonly ['group', self.structure.Value.group]
+        | readonly ['list', self.structure.Value.list]
+        | readonly ['nothing', self.structure.Value.nothing]
+        | readonly ['simple', self.structure.Value.simple]
+        | readonly ['optional', self.structure.Value.optional]
+        | readonly ['reference', self.structure.Value.reference]
+        | readonly ['state', self.structure.Value.state]
+    
+    export namespace Dictionary {
+        
+        export namespace benchmark {
+            
+            export namespace O {
+                
+                export namespace selection {
+                    
+                    export namespace constraints {
+                        
+                        export type dictionary = self.structure.Value.dictionary
+                    }
+                    
+                    export type constraints = {
+                        readonly 'dictionary': self.structure.Dictionary.benchmark.O.selection.constraints.dictionary
+                    }
+                    
+                    export type value = self.structure.Value_Reference
+                }
+                
+                export type selection = {
+                    readonly 'constraints': self.structure.Dictionary.benchmark.O.selection.constraints
+                    readonly 'value': self.structure.Dictionary.benchmark.O.selection.value
+                }
+                
+                export namespace coverage {
+                    
+                    export type dense = null
+                    
+                    export type sparse = null
+                }
+                
+                export type coverage =
+                    | readonly ['dense', self.structure.Dictionary.benchmark.O.coverage.dense]
+                    | readonly ['sparse', self.structure.Dictionary.benchmark.O.coverage.sparse]
+            }
+            
+            export type O = {
+                readonly 'selection': self.structure.Dictionary.benchmark.O.selection
+                readonly 'coverage': self.structure.Dictionary.benchmark.O.coverage
+            }
+        }
+        
+        export type benchmark = p_.Optional_Value<self.structure.Dictionary.benchmark.O>
+        
+        export type value = self.structure.Value
+    }
+    
+    export type Dictionary = {
+        readonly 'benchmark': self.structure.Dictionary.benchmark
+        readonly 'value': self.structure.Dictionary.value
+    }
+    
+    export namespace Value_Reference {
+        
+        export namespace type_ {
+            
+            export namespace location {
+                
+                export namespace value {
+                    
+                    export namespace local {
+                        
+                        export type l_entry = self.structure.Types.D
+                        
+                        export type l_id = string
+                    }
+                    
+                    export type local = {
+                        readonly 'l entry': self.structure.Value_Reference.type_.location.value.local.l_entry
+                        readonly 'l id': self.structure.Value_Reference.type_.location.value.local.l_id
+                    }
+                    
+                    export namespace child_namespace {
+                        
+                        export namespace namespace {
+                            
+                            export type l_entry = self.structure.Namespaces.D
+                            
+                            export type l_id = string
+                        }
+                        
+                        export type namespace = {
+                            readonly 'l entry': self.structure.Value_Reference.type_.location.value.child_namespace.namespace.l_entry
+                            readonly 'l id': self.structure.Value_Reference.type_.location.value.child_namespace.namespace.l_id
+                        }
+                        
+                        export namespace type_ {
+                            
+                            export type l_entry = self.structure.Types.D
+                            
+                            export type l_id = string
+                        }
+                        
+                        export type type_ = {
+                            readonly 'l entry': self.structure.Value_Reference.type_.location.value.child_namespace.type_.l_entry
+                            readonly 'l id': self.structure.Value_Reference.type_.location.value.child_namespace.type_.l_id
+                        }
+                    }
+                    
+                    export type child_namespace = {
+                        readonly 'namespace': self.structure.Value_Reference.type_.location.value.child_namespace.namespace
+                        readonly 'type': self.structure.Value_Reference.type_.location.value.child_namespace.type_
+                    }
+                    
+                    export namespace sibling_namespace {
+                        
+                        export namespace namespace {
+                            
+                            export type l_entry = self.structure.Namespaces.D
+                            
+                            export type l_id = string
+                        }
+                        
+                        export type namespace = {
+                            readonly 'l entry': self.structure.Value_Reference.type_.location.value.sibling_namespace.namespace.l_entry
+                            readonly 'l id': self.structure.Value_Reference.type_.location.value.sibling_namespace.namespace.l_id
+                        }
+                        
+                        export namespace type_ {
+                            
+                            export type l_entry = self.structure.Types.D
+                            
+                            export type l_id = string
+                        }
+                        
+                        export type type_ = {
+                            readonly 'l entry': self.structure.Value_Reference.type_.location.value.sibling_namespace.type_.l_entry
+                            readonly 'l id': self.structure.Value_Reference.type_.location.value.sibling_namespace.type_.l_id
+                        }
+                    }
+                    
+                    export type sibling_namespace = {
+                        readonly 'namespace': self.structure.Value_Reference.type_.location.value.sibling_namespace.namespace
+                        readonly 'type': self.structure.Value_Reference.type_.location.value.sibling_namespace.type_
+                    }
+                }
+                
+                export type value =
+                    | readonly ['local', self.structure.Value_Reference.type_.location.value.local]
+                    | readonly ['child namespace', self.structure.Value_Reference.type_.location.value.child_namespace]
+                    | readonly ['sibling namespace', self.structure.Value_Reference.type_.location.value.sibling_namespace]
+                
+                export type result = self.structure.Type
+            }
+            
+            export type location = {
+                readonly 'value': self.structure.Value_Reference.type_.location.value
+                readonly 'result': self.structure.Value_Reference.type_.location.result
+            }
+        }
+        
+        export type type_ = {
+            readonly 'location': self.structure.Value_Reference.type_.location
+        }
+        
+        export namespace path {
+            
+            export namespace tail {
+                
+                export namespace value {
+                    
+                    export namespace L {
+                        
+                        export namespace value {
+                            
+                            export namespace value {
+                                
+                                export namespace dictionary {
                                     
                                     export namespace constraints {
                                         
-                                        export type definition = s_self.structure.Value.type_.component
-                                        
-                                        export type constraints = s_self.structure.Reference_Constraints.O
-                                        
+                                        export type definition = self.structure.Value.dictionary
                                     }
-                                    
-                                    export type value = {
-                                        readonly 'name': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component_constraint.value.name
-                                        readonly 'target': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component_constraint.value.target
-                                    }
-                                    
-                                    export namespace value {
-                                        
-                                        export type name = {
-                                            readonly 'l entry': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component_constraint.value.name.l_entry
-                                            readonly 'l id': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component_constraint.value.name.l_id
-                                        }
-                                        
-                                        export namespace name {
-                                            
-                                            export type l_entry = s_self.structure.Reference_Constraints.O.D
-                                            
-                                            export type l_id = string
-                                            
-                                        }
-                                        
-                                        export type target = s_self.resolver.Value_Reference
-                                        
-                                    }
-                                    
-                                }
-                                
-                                export type component = {
-                                    readonly 'constraints': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.constraints
-                                    readonly 'value': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.value
-                                }
-                                
-                                export namespace component {
                                     
                                     export type constraints = {
-                                        readonly 'component': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.constraints.component
-                                        readonly 'definition': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.component.constraints.definition
-                                    }
-                                    
-                                    export namespace constraints {
-                                        
-                                        export type component = s_self.structure.Value.type_.component
-                                        
-                                        export type definition = s_self.structure.Value.type_.component.type_.type_.simple
-                                        
+                                        readonly 'definition': self.structure.Value_Reference.path.tail.value.L.value.value.dictionary.constraints.definition
                                     }
                                     
                                     export type value = null
-                                    
                                 }
                                 
-                                export type cyclic_component = {
-                                    readonly 'constraints': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.constraints
-                                    readonly 'value': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.value
-                                }
-                                
-                                export namespace cyclic_component {
-                                    
-                                    export type constraints = {
-                                        readonly 'component': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.constraints.component
-                                        readonly 'definition': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.cyclic_component.constraints.definition
-                                    }
-                                    
-                                    export namespace constraints {
-                                        
-                                        export type component = s_self.structure.Value.type_.component
-                                        
-                                        export type definition = s_self.structure.Value.type_.component.type_.type_.cyclic
-                                        
-                                    }
-                                    
-                                    export type value = null
-                                    
-                                }
-                                
-                                export type group = {
-                                    readonly 'constraints': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.group.constraints
-                                    readonly 'value': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.group.value
+                                export type dictionary = {
+                                    readonly 'constraints': self.structure.Value_Reference.path.tail.value.L.value.value.dictionary.constraints
+                                    readonly 'value': self.structure.Value_Reference.path.tail.value.L.value.value.dictionary.value
                                 }
                                 
                                 export namespace group {
                                     
-                                    export type constraints = {
-                                        readonly 'definition': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.group.constraints.definition
-                                    }
-                                    
                                     export namespace constraints {
                                         
-                                        export type definition = s_self.structure.Value.type_.group
-                                        
+                                        export type definition = self.structure.Value.group
                                     }
                                     
-                                    export type value = {
-                                        readonly 'l entry': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.group.value.l_entry
-                                        readonly 'l id': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.group.value.l_id
+                                    export type constraints = {
+                                        readonly 'definition': self.structure.Value_Reference.path.tail.value.L.value.value.group.constraints.definition
                                     }
                                     
                                     export namespace value {
                                         
-                                        export type l_entry = s_self.structure.Group.D
+                                        export type l_entry = self.structure.Group.D
                                         
                                         export type l_id = string
-                                        
-                                    }
-                                    
-                                }
-                                
-                                export type list_result = {
-                                    readonly 'constraints': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.list_result.constraints
-                                    readonly 'value': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.list_result.value
-                                }
-                                
-                                export namespace list_result {
-                                    
-                                    export type constraints = {
-                                        readonly 'definition': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.list_result.constraints.definition
-                                    }
-                                    
-                                    export namespace constraints {
-                                        
-                                        export type definition = s_self.structure.Value.type_.list
-                                        
-                                    }
-                                    
-                                    export type value = null
-                                    
-                                }
-                                
-                                export type option_constraint = {
-                                    readonly 'constraints': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.option_constraint.constraints
-                                    readonly 'value': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.option_constraint.value
-                                }
-                                
-                                export namespace option_constraint {
-                                    
-                                    export type constraints = {
-                                        readonly 'definition': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.option_constraint.constraints.definition
-                                    }
-                                    
-                                    export namespace constraints {
-                                        
-                                        export type definition = s_self.structure.Value.type_.state
-                                        
                                     }
                                     
                                     export type value = {
-                                        readonly 'option': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.option_constraint.value.option
-                                        readonly 'constraint': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.option_constraint.value.constraint
+                                        readonly 'l entry': self.structure.Value_Reference.path.tail.value.L.value.value.group.value.l_entry
+                                        readonly 'l id': self.structure.Value_Reference.path.tail.value.L.value.value.group.value.l_id
                                     }
-                                    
-                                    export namespace value {
-                                        
-                                        export type option = {
-                                            readonly 'l entry': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.option_constraint.value.option.l_entry
-                                            readonly 'l id': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.option_constraint.value.option.l_id
-                                        }
-                                        
-                                        export namespace option {
-                                            
-                                            export type l_entry = s_self.structure.Value.type_.state.options.D
-                                            
-                                            export type l_id = string
-                                            
-                                        }
-                                        
-                                        export type constraint = {
-                                            readonly 'l entry': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.option_constraint.value.constraint.l_entry
-                                            readonly 'l id': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.option_constraint.value.constraint.l_id
-                                        }
-                                        
-                                        export namespace constraint {
-                                            
-                                            export type l_entry = s_self.structure.Option_Constraints.O.D
-                                            
-                                            export type l_id = string
-                                            
-                                        }
-                                        
-                                    }
-                                    
                                 }
                                 
-                                export type optional = {
-                                    readonly 'constraints': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.optional.constraints
-                                    readonly 'value': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.optional.value
-                                }
-                                
-                                export namespace optional {
-                                    
-                                    export type constraints = {
-                                        readonly 'definition': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.optional.constraints.definition
-                                    }
-                                    
-                                    export namespace constraints {
-                                        
-                                        export type definition = s_self.structure.Value.type_.optional
-                                        
-                                    }
-                                    
-                                    export type value = null
-                                    
-                                }
-                                
-                                export type optional_value_constraint = {
-                                    readonly 'constraints': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.optional_value_constraint.constraints
-                                    readonly 'value': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.optional_value_constraint.value
-                                }
-                                
-                                export namespace optional_value_constraint {
-                                    
-                                    export type constraints = {
-                                        readonly 'definition': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.optional_value_constraint.constraints.definition
-                                    }
-                                    
-                                    export namespace constraints {
-                                        
-                                        export type definition = s_self.structure.Value.type_.optional
-                                        
-                                    }
-                                    
-                                    export type value = {
-                                        readonly 'l entry': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.optional_value_constraint.value.l_entry
-                                        readonly 'l id': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.optional_value_constraint.value.l_id
-                                    }
-                                    
-                                    export namespace value {
-                                        
-                                        export type l_entry = s_self.structure.Option_Constraints.O.D
-                                        
-                                        export type l_id = string
-                                        
-                                    }
-                                    
-                                }
-                                
-                                export type reference_constraint = {
-                                    readonly 'constraints': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.reference_constraint.constraints
-                                    readonly 'value': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.reference_constraint.value
-                                }
-                                
-                                export namespace reference_constraint {
-                                    
-                                    export type constraints = {
-                                        readonly 'definition': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.reference_constraint.constraints.definition
-                                    }
-                                    
-                                    export namespace constraints {
-                                        
-                                        export type definition = s_self.structure.Value.type_.reference
-                                        
-                                    }
-                                    
-                                    export type value = {
-                                        readonly 'l entry': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.reference_constraint.value.l_entry
-                                        readonly 'l id': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.reference_constraint.value.l_id
-                                    }
-                                    
-                                    export namespace value {
-                                        
-                                        export type l_entry = s_self.structure.Reference_Constraints.O.D
-                                        
-                                        export type l_id = string
-                                        
-                                    }
-                                    
-                                }
-                                
-                                export type reference = {
-                                    readonly 'constraints': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.reference.constraints
-                                    readonly 'value': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.reference.value
-                                }
-                                
-                                export namespace reference {
-                                    
-                                    export type constraints = {
-                                        readonly 'definition': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.reference.constraints.definition
-                                        readonly 'acyclic': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.reference.constraints.acyclic
-                                    }
-                                    
-                                    export namespace constraints {
-                                        
-                                        export type definition = s_self.structure.Value.type_.reference
-                                        
-                                        export type acyclic = s_self.structure.Reference.type_.dependency.type_.acyclic
-                                        
-                                    }
-                                    
-                                    export type value = null
-                                    
-                                }
-                                
-                                export type expect_resolved = {
-                                    readonly 'constraints': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.constraints
-                                    readonly 'value': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.value
-                                }
-                                
-                                export namespace expect_resolved {
-                                    
-                                    export type constraints = {
-                                        readonly 'definition': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.constraints.definition
-                                        readonly 'cyclic': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.expect_resolved.constraints.cyclic
-                                    }
-                                    
-                                    export namespace constraints {
-                                        
-                                        export type definition = s_self.structure.Value.type_.reference
-                                        
-                                        export type cyclic = s_self.structure.Reference.type_.dependency.type_.cyclic
-                                        
-                                    }
-                                    
-                                    export type value = null
-                                    
-                                }
-                                
-                                export type state_result = {
-                                    readonly 'constraints': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.state_result.constraints
-                                    readonly 'value': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.state_result.value
-                                }
-                                
-                                export namespace state_result {
-                                    
-                                    export type constraints = {
-                                        readonly 'definition': s_self.resolver.Relative_Value_Selection.path.value.L.value.value.type_.state_result.constraints.definition
-                                    }
-                                    
-                                    export namespace constraints {
-                                        
-                                        export type definition = s_self.structure.Value.type_.state
-                                        
-                                    }
-                                    
-                                    export type value = null
-                                    
-                                }
-                                
-                            }
-                            
-                        }
-                        
-                        export type result = s_self.structure.Value
-                        
-                    }
-                    
-                    export type result = s_self.structure.Value
-                    
-                }
-                
-            }
-            
-            export type result = s_self.structure.Value
-            
-        }
-        
-    }
-    
-    export type Possible_Value_Branches = p_.Dictionary<s_self.resolver.Possible_Value_Branches.D>
-    
-    export namespace Possible_Value_Branches {
-        
-        export type D = {
-            readonly 'benchmark': s_self.resolver.Possible_Value_Branches.D.benchmark
-            readonly 'value': s_self.resolver.Possible_Value_Branches.D.value
-        }
-        
-        export namespace D {
-            
-            export type benchmark = s_self.structure.Value.type_.state.options.D
-            
-            export type value =
-                | readonly ['not set', s_self.resolver.Possible_Value_Branches.D.value.type_.not_set]
-                | readonly ['set', s_self.resolver.Possible_Value_Branches.D.value.type_.set_]
-            
-            export namespace value {
-                export namespace type_ {
-                    
-                    export type not_set = null
-                    
-                    export type set_ = s_self.resolver.Relative_Value_Selection
-                    
-                }
-                
-            }
-            
-        }
-        
-    }
-    
-    export type Possible_Value_Selection = {
-        readonly 'value': s_self.resolver.Possible_Value_Selection.value
-        readonly 'result': s_self.resolver.Possible_Value_Selection.result
-    }
-    
-    export namespace Possible_Value_Selection {
-        
-        export type value =
-            | readonly ['decide state', s_self.resolver.Possible_Value_Selection.value.type_.decide_state]
-            | readonly ['optional value', s_self.resolver.Possible_Value_Selection.value.type_.optional_value]
-            | readonly ['parameter', s_self.resolver.Possible_Value_Selection.value.type_.parameter]
-            | readonly ['result', s_self.resolver.Possible_Value_Selection.value.type_.result]
-        
-        export namespace value {
-            export namespace type_ {
-                
-                export type decide_state = {
-                    readonly 'target': s_self.resolver.Possible_Value_Selection.value.type_.decide_state.target
-                    readonly 'selection': s_self.resolver.Possible_Value_Selection.value.type_.decide_state.selection
-                    readonly 'options': s_self.resolver.Possible_Value_Selection.value.type_.decide_state.options
-                }
-                
-                export namespace decide_state {
-                    
-                    export type target = s_self.resolver.Value_Reference
-                    
-                    export type selection = {
-                        readonly 'constraints': s_self.resolver.Possible_Value_Selection.value.type_.decide_state.selection.constraints
-                        readonly 'value': s_self.resolver.Possible_Value_Selection.value.type_.decide_state.selection.value
-                    }
-                    
-                    export namespace selection {
-                        
-                        export type constraints = {
-                            readonly 'state': s_self.resolver.Possible_Value_Selection.value.type_.decide_state.selection.constraints.state
-                        }
-                        
-                        export namespace constraints {
-                            
-                            export type state = s_self.structure.Value.type_.state
-                            
-                        }
-                        
-                        export type value = s_self.resolver.Guaranteed_Value_Selection
-                        
-                    }
-                    
-                    export type options = s_self.resolver.Possible_Value_Branches
-                    
-                }
-                
-                export type optional_value = {
-                    readonly 'selection': s_self.resolver.Possible_Value_Selection.value.type_.optional_value.selection
-                    readonly 'tail': s_self.resolver.Possible_Value_Selection.value.type_.optional_value.tail
-                }
-                
-                export namespace optional_value {
-                    
-                    export type selection = {
-                        readonly 'constraints': s_self.resolver.Possible_Value_Selection.value.type_.optional_value.selection.constraints
-                        readonly 'value': s_self.resolver.Possible_Value_Selection.value.type_.optional_value.selection.value
-                    }
-                    
-                    export namespace selection {
-                        
-                        export type constraints = {
-                            readonly 'optional': s_self.resolver.Possible_Value_Selection.value.type_.optional_value.selection.constraints.optional
-                        }
-                        
-                        export namespace constraints {
-                            
-                            export type optional = s_self.structure.Value.type_.optional
-                            
-                        }
-                        
-                        export type value = s_self.resolver.Guaranteed_Value_Selection
-                        
-                    }
-                    
-                    export type tail = s_self.resolver.Relative_Value_Selection
-                    
-                }
-                
-                export type parameter = {
-                    readonly 'l entry': s_self.resolver.Possible_Value_Selection.value.type_.parameter.l_entry
-                    readonly 'l id': s_self.resolver.Possible_Value_Selection.value.type_.parameter.l_id
-                }
-                
-                export namespace parameter {
-                    
-                    export type l_entry = s_self.declarations.Signature.values.D
-                    
-                    export type l_id = string
-                    
-                }
-                
-                export type result = {
-                    readonly 'value': s_self.resolver.Possible_Value_Selection.value.type_.result.value
-                    readonly 'result': s_self.resolver.Possible_Value_Selection.value.type_.result.result
-                }
-                
-                export namespace result {
-                    
-                    export type value =
-                        | readonly ['state', s_self.resolver.Possible_Value_Selection.value.type_.result.value.type_.state]
-                        | readonly ['optional value', s_self.resolver.Possible_Value_Selection.value.type_.result.value.type_.optional_value]
-                    
-                    export namespace value {
-                        export namespace type_ {
-                            
-                            export type state = {
-                                readonly 'property': s_self.resolver.Possible_Value_Selection.value.type_.result.value.type_.state.property
-                            }
-                            
-                            export namespace state {
-                                
-                                export type property = {
-                                    readonly 'constraints': s_self.resolver.Possible_Value_Selection.value.type_.result.value.type_.state.property.constraints
-                                    readonly 'value': s_self.resolver.Possible_Value_Selection.value.type_.result.value.type_.state.property.value
-                                }
-                                
-                                export namespace property {
-                                    
-                                    export type constraints = {
-                                        readonly 'state': s_self.resolver.Possible_Value_Selection.value.type_.result.value.type_.state.property.constraints.state
-                                        readonly 'result': s_self.resolver.Possible_Value_Selection.value.type_.result.value.type_.state.property.constraints.result
-                                    }
-                                    
-                                    export namespace constraints {
-                                        
-                                        export type state = s_self.structure.Value.type_.state
-                                        
-                                        export type result = s_self.structure.Optional_Result.O
-                                        
-                                    }
-                                    
-                                    export type value = {
-                                        readonly 'l entry': s_self.resolver.Possible_Value_Selection.value.type_.result.value.type_.state.property.value.l_entry
-                                        readonly 'l id': s_self.resolver.Possible_Value_Selection.value.type_.result.value.type_.state.property.value.l_id
-                                    }
-                                    
-                                    export namespace value {
-                                        
-                                        export type l_entry = s_self.structure.Group.D
-                                        
-                                        export type l_id = string
-                                        
-                                    }
-                                    
-                                }
-                                
-                            }
-                            
-                            export type optional_value = {
-                                readonly 'property': s_self.resolver.Possible_Value_Selection.value.type_.result.value.type_.optional_value.property
-                            }
-                            
-                            export namespace optional_value {
-                                
-                                export type property = {
-                                    readonly 'constraints': s_self.resolver.Possible_Value_Selection.value.type_.result.value.type_.optional_value.property.constraints
-                                    readonly 'value': s_self.resolver.Possible_Value_Selection.value.type_.result.value.type_.optional_value.property.value
-                                }
-                                
-                                export namespace property {
-                                    
-                                    export type constraints = {
-                                        readonly 'optional': s_self.resolver.Possible_Value_Selection.value.type_.result.value.type_.optional_value.property.constraints.optional
-                                        readonly 'result': s_self.resolver.Possible_Value_Selection.value.type_.result.value.type_.optional_value.property.constraints.result
-                                    }
-                                    
-                                    export namespace constraints {
-                                        
-                                        export type optional = s_self.structure.Value.type_.optional
-                                        
-                                        export type result = s_self.structure.Optional_Result.O
-                                        
-                                    }
-                                    
-                                    export type value = {
-                                        readonly 'l entry': s_self.resolver.Possible_Value_Selection.value.type_.result.value.type_.optional_value.property.value.l_entry
-                                        readonly 'l id': s_self.resolver.Possible_Value_Selection.value.type_.result.value.type_.optional_value.property.value.l_id
-                                    }
-                                    
-                                    export namespace value {
-                                        
-                                        export type l_entry = s_self.structure.Group.D
-                                        
-                                        export type l_id = string
-                                        
-                                    }
-                                    
-                                }
-                                
-                            }
-                            
-                        }
-                        
-                    }
-                    
-                    export type result = s_self.structure.Value
-                    
-                }
-                
-            }
-            
-        }
-        
-        export type result = s_self.structure.Value
-        
-    }
-    
-    export type Option_Constraints = p_.Optional_Value<s_self.resolver.Option_Constraints.O>
-    
-    export namespace Option_Constraints {
-        
-        export type O = {
-            readonly 'constraints': s_self.resolver.Option_Constraints.O.constraints
-            readonly 'value': s_self.resolver.Option_Constraints.O.value
-        }
-        
-        export namespace O {
-            
-            export type constraints = {
-                readonly 'declarations': s_self.resolver.Option_Constraints.O.constraints.declarations
-            }
-            
-            export namespace constraints {
-                
-                export type declarations = s_self.structure.Option_Constraints.O
-                
-            }
-            
-            export type value = p_.Dictionary<s_self.resolver.Option_Constraints.O.value.D>
-            
-            export namespace value {
-                
-                export type D = {
-                    readonly 'benchmark': s_self.resolver.Option_Constraints.O.value.D.benchmark
-                    readonly 'value': s_self.resolver.Option_Constraints.O.value.D.value
-                }
-                
-                export namespace D {
-                    
-                    export type benchmark = s_self.structure.Option_Constraints.O.D
-                    
-                    export type value = {
-                        readonly 'value': s_self.resolver.Option_Constraints.O.value.D.value.value
-                        readonly 'result': s_self.resolver.Option_Constraints.O.value.D.value.result
-                    }
-                    
-                    export namespace value {
-                        
-                        export type value =
-                            | readonly ['state', s_self.resolver.Option_Constraints.O.value.D.value.value.type_.state]
-                            | readonly ['assert is set', s_self.resolver.Option_Constraints.O.value.D.value.value.type_.assert_is_set]
-                        
-                        export namespace value {
-                            export namespace type_ {
-                                
-                                export type state = {
-                                    readonly 'selection': s_self.resolver.Option_Constraints.O.value.D.value.value.type_.state.selection
-                                    readonly 'option': s_self.resolver.Option_Constraints.O.value.D.value.value.type_.state.option
-                                }
-                                
-                                export namespace state {
-                                    
-                                    export type selection = {
-                                        readonly 'constraints': s_self.resolver.Option_Constraints.O.value.D.value.value.type_.state.selection.constraints
-                                        readonly 'value': s_self.resolver.Option_Constraints.O.value.D.value.value.type_.state.selection.value
-                                    }
-                                    
-                                    export namespace selection {
-                                        
-                                        export type constraints = {
-                                            readonly 'state': s_self.resolver.Option_Constraints.O.value.D.value.value.type_.state.selection.constraints.state
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type state = s_self.structure.Value.type_.state
-                                            
-                                        }
-                                        
-                                        export type value = s_self.resolver.Guaranteed_Value_Selection
-                                        
-                                    }
-                                    
-                                    export type option = {
-                                        readonly 'l entry': s_self.resolver.Option_Constraints.O.value.D.value.value.type_.state.option.l_entry
-                                        readonly 'l id': s_self.resolver.Option_Constraints.O.value.D.value.value.type_.state.option.l_id
-                                    }
-                                    
-                                    export namespace option {
-                                        
-                                        export type l_entry = s_self.structure.Value.type_.state.options.D
-                                        
-                                        export type l_id = string
-                                        
-                                    }
-                                    
-                                }
-                                
-                                export type assert_is_set = s_self.resolver.Possible_Value_Selection
-                                
-                            }
-                            
-                        }
-                        
-                        export type result = s_self.structure.Value
-                        
-                    }
-                    
-                }
-                
-            }
-            
-        }
-        
-    }
-    
-    export type Guaranteed_Value_Selection = {
-        readonly 'start': s_self.resolver.Guaranteed_Value_Selection.start
-        readonly 'tail': s_self.resolver.Guaranteed_Value_Selection.tail
-    }
-    
-    export namespace Guaranteed_Value_Selection {
-        
-        export type start = {
-            readonly 'value': s_self.resolver.Guaranteed_Value_Selection.start.value
-            readonly 'result': s_self.resolver.Guaranteed_Value_Selection.start.result
-        }
-        
-        export namespace start {
-            
-            export type value =
-                | readonly ['optional fallback', s_self.resolver.Guaranteed_Value_Selection.start.value.type_.optional_fallback]
-                | readonly ['sibling property', s_self.resolver.Guaranteed_Value_Selection.start.value.type_.sibling_property]
-                | readonly ['parent sibling', s_self.resolver.Guaranteed_Value_Selection.start.value.type_.parent_sibling]
-                | readonly ['option constraint', s_self.resolver.Guaranteed_Value_Selection.start.value.type_.option_constraint]
-                | readonly ['sibling option constraint', s_self.resolver.Guaranteed_Value_Selection.start.value.type_.sibling_option_constraint]
-                | readonly ['list cursor', s_self.resolver.Guaranteed_Value_Selection.start.value.type_.list_cursor]
-                | readonly ['linked entry', s_self.resolver.Guaranteed_Value_Selection.start.value.type_.linked_entry]
-                | readonly ['constraint', s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint]
-                | readonly ['parameter', s_self.resolver.Guaranteed_Value_Selection.start.value.type_.parameter]
-                | readonly ['result', s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result]
-            
-            export namespace value {
-                export namespace type_ {
-                    
-                    export type optional_fallback = {
-                        readonly 'selection': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.optional_fallback.selection
-                        readonly 'fallback': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.optional_fallback.fallback
-                    }
-                    
-                    export namespace optional_fallback {
-                        
-                        export type selection = s_self.resolver.Possible_Value_Selection
-                        
-                        export type fallback = s_self.resolver.Guaranteed_Value_Selection
-                        
-                    }
-                    
-                    export type sibling_property = {
-                        readonly 'l entry': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.sibling_property.l_entry
-                        readonly 'l id': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.sibling_property.l_id
-                    }
-                    
-                    export namespace sibling_property {
-                        
-                        export type l_entry = s_self.structure.Group.D
-                        
-                        export type l_id = string
-                        
-                    }
-                    
-                    export type parent_sibling = {
-                        readonly 'l entry': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.parent_sibling.l_entry
-                        readonly 'l id': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.parent_sibling.l_id
-                    }
-                    
-                    export namespace parent_sibling {
-                        
-                        export type l_entry = s_self.structure.Group.D
-                        
-                        export type l_id = string
-                        
-                    }
-                    
-                    export type option_constraint = {
-                        readonly 'constraints': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.option_constraint.constraints
-                        readonly 'value': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.option_constraint.value
-                    }
-                    
-                    export namespace option_constraint {
-                        
-                        export type constraints = {
-                            readonly 'oc': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.option_constraint.constraints.oc
-                        }
-                        
-                        export namespace constraints {
-                            
-                            export type oc = s_self.structure.Option_Constraints
-                            
-                        }
-                        
-                        export type value = {
-                            readonly 'l entry': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.option_constraint.value.l_entry
-                            readonly 'l id': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.option_constraint.value.l_id
-                        }
-                        
-                        export namespace value {
-                            
-                            export type l_entry = s_self.structure.Option_Constraints.O.D
-                            
-                            export type l_id = string
-                            
-                        }
-                        
-                    }
-                    
-                    export type sibling_option_constraint = {
-                        readonly 'l entry': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.sibling_option_constraint.l_entry
-                        readonly 'l id': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.sibling_option_constraint.l_id
-                    }
-                    
-                    export namespace sibling_option_constraint {
-                        
-                        export type l_entry = s_self.resolver.Option_Constraints.O.value.D
-                        
-                        export type l_id = string
-                        
-                    }
-                    
-                    export type list_cursor = {
-                        readonly 'constraints': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.list_cursor.constraints
-                        readonly 'value': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.list_cursor.value
-                    }
-                    
-                    export namespace list_cursor {
-                        
-                        export type constraints = {
-                            readonly 'result': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.list_cursor.constraints.result
-                        }
-                        
-                        export namespace constraints {
-                            
-                            export type result = s_self.structure.Optional_Result.O
-                            
-                        }
-                        
-                        export type value = null
-                        
-                    }
-                    
-                    export type linked_entry = {
-                        readonly 'constraints': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.linked_entry.constraints
-                        readonly 'value': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.linked_entry.value
-                    }
-                    
-                    export namespace linked_entry {
-                        
-                        export type constraints = {
-                            readonly 'entry': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.linked_entry.constraints.entry
-                        }
-                        
-                        export namespace constraints {
-                            
-                            export type entry = s_self.structure.Value
-                            
-                        }
-                        
-                        export type value = null
-                        
-                    }
-                    
-                    export type constraint = {
-                        readonly 'value': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint.value
-                        readonly 'result': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint.result
-                    }
-                    
-                    export namespace constraint {
-                        
-                        export type value =
-                            | readonly ['component', s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint.value.type_.component]
-                            | readonly ['reference', s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint.value.type_.reference]
-                        
-                        export namespace value {
-                            export namespace type_ {
-                                
-                                export type component = {
-                                    readonly 'property': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint.value.type_.component.property
-                                    readonly 'constraint': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint.value.type_.component.constraint
-                                }
-                                
-                                export namespace component {
-                                    
-                                    export type property = {
-                                        readonly 'constraints': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint.value.type_.component.property.constraints
-                                        readonly 'value': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint.value.type_.component.property.value
-                                    }
-                                    
-                                    export namespace property {
-                                        
-                                        export type constraints = {
-                                            readonly 'component': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint.value.type_.component.property.constraints.component
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type component = s_self.structure.Value.type_.component
-                                            
-                                        }
-                                        
-                                        export type value = {
-                                            readonly 'l entry': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint.value.type_.component.property.value.l_entry
-                                            readonly 'l id': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint.value.type_.component.property.value.l_id
-                                        }
-                                        
-                                        export namespace value {
-                                            
-                                            export type l_entry = s_self.structure.Group.D
-                                            
-                                            export type l_id = string
-                                            
-                                        }
-                                        
-                                    }
-                                    
-                                    export type constraint = {
-                                        readonly 'l entry': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint.value.type_.component.constraint.l_entry
-                                        readonly 'l id': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint.value.type_.component.constraint.l_id
-                                    }
-                                    
-                                    export namespace constraint {
-                                        
-                                        export type l_entry = s_self.structure.Reference_Constraints.O.D
-                                        
-                                        export type l_id = string
-                                        
-                                    }
-                                    
-                                }
-                                
-                                export type reference = {
-                                    readonly 'property': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint.value.type_.reference.property
-                                    readonly 'constraint': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint.value.type_.reference.constraint
-                                }
-                                
-                                export namespace reference {
-                                    
-                                    export type property = {
-                                        readonly 'constraints': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint.value.type_.reference.property.constraints
-                                        readonly 'value': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint.value.type_.reference.property.value
-                                    }
-                                    
-                                    export namespace property {
-                                        
-                                        export type constraints = {
-                                            readonly 'reference': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint.value.type_.reference.property.constraints.reference
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type reference = s_self.structure.Value.type_.reference
-                                            
-                                        }
-                                        
-                                        export type value = {
-                                            readonly 'l entry': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint.value.type_.reference.property.value.l_entry
-                                            readonly 'l id': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint.value.type_.reference.property.value.l_id
-                                        }
-                                        
-                                        export namespace value {
-                                            
-                                            export type l_entry = s_self.structure.Group.D
-                                            
-                                            export type l_id = string
-                                            
-                                        }
-                                        
-                                    }
-                                    
-                                    export type constraint = {
-                                        readonly 'l entry': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint.value.type_.reference.constraint.l_entry
-                                        readonly 'l id': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.constraint.value.type_.reference.constraint.l_id
-                                    }
-                                    
-                                    export namespace constraint {
-                                        
-                                        export type l_entry = s_self.structure.Reference_Constraints.O.D
-                                        
-                                        export type l_id = string
-                                        
-                                    }
-                                    
-                                }
-                                
-                            }
-                            
-                        }
-                        
-                        export type result = s_self.structure.Value
-                        
-                    }
-                    
-                    export type parameter = {
-                        readonly 'l entry': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.parameter.l_entry
-                        readonly 'l id': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.parameter.l_id
-                    }
-                    
-                    export namespace parameter {
-                        
-                        export type l_entry = s_self.declarations.Signature.values.D
-                        
-                        export type l_id = string
-                        
-                    }
-                    
-                    export type result = {
-                        readonly 'value': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value
-                        readonly 'result': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.result
-                    }
-                    
-                    export namespace result {
-                        
-                        export type value =
-                            | readonly ['list', s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.list]
-                            | readonly ['state', s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.state]
-                        
-                        export namespace value {
-                            export namespace type_ {
-                                
-                                export type list = {
-                                    readonly 'property': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.list.property
+                                export type group = {
+                                    readonly 'constraints': self.structure.Value_Reference.path.tail.value.L.value.value.group.constraints
+                                    readonly 'value': self.structure.Value_Reference.path.tail.value.L.value.value.group.value
                                 }
                                 
                                 export namespace list {
                                     
-                                    export type property = {
-                                        readonly 'constraints': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.list.property.constraints
-                                        readonly 'value': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.list.property.value
+                                    export namespace constraints {
+                                        
+                                        export type definition = self.structure.Value.list
                                     }
                                     
-                                    export namespace property {
-                                        
-                                        export type constraints = {
-                                            readonly 'list': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.list.property.constraints.list
-                                            readonly 'result': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.list.property.constraints.result
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type list = s_self.structure.Value.type_.list
-                                            
-                                            export type result = s_self.structure.Optional_Result.O
-                                            
-                                        }
-                                        
-                                        export type value = {
-                                            readonly 'l entry': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.list.property.value.l_entry
-                                            readonly 'l id': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.list.property.value.l_id
-                                        }
-                                        
-                                        export namespace value {
-                                            
-                                            export type l_entry = s_self.structure.Group.D
-                                            
-                                            export type l_id = string
-                                            
-                                        }
-                                        
+                                    export type constraints = {
+                                        readonly 'definition': self.structure.Value_Reference.path.tail.value.L.value.value.list.constraints.definition
                                     }
                                     
+                                    export type value = null
                                 }
                                 
-                                export type state = {
-                                    readonly 'property': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.state.property
+                                export type list = {
+                                    readonly 'constraints': self.structure.Value_Reference.path.tail.value.L.value.value.list.constraints
+                                    readonly 'value': self.structure.Value_Reference.path.tail.value.L.value.value.list.value
+                                }
+                                
+                                export namespace optional {
+                                    
+                                    export namespace constraints {
+                                        
+                                        export type definition = self.structure.Value.optional
+                                    }
+                                    
+                                    export type constraints = {
+                                        readonly 'definition': self.structure.Value_Reference.path.tail.value.L.value.value.optional.constraints.definition
+                                    }
+                                    
+                                    export type value = null
+                                }
+                                
+                                export type optional = {
+                                    readonly 'constraints': self.structure.Value_Reference.path.tail.value.L.value.value.optional.constraints
+                                    readonly 'value': self.structure.Value_Reference.path.tail.value.L.value.value.optional.value
                                 }
                                 
                                 export namespace state {
                                     
-                                    export type property = {
-                                        readonly 'constraints': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.state.property.constraints
-                                        readonly 'value': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.state.property.value
-                                    }
-                                    
-                                    export namespace property {
-                                        
-                                        export type constraints = {
-                                            readonly 'state': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.state.property.constraints.state
-                                            readonly 'result': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.state.property.constraints.result
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type state = s_self.structure.Value.type_.state
-                                            
-                                            export type result = s_self.structure.Optional_Result.O
-                                            
-                                        }
-                                        
-                                        export type value = {
-                                            readonly 'l entry': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.state.property.value.l_entry
-                                            readonly 'l id': s_self.resolver.Guaranteed_Value_Selection.start.value.type_.result.value.type_.state.property.value.l_id
-                                        }
-                                        
-                                        export namespace value {
-                                            
-                                            export type l_entry = s_self.structure.Group.D
-                                            
-                                            export type l_id = string
-                                            
-                                        }
-                                        
-                                    }
-                                    
-                                }
-                                
-                            }
-                            
-                        }
-                        
-                        export type result = s_self.structure.Value
-                        
-                    }
-                    
-                }
-                
-            }
-            
-            export type result = s_self.structure.Value
-            
-        }
-        
-        export type tail = s_self.resolver.Relative_Value_Selection
-        
-    }
-    
-    export type Lookup_Selection = {
-        readonly 'type': s_self.resolver.Lookup_Selection.type_
-    }
-    
-    export namespace Lookup_Selection {
-        
-        export type type_ = {
-            readonly 'value': s_self.resolver.Lookup_Selection.type_.value
-            readonly 'result': s_self.resolver.Lookup_Selection.type_.result
-        }
-        
-        export namespace type_ {
-            
-            export type value =
-                | readonly ['acyclic', s_self.resolver.Lookup_Selection.type_.value.type_.acyclic]
-                | readonly ['cyclic', s_self.resolver.Lookup_Selection.type_.value.type_.cyclic]
-                | readonly ['parameter', s_self.resolver.Lookup_Selection.type_.value.type_.parameter]
-            
-            export namespace value {
-                export namespace type_ {
-                    
-                    export type acyclic = {
-                        readonly 'value': s_self.resolver.Lookup_Selection.type_.value.type_.acyclic.value
-                        readonly 'result': s_self.resolver.Lookup_Selection.type_.value.type_.acyclic.result
-                    }
-                    
-                    export namespace acyclic {
-                        
-                        export type value =
-                            | readonly ['siblings', s_self.resolver.Lookup_Selection.type_.value.type_.acyclic.value.type_.siblings]
-                            | readonly ['resolved dictionary', s_self.resolver.Lookup_Selection.type_.value.type_.acyclic.value.type_.resolved_dictionary]
-                        
-                        export namespace value {
-                            export namespace type_ {
-                                
-                                export type siblings = {
-                                    readonly 'constraints': s_self.resolver.Lookup_Selection.type_.value.type_.acyclic.value.type_.siblings.constraints
-                                    readonly 'value': s_self.resolver.Lookup_Selection.type_.value.type_.acyclic.value.type_.siblings.value
-                                }
-                                
-                                export namespace siblings {
-                                    
-                                    export type constraints = {
-                                        readonly 'cd': s_self.resolver.Lookup_Selection.type_.value.type_.acyclic.value.type_.siblings.constraints.cd
-                                    }
-                                    
                                     export namespace constraints {
                                         
-                                        export type cd = s_self.structure.Dictionary
-                                        
+                                        export type definition = self.structure.Value.state
                                     }
-                                    
-                                    export type value = null
-                                    
-                                }
-                                
-                                export type resolved_dictionary = {
-                                    readonly 'selection': s_self.resolver.Lookup_Selection.type_.value.type_.acyclic.value.type_.resolved_dictionary.selection
-                                }
-                                
-                                export namespace resolved_dictionary {
-                                    
-                                    export type selection = {
-                                        readonly 'constraints': s_self.resolver.Lookup_Selection.type_.value.type_.acyclic.value.type_.resolved_dictionary.selection.constraints
-                                        readonly 'value': s_self.resolver.Lookup_Selection.type_.value.type_.acyclic.value.type_.resolved_dictionary.selection.value
-                                    }
-                                    
-                                    export namespace selection {
-                                        
-                                        export type constraints = {
-                                            readonly 'dictionary': s_self.resolver.Lookup_Selection.type_.value.type_.acyclic.value.type_.resolved_dictionary.selection.constraints.dictionary
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type dictionary = s_self.structure.Value.type_.dictionary
-                                            
-                                        }
-                                        
-                                        export type value = s_self.resolver.Guaranteed_Value_Selection
-                                        
-                                    }
-                                    
-                                }
-                                
-                            }
-                            
-                        }
-                        
-                        export type result = s_self.structure.Dictionary
-                        
-                    }
-                    
-                    export type cyclic = {
-                        readonly 'value': s_self.resolver.Lookup_Selection.type_.value.type_.cyclic.value
-                        readonly 'result': s_self.resolver.Lookup_Selection.type_.value.type_.cyclic.result
-                    }
-                    
-                    export namespace cyclic {
-                        
-                        export type value =
-                            | readonly ['siblings', s_self.resolver.Lookup_Selection.type_.value.type_.cyclic.value.type_.siblings]
-                        
-                        export namespace value {
-                            export namespace type_ {
-                                
-                                export type siblings = {
-                                    readonly 'constraints': s_self.resolver.Lookup_Selection.type_.value.type_.cyclic.value.type_.siblings.constraints
-                                    readonly 'value': s_self.resolver.Lookup_Selection.type_.value.type_.cyclic.value.type_.siblings.value
-                                }
-                                
-                                export namespace siblings {
                                     
                                     export type constraints = {
-                                        readonly 'cd': s_self.resolver.Lookup_Selection.type_.value.type_.cyclic.value.type_.siblings.constraints.cd
-                                    }
-                                    
-                                    export namespace constraints {
-                                        
-                                        export type cd = s_self.structure.Dictionary
-                                        
-                                    }
-                                    
-                                    export type value = null
-                                    
-                                }
-                                
-                            }
-                            
-                        }
-                        
-                        export type result = s_self.structure.Dictionary
-                        
-                    }
-                    
-                    export type parameter = {
-                        readonly 'l entry': s_self.resolver.Lookup_Selection.type_.value.type_.parameter.l_entry
-                        readonly 'l id': s_self.resolver.Lookup_Selection.type_.value.type_.parameter.l_id
-                    }
-                    
-                    export namespace parameter {
-                        
-                        export type l_entry = s_self.declarations.Signature.lookups.D
-                        
-                        export type l_id = string
-                        
-                    }
-                    
-                }
-                
-            }
-            
-            export type result = s_self.structure.Dictionary
-            
-        }
-        
-    }
-    
-    export type Reference_Constraints = p_.Optional_Value<s_self.resolver.Reference_Constraints.O>
-    
-    export namespace Reference_Constraints {
-        
-        export type O = {
-            readonly 'constraints': s_self.resolver.Reference_Constraints.O.constraints
-            readonly 'value': s_self.resolver.Reference_Constraints.O.value
-        }
-        
-        export namespace O {
-            
-            export type constraints = {
-                readonly 'declarations': s_self.resolver.Reference_Constraints.O.constraints.declarations
-            }
-            
-            export namespace constraints {
-                
-                export type declarations = s_self.structure.Reference_Constraints.O
-                
-            }
-            
-            export type value = p_.Dictionary<s_self.resolver.Reference_Constraints.O.value.D>
-            
-            export namespace value {
-                
-                export type D = {
-                    readonly 'benchmark': s_self.resolver.Reference_Constraints.O.value.D.benchmark
-                    readonly 'value': s_self.resolver.Reference_Constraints.O.value.D.value
-                }
-                
-                export namespace D {
-                    
-                    export type benchmark = s_self.structure.Reference_Constraints.O.D
-                    
-                    export type value = {
-                        readonly 'start': s_self.resolver.Reference_Constraints.O.value.D.value.start
-                        readonly 'constraint': s_self.resolver.Reference_Constraints.O.value.D.value.constraint
-                    }
-                    
-                    export namespace value {
-                        
-                        export type start = {
-                            readonly 'value': s_self.resolver.Reference_Constraints.O.value.D.value.start.value
-                            readonly 'result': s_self.resolver.Reference_Constraints.O.value.D.value.start.result
-                        }
-                        
-                        export namespace start {
-                            
-                            export type value =
-                                | readonly ['value', s_self.resolver.Reference_Constraints.O.value.D.value.start.value.type_.value]
-                                | readonly ['sibling', s_self.resolver.Reference_Constraints.O.value.D.value.start.value.type_.sibling]
-                            
-                            export namespace value {
-                                export namespace type_ {
-                                    
-                                    export type value = null
-                                    
-                                    export type sibling = {
-                                        readonly 'l entry': s_self.resolver.Reference_Constraints.O.value.D.value.start.value.type_.sibling.l_entry
-                                        readonly 'l id': s_self.resolver.Reference_Constraints.O.value.D.value.start.value.type_.sibling.l_id
-                                    }
-                                    
-                                    export namespace sibling {
-                                        
-                                        export type l_entry = s_self.structure.Reference_Constraints.O.D
-                                        
-                                        export type l_id = string
-                                        
-                                    }
-                                    
-                                }
-                                
-                            }
-                            
-                            export type result = s_self.structure.Value
-                            
-                        }
-                        
-                        export type constraint = {
-                            readonly 'selection': s_self.resolver.Reference_Constraints.O.value.D.value.constraint.selection
-                            readonly 'type': s_self.resolver.Reference_Constraints.O.value.D.value.constraint.type_
-                        }
-                        
-                        export namespace constraint {
-                            
-                            export type selection = s_self.resolver.Relative_Value_Selection
-                            
-                            export type type_ = {
-                                readonly 'value': s_self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value
-                                readonly 'result': s_self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.result
-                            }
-                            
-                            export namespace type_ {
-                                
-                                export type value =
-                                    | readonly ['state', s_self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value.type_.state]
-                                    | readonly ['optional value', s_self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value.type_.optional_value]
-                                
-                                export namespace value {
-                                    export namespace type_ {
-                                        
-                                        export type state = {
-                                            readonly 'constraints': s_self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value.type_.state.constraints
-                                            readonly 'value': s_self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value.type_.state.value
-                                        }
-                                        
-                                        export namespace state {
-                                            
-                                            export type constraints = {
-                                                readonly 'state': s_self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value.type_.state.constraints.state
-                                            }
-                                            
-                                            export namespace constraints {
-                                                
-                                                export type state = s_self.structure.Value.type_.state
-                                                
-                                            }
-                                            
-                                            export type value = {
-                                                readonly 'option': s_self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value.type_.state.value.option
-                                            }
-                                            
-                                            export namespace value {
-                                                
-                                                export type option = {
-                                                    readonly 'l entry': s_self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value.type_.state.value.option.l_entry
-                                                    readonly 'l id': s_self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value.type_.state.value.option.l_id
-                                                }
-                                                
-                                                export namespace option {
-                                                    
-                                                    export type l_entry = s_self.structure.Value.type_.state.options.D
-                                                    
-                                                    export type l_id = string
-                                                    
-                                                }
-                                                
-                                            }
-                                            
-                                        }
-                                        
-                                        export type optional_value = {
-                                            readonly 'constraints': s_self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value.type_.optional_value.constraints
-                                            readonly 'value': s_self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value.type_.optional_value.value
-                                        }
-                                        
-                                        export namespace optional_value {
-                                            
-                                            export type constraints = {
-                                                readonly 'optional': s_self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value.type_.optional_value.constraints.optional
-                                            }
-                                            
-                                            export namespace constraints {
-                                                
-                                                export type optional = s_self.structure.Value.type_.optional
-                                                
-                                            }
-                                            
-                                            export type value = null
-                                            
-                                        }
-                                        
-                                    }
-                                    
-                                }
-                                
-                                export type result = s_self.structure.Value
-                                
-                            }
-                            
-                        }
-                        
-                    }
-                    
-                }
-                
-            }
-            
-        }
-        
-    }
-    
-    export type Resolver = {
-        readonly 'namespaces': s_self.resolver.Resolver.namespaces
-        readonly 'types': s_self.resolver.Resolver.types
-    }
-    
-    export namespace Resolver {
-        
-        export type namespaces = p_.Dictionary<s_self.resolver.Resolver.namespaces.D>
-        
-        export namespace namespaces {
-            
-            export type D = {
-                readonly 'benchmark': s_self.resolver.Resolver.namespaces.D.benchmark
-                readonly 'value': s_self.resolver.Resolver.namespaces.D.value
-            }
-            
-            export namespace D {
-                
-                export type benchmark = s_self.declarations.Namespaces.D
-                
-                export type value = s_self.resolver.Resolver
-                
-            }
-            
-        }
-        
-        export type types = p_.Dictionary<s_self.resolver.Resolver.types.D>
-        
-        export namespace types {
-            
-            export type D = {
-                readonly 'benchmark': s_self.resolver.Resolver.types.D.benchmark
-                readonly 'value': s_self.resolver.Resolver.types.D.value
-            }
-            
-            export namespace D {
-                
-                export type benchmark = s_self.declarations.Declarations.D
-                
-                export type value = {
-                    readonly 'root value resolver': s_self.resolver.Resolver.types.D.value.root_value_resolver
-                }
-                
-                export namespace value {
-                    
-                    export type root_value_resolver = s_self.resolver.Value
-                    
-                }
-                
-            }
-            
-        }
-        
-    }
-    
-    export type Result_Selection = {
-        readonly 'value': s_self.resolver.Result_Selection.value
-        readonly 'result': s_self.resolver.Result_Selection.result
-    }
-    
-    export namespace Result_Selection {
-        
-        export type value =
-            | readonly ['context', s_self.resolver.Result_Selection.value.type_.context]
-            | readonly ['value', s_self.resolver.Result_Selection.value.type_.value]
-        
-        export namespace value {
-            export namespace type_ {
-                
-                export type context = s_self.resolver.Guaranteed_Value_Selection
-                
-                export type value = s_self.resolver.Relative_Value_Selection
-                
-            }
-            
-        }
-        
-        export type result = s_self.structure.Value
-        
-    }
-    
-    export type Checks = p_.Optional_Value<s_self.resolver.Checks.O>
-    
-    export namespace Checks {
-        
-        export type O = p_.Dictionary<s_self.resolver.Checks.O.D>
-        
-        export namespace O {
-            
-            export type D = {
-                readonly 'expected': s_self.resolver.Checks.O.D.expected
-                readonly 'actual': s_self.resolver.Checks.O.D.actual
-            }
-            
-            export namespace D {
-                
-                export type expected = s_self.resolver.Result_Selection
-                
-                export type actual = s_self.resolver.Result_Selection
-                
-            }
-            
-        }
-        
-    }
-    
-    export type Value =
-        | readonly ['component', s_self.resolver.Value.type_.component]
-        | readonly ['dictionary', s_self.resolver.Value.type_.dictionary]
-        | readonly ['group', s_self.resolver.Value.type_.group]
-        | readonly ['list', s_self.resolver.Value.type_.list]
-        | readonly ['nothing', s_self.resolver.Value.type_.nothing]
-        | readonly ['simple', s_self.resolver.Value.type_.simple]
-        | readonly ['optional', s_self.resolver.Value.type_.optional]
-        | readonly ['reference', s_self.resolver.Value.type_.reference]
-        | readonly ['state', s_self.resolver.Value.type_.state]
-    
-    export namespace Value {
-        export namespace type_ {
-            
-            export type component = {
-                readonly 'constraints': s_self.resolver.Value.type_.component.constraints
-                readonly 'value': s_self.resolver.Value.type_.component.value
-            }
-            
-            export namespace component {
-                
-                export type constraints = {
-                    readonly 'definition': s_self.resolver.Value.type_.component.constraints.definition
-                }
-                
-                export namespace constraints {
-                    
-                    export type definition = s_self.structure.Value.type_.component
-                    
-                }
-                
-                export type value = {
-                    readonly 'location': s_self.resolver.Value.type_.component.value.location
-                    readonly 'arguments': s_self.resolver.Value.type_.component.value.arguments_
-                    readonly 'constraints': s_self.resolver.Value.type_.component.value.constraints
-                }
-                
-                export namespace value {
-                    
-                    export type location = {
-                        readonly 'value': s_self.resolver.Value.type_.component.value.location.value
-                        readonly 'result': s_self.resolver.Value.type_.component.value.location.result
-                    }
-                    
-                    export namespace location {
-                        
-                        export type value =
-                            | readonly ['local', s_self.resolver.Value.type_.component.value.location.value.type_.local]
-                            | readonly ['child namespace', s_self.resolver.Value.type_.component.value.location.value.type_.child_namespace]
-                            | readonly ['sibling namespace', s_self.resolver.Value.type_.component.value.location.value.type_.sibling_namespace]
-                        
-                        export namespace value {
-                            export namespace type_ {
-                                
-                                export type local = {
-                                    readonly 'l entry': s_self.resolver.Value.type_.component.value.location.value.type_.local.l_entry
-                                    readonly 'l id': s_self.resolver.Value.type_.component.value.location.value.type_.local.l_id
-                                }
-                                
-                                export namespace local {
-                                    
-                                    export type l_entry = s_self.declarations.Declarations.D
-                                    
-                                    export type l_id = string
-                                    
-                                }
-                                
-                                export type child_namespace = {
-                                    readonly 'namespace': s_self.resolver.Value.type_.component.value.location.value.type_.child_namespace.namespace
-                                    readonly 'resolver': s_self.resolver.Value.type_.component.value.location.value.type_.child_namespace.resolver
-                                }
-                                
-                                export namespace child_namespace {
-                                    
-                                    export type namespace = {
-                                        readonly 'l entry': s_self.resolver.Value.type_.component.value.location.value.type_.child_namespace.namespace.l_entry
-                                        readonly 'l id': s_self.resolver.Value.type_.component.value.location.value.type_.child_namespace.namespace.l_id
-                                    }
-                                    
-                                    export namespace namespace {
-                                        
-                                        export type l_entry = s_self.declarations.Namespaces.D
-                                        
-                                        export type l_id = string
-                                        
-                                    }
-                                    
-                                    export type resolver = {
-                                        readonly 'constraints': s_self.resolver.Value.type_.component.value.location.value.type_.child_namespace.resolver.constraints
-                                        readonly 'value': s_self.resolver.Value.type_.component.value.location.value.type_.child_namespace.resolver.value
-                                    }
-                                    
-                                    export namespace resolver {
-                                        
-                                        export type constraints = {
-                                            readonly 'public': s_self.resolver.Value.type_.component.value.location.value.type_.child_namespace.resolver.constraints.public_
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type public_ = s_self.structure.Type.visibility.type_.public_
-                                            
-                                        }
-                                        
-                                        export type value = {
-                                            readonly 'l entry': s_self.resolver.Value.type_.component.value.location.value.type_.child_namespace.resolver.value.l_entry
-                                            readonly 'l id': s_self.resolver.Value.type_.component.value.location.value.type_.child_namespace.resolver.value.l_id
-                                        }
-                                        
-                                        export namespace value {
-                                            
-                                            export type l_entry = s_self.declarations.Declarations.D
-                                            
-                                            export type l_id = string
-                                            
-                                        }
-                                        
-                                    }
-                                    
-                                }
-                                
-                                export type sibling_namespace = {
-                                    readonly 'constraints': s_self.resolver.Value.type_.component.value.location.value.type_.sibling_namespace.constraints
-                                    readonly 'value': s_self.resolver.Value.type_.component.value.location.value.type_.sibling_namespace.value
-                                }
-                                
-                                export namespace sibling_namespace {
-                                    
-                                    export type constraints = {
-                                        readonly 'declarations': s_self.resolver.Value.type_.component.value.location.value.type_.sibling_namespace.constraints.declarations
-                                    }
-                                    
-                                    export namespace constraints {
-                                        
-                                        export type declarations = s_self.declarations.Namespaces
-                                        
-                                    }
-                                    
-                                    export type value = {
-                                        readonly 'namespace': s_self.resolver.Value.type_.component.value.location.value.type_.sibling_namespace.value.namespace
-                                        readonly 'resolver': s_self.resolver.Value.type_.component.value.location.value.type_.sibling_namespace.value.resolver
+                                        readonly 'definition': self.structure.Value_Reference.path.tail.value.L.value.value.state.constraints.definition
                                     }
                                     
                                     export namespace value {
                                         
-                                        export type namespace = {
-                                            readonly 'l entry': s_self.resolver.Value.type_.component.value.location.value.type_.sibling_namespace.value.namespace.l_entry
-                                            readonly 'l id': s_self.resolver.Value.type_.component.value.location.value.type_.sibling_namespace.value.namespace.l_id
-                                        }
+                                        export type l_entry = self.structure.Value.state.options.D
                                         
-                                        export namespace namespace {
-                                            
-                                            export type l_entry = s_self.declarations.Namespaces.D
-                                            
-                                            export type l_id = string
-                                            
-                                        }
-                                        
-                                        export type resolver = {
-                                            readonly 'constraints': s_self.resolver.Value.type_.component.value.location.value.type_.sibling_namespace.value.resolver.constraints
-                                            readonly 'value': s_self.resolver.Value.type_.component.value.location.value.type_.sibling_namespace.value.resolver.value
-                                        }
-                                        
-                                        export namespace resolver {
-                                            
-                                            export type constraints = {
-                                                readonly 'public': s_self.resolver.Value.type_.component.value.location.value.type_.sibling_namespace.value.resolver.constraints.public_
-                                            }
-                                            
-                                            export namespace constraints {
-                                                
-                                                export type public_ = s_self.structure.Type.visibility.type_.public_
-                                                
-                                            }
-                                            
-                                            export type value = {
-                                                readonly 'l entry': s_self.resolver.Value.type_.component.value.location.value.type_.sibling_namespace.value.resolver.value.l_entry
-                                                readonly 'l id': s_self.resolver.Value.type_.component.value.location.value.type_.sibling_namespace.value.resolver.value.l_id
-                                            }
-                                            
-                                            export namespace value {
-                                                
-                                                export type l_entry = s_self.declarations.Declarations.D
-                                                
-                                                export type l_id = string
-                                                
-                                            }
-                                            
-                                        }
-                                        
+                                        export type l_id = string
                                     }
                                     
+                                    export type value = {
+                                        readonly 'l entry': self.structure.Value_Reference.path.tail.value.L.value.value.state.value.l_entry
+                                        readonly 'l id': self.structure.Value_Reference.path.tail.value.L.value.value.state.value.l_id
+                                    }
                                 }
                                 
+                                export type state = {
+                                    readonly 'constraints': self.structure.Value_Reference.path.tail.value.L.value.value.state.constraints
+                                    readonly 'value': self.structure.Value_Reference.path.tail.value.L.value.value.state.value
+                                }
                             }
                             
+                            export type value =
+                                | readonly ['dictionary', self.structure.Value_Reference.path.tail.value.L.value.value.dictionary]
+                                | readonly ['group', self.structure.Value_Reference.path.tail.value.L.value.value.group]
+                                | readonly ['list', self.structure.Value_Reference.path.tail.value.L.value.value.list]
+                                | readonly ['optional', self.structure.Value_Reference.path.tail.value.L.value.value.optional]
+                                | readonly ['state', self.structure.Value_Reference.path.tail.value.L.value.value.state]
+                            
+                            export type result = self.structure.Value
                         }
                         
-                        export type result = s_self.declarations.Declarations.D
+                        export type value = {
+                            readonly 'value': self.structure.Value_Reference.path.tail.value.L.value.value
+                            readonly 'result': self.structure.Value_Reference.path.tail.value.L.value.result
+                        }
                         
+                        export type result = self.structure.Value
                     }
                     
-                    export type arguments_ = p_.Optional_Value<s_self.resolver.Value.type_.component.value.arguments_.O>
-                    
-                    export namespace arguments_ {
-                        
-                        export type O = {
-                            readonly 'types': s_self.resolver.Value.type_.component.value.arguments_.O.types
-                            readonly 'lookups': s_self.resolver.Value.type_.component.value.arguments_.O.lookups
-                        }
-                        
-                        export namespace O {
-                            
-                            export type types = p_.Optional_Value<s_self.resolver.Value.type_.component.value.arguments_.O.types.O>
-                            
-                            export namespace types {
-                                
-                                export type O = p_.Dictionary<s_self.resolver.Value.type_.component.value.arguments_.O.types.O.D>
-                                
-                                export namespace O {
-                                    
-                                    export type D = {
-                                        readonly 'benchmark': s_self.resolver.Value.type_.component.value.arguments_.O.types.O.D.benchmark
-                                        readonly 'value': s_self.resolver.Value.type_.component.value.arguments_.O.types.O.D.value
-                                    }
-                                    
-                                    export namespace D {
-                                        
-                                        export type benchmark = s_self.declarations.Signature.values.D
-                                        
-                                        export type value =
-                                            | readonly ['optional', s_self.resolver.Value.type_.component.value.arguments_.O.types.O.D.value.type_.optional]
-                                            | readonly ['required', s_self.resolver.Value.type_.component.value.arguments_.O.types.O.D.value.type_.required]
-                                            | readonly ['parameter', s_self.resolver.Value.type_.component.value.arguments_.O.types.O.D.value.type_.parameter]
-                                        
-                                        export namespace value {
-                                            export namespace type_ {
-                                                
-                                                export type optional =
-                                                    | readonly ['not set', s_self.resolver.Value.type_.component.value.arguments_.O.types.O.D.value.type_.optional.type_.not_set]
-                                                    | readonly ['set', s_self.resolver.Value.type_.component.value.arguments_.O.types.O.D.value.type_.optional.type_.set_]
-                                                    | readonly ['selection', s_self.resolver.Value.type_.component.value.arguments_.O.types.O.D.value.type_.optional.type_.selection]
-                                                
-                                                export namespace optional {
-                                                    export namespace type_ {
-                                                        
-                                                        export type not_set = null
-                                                        
-                                                        export type set_ = s_self.resolver.Guaranteed_Value_Selection
-                                                        
-                                                        export type selection = s_self.resolver.Possible_Value_Selection
-                                                        
-                                                    }
-                                                    
-                                                }
-                                                
-                                                export type required = s_self.resolver.Guaranteed_Value_Selection
-                                                
-                                                export type parameter = {
-                                                    readonly 'l entry': s_self.resolver.Value.type_.component.value.arguments_.O.types.O.D.value.type_.parameter.l_entry
-                                                    readonly 'l id': s_self.resolver.Value.type_.component.value.arguments_.O.types.O.D.value.type_.parameter.l_id
-                                                }
-                                                
-                                                export namespace parameter {
-                                                    
-                                                    export type l_entry = s_self.declarations.Signature.values.D
-                                                    
-                                                    export type l_id = string
-                                                    
-                                                }
-                                                
-                                            }
-                                            
-                                        }
-                                        
-                                    }
-                                    
-                                }
-                                
-                            }
-                            
-                            export type lookups = p_.Optional_Value<s_self.resolver.Value.type_.component.value.arguments_.O.lookups.O>
-                            
-                            export namespace lookups {
-                                
-                                export type O = p_.Dictionary<s_self.resolver.Value.type_.component.value.arguments_.O.lookups.O.D>
-                                
-                                export namespace O {
-                                    
-                                    export type D = {
-                                        readonly 'benchmark': s_self.resolver.Value.type_.component.value.arguments_.O.lookups.O.D.benchmark
-                                        readonly 'value': s_self.resolver.Value.type_.component.value.arguments_.O.lookups.O.D.value
-                                    }
-                                    
-                                    export namespace D {
-                                        
-                                        export type benchmark = s_self.declarations.Signature.lookups.D
-                                        
-                                        export type value =
-                                            | readonly ['acyclic', s_self.resolver.Value.type_.component.value.arguments_.O.lookups.O.D.value.type_.acyclic]
-                                            | readonly ['cyclic', s_self.resolver.Value.type_.component.value.arguments_.O.lookups.O.D.value.type_.cyclic]
-                                            | readonly ['selection', s_self.resolver.Value.type_.component.value.arguments_.O.lookups.O.D.value.type_.selection]
-                                        
-                                        export namespace value {
-                                            export namespace type_ {
-                                                
-                                                export type acyclic = null
-                                                
-                                                export type cyclic = null
-                                                
-                                                export type selection = s_self.resolver.Lookup_Selection
-                                                
-                                            }
-                                            
-                                        }
-                                        
-                                    }
-                                    
-                                }
-                                
-                            }
-                            
-                        }
-                        
+                    export type L = {
+                        readonly 'value': self.structure.Value_Reference.path.tail.value.L.value
+                        readonly 'result': self.structure.Value_Reference.path.tail.value.L.result
                     }
-                    
-                    export type constraints = s_self.resolver.Reference_Constraints
-                    
                 }
                 
+                export type value = p_.List<self.structure.Value_Reference.path.tail.value.L>
+                
+                export type result = self.structure.Value
             }
             
-            export type dictionary = {
-                readonly 'constraints': s_self.resolver.Value.type_.dictionary.constraints
-                readonly 'value': s_self.resolver.Value.type_.dictionary.value
+            export type tail = {
+                readonly 'value': self.structure.Value_Reference.path.tail.value
+                readonly 'result': self.structure.Value_Reference.path.tail.result
+            }
+        }
+        
+        export type path = {
+            readonly 'tail': self.structure.Value_Reference.path.tail
+        }
+    }
+    
+    export type Value_Reference = {
+        readonly 'type': self.structure.Value_Reference.type_
+        readonly 'path': self.structure.Value_Reference.path
+    }
+    
+    export namespace Option_Constraints {
+        
+        export namespace O {
+            
+            export type D = self.structure.Value_Reference
+        }
+        
+        export type O = p_.Dictionary<self.structure.Option_Constraints.O.D>
+    }
+    
+    export type Option_Constraints = p_.Optional_Value<self.structure.Option_Constraints.O>
+    
+    export namespace Reference {
+        
+        export namespace referent {
+            
+            export namespace constraints {
+                
+                export type dictionary = self.structure.Value.dictionary
             }
             
-            export namespace dictionary {
+            export type constraints = {
+                readonly 'dictionary': self.structure.Reference.referent.constraints.dictionary
+            }
+            
+            export type value = self.structure.Value_Reference
+        }
+        
+        export type referent = {
+            readonly 'constraints': self.structure.Reference.referent.constraints
+            readonly 'value': self.structure.Reference.referent.value
+        }
+        
+        export namespace type_ {
+            
+            export namespace dependency {
                 
-                export type constraints = {
-                    readonly 'definition': s_self.resolver.Value.type_.dictionary.constraints.definition
-                }
+                export type acyclic = null
                 
-                export namespace constraints {
-                    
-                    export type definition = s_self.structure.Value.type_.dictionary
-                    
-                }
+                export type cyclic = null
+            }
+            
+            export type dependency =
+                | readonly ['acyclic', self.structure.Reference.type_.dependency.acyclic]
+                | readonly ['cyclic', self.structure.Reference.type_.dependency.cyclic]
+            
+            export type constraints = self.structure.Reference_Constraints
+        }
+        
+        export type type_ = {
+            readonly 'dependency': self.structure.Reference.type_.dependency
+            readonly 'constraints': self.structure.Reference.type_.constraints
+        }
+    }
+    
+    export type Reference = {
+        readonly 'referent': self.structure.Reference.referent
+        readonly 'type': self.structure.Reference.type_
+    }
+    
+    export namespace Reference_Constraints {
+        
+        export namespace O {
+            
+            export type D = self.structure.Value_Reference
+        }
+        
+        export type O = p_.Dictionary<self.structure.Reference_Constraints.O.D>
+    }
+    
+    export type Reference_Constraints = p_.Optional_Value<self.structure.Reference_Constraints.O>
+    
+    export namespace Regular_Expression {
+        
+        export type any_character = null
+        
+        export type literal = string
+        
+        export type character_set = string
+        
+        export namespace sequence {
+            
+            export type L = self.structure.Regular_Expression
+        }
+        
+        export type sequence = p_.List<self.structure.Regular_Expression.sequence.L>
+        
+        export namespace choice {
+            
+            export type L = self.structure.Regular_Expression
+        }
+        
+        export type choice = p_.List<self.structure.Regular_Expression.choice.L>
+        
+        export namespace repetition {
+            
+            export type expression = self.structure.Regular_Expression
+            
+            export namespace quantity {
                 
-                export type value = {
-                    readonly 'resolver': s_self.resolver.Value.type_.dictionary.value.resolver
-                    readonly 'benchmark': s_self.resolver.Value.type_.dictionary.value.benchmark
-                }
+                export type optional = null
+                
+                export type zero_or_more = null
+                
+                export type one_or_more = null
+            }
+            
+            export type quantity =
+                | readonly ['optional', self.structure.Regular_Expression.repetition.quantity.optional]
+                | readonly ['zero or more', self.structure.Regular_Expression.repetition.quantity.zero_or_more]
+                | readonly ['one or more', self.structure.Regular_Expression.repetition.quantity.one_or_more]
+        }
+        
+        export type repetition = {
+            readonly 'expression': self.structure.Regular_Expression.repetition.expression
+            readonly 'quantity': self.structure.Regular_Expression.repetition.quantity
+        }
+    }
+    
+    export type Regular_Expression =
+        | readonly ['any character', self.structure.Regular_Expression.any_character]
+        | readonly ['literal', self.structure.Regular_Expression.literal]
+        | readonly ['character set', self.structure.Regular_Expression.character_set]
+        | readonly ['sequence', self.structure.Regular_Expression.sequence]
+        | readonly ['choice', self.structure.Regular_Expression.choice]
+        | readonly ['repetition', self.structure.Regular_Expression.repetition]
+    
+    export namespace Structure {
+        
+        export type namespaces = self.structure.Namespaces
+        
+        export type basic_types = self.structure.Basic_Types
+        
+        export type types = self.structure.Types
+    }
+    
+    export type Structure = {
+        readonly 'namespaces': self.structure.Structure.namespaces
+        readonly 'basic types': self.structure.Structure.basic_types
+        readonly 'types': self.structure.Structure.types
+    }
+    
+    export namespace Optional_Result {
+        
+        export type O = self.structure.Value_Reference
+    }
+    
+    export type Optional_Result = p_.Optional_Value<self.structure.Optional_Result.O>
+}
+
+export namespace declarations {
+    
+    export namespace Presence {
+        
+        export type optional = null
+        
+        export type required = null
+    }
+    
+    export type Presence =
+        | readonly ['optional', self.declarations.Presence.optional]
+        | readonly ['required', self.declarations.Presence.required]
+    
+    export namespace Signature_Value_Reference {
+        
+        export namespace type_ {
+            
+            export namespace location {
                 
                 export namespace value {
                     
-                    export type resolver = s_self.resolver.Value
-                    
-                    export type benchmark = p_.Optional_Value<s_self.resolver.Value.type_.dictionary.value.benchmark.O>
-                    
-                    export namespace benchmark {
+                    export namespace local {
                         
-                        export type O = {
-                            readonly 'constraints': s_self.resolver.Value.type_.dictionary.value.benchmark.O.constraints
-                            readonly 'value': s_self.resolver.Value.type_.dictionary.value.benchmark.O.value
+                        export type l_entry = self.structure.Types.D
+                        
+                        export type l_id = string
+                    }
+                    
+                    export type local = {
+                        readonly 'l entry': self.declarations.Signature_Value_Reference.type_.location.value.local.l_entry
+                        readonly 'l id': self.declarations.Signature_Value_Reference.type_.location.value.local.l_id
+                    }
+                    
+                    export namespace child_namespace {
+                        
+                        export namespace namespace {
+                            
+                            export type l_entry = self.structure.Namespaces.D
+                            
+                            export type l_id = string
                         }
                         
-                        export namespace O {
+                        export type namespace = {
+                            readonly 'l entry': self.declarations.Signature_Value_Reference.type_.location.value.child_namespace.namespace.l_entry
+                            readonly 'l id': self.declarations.Signature_Value_Reference.type_.location.value.child_namespace.namespace.l_id
+                        }
+                        
+                        export namespace type_ {
                             
-                            export type constraints = {
-                                readonly 'benchmark': s_self.resolver.Value.type_.dictionary.value.benchmark.O.constraints.benchmark
+                            export type l_entry = self.structure.Types.D
+                            
+                            export type l_id = string
+                        }
+                        
+                        export type type_ = {
+                            readonly 'l entry': self.declarations.Signature_Value_Reference.type_.location.value.child_namespace.type_.l_entry
+                            readonly 'l id': self.declarations.Signature_Value_Reference.type_.location.value.child_namespace.type_.l_id
+                        }
+                    }
+                    
+                    export type child_namespace = {
+                        readonly 'namespace': self.declarations.Signature_Value_Reference.type_.location.value.child_namespace.namespace
+                        readonly 'type': self.declarations.Signature_Value_Reference.type_.location.value.child_namespace.type_
+                    }
+                    
+                    export namespace sibling_namespace {
+                        
+                        export namespace namespace {
+                            
+                            export type l_entry = self.structure.Namespaces.D
+                            
+                            export type l_id = string
+                        }
+                        
+                        export type namespace = {
+                            readonly 'l entry': self.declarations.Signature_Value_Reference.type_.location.value.sibling_namespace.namespace.l_entry
+                            readonly 'l id': self.declarations.Signature_Value_Reference.type_.location.value.sibling_namespace.namespace.l_id
+                        }
+                        
+                        export namespace type_ {
+                            
+                            export type l_entry = self.structure.Types.D
+                            
+                            export type l_id = string
+                        }
+                        
+                        export type type_ = {
+                            readonly 'l entry': self.declarations.Signature_Value_Reference.type_.location.value.sibling_namespace.type_.l_entry
+                            readonly 'l id': self.declarations.Signature_Value_Reference.type_.location.value.sibling_namespace.type_.l_id
+                        }
+                    }
+                    
+                    export type sibling_namespace = {
+                        readonly 'namespace': self.declarations.Signature_Value_Reference.type_.location.value.sibling_namespace.namespace
+                        readonly 'type': self.declarations.Signature_Value_Reference.type_.location.value.sibling_namespace.type_
+                    }
+                }
+                
+                export type value =
+                    | readonly ['local', self.declarations.Signature_Value_Reference.type_.location.value.local]
+                    | readonly ['child namespace', self.declarations.Signature_Value_Reference.type_.location.value.child_namespace]
+                    | readonly ['sibling namespace', self.declarations.Signature_Value_Reference.type_.location.value.sibling_namespace]
+                
+                export type result = self.structure.Type
+            }
+            
+            export type location = {
+                readonly 'value': self.declarations.Signature_Value_Reference.type_.location.value
+                readonly 'result': self.declarations.Signature_Value_Reference.type_.location.result
+            }
+        }
+        
+        export type type_ = {
+            readonly 'location': self.declarations.Signature_Value_Reference.type_.location
+        }
+        
+        export namespace subselection {
+            
+            export namespace tail {
+                
+                export namespace value {
+                    
+                    export namespace L {
+                        
+                        export namespace value {
+                            
+                            export namespace value {
+                                
+                                export namespace dictionary {
+                                    
+                                    export namespace constraints {
+                                        
+                                        export type definition = self.structure.Value.dictionary
+                                    }
+                                    
+                                    export type constraints = {
+                                        readonly 'definition': self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.dictionary.constraints.definition
+                                    }
+                                    
+                                    export type value = null
+                                }
+                                
+                                export type dictionary = {
+                                    readonly 'constraints': self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.dictionary.constraints
+                                    readonly 'value': self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.dictionary.value
+                                }
+                                
+                                export namespace group {
+                                    
+                                    export namespace constraints {
+                                        
+                                        export type definition = self.structure.Value.group
+                                    }
+                                    
+                                    export type constraints = {
+                                        readonly 'definition': self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.group.constraints.definition
+                                    }
+                                    
+                                    export namespace value {
+                                        
+                                        export type l_entry = self.structure.Group.D
+                                        
+                                        export type l_id = string
+                                    }
+                                    
+                                    export type value = {
+                                        readonly 'l entry': self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.group.value.l_entry
+                                        readonly 'l id': self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.group.value.l_id
+                                    }
+                                }
+                                
+                                export type group = {
+                                    readonly 'constraints': self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.group.constraints
+                                    readonly 'value': self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.group.value
+                                }
+                                
+                                export namespace list {
+                                    
+                                    export namespace constraints {
+                                        
+                                        export type definition = self.structure.Value.list
+                                    }
+                                    
+                                    export type constraints = {
+                                        readonly 'definition': self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.list.constraints.definition
+                                    }
+                                    
+                                    export type value = null
+                                }
+                                
+                                export type list = {
+                                    readonly 'constraints': self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.list.constraints
+                                    readonly 'value': self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.list.value
+                                }
+                                
+                                export namespace optional {
+                                    
+                                    export namespace constraints {
+                                        
+                                        export type definition = self.structure.Value.optional
+                                    }
+                                    
+                                    export type constraints = {
+                                        readonly 'definition': self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.optional.constraints.definition
+                                    }
+                                    
+                                    export type value = null
+                                }
+                                
+                                export type optional = {
+                                    readonly 'constraints': self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.optional.constraints
+                                    readonly 'value': self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.optional.value
+                                }
+                                
+                                export namespace state {
+                                    
+                                    export namespace constraints {
+                                        
+                                        export type definition = self.structure.Value.state
+                                    }
+                                    
+                                    export type constraints = {
+                                        readonly 'definition': self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.state.constraints.definition
+                                    }
+                                    
+                                    export namespace value {
+                                        
+                                        export type l_entry = self.structure.Value.state.options.D
+                                        
+                                        export type l_id = string
+                                    }
+                                    
+                                    export type value = {
+                                        readonly 'l entry': self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.state.value.l_entry
+                                        readonly 'l id': self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.state.value.l_id
+                                    }
+                                }
+                                
+                                export type state = {
+                                    readonly 'constraints': self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.state.constraints
+                                    readonly 'value': self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.state.value
+                                }
                             }
+                            
+                            export type value =
+                                | readonly ['dictionary', self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.dictionary]
+                                | readonly ['group', self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.group]
+                                | readonly ['list', self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.list]
+                                | readonly ['optional', self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.optional]
+                                | readonly ['state', self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value.state]
+                            
+                            export type result = self.structure.Value
+                        }
+                        
+                        export type value = {
+                            readonly 'value': self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.value
+                            readonly 'result': self.declarations.Signature_Value_Reference.subselection.tail.value.L.value.result
+                        }
+                        
+                        export type result = self.structure.Value
+                    }
+                    
+                    export type L = {
+                        readonly 'value': self.declarations.Signature_Value_Reference.subselection.tail.value.L.value
+                        readonly 'result': self.declarations.Signature_Value_Reference.subselection.tail.value.L.result
+                    }
+                }
+                
+                export type value = p_.List<self.declarations.Signature_Value_Reference.subselection.tail.value.L>
+                
+                export type result = self.structure.Value
+            }
+            
+            export type tail = {
+                readonly 'value': self.declarations.Signature_Value_Reference.subselection.tail.value
+                readonly 'result': self.declarations.Signature_Value_Reference.subselection.tail.result
+            }
+        }
+        
+        export type subselection = {
+            readonly 'tail': self.declarations.Signature_Value_Reference.subselection.tail
+        }
+    }
+    
+    export type Signature_Value_Reference = {
+        readonly 'type': self.declarations.Signature_Value_Reference.type_
+        readonly 'subselection': self.declarations.Signature_Value_Reference.subselection
+    }
+    
+    export namespace Signature {
+        
+        export namespace values {
+            
+            export namespace D {
+                
+                export type value = self.declarations.Signature_Value_Reference
+                
+                export type presence = self.declarations.Presence
+            }
+            
+            export type D = {
+                readonly 'value': self.declarations.Signature.values.D.value
+                readonly 'presence': self.declarations.Signature.values.D.presence
+            }
+        }
+        
+        export type values = p_.Dictionary<self.declarations.Signature.values.D>
+        
+        export namespace lookups {
+            
+            export namespace D {
+                
+                export namespace referent {
+                    
+                    export namespace constraints {
+                        
+                        export type dictionary = self.structure.Value.dictionary
+                    }
+                    
+                    export type constraints = {
+                        readonly 'dictionary': self.declarations.Signature.lookups.D.referent.constraints.dictionary
+                    }
+                    
+                    export type value = self.declarations.Signature_Value_Reference
+                }
+                
+                export type referent = {
+                    readonly 'constraints': self.declarations.Signature.lookups.D.referent.constraints
+                    readonly 'value': self.declarations.Signature.lookups.D.referent.value
+                }
+                
+                export namespace type_ {
+                    
+                    export type cyclic = null
+                    
+                    export type acyclic = null
+                }
+                
+                export type type_ =
+                    | readonly ['cyclic', self.declarations.Signature.lookups.D.type_.cyclic]
+                    | readonly ['acyclic', self.declarations.Signature.lookups.D.type_.acyclic]
+                
+                export type presence = self.declarations.Presence
+            }
+            
+            export type D = {
+                readonly 'referent': self.declarations.Signature.lookups.D.referent
+                readonly 'type': self.declarations.Signature.lookups.D.type_
+                readonly 'presence': self.declarations.Signature.lookups.D.presence
+            }
+        }
+        
+        export type lookups = p_.Dictionary<self.declarations.Signature.lookups.D>
+    }
+    
+    export type Signature = {
+        readonly 'values': self.declarations.Signature.values
+        readonly 'lookups': self.declarations.Signature.lookups
+    }
+    
+    export namespace Declarations {
+        
+        export namespace D {
+            
+            export type benchmark = self.structure.Types.D
+            
+            export type value = self.declarations.Declaration
+        }
+        
+        export type D = {
+            readonly 'benchmark': self.declarations.Declarations.D.benchmark
+            readonly 'value': self.declarations.Declarations.D.value
+        }
+    }
+    
+    export type Declarations = p_.Dictionary<self.declarations.Declarations.D>
+    
+    export namespace Declaration {
+        
+        export namespace signature {
+            
+            export namespace value {
+                
+                export type local = self.declarations.Signature
+                
+                export namespace same_as {
+                    
+                    export type l_entry = self.declarations.Declarations.D
+                    
+                    export type l_id = string
+                }
+                
+                export type same_as = {
+                    readonly 'l entry': self.declarations.Declaration.signature.value.same_as.l_entry
+                    readonly 'l id': self.declarations.Declaration.signature.value.same_as.l_id
+                }
+            }
+            
+            export type value =
+                | readonly ['local', self.declarations.Declaration.signature.value.local]
+                | readonly ['same as', self.declarations.Declaration.signature.value.same_as]
+            
+            export type result = self.declarations.Signature
+        }
+        
+        export type signature = {
+            readonly 'value': self.declarations.Declaration.signature.value
+            readonly 'result': self.declarations.Declaration.signature.result
+        }
+    }
+    
+    export type Declaration = {
+        readonly 'signature': self.declarations.Declaration.signature
+    }
+    
+    export namespace Namespaces {
+        
+        export namespace D {
+            
+            export type benchmark = self.structure.Namespaces.D
+            
+            export type value = self.declarations.Namespace
+        }
+        
+        export type D = {
+            readonly 'benchmark': self.declarations.Namespaces.D.benchmark
+            readonly 'value': self.declarations.Namespaces.D.value
+        }
+    }
+    
+    export type Namespaces = p_.Dictionary<self.declarations.Namespaces.D>
+    
+    export namespace Namespace {
+        
+        export type namespaces = self.declarations.Namespaces
+        
+        export type types = self.declarations.Declarations
+    }
+    
+    export type Namespace = {
+        readonly 'namespaces': self.declarations.Namespace.namespaces
+        readonly 'types': self.declarations.Namespace.types
+    }
+}
+
+export namespace resolver {
+    
+    export namespace Value_Reference {
+        
+        export namespace type_ {
+            
+            export namespace location {
+                
+                export namespace value {
+                    
+                    export namespace local {
+                        
+                        export type l_entry = self.structure.Types.D
+                        
+                        export type l_id = string
+                    }
+                    
+                    export type local = {
+                        readonly 'l entry': self.resolver.Value_Reference.type_.location.value.local.l_entry
+                        readonly 'l id': self.resolver.Value_Reference.type_.location.value.local.l_id
+                    }
+                    
+                    export namespace child_namespace {
+                        
+                        export namespace namespace {
+                            
+                            export type l_entry = self.structure.Namespaces.D
+                            
+                            export type l_id = string
+                        }
+                        
+                        export type namespace = {
+                            readonly 'l entry': self.resolver.Value_Reference.type_.location.value.child_namespace.namespace.l_entry
+                            readonly 'l id': self.resolver.Value_Reference.type_.location.value.child_namespace.namespace.l_id
+                        }
+                        
+                        export namespace type_ {
+                            
+                            export type l_entry = self.structure.Types.D
+                            
+                            export type l_id = string
+                        }
+                        
+                        export type type_ = {
+                            readonly 'l entry': self.resolver.Value_Reference.type_.location.value.child_namespace.type_.l_entry
+                            readonly 'l id': self.resolver.Value_Reference.type_.location.value.child_namespace.type_.l_id
+                        }
+                    }
+                    
+                    export type child_namespace = {
+                        readonly 'namespace': self.resolver.Value_Reference.type_.location.value.child_namespace.namespace
+                        readonly 'type': self.resolver.Value_Reference.type_.location.value.child_namespace.type_
+                    }
+                    
+                    export namespace sibling_namespace {
+                        
+                        export namespace namespace {
+                            
+                            export type l_entry = self.structure.Namespaces.D
+                            
+                            export type l_id = string
+                        }
+                        
+                        export type namespace = {
+                            readonly 'l entry': self.resolver.Value_Reference.type_.location.value.sibling_namespace.namespace.l_entry
+                            readonly 'l id': self.resolver.Value_Reference.type_.location.value.sibling_namespace.namespace.l_id
+                        }
+                        
+                        export namespace type_ {
+                            
+                            export type l_entry = self.structure.Types.D
+                            
+                            export type l_id = string
+                        }
+                        
+                        export type type_ = {
+                            readonly 'l entry': self.resolver.Value_Reference.type_.location.value.sibling_namespace.type_.l_entry
+                            readonly 'l id': self.resolver.Value_Reference.type_.location.value.sibling_namespace.type_.l_id
+                        }
+                    }
+                    
+                    export type sibling_namespace = {
+                        readonly 'namespace': self.resolver.Value_Reference.type_.location.value.sibling_namespace.namespace
+                        readonly 'type': self.resolver.Value_Reference.type_.location.value.sibling_namespace.type_
+                    }
+                }
+                
+                export type value =
+                    | readonly ['local', self.resolver.Value_Reference.type_.location.value.local]
+                    | readonly ['child namespace', self.resolver.Value_Reference.type_.location.value.child_namespace]
+                    | readonly ['sibling namespace', self.resolver.Value_Reference.type_.location.value.sibling_namespace]
+                
+                export type result = self.structure.Type
+            }
+            
+            export type location = {
+                readonly 'value': self.resolver.Value_Reference.type_.location.value
+                readonly 'result': self.resolver.Value_Reference.type_.location.result
+            }
+        }
+        
+        export type type_ = {
+            readonly 'location': self.resolver.Value_Reference.type_.location
+        }
+        
+        export namespace path {
+            
+            export namespace tail {
+                
+                export namespace value {
+                    
+                    export namespace L {
+                        
+                        export namespace value {
+                            
+                            export namespace value {
+                                
+                                export namespace dictionary {
+                                    
+                                    export namespace constraints {
+                                        
+                                        export type definition = self.structure.Value.dictionary
+                                    }
+                                    
+                                    export type constraints = {
+                                        readonly 'definition': self.resolver.Value_Reference.path.tail.value.L.value.value.dictionary.constraints.definition
+                                    }
+                                    
+                                    export type value = null
+                                }
+                                
+                                export type dictionary = {
+                                    readonly 'constraints': self.resolver.Value_Reference.path.tail.value.L.value.value.dictionary.constraints
+                                    readonly 'value': self.resolver.Value_Reference.path.tail.value.L.value.value.dictionary.value
+                                }
+                                
+                                export namespace group {
+                                    
+                                    export namespace constraints {
+                                        
+                                        export type definition = self.structure.Value.group
+                                    }
+                                    
+                                    export type constraints = {
+                                        readonly 'definition': self.resolver.Value_Reference.path.tail.value.L.value.value.group.constraints.definition
+                                    }
+                                    
+                                    export namespace value {
+                                        
+                                        export type l_entry = self.structure.Group.D
+                                        
+                                        export type l_id = string
+                                    }
+                                    
+                                    export type value = {
+                                        readonly 'l entry': self.resolver.Value_Reference.path.tail.value.L.value.value.group.value.l_entry
+                                        readonly 'l id': self.resolver.Value_Reference.path.tail.value.L.value.value.group.value.l_id
+                                    }
+                                }
+                                
+                                export type group = {
+                                    readonly 'constraints': self.resolver.Value_Reference.path.tail.value.L.value.value.group.constraints
+                                    readonly 'value': self.resolver.Value_Reference.path.tail.value.L.value.value.group.value
+                                }
+                                
+                                export namespace list {
+                                    
+                                    export namespace constraints {
+                                        
+                                        export type definition = self.structure.Value.list
+                                    }
+                                    
+                                    export type constraints = {
+                                        readonly 'definition': self.resolver.Value_Reference.path.tail.value.L.value.value.list.constraints.definition
+                                    }
+                                    
+                                    export type value = null
+                                }
+                                
+                                export type list = {
+                                    readonly 'constraints': self.resolver.Value_Reference.path.tail.value.L.value.value.list.constraints
+                                    readonly 'value': self.resolver.Value_Reference.path.tail.value.L.value.value.list.value
+                                }
+                                
+                                export namespace optional {
+                                    
+                                    export namespace constraints {
+                                        
+                                        export type definition = self.structure.Value.optional
+                                    }
+                                    
+                                    export type constraints = {
+                                        readonly 'definition': self.resolver.Value_Reference.path.tail.value.L.value.value.optional.constraints.definition
+                                    }
+                                    
+                                    export type value = null
+                                }
+                                
+                                export type optional = {
+                                    readonly 'constraints': self.resolver.Value_Reference.path.tail.value.L.value.value.optional.constraints
+                                    readonly 'value': self.resolver.Value_Reference.path.tail.value.L.value.value.optional.value
+                                }
+                                
+                                export namespace state {
+                                    
+                                    export namespace constraints {
+                                        
+                                        export type definition = self.structure.Value.state
+                                    }
+                                    
+                                    export type constraints = {
+                                        readonly 'definition': self.resolver.Value_Reference.path.tail.value.L.value.value.state.constraints.definition
+                                    }
+                                    
+                                    export namespace value {
+                                        
+                                        export type l_entry = self.structure.Value.state.options.D
+                                        
+                                        export type l_id = string
+                                    }
+                                    
+                                    export type value = {
+                                        readonly 'l entry': self.resolver.Value_Reference.path.tail.value.L.value.value.state.value.l_entry
+                                        readonly 'l id': self.resolver.Value_Reference.path.tail.value.L.value.value.state.value.l_id
+                                    }
+                                }
+                                
+                                export type state = {
+                                    readonly 'constraints': self.resolver.Value_Reference.path.tail.value.L.value.value.state.constraints
+                                    readonly 'value': self.resolver.Value_Reference.path.tail.value.L.value.value.state.value
+                                }
+                            }
+                            
+                            export type value =
+                                | readonly ['dictionary', self.resolver.Value_Reference.path.tail.value.L.value.value.dictionary]
+                                | readonly ['group', self.resolver.Value_Reference.path.tail.value.L.value.value.group]
+                                | readonly ['list', self.resolver.Value_Reference.path.tail.value.L.value.value.list]
+                                | readonly ['optional', self.resolver.Value_Reference.path.tail.value.L.value.value.optional]
+                                | readonly ['state', self.resolver.Value_Reference.path.tail.value.L.value.value.state]
+                            
+                            export type result = self.structure.Value
+                        }
+                        
+                        export type value = {
+                            readonly 'value': self.resolver.Value_Reference.path.tail.value.L.value.value
+                            readonly 'result': self.resolver.Value_Reference.path.tail.value.L.value.result
+                        }
+                        
+                        export type result = self.structure.Value
+                    }
+                    
+                    export type L = {
+                        readonly 'value': self.resolver.Value_Reference.path.tail.value.L.value
+                        readonly 'result': self.resolver.Value_Reference.path.tail.value.L.result
+                    }
+                }
+                
+                export type value = p_.List<self.resolver.Value_Reference.path.tail.value.L>
+                
+                export type result = self.structure.Value
+            }
+            
+            export type tail = {
+                readonly 'value': self.resolver.Value_Reference.path.tail.value
+                readonly 'result': self.resolver.Value_Reference.path.tail.result
+            }
+        }
+        
+        export type path = {
+            readonly 'tail': self.resolver.Value_Reference.path.tail
+        }
+    }
+    
+    export type Value_Reference = {
+        readonly 'type': self.resolver.Value_Reference.type_
+        readonly 'path': self.resolver.Value_Reference.path
+    }
+    
+    export namespace Relative_Value_Selection {
+        
+        export namespace path {
+            
+            export namespace value {
+                
+                export namespace L {
+                    
+                    export namespace value {
+                        
+                        export namespace value {
+                            
+                            export type benchmark_link = self.resolver.Value_Reference
+                            
+                            export namespace component_constraint {
+                                
+                                export namespace constraints {
+                                    
+                                    export type definition = self.structure.Value.component
+                                    
+                                    export type constraints = self.structure.Reference_Constraints.O
+                                }
+                                
+                                export type constraints = {
+                                    readonly 'definition': self.resolver.Relative_Value_Selection.path.value.L.value.value.component_constraint.constraints.definition
+                                    readonly 'constraints': self.resolver.Relative_Value_Selection.path.value.L.value.value.component_constraint.constraints.constraints
+                                }
+                                
+                                export namespace value {
+                                    
+                                    export namespace name {
+                                        
+                                        export type l_entry = self.structure.Reference_Constraints.O.D
+                                        
+                                        export type l_id = string
+                                    }
+                                    
+                                    export type name = {
+                                        readonly 'l entry': self.resolver.Relative_Value_Selection.path.value.L.value.value.component_constraint.value.name.l_entry
+                                        readonly 'l id': self.resolver.Relative_Value_Selection.path.value.L.value.value.component_constraint.value.name.l_id
+                                    }
+                                    
+                                    export type target = self.resolver.Value_Reference
+                                }
+                                
+                                export type value = {
+                                    readonly 'name': self.resolver.Relative_Value_Selection.path.value.L.value.value.component_constraint.value.name
+                                    readonly 'target': self.resolver.Relative_Value_Selection.path.value.L.value.value.component_constraint.value.target
+                                }
+                            }
+                            
+                            export type component_constraint = {
+                                readonly 'constraints': self.resolver.Relative_Value_Selection.path.value.L.value.value.component_constraint.constraints
+                                readonly 'value': self.resolver.Relative_Value_Selection.path.value.L.value.value.component_constraint.value
+                            }
+                            
+                            export namespace component {
+                                
+                                export namespace constraints {
+                                    
+                                    export type component = self.structure.Value.component
+                                    
+                                    export type definition = self.structure.Value.component.type_.simple
+                                }
+                                
+                                export type constraints = {
+                                    readonly 'component': self.resolver.Relative_Value_Selection.path.value.L.value.value.component.constraints.component
+                                    readonly 'definition': self.resolver.Relative_Value_Selection.path.value.L.value.value.component.constraints.definition
+                                }
+                                
+                                export type value = null
+                            }
+                            
+                            export type component = {
+                                readonly 'constraints': self.resolver.Relative_Value_Selection.path.value.L.value.value.component.constraints
+                                readonly 'value': self.resolver.Relative_Value_Selection.path.value.L.value.value.component.value
+                            }
+                            
+                            export namespace cyclic_component {
+                                
+                                export namespace constraints {
+                                    
+                                    export type component = self.structure.Value.component
+                                    
+                                    export type definition = self.structure.Value.component.type_.cyclic
+                                }
+                                
+                                export type constraints = {
+                                    readonly 'component': self.resolver.Relative_Value_Selection.path.value.L.value.value.cyclic_component.constraints.component
+                                    readonly 'definition': self.resolver.Relative_Value_Selection.path.value.L.value.value.cyclic_component.constraints.definition
+                                }
+                                
+                                export type value = null
+                            }
+                            
+                            export type cyclic_component = {
+                                readonly 'constraints': self.resolver.Relative_Value_Selection.path.value.L.value.value.cyclic_component.constraints
+                                readonly 'value': self.resolver.Relative_Value_Selection.path.value.L.value.value.cyclic_component.value
+                            }
+                            
+                            export namespace group {
+                                
+                                export namespace constraints {
+                                    
+                                    export type definition = self.structure.Value.group
+                                }
+                                
+                                export type constraints = {
+                                    readonly 'definition': self.resolver.Relative_Value_Selection.path.value.L.value.value.group.constraints.definition
+                                }
+                                
+                                export namespace value {
+                                    
+                                    export type l_entry = self.structure.Group.D
+                                    
+                                    export type l_id = string
+                                }
+                                
+                                export type value = {
+                                    readonly 'l entry': self.resolver.Relative_Value_Selection.path.value.L.value.value.group.value.l_entry
+                                    readonly 'l id': self.resolver.Relative_Value_Selection.path.value.L.value.value.group.value.l_id
+                                }
+                            }
+                            
+                            export type group = {
+                                readonly 'constraints': self.resolver.Relative_Value_Selection.path.value.L.value.value.group.constraints
+                                readonly 'value': self.resolver.Relative_Value_Selection.path.value.L.value.value.group.value
+                            }
+                            
+                            export namespace list_result {
+                                
+                                export namespace constraints {
+                                    
+                                    export type definition = self.structure.Value.list
+                                }
+                                
+                                export type constraints = {
+                                    readonly 'definition': self.resolver.Relative_Value_Selection.path.value.L.value.value.list_result.constraints.definition
+                                }
+                                
+                                export type value = null
+                            }
+                            
+                            export type list_result = {
+                                readonly 'constraints': self.resolver.Relative_Value_Selection.path.value.L.value.value.list_result.constraints
+                                readonly 'value': self.resolver.Relative_Value_Selection.path.value.L.value.value.list_result.value
+                            }
+                            
+                            export namespace option_constraint {
+                                
+                                export namespace constraints {
+                                    
+                                    export type definition = self.structure.Value.state
+                                }
+                                
+                                export type constraints = {
+                                    readonly 'definition': self.resolver.Relative_Value_Selection.path.value.L.value.value.option_constraint.constraints.definition
+                                }
+                                
+                                export namespace value {
+                                    
+                                    export namespace option {
+                                        
+                                        export type l_entry = self.structure.Value.state.options.D
+                                        
+                                        export type l_id = string
+                                    }
+                                    
+                                    export type option = {
+                                        readonly 'l entry': self.resolver.Relative_Value_Selection.path.value.L.value.value.option_constraint.value.option.l_entry
+                                        readonly 'l id': self.resolver.Relative_Value_Selection.path.value.L.value.value.option_constraint.value.option.l_id
+                                    }
+                                    
+                                    export namespace constraint {
+                                        
+                                        export type l_entry = self.structure.Option_Constraints.O.D
+                                        
+                                        export type l_id = string
+                                    }
+                                    
+                                    export type constraint = {
+                                        readonly 'l entry': self.resolver.Relative_Value_Selection.path.value.L.value.value.option_constraint.value.constraint.l_entry
+                                        readonly 'l id': self.resolver.Relative_Value_Selection.path.value.L.value.value.option_constraint.value.constraint.l_id
+                                    }
+                                }
+                                
+                                export type value = {
+                                    readonly 'option': self.resolver.Relative_Value_Selection.path.value.L.value.value.option_constraint.value.option
+                                    readonly 'constraint': self.resolver.Relative_Value_Selection.path.value.L.value.value.option_constraint.value.constraint
+                                }
+                            }
+                            
+                            export type option_constraint = {
+                                readonly 'constraints': self.resolver.Relative_Value_Selection.path.value.L.value.value.option_constraint.constraints
+                                readonly 'value': self.resolver.Relative_Value_Selection.path.value.L.value.value.option_constraint.value
+                            }
+                            
+                            export namespace optional {
+                                
+                                export namespace constraints {
+                                    
+                                    export type definition = self.structure.Value.optional
+                                }
+                                
+                                export type constraints = {
+                                    readonly 'definition': self.resolver.Relative_Value_Selection.path.value.L.value.value.optional.constraints.definition
+                                }
+                                
+                                export type value = null
+                            }
+                            
+                            export type optional = {
+                                readonly 'constraints': self.resolver.Relative_Value_Selection.path.value.L.value.value.optional.constraints
+                                readonly 'value': self.resolver.Relative_Value_Selection.path.value.L.value.value.optional.value
+                            }
+                            
+                            export namespace optional_value_constraint {
+                                
+                                export namespace constraints {
+                                    
+                                    export type definition = self.structure.Value.optional
+                                }
+                                
+                                export type constraints = {
+                                    readonly 'definition': self.resolver.Relative_Value_Selection.path.value.L.value.value.optional_value_constraint.constraints.definition
+                                }
+                                
+                                export namespace value {
+                                    
+                                    export type l_entry = self.structure.Option_Constraints.O.D
+                                    
+                                    export type l_id = string
+                                }
+                                
+                                export type value = {
+                                    readonly 'l entry': self.resolver.Relative_Value_Selection.path.value.L.value.value.optional_value_constraint.value.l_entry
+                                    readonly 'l id': self.resolver.Relative_Value_Selection.path.value.L.value.value.optional_value_constraint.value.l_id
+                                }
+                            }
+                            
+                            export type optional_value_constraint = {
+                                readonly 'constraints': self.resolver.Relative_Value_Selection.path.value.L.value.value.optional_value_constraint.constraints
+                                readonly 'value': self.resolver.Relative_Value_Selection.path.value.L.value.value.optional_value_constraint.value
+                            }
+                            
+                            export namespace reference_constraint {
+                                
+                                export namespace constraints {
+                                    
+                                    export type definition = self.structure.Value.reference
+                                }
+                                
+                                export type constraints = {
+                                    readonly 'definition': self.resolver.Relative_Value_Selection.path.value.L.value.value.reference_constraint.constraints.definition
+                                }
+                                
+                                export namespace value {
+                                    
+                                    export type l_entry = self.structure.Reference_Constraints.O.D
+                                    
+                                    export type l_id = string
+                                }
+                                
+                                export type value = {
+                                    readonly 'l entry': self.resolver.Relative_Value_Selection.path.value.L.value.value.reference_constraint.value.l_entry
+                                    readonly 'l id': self.resolver.Relative_Value_Selection.path.value.L.value.value.reference_constraint.value.l_id
+                                }
+                            }
+                            
+                            export type reference_constraint = {
+                                readonly 'constraints': self.resolver.Relative_Value_Selection.path.value.L.value.value.reference_constraint.constraints
+                                readonly 'value': self.resolver.Relative_Value_Selection.path.value.L.value.value.reference_constraint.value
+                            }
+                            
+                            export namespace reference {
+                                
+                                export namespace constraints {
+                                    
+                                    export type definition = self.structure.Value.reference
+                                    
+                                    export type acyclic = self.structure.Reference.type_.dependency.acyclic
+                                }
+                                
+                                export type constraints = {
+                                    readonly 'definition': self.resolver.Relative_Value_Selection.path.value.L.value.value.reference.constraints.definition
+                                    readonly 'acyclic': self.resolver.Relative_Value_Selection.path.value.L.value.value.reference.constraints.acyclic
+                                }
+                                
+                                export namespace value {}
+                                
+                                export type value = null
+                            }
+                            
+                            export type reference = {
+                                readonly 'constraints': self.resolver.Relative_Value_Selection.path.value.L.value.value.reference.constraints
+                                readonly 'value': self.resolver.Relative_Value_Selection.path.value.L.value.value.reference.value
+                            }
+                            
+                            export namespace expect_resolved {
+                                
+                                export namespace constraints {
+                                    
+                                    export type definition = self.structure.Value.reference
+                                    
+                                    export type cyclic = self.structure.Reference.type_.dependency.cyclic
+                                }
+                                
+                                export type constraints = {
+                                    readonly 'definition': self.resolver.Relative_Value_Selection.path.value.L.value.value.expect_resolved.constraints.definition
+                                    readonly 'cyclic': self.resolver.Relative_Value_Selection.path.value.L.value.value.expect_resolved.constraints.cyclic
+                                }
+                                
+                                export namespace value {}
+                                
+                                export type value = null
+                            }
+                            
+                            export type expect_resolved = {
+                                readonly 'constraints': self.resolver.Relative_Value_Selection.path.value.L.value.value.expect_resolved.constraints
+                                readonly 'value': self.resolver.Relative_Value_Selection.path.value.L.value.value.expect_resolved.value
+                            }
+                            
+                            export namespace state_result {
+                                
+                                export namespace constraints {
+                                    
+                                    export type definition = self.structure.Value.state
+                                }
+                                
+                                export type constraints = {
+                                    readonly 'definition': self.resolver.Relative_Value_Selection.path.value.L.value.value.state_result.constraints.definition
+                                }
+                                
+                                export type value = null
+                            }
+                            
+                            export type state_result = {
+                                readonly 'constraints': self.resolver.Relative_Value_Selection.path.value.L.value.value.state_result.constraints
+                                readonly 'value': self.resolver.Relative_Value_Selection.path.value.L.value.value.state_result.value
+                            }
+                        }
+                        
+                        export type value =
+                            | readonly ['benchmark link', self.resolver.Relative_Value_Selection.path.value.L.value.value.benchmark_link]
+                            | readonly ['component constraint', self.resolver.Relative_Value_Selection.path.value.L.value.value.component_constraint]
+                            | readonly ['component', self.resolver.Relative_Value_Selection.path.value.L.value.value.component]
+                            | readonly ['cyclic component', self.resolver.Relative_Value_Selection.path.value.L.value.value.cyclic_component]
+                            | readonly ['group', self.resolver.Relative_Value_Selection.path.value.L.value.value.group]
+                            | readonly ['list result', self.resolver.Relative_Value_Selection.path.value.L.value.value.list_result]
+                            | readonly ['option constraint', self.resolver.Relative_Value_Selection.path.value.L.value.value.option_constraint]
+                            | readonly ['optional', self.resolver.Relative_Value_Selection.path.value.L.value.value.optional]
+                            | readonly ['optional value constraint', self.resolver.Relative_Value_Selection.path.value.L.value.value.optional_value_constraint]
+                            | readonly ['reference constraint', self.resolver.Relative_Value_Selection.path.value.L.value.value.reference_constraint]
+                            | readonly ['reference', self.resolver.Relative_Value_Selection.path.value.L.value.value.reference]
+                            | readonly ['expect resolved', self.resolver.Relative_Value_Selection.path.value.L.value.value.expect_resolved]
+                            | readonly ['state result', self.resolver.Relative_Value_Selection.path.value.L.value.value.state_result]
+                        
+                        export type result = self.structure.Value
+                    }
+                    
+                    export type value = {
+                        readonly 'value': self.resolver.Relative_Value_Selection.path.value.L.value.value
+                        readonly 'result': self.resolver.Relative_Value_Selection.path.value.L.value.result
+                    }
+                    
+                    export type result = self.structure.Value
+                }
+                
+                export type L = {
+                    readonly 'value': self.resolver.Relative_Value_Selection.path.value.L.value
+                    readonly 'result': self.resolver.Relative_Value_Selection.path.value.L.result
+                }
+            }
+            
+            export type value = p_.List<self.resolver.Relative_Value_Selection.path.value.L>
+            
+            export type result = self.structure.Value
+        }
+        
+        export type path = {
+            readonly 'value': self.resolver.Relative_Value_Selection.path.value
+            readonly 'result': self.resolver.Relative_Value_Selection.path.result
+        }
+    }
+    
+    export type Relative_Value_Selection = {
+        readonly 'path': self.resolver.Relative_Value_Selection.path
+    }
+    
+    export namespace Possible_Value_Branches {
+        
+        export namespace D {
+            
+            export type benchmark = self.structure.Value.state.options.D
+            
+            export namespace value {
+                
+                export type not_set = null
+                
+                export type set_ = self.resolver.Relative_Value_Selection
+            }
+            
+            export type value =
+                | readonly ['not set', self.resolver.Possible_Value_Branches.D.value.not_set]
+                | readonly ['set', self.resolver.Possible_Value_Branches.D.value.set_]
+        }
+        
+        export type D = {
+            readonly 'benchmark': self.resolver.Possible_Value_Branches.D.benchmark
+            readonly 'value': self.resolver.Possible_Value_Branches.D.value
+        }
+    }
+    
+    export type Possible_Value_Branches = p_.Dictionary<self.resolver.Possible_Value_Branches.D>
+    
+    export namespace Possible_Value_Selection {
+        
+        export namespace value {
+            
+            export namespace decide_state {
+                
+                export type target = self.resolver.Value_Reference
+                
+                export namespace selection {
+                    
+                    export namespace constraints {
+                        
+                        export type state = self.structure.Value.state
+                    }
+                    
+                    export type constraints = {
+                        readonly 'state': self.resolver.Possible_Value_Selection.value.decide_state.selection.constraints.state
+                    }
+                    
+                    export type value = self.resolver.Guaranteed_Value_Selection
+                }
+                
+                export type selection = {
+                    readonly 'constraints': self.resolver.Possible_Value_Selection.value.decide_state.selection.constraints
+                    readonly 'value': self.resolver.Possible_Value_Selection.value.decide_state.selection.value
+                }
+                
+                export type options = self.resolver.Possible_Value_Branches
+            }
+            
+            export type decide_state = {
+                readonly 'target': self.resolver.Possible_Value_Selection.value.decide_state.target
+                readonly 'selection': self.resolver.Possible_Value_Selection.value.decide_state.selection
+                readonly 'options': self.resolver.Possible_Value_Selection.value.decide_state.options
+            }
+            
+            export namespace optional_value {
+                
+                export namespace selection {
+                    
+                    export namespace constraints {
+                        
+                        export type optional = self.structure.Value.optional
+                    }
+                    
+                    export type constraints = {
+                        readonly 'optional': self.resolver.Possible_Value_Selection.value.optional_value.selection.constraints.optional
+                    }
+                    
+                    export type value = self.resolver.Guaranteed_Value_Selection
+                }
+                
+                export type selection = {
+                    readonly 'constraints': self.resolver.Possible_Value_Selection.value.optional_value.selection.constraints
+                    readonly 'value': self.resolver.Possible_Value_Selection.value.optional_value.selection.value
+                }
+                
+                export type tail = self.resolver.Relative_Value_Selection
+            }
+            
+            export type optional_value = {
+                readonly 'selection': self.resolver.Possible_Value_Selection.value.optional_value.selection
+                readonly 'tail': self.resolver.Possible_Value_Selection.value.optional_value.tail
+            }
+            
+            export namespace parameter {
+                
+                export type l_entry = self.declarations.Signature.values.D
+                
+                export type l_id = string
+            }
+            
+            export type parameter = {
+                readonly 'l entry': self.resolver.Possible_Value_Selection.value.parameter.l_entry
+                readonly 'l id': self.resolver.Possible_Value_Selection.value.parameter.l_id
+            }
+            
+            export namespace result {
+                
+                export namespace value {
+                    
+                    export namespace state {
+                        
+                        export namespace property {
                             
                             export namespace constraints {
                                 
-                                export type benchmark = s_self.structure.Dictionary.benchmark.O
+                                export type state = self.structure.Value.state
                                 
+                                export type result = self.structure.Optional_Result.O
                             }
                             
-                            export type value = {
-                                readonly 'selection': s_self.resolver.Value.type_.dictionary.value.benchmark.O.value.selection
+                            export type constraints = {
+                                readonly 'state': self.resolver.Possible_Value_Selection.value.result.value.state.property.constraints.state
+                                readonly 'result': self.resolver.Possible_Value_Selection.value.result.value.state.property.constraints.result
                             }
                             
                             export namespace value {
                                 
-                                export type selection = {
-                                    readonly 'constraints': s_self.resolver.Value.type_.dictionary.value.benchmark.O.value.selection.constraints
-                                    readonly 'value': s_self.resolver.Value.type_.dictionary.value.benchmark.O.value.selection.value
-                                }
+                                export type l_entry = self.structure.Group.D
+                                
+                                export type l_id = string
+                            }
+                            
+                            export type value = {
+                                readonly 'l entry': self.resolver.Possible_Value_Selection.value.result.value.state.property.value.l_entry
+                                readonly 'l id': self.resolver.Possible_Value_Selection.value.result.value.state.property.value.l_id
+                            }
+                        }
+                        
+                        export type property = {
+                            readonly 'constraints': self.resolver.Possible_Value_Selection.value.result.value.state.property.constraints
+                            readonly 'value': self.resolver.Possible_Value_Selection.value.result.value.state.property.value
+                        }
+                    }
+                    
+                    export type state = {
+                        readonly 'property': self.resolver.Possible_Value_Selection.value.result.value.state.property
+                    }
+                    
+                    export namespace optional_value {
+                        
+                        export namespace property {
+                            
+                            export namespace constraints {
+                                
+                                export type optional = self.structure.Value.optional
+                                
+                                export type result = self.structure.Optional_Result.O
+                            }
+                            
+                            export type constraints = {
+                                readonly 'optional': self.resolver.Possible_Value_Selection.value.result.value.optional_value.property.constraints.optional
+                                readonly 'result': self.resolver.Possible_Value_Selection.value.result.value.optional_value.property.constraints.result
+                            }
+                            
+                            export namespace value {
+                                
+                                export type l_entry = self.structure.Group.D
+                                
+                                export type l_id = string
+                            }
+                            
+                            export type value = {
+                                readonly 'l entry': self.resolver.Possible_Value_Selection.value.result.value.optional_value.property.value.l_entry
+                                readonly 'l id': self.resolver.Possible_Value_Selection.value.result.value.optional_value.property.value.l_id
+                            }
+                        }
+                        
+                        export type property = {
+                            readonly 'constraints': self.resolver.Possible_Value_Selection.value.result.value.optional_value.property.constraints
+                            readonly 'value': self.resolver.Possible_Value_Selection.value.result.value.optional_value.property.value
+                        }
+                    }
+                    
+                    export type optional_value = {
+                        readonly 'property': self.resolver.Possible_Value_Selection.value.result.value.optional_value.property
+                    }
+                }
+                
+                export type value =
+                    | readonly ['state', self.resolver.Possible_Value_Selection.value.result.value.state]
+                    | readonly ['optional value', self.resolver.Possible_Value_Selection.value.result.value.optional_value]
+                
+                export type result = self.structure.Value
+            }
+            
+            export type result = {
+                readonly 'value': self.resolver.Possible_Value_Selection.value.result.value
+                readonly 'result': self.resolver.Possible_Value_Selection.value.result.result
+            }
+        }
+        
+        export type value =
+            | readonly ['decide state', self.resolver.Possible_Value_Selection.value.decide_state]
+            | readonly ['optional value', self.resolver.Possible_Value_Selection.value.optional_value]
+            | readonly ['parameter', self.resolver.Possible_Value_Selection.value.parameter]
+            | readonly ['result', self.resolver.Possible_Value_Selection.value.result]
+        
+        export type result = self.structure.Value
+    }
+    
+    export type Possible_Value_Selection = {
+        readonly 'value': self.resolver.Possible_Value_Selection.value
+        readonly 'result': self.resolver.Possible_Value_Selection.result
+    }
+    
+    export namespace Option_Constraints {
+        
+        export namespace O {
+            
+            export namespace constraints {
+                
+                export type declarations = self.structure.Option_Constraints.O
+            }
+            
+            export type constraints = {
+                readonly 'declarations': self.resolver.Option_Constraints.O.constraints.declarations
+            }
+            
+            export namespace value {
+                
+                export namespace D {
+                    
+                    export type benchmark = self.structure.Option_Constraints.O.D
+                    
+                    export namespace value {
+                        
+                        export namespace value {
+                            
+                            export namespace state {
                                 
                                 export namespace selection {
                                     
-                                    export type constraints = {
-                                        readonly 'dictionary': s_self.resolver.Value.type_.dictionary.value.benchmark.O.value.selection.constraints.dictionary
-                                    }
-                                    
                                     export namespace constraints {
                                         
-                                        export type dictionary = s_self.structure.Value.type_.dictionary
-                                        
+                                        export type state = self.structure.Value.state
                                     }
                                     
-                                    export type value = s_self.resolver.Guaranteed_Value_Selection
+                                    export type constraints = {
+                                        readonly 'state': self.resolver.Option_Constraints.O.value.D.value.value.state.selection.constraints.state
+                                    }
                                     
+                                    export type value = self.resolver.Guaranteed_Value_Selection
                                 }
                                 
+                                export type selection = {
+                                    readonly 'constraints': self.resolver.Option_Constraints.O.value.D.value.value.state.selection.constraints
+                                    readonly 'value': self.resolver.Option_Constraints.O.value.D.value.value.state.selection.value
+                                }
+                                
+                                export namespace option {
+                                    
+                                    export type l_entry = self.structure.Value.state.options.D
+                                    
+                                    export type l_id = string
+                                }
+                                
+                                export type option = {
+                                    readonly 'l entry': self.resolver.Option_Constraints.O.value.D.value.value.state.option.l_entry
+                                    readonly 'l id': self.resolver.Option_Constraints.O.value.D.value.value.state.option.l_id
+                                }
                             }
                             
+                            export type state = {
+                                readonly 'selection': self.resolver.Option_Constraints.O.value.D.value.value.state.selection
+                                readonly 'option': self.resolver.Option_Constraints.O.value.D.value.value.state.option
+                            }
+                            
+                            export type assert_is_set = self.resolver.Possible_Value_Selection
                         }
                         
+                        export type value =
+                            | readonly ['state', self.resolver.Option_Constraints.O.value.D.value.value.state]
+                            | readonly ['assert is set', self.resolver.Option_Constraints.O.value.D.value.value.assert_is_set]
+                        
+                        export type result = self.structure.Value
                     }
                     
+                    export type value = {
+                        readonly 'value': self.resolver.Option_Constraints.O.value.D.value.value
+                        readonly 'result': self.resolver.Option_Constraints.O.value.D.value.result
+                    }
                 }
                 
+                export type D = {
+                    readonly 'benchmark': self.resolver.Option_Constraints.O.value.D.benchmark
+                    readonly 'value': self.resolver.Option_Constraints.O.value.D.value
+                }
             }
             
-            export type group = {
-                readonly 'constraints': s_self.resolver.Value.type_.group.constraints
-                readonly 'value': s_self.resolver.Value.type_.group.value
+            export type value = p_.Dictionary<self.resolver.Option_Constraints.O.value.D>
+        }
+        
+        export type O = {
+            readonly 'constraints': self.resolver.Option_Constraints.O.constraints
+            readonly 'value': self.resolver.Option_Constraints.O.value
+        }
+    }
+    
+    export type Option_Constraints = p_.Optional_Value<self.resolver.Option_Constraints.O>
+    
+    export namespace Guaranteed_Value_Selection {
+        
+        export namespace start {
+            
+            export namespace value {
+                
+                export namespace optional_fallback {
+                    
+                    export type selection = self.resolver.Possible_Value_Selection
+                    
+                    export type fallback = self.resolver.Guaranteed_Value_Selection
+                }
+                
+                export type optional_fallback = {
+                    readonly 'selection': self.resolver.Guaranteed_Value_Selection.start.value.optional_fallback.selection
+                    readonly 'fallback': self.resolver.Guaranteed_Value_Selection.start.value.optional_fallback.fallback
+                }
+                
+                export namespace sibling_property {
+                    
+                    export type l_entry = self.structure.Group.D
+                    
+                    export type l_id = string
+                }
+                
+                export type sibling_property = {
+                    readonly 'l entry': self.resolver.Guaranteed_Value_Selection.start.value.sibling_property.l_entry
+                    readonly 'l id': self.resolver.Guaranteed_Value_Selection.start.value.sibling_property.l_id
+                }
+                
+                export namespace parent_sibling {
+                    
+                    export type l_entry = self.structure.Group.D
+                    
+                    export type l_id = string
+                }
+                
+                export type parent_sibling = {
+                    readonly 'l entry': self.resolver.Guaranteed_Value_Selection.start.value.parent_sibling.l_entry
+                    readonly 'l id': self.resolver.Guaranteed_Value_Selection.start.value.parent_sibling.l_id
+                }
+                
+                export namespace option_constraint {
+                    
+                    export namespace constraints {
+                        
+                        export type oc = self.structure.Option_Constraints
+                    }
+                    
+                    export type constraints = {
+                        readonly 'oc': self.resolver.Guaranteed_Value_Selection.start.value.option_constraint.constraints.oc
+                    }
+                    
+                    export namespace value {
+                        
+                        export type l_entry = self.structure.Option_Constraints.O.D
+                        
+                        export type l_id = string
+                    }
+                    
+                    export type value = {
+                        readonly 'l entry': self.resolver.Guaranteed_Value_Selection.start.value.option_constraint.value.l_entry
+                        readonly 'l id': self.resolver.Guaranteed_Value_Selection.start.value.option_constraint.value.l_id
+                    }
+                }
+                
+                export type option_constraint = {
+                    readonly 'constraints': self.resolver.Guaranteed_Value_Selection.start.value.option_constraint.constraints
+                    readonly 'value': self.resolver.Guaranteed_Value_Selection.start.value.option_constraint.value
+                }
+                
+                export namespace sibling_option_constraint {
+                    
+                    export type l_entry = self.resolver.Option_Constraints.O.value.D
+                    
+                    export type l_id = string
+                }
+                
+                export type sibling_option_constraint = {
+                    readonly 'l entry': self.resolver.Guaranteed_Value_Selection.start.value.sibling_option_constraint.l_entry
+                    readonly 'l id': self.resolver.Guaranteed_Value_Selection.start.value.sibling_option_constraint.l_id
+                }
+                
+                export namespace list_cursor {
+                    
+                    export namespace constraints {
+                        
+                        export type result = self.structure.Optional_Result.O
+                    }
+                    
+                    export type constraints = {
+                        readonly 'result': self.resolver.Guaranteed_Value_Selection.start.value.list_cursor.constraints.result
+                    }
+                    
+                    export type value = null
+                }
+                
+                export type list_cursor = {
+                    readonly 'constraints': self.resolver.Guaranteed_Value_Selection.start.value.list_cursor.constraints
+                    readonly 'value': self.resolver.Guaranteed_Value_Selection.start.value.list_cursor.value
+                }
+                
+                export namespace linked_entry {
+                    
+                    export namespace constraints {
+                        
+                        export type entry = self.structure.Value
+                    }
+                    
+                    export type constraints = {
+                        readonly 'entry': self.resolver.Guaranteed_Value_Selection.start.value.linked_entry.constraints.entry
+                    }
+                    
+                    export type value = null
+                }
+                
+                export type linked_entry = {
+                    readonly 'constraints': self.resolver.Guaranteed_Value_Selection.start.value.linked_entry.constraints
+                    readonly 'value': self.resolver.Guaranteed_Value_Selection.start.value.linked_entry.value
+                }
+                
+                export namespace constraint {
+                    
+                    export namespace value {
+                        
+                        export namespace component {
+                            
+                            export namespace property {
+                                
+                                export namespace constraints {
+                                    
+                                    export type component = self.structure.Value.component
+                                }
+                                
+                                export type constraints = {
+                                    readonly 'component': self.resolver.Guaranteed_Value_Selection.start.value.constraint.value.component.property.constraints.component
+                                }
+                                
+                                export namespace value {
+                                    
+                                    export type l_entry = self.structure.Group.D
+                                    
+                                    export type l_id = string
+                                }
+                                
+                                export type value = {
+                                    readonly 'l entry': self.resolver.Guaranteed_Value_Selection.start.value.constraint.value.component.property.value.l_entry
+                                    readonly 'l id': self.resolver.Guaranteed_Value_Selection.start.value.constraint.value.component.property.value.l_id
+                                }
+                            }
+                            
+                            export type property = {
+                                readonly 'constraints': self.resolver.Guaranteed_Value_Selection.start.value.constraint.value.component.property.constraints
+                                readonly 'value': self.resolver.Guaranteed_Value_Selection.start.value.constraint.value.component.property.value
+                            }
+                            
+                            export namespace constraint {
+                                
+                                export type l_entry = self.structure.Reference_Constraints.O.D
+                                
+                                export type l_id = string
+                            }
+                            
+                            export type constraint = {
+                                readonly 'l entry': self.resolver.Guaranteed_Value_Selection.start.value.constraint.value.component.constraint.l_entry
+                                readonly 'l id': self.resolver.Guaranteed_Value_Selection.start.value.constraint.value.component.constraint.l_id
+                            }
+                        }
+                        
+                        export type component = {
+                            readonly 'property': self.resolver.Guaranteed_Value_Selection.start.value.constraint.value.component.property
+                            readonly 'constraint': self.resolver.Guaranteed_Value_Selection.start.value.constraint.value.component.constraint
+                        }
+                        
+                        export namespace reference {
+                            
+                            export namespace property {
+                                
+                                export namespace constraints {
+                                    
+                                    export type reference = self.structure.Value.reference
+                                }
+                                
+                                export type constraints = {
+                                    readonly 'reference': self.resolver.Guaranteed_Value_Selection.start.value.constraint.value.reference.property.constraints.reference
+                                }
+                                
+                                export namespace value {
+                                    
+                                    export type l_entry = self.structure.Group.D
+                                    
+                                    export type l_id = string
+                                }
+                                
+                                export type value = {
+                                    readonly 'l entry': self.resolver.Guaranteed_Value_Selection.start.value.constraint.value.reference.property.value.l_entry
+                                    readonly 'l id': self.resolver.Guaranteed_Value_Selection.start.value.constraint.value.reference.property.value.l_id
+                                }
+                            }
+                            
+                            export type property = {
+                                readonly 'constraints': self.resolver.Guaranteed_Value_Selection.start.value.constraint.value.reference.property.constraints
+                                readonly 'value': self.resolver.Guaranteed_Value_Selection.start.value.constraint.value.reference.property.value
+                            }
+                            
+                            export namespace constraint {
+                                
+                                export type l_entry = self.structure.Reference_Constraints.O.D
+                                
+                                export type l_id = string
+                            }
+                            
+                            export type constraint = {
+                                readonly 'l entry': self.resolver.Guaranteed_Value_Selection.start.value.constraint.value.reference.constraint.l_entry
+                                readonly 'l id': self.resolver.Guaranteed_Value_Selection.start.value.constraint.value.reference.constraint.l_id
+                            }
+                        }
+                        
+                        export type reference = {
+                            readonly 'property': self.resolver.Guaranteed_Value_Selection.start.value.constraint.value.reference.property
+                            readonly 'constraint': self.resolver.Guaranteed_Value_Selection.start.value.constraint.value.reference.constraint
+                        }
+                    }
+                    
+                    export type value =
+                        | readonly ['component', self.resolver.Guaranteed_Value_Selection.start.value.constraint.value.component]
+                        | readonly ['reference', self.resolver.Guaranteed_Value_Selection.start.value.constraint.value.reference]
+                    
+                    export type result = self.structure.Value
+                }
+                
+                export type constraint = {
+                    readonly 'value': self.resolver.Guaranteed_Value_Selection.start.value.constraint.value
+                    readonly 'result': self.resolver.Guaranteed_Value_Selection.start.value.constraint.result
+                }
+                
+                export namespace parameter {
+                    
+                    export type l_entry = self.declarations.Signature.values.D
+                    
+                    export type l_id = string
+                }
+                
+                export type parameter = {
+                    readonly 'l entry': self.resolver.Guaranteed_Value_Selection.start.value.parameter.l_entry
+                    readonly 'l id': self.resolver.Guaranteed_Value_Selection.start.value.parameter.l_id
+                }
+                
+                export namespace result {
+                    
+                    export namespace value {
+                        
+                        export namespace list {
+                            
+                            export namespace property {
+                                
+                                export namespace constraints {
+                                    
+                                    export type list = self.structure.Value.list
+                                    
+                                    export type result = self.structure.Optional_Result.O
+                                }
+                                
+                                export type constraints = {
+                                    readonly 'list': self.resolver.Guaranteed_Value_Selection.start.value.result.value.list.property.constraints.list
+                                    readonly 'result': self.resolver.Guaranteed_Value_Selection.start.value.result.value.list.property.constraints.result
+                                }
+                                
+                                export namespace value {
+                                    
+                                    export type l_entry = self.structure.Group.D
+                                    
+                                    export type l_id = string
+                                }
+                                
+                                export type value = {
+                                    readonly 'l entry': self.resolver.Guaranteed_Value_Selection.start.value.result.value.list.property.value.l_entry
+                                    readonly 'l id': self.resolver.Guaranteed_Value_Selection.start.value.result.value.list.property.value.l_id
+                                }
+                            }
+                            
+                            export type property = {
+                                readonly 'constraints': self.resolver.Guaranteed_Value_Selection.start.value.result.value.list.property.constraints
+                                readonly 'value': self.resolver.Guaranteed_Value_Selection.start.value.result.value.list.property.value
+                            }
+                        }
+                        
+                        export type list = {
+                            readonly 'property': self.resolver.Guaranteed_Value_Selection.start.value.result.value.list.property
+                        }
+                        
+                        export namespace state {
+                            
+                            export namespace property {
+                                
+                                export namespace constraints {
+                                    
+                                    export type state = self.structure.Value.state
+                                    
+                                    export type result = self.structure.Optional_Result.O
+                                }
+                                
+                                export type constraints = {
+                                    readonly 'state': self.resolver.Guaranteed_Value_Selection.start.value.result.value.state.property.constraints.state
+                                    readonly 'result': self.resolver.Guaranteed_Value_Selection.start.value.result.value.state.property.constraints.result
+                                }
+                                
+                                export namespace value {
+                                    
+                                    export type l_entry = self.structure.Group.D
+                                    
+                                    export type l_id = string
+                                }
+                                
+                                export type value = {
+                                    readonly 'l entry': self.resolver.Guaranteed_Value_Selection.start.value.result.value.state.property.value.l_entry
+                                    readonly 'l id': self.resolver.Guaranteed_Value_Selection.start.value.result.value.state.property.value.l_id
+                                }
+                            }
+                            
+                            export type property = {
+                                readonly 'constraints': self.resolver.Guaranteed_Value_Selection.start.value.result.value.state.property.constraints
+                                readonly 'value': self.resolver.Guaranteed_Value_Selection.start.value.result.value.state.property.value
+                            }
+                        }
+                        
+                        export type state = {
+                            readonly 'property': self.resolver.Guaranteed_Value_Selection.start.value.result.value.state.property
+                        }
+                    }
+                    
+                    export type value =
+                        | readonly ['list', self.resolver.Guaranteed_Value_Selection.start.value.result.value.list]
+                        | readonly ['state', self.resolver.Guaranteed_Value_Selection.start.value.result.value.state]
+                    
+                    export type result = self.structure.Value
+                }
+                
+                export type result = {
+                    readonly 'value': self.resolver.Guaranteed_Value_Selection.start.value.result.value
+                    readonly 'result': self.resolver.Guaranteed_Value_Selection.start.value.result.result
+                }
             }
             
-            export namespace group {
+            export type value =
+                | readonly ['optional fallback', self.resolver.Guaranteed_Value_Selection.start.value.optional_fallback]
+                | readonly ['sibling property', self.resolver.Guaranteed_Value_Selection.start.value.sibling_property]
+                | readonly ['parent sibling', self.resolver.Guaranteed_Value_Selection.start.value.parent_sibling]
+                | readonly ['option constraint', self.resolver.Guaranteed_Value_Selection.start.value.option_constraint]
+                | readonly ['sibling option constraint', self.resolver.Guaranteed_Value_Selection.start.value.sibling_option_constraint]
+                | readonly ['list cursor', self.resolver.Guaranteed_Value_Selection.start.value.list_cursor]
+                | readonly ['linked entry', self.resolver.Guaranteed_Value_Selection.start.value.linked_entry]
+                | readonly ['constraint', self.resolver.Guaranteed_Value_Selection.start.value.constraint]
+                | readonly ['parameter', self.resolver.Guaranteed_Value_Selection.start.value.parameter]
+                | readonly ['result', self.resolver.Guaranteed_Value_Selection.start.value.result]
+            
+            export type result = self.structure.Value
+        }
+        
+        export type start = {
+            readonly 'value': self.resolver.Guaranteed_Value_Selection.start.value
+            readonly 'result': self.resolver.Guaranteed_Value_Selection.start.result
+        }
+        
+        export type tail = self.resolver.Relative_Value_Selection
+    }
+    
+    export type Guaranteed_Value_Selection = {
+        readonly 'start': self.resolver.Guaranteed_Value_Selection.start
+        readonly 'tail': self.resolver.Guaranteed_Value_Selection.tail
+    }
+    
+    export namespace Lookup_Selection {
+        
+        export namespace type_ {
+            
+            export namespace value {
                 
-                export type constraints = {
-                    readonly 'definition': s_self.resolver.Value.type_.group.constraints.definition
+                export namespace acyclic {
+                    
+                    export namespace value {
+                        
+                        export namespace siblings {
+                            
+                            export namespace constraints {
+                                
+                                export type cd = self.structure.Dictionary
+                            }
+                            
+                            export type constraints = {
+                                readonly 'cd': self.resolver.Lookup_Selection.type_.value.acyclic.value.siblings.constraints.cd
+                            }
+                            
+                            export type value = null
+                        }
+                        
+                        export type siblings = {
+                            readonly 'constraints': self.resolver.Lookup_Selection.type_.value.acyclic.value.siblings.constraints
+                            readonly 'value': self.resolver.Lookup_Selection.type_.value.acyclic.value.siblings.value
+                        }
+                        
+                        export namespace resolved_dictionary {
+                            
+                            export namespace selection {
+                                
+                                export namespace constraints {
+                                    
+                                    export type dictionary = self.structure.Value.dictionary
+                                }
+                                
+                                export type constraints = {
+                                    readonly 'dictionary': self.resolver.Lookup_Selection.type_.value.acyclic.value.resolved_dictionary.selection.constraints.dictionary
+                                }
+                                
+                                export type value = self.resolver.Guaranteed_Value_Selection
+                            }
+                            
+                            export type selection = {
+                                readonly 'constraints': self.resolver.Lookup_Selection.type_.value.acyclic.value.resolved_dictionary.selection.constraints
+                                readonly 'value': self.resolver.Lookup_Selection.type_.value.acyclic.value.resolved_dictionary.selection.value
+                            }
+                        }
+                        
+                        export type resolved_dictionary = {
+                            readonly 'selection': self.resolver.Lookup_Selection.type_.value.acyclic.value.resolved_dictionary.selection
+                        }
+                    }
+                    
+                    export type value =
+                        | readonly ['siblings', self.resolver.Lookup_Selection.type_.value.acyclic.value.siblings]
+                        | readonly ['resolved dictionary', self.resolver.Lookup_Selection.type_.value.acyclic.value.resolved_dictionary]
+                    
+                    export type result = self.structure.Dictionary
                 }
                 
-                export namespace constraints {
-                    
-                    export type definition = s_self.structure.Value.type_.group
-                    
+                export type acyclic = {
+                    readonly 'value': self.resolver.Lookup_Selection.type_.value.acyclic.value
+                    readonly 'result': self.resolver.Lookup_Selection.type_.value.acyclic.result
                 }
                 
-                export type value = p_.Dictionary<s_self.resolver.Value.type_.group.value.D>
+                export namespace cyclic {
+                    
+                    export namespace value {
+                        
+                        export namespace siblings {
+                            
+                            export namespace constraints {
+                                
+                                export type cd = self.structure.Dictionary
+                            }
+                            
+                            export type constraints = {
+                                readonly 'cd': self.resolver.Lookup_Selection.type_.value.cyclic.value.siblings.constraints.cd
+                            }
+                            
+                            export type value = null
+                        }
+                        
+                        export type siblings = {
+                            readonly 'constraints': self.resolver.Lookup_Selection.type_.value.cyclic.value.siblings.constraints
+                            readonly 'value': self.resolver.Lookup_Selection.type_.value.cyclic.value.siblings.value
+                        }
+                    }
+                    
+                    export type value =
+                        | readonly ['siblings', self.resolver.Lookup_Selection.type_.value.cyclic.value.siblings]
+                    
+                    export type result = self.structure.Dictionary
+                }
+                
+                export type cyclic = {
+                    readonly 'value': self.resolver.Lookup_Selection.type_.value.cyclic.value
+                    readonly 'result': self.resolver.Lookup_Selection.type_.value.cyclic.result
+                }
+                
+                export namespace parameter {
+                    
+                    export type l_entry = self.declarations.Signature.lookups.D
+                    
+                    export type l_id = string
+                }
+                
+                export type parameter = {
+                    readonly 'l entry': self.resolver.Lookup_Selection.type_.value.parameter.l_entry
+                    readonly 'l id': self.resolver.Lookup_Selection.type_.value.parameter.l_id
+                }
+            }
+            
+            export type value =
+                | readonly ['acyclic', self.resolver.Lookup_Selection.type_.value.acyclic]
+                | readonly ['cyclic', self.resolver.Lookup_Selection.type_.value.cyclic]
+                | readonly ['parameter', self.resolver.Lookup_Selection.type_.value.parameter]
+            
+            export type result = self.structure.Dictionary
+        }
+        
+        export type type_ = {
+            readonly 'value': self.resolver.Lookup_Selection.type_.value
+            readonly 'result': self.resolver.Lookup_Selection.type_.result
+        }
+    }
+    
+    export type Lookup_Selection = {
+        readonly 'type': self.resolver.Lookup_Selection.type_
+    }
+    
+    export namespace Reference_Constraints {
+        
+        export namespace O {
+            
+            export namespace constraints {
+                
+                export type declarations = self.structure.Reference_Constraints.O
+            }
+            
+            export type constraints = {
+                readonly 'declarations': self.resolver.Reference_Constraints.O.constraints.declarations
+            }
+            
+            export namespace value {
+                
+                export namespace D {
+                    
+                    export type benchmark = self.structure.Reference_Constraints.O.D
+                    
+                    export namespace value {
+                        
+                        export namespace start {
+                            
+                            export namespace value {
+                                
+                                export type value = null
+                                
+                                export namespace sibling {
+                                    
+                                    export type l_entry = self.structure.Reference_Constraints.O.D
+                                    
+                                    export type l_id = string
+                                }
+                                
+                                export type sibling = {
+                                    readonly 'l entry': self.resolver.Reference_Constraints.O.value.D.value.start.value.sibling.l_entry
+                                    readonly 'l id': self.resolver.Reference_Constraints.O.value.D.value.start.value.sibling.l_id
+                                }
+                            }
+                            
+                            export type value =
+                                | readonly ['value', self.resolver.Reference_Constraints.O.value.D.value.start.value.value]
+                                | readonly ['sibling', self.resolver.Reference_Constraints.O.value.D.value.start.value.sibling]
+                            
+                            export type result = self.structure.Value
+                        }
+                        
+                        export type start = {
+                            readonly 'value': self.resolver.Reference_Constraints.O.value.D.value.start.value
+                            readonly 'result': self.resolver.Reference_Constraints.O.value.D.value.start.result
+                        }
+                        
+                        export namespace constraint {
+                            
+                            export type selection = self.resolver.Relative_Value_Selection
+                            
+                            export namespace type_ {
+                                
+                                export namespace value {
+                                    
+                                    export namespace state {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type state = self.structure.Value.state
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'state': self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value.state.constraints.state
+                                        }
+                                        
+                                        export namespace value {
+                                            
+                                            export namespace option {
+                                                
+                                                export type l_entry = self.structure.Value.state.options.D
+                                                
+                                                export type l_id = string
+                                            }
+                                            
+                                            export type option = {
+                                                readonly 'l entry': self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value.state.value.option.l_entry
+                                                readonly 'l id': self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value.state.value.option.l_id
+                                            }
+                                        }
+                                        
+                                        export type value = {
+                                            readonly 'option': self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value.state.value.option
+                                        }
+                                    }
+                                    
+                                    export type state = {
+                                        readonly 'constraints': self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value.state.constraints
+                                        readonly 'value': self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value.state.value
+                                    }
+                                    
+                                    export namespace optional_value {
+                                        
+                                        export namespace constraints {
+                                            
+                                            export type optional = self.structure.Value.optional
+                                        }
+                                        
+                                        export type constraints = {
+                                            readonly 'optional': self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value.optional_value.constraints.optional
+                                        }
+                                        
+                                        export namespace value {}
+                                        
+                                        export type value = null
+                                    }
+                                    
+                                    export type optional_value = {
+                                        readonly 'constraints': self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value.optional_value.constraints
+                                        readonly 'value': self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value.optional_value.value
+                                    }
+                                }
+                                
+                                export type value =
+                                    | readonly ['state', self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value.state]
+                                    | readonly ['optional value', self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value.optional_value]
+                                
+                                export type result = self.structure.Value
+                            }
+                            
+                            export type type_ = {
+                                readonly 'value': self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.value
+                                readonly 'result': self.resolver.Reference_Constraints.O.value.D.value.constraint.type_.result
+                            }
+                        }
+                        
+                        export type constraint = {
+                            readonly 'selection': self.resolver.Reference_Constraints.O.value.D.value.constraint.selection
+                            readonly 'type': self.resolver.Reference_Constraints.O.value.D.value.constraint.type_
+                        }
+                    }
+                    
+                    export type value = {
+                        readonly 'start': self.resolver.Reference_Constraints.O.value.D.value.start
+                        readonly 'constraint': self.resolver.Reference_Constraints.O.value.D.value.constraint
+                    }
+                }
+                
+                export type D = {
+                    readonly 'benchmark': self.resolver.Reference_Constraints.O.value.D.benchmark
+                    readonly 'value': self.resolver.Reference_Constraints.O.value.D.value
+                }
+            }
+            
+            export type value = p_.Dictionary<self.resolver.Reference_Constraints.O.value.D>
+        }
+        
+        export type O = {
+            readonly 'constraints': self.resolver.Reference_Constraints.O.constraints
+            readonly 'value': self.resolver.Reference_Constraints.O.value
+        }
+    }
+    
+    export type Reference_Constraints = p_.Optional_Value<self.resolver.Reference_Constraints.O>
+    
+    export namespace Resolver {
+        
+        export namespace namespaces {
+            
+            export namespace D {
+                
+                export type benchmark = self.declarations.Namespaces.D
+                
+                export type value = self.resolver.Resolver
+            }
+            
+            export type D = {
+                readonly 'benchmark': self.resolver.Resolver.namespaces.D.benchmark
+                readonly 'value': self.resolver.Resolver.namespaces.D.value
+            }
+        }
+        
+        export type namespaces = p_.Dictionary<self.resolver.Resolver.namespaces.D>
+        
+        export namespace types {
+            
+            export namespace D {
+                
+                export type benchmark = self.declarations.Declarations.D
                 
                 export namespace value {
                     
-                    export type D = {
-                        readonly 'benchmark': s_self.resolver.Value.type_.group.value.D.benchmark
-                        readonly 'value': s_self.resolver.Value.type_.group.value.D.value
+                    export type root_value_resolver = self.resolver.Value
+                }
+                
+                export type value = {
+                    readonly 'root value resolver': self.resolver.Resolver.types.D.value.root_value_resolver
+                }
+            }
+            
+            export type D = {
+                readonly 'benchmark': self.resolver.Resolver.types.D.benchmark
+                readonly 'value': self.resolver.Resolver.types.D.value
+            }
+        }
+        
+        export type types = p_.Dictionary<self.resolver.Resolver.types.D>
+    }
+    
+    export type Resolver = {
+        readonly 'namespaces': self.resolver.Resolver.namespaces
+        readonly 'types': self.resolver.Resolver.types
+    }
+    
+    export namespace Result_Selection {
+        
+        export namespace value {
+            
+            export type context = self.resolver.Guaranteed_Value_Selection
+            
+            export type value = self.resolver.Relative_Value_Selection
+        }
+        
+        export type value =
+            | readonly ['context', self.resolver.Result_Selection.value.context]
+            | readonly ['value', self.resolver.Result_Selection.value.value]
+        
+        export type result = self.structure.Value
+    }
+    
+    export type Result_Selection = {
+        readonly 'value': self.resolver.Result_Selection.value
+        readonly 'result': self.resolver.Result_Selection.result
+    }
+    
+    export namespace Checks {
+        
+        export namespace O {
+            
+            export namespace D {
+                
+                export type expected = self.resolver.Result_Selection
+                
+                export type actual = self.resolver.Result_Selection
+            }
+            
+            export type D = {
+                readonly 'expected': self.resolver.Checks.O.D.expected
+                readonly 'actual': self.resolver.Checks.O.D.actual
+            }
+        }
+        
+        export type O = p_.Dictionary<self.resolver.Checks.O.D>
+    }
+    
+    export type Checks = p_.Optional_Value<self.resolver.Checks.O>
+    
+    export namespace Value {
+        
+        export namespace component {
+            
+            export namespace constraints {
+                
+                export type definition = self.structure.Value.component
+            }
+            
+            export type constraints = {
+                readonly 'definition': self.resolver.Value.component.constraints.definition
+            }
+            
+            export namespace value {
+                
+                export namespace location {
+                    
+                    export namespace value {
+                        
+                        export namespace local {
+                            
+                            export type l_entry = self.declarations.Declarations.D
+                            
+                            export type l_id = string
+                        }
+                        
+                        export type local = {
+                            readonly 'l entry': self.resolver.Value.component.value.location.value.local.l_entry
+                            readonly 'l id': self.resolver.Value.component.value.location.value.local.l_id
+                        }
+                        
+                        export namespace child_namespace {
+                            
+                            export namespace namespace {
+                                
+                                export type l_entry = self.declarations.Namespaces.D
+                                
+                                export type l_id = string
+                            }
+                            
+                            export type namespace = {
+                                readonly 'l entry': self.resolver.Value.component.value.location.value.child_namespace.namespace.l_entry
+                                readonly 'l id': self.resolver.Value.component.value.location.value.child_namespace.namespace.l_id
+                            }
+                            
+                            export namespace resolver {
+                                
+                                export namespace constraints {
+                                    
+                                    export type public_ = self.structure.Type.visibility.public_
+                                }
+                                
+                                export type constraints = {
+                                    readonly 'public': self.resolver.Value.component.value.location.value.child_namespace.resolver.constraints.public_
+                                }
+                                
+                                export namespace value {
+                                    
+                                    export type l_entry = self.declarations.Declarations.D
+                                    
+                                    export type l_id = string
+                                }
+                                
+                                export type value = {
+                                    readonly 'l entry': self.resolver.Value.component.value.location.value.child_namespace.resolver.value.l_entry
+                                    readonly 'l id': self.resolver.Value.component.value.location.value.child_namespace.resolver.value.l_id
+                                }
+                            }
+                            
+                            export type resolver = {
+                                readonly 'constraints': self.resolver.Value.component.value.location.value.child_namespace.resolver.constraints
+                                readonly 'value': self.resolver.Value.component.value.location.value.child_namespace.resolver.value
+                            }
+                        }
+                        
+                        export type child_namespace = {
+                            readonly 'namespace': self.resolver.Value.component.value.location.value.child_namespace.namespace
+                            readonly 'resolver': self.resolver.Value.component.value.location.value.child_namespace.resolver
+                        }
+                        
+                        export namespace sibling_namespace {
+                            
+                            export namespace constraints {
+                                
+                                export type declarations = self.declarations.Namespaces
+                            }
+                            
+                            export type constraints = {
+                                readonly 'declarations': self.resolver.Value.component.value.location.value.sibling_namespace.constraints.declarations
+                            }
+                            
+                            export namespace value {
+                                
+                                export namespace namespace {
+                                    
+                                    export type l_entry = self.declarations.Namespaces.D
+                                    
+                                    export type l_id = string
+                                }
+                                
+                                export type namespace = {
+                                    readonly 'l entry': self.resolver.Value.component.value.location.value.sibling_namespace.value.namespace.l_entry
+                                    readonly 'l id': self.resolver.Value.component.value.location.value.sibling_namespace.value.namespace.l_id
+                                }
+                                
+                                export namespace resolver {
+                                    
+                                    export namespace constraints {
+                                        
+                                        export type public_ = self.structure.Type.visibility.public_
+                                    }
+                                    
+                                    export type constraints = {
+                                        readonly 'public': self.resolver.Value.component.value.location.value.sibling_namespace.value.resolver.constraints.public_
+                                    }
+                                    
+                                    export namespace value {
+                                        
+                                        export type l_entry = self.declarations.Declarations.D
+                                        
+                                        export type l_id = string
+                                    }
+                                    
+                                    export type value = {
+                                        readonly 'l entry': self.resolver.Value.component.value.location.value.sibling_namespace.value.resolver.value.l_entry
+                                        readonly 'l id': self.resolver.Value.component.value.location.value.sibling_namespace.value.resolver.value.l_id
+                                    }
+                                }
+                                
+                                export type resolver = {
+                                    readonly 'constraints': self.resolver.Value.component.value.location.value.sibling_namespace.value.resolver.constraints
+                                    readonly 'value': self.resolver.Value.component.value.location.value.sibling_namespace.value.resolver.value
+                                }
+                            }
+                            
+                            export type value = {
+                                readonly 'namespace': self.resolver.Value.component.value.location.value.sibling_namespace.value.namespace
+                                readonly 'resolver': self.resolver.Value.component.value.location.value.sibling_namespace.value.resolver
+                            }
+                        }
+                        
+                        export type sibling_namespace = {
+                            readonly 'constraints': self.resolver.Value.component.value.location.value.sibling_namespace.constraints
+                            readonly 'value': self.resolver.Value.component.value.location.value.sibling_namespace.value
+                        }
                     }
                     
-                    export namespace D {
+                    export type value =
+                        | readonly ['local', self.resolver.Value.component.value.location.value.local]
+                        | readonly ['child namespace', self.resolver.Value.component.value.location.value.child_namespace]
+                        | readonly ['sibling namespace', self.resolver.Value.component.value.location.value.sibling_namespace]
+                    
+                    export type result = self.declarations.Declarations.D
+                }
+                
+                export type location = {
+                    readonly 'value': self.resolver.Value.component.value.location.value
+                    readonly 'result': self.resolver.Value.component.value.location.result
+                }
+                
+                export namespace arguments_ {
+                    
+                    export namespace O {
                         
-                        export type benchmark = s_self.structure.Group.D
+                        export namespace types {
+                            
+                            export namespace O {
+                                
+                                export namespace D {
+                                    
+                                    export type benchmark = self.declarations.Signature.values.D
+                                    
+                                    export namespace value {
+                                        
+                                        export namespace optional {
+                                            
+                                            export type not_set = null
+                                            
+                                            export type set_ = self.resolver.Guaranteed_Value_Selection
+                                            
+                                            export type selection = self.resolver.Possible_Value_Selection
+                                        }
+                                        
+                                        export type optional =
+                                            | readonly ['not set', self.resolver.Value.component.value.arguments_.O.types.O.D.value.optional.not_set]
+                                            | readonly ['set', self.resolver.Value.component.value.arguments_.O.types.O.D.value.optional.set_]
+                                            | readonly ['selection', self.resolver.Value.component.value.arguments_.O.types.O.D.value.optional.selection]
+                                        
+                                        export type required = self.resolver.Guaranteed_Value_Selection
+                                        
+                                        export namespace parameter {
+                                            
+                                            export type l_entry = self.declarations.Signature.values.D
+                                            
+                                            export type l_id = string
+                                        }
+                                        
+                                        export type parameter = {
+                                            readonly 'l entry': self.resolver.Value.component.value.arguments_.O.types.O.D.value.parameter.l_entry
+                                            readonly 'l id': self.resolver.Value.component.value.arguments_.O.types.O.D.value.parameter.l_id
+                                        }
+                                    }
+                                    
+                                    export type value =
+                                        | readonly ['optional', self.resolver.Value.component.value.arguments_.O.types.O.D.value.optional]
+                                        | readonly ['required', self.resolver.Value.component.value.arguments_.O.types.O.D.value.required]
+                                        | readonly ['parameter', self.resolver.Value.component.value.arguments_.O.types.O.D.value.parameter]
+                                }
+                                
+                                export type D = {
+                                    readonly 'benchmark': self.resolver.Value.component.value.arguments_.O.types.O.D.benchmark
+                                    readonly 'value': self.resolver.Value.component.value.arguments_.O.types.O.D.value
+                                }
+                            }
+                            
+                            export type O = p_.Dictionary<self.resolver.Value.component.value.arguments_.O.types.O.D>
+                        }
                         
-                        export type value = {
-                            readonly 'resolver': s_self.resolver.Value.type_.group.value.D.value.resolver
+                        export type types = p_.Optional_Value<self.resolver.Value.component.value.arguments_.O.types.O>
+                        
+                        export namespace lookups {
+                            
+                            export namespace O {
+                                
+                                export namespace D {
+                                    
+                                    export type benchmark = self.declarations.Signature.lookups.D
+                                    
+                                    export namespace value {
+                                        
+                                        export type acyclic = null
+                                        
+                                        export type cyclic = null
+                                        
+                                        export type selection = self.resolver.Lookup_Selection
+                                    }
+                                    
+                                    export type value =
+                                        | readonly ['acyclic', self.resolver.Value.component.value.arguments_.O.lookups.O.D.value.acyclic]
+                                        | readonly ['cyclic', self.resolver.Value.component.value.arguments_.O.lookups.O.D.value.cyclic]
+                                        | readonly ['selection', self.resolver.Value.component.value.arguments_.O.lookups.O.D.value.selection]
+                                }
+                                
+                                export type D = {
+                                    readonly 'benchmark': self.resolver.Value.component.value.arguments_.O.lookups.O.D.benchmark
+                                    readonly 'value': self.resolver.Value.component.value.arguments_.O.lookups.O.D.value
+                                }
+                            }
+                            
+                            export type O = p_.Dictionary<self.resolver.Value.component.value.arguments_.O.lookups.O.D>
+                        }
+                        
+                        export type lookups = p_.Optional_Value<self.resolver.Value.component.value.arguments_.O.lookups.O>
+                    }
+                    
+                    export type O = {
+                        readonly 'types': self.resolver.Value.component.value.arguments_.O.types
+                        readonly 'lookups': self.resolver.Value.component.value.arguments_.O.lookups
+                    }
+                }
+                
+                export type arguments_ = p_.Optional_Value<self.resolver.Value.component.value.arguments_.O>
+                
+                export type constraints = self.resolver.Reference_Constraints
+            }
+            
+            export type value = {
+                readonly 'location': self.resolver.Value.component.value.location
+                readonly 'arguments': self.resolver.Value.component.value.arguments_
+                readonly 'constraints': self.resolver.Value.component.value.constraints
+            }
+        }
+        
+        export type component = {
+            readonly 'constraints': self.resolver.Value.component.constraints
+            readonly 'value': self.resolver.Value.component.value
+        }
+        
+        export namespace dictionary {
+            
+            export namespace constraints {
+                
+                export type definition = self.structure.Value.dictionary
+            }
+            
+            export type constraints = {
+                readonly 'definition': self.resolver.Value.dictionary.constraints.definition
+            }
+            
+            export namespace value {
+                
+                export type resolver = self.resolver.Value
+                
+                export namespace benchmark {
+                    
+                    export namespace O {
+                        
+                        export namespace constraints {
+                            
+                            export type benchmark = self.structure.Dictionary.benchmark.O
+                        }
+                        
+                        export type constraints = {
+                            readonly 'benchmark': self.resolver.Value.dictionary.value.benchmark.O.constraints.benchmark
                         }
                         
                         export namespace value {
                             
-                            export type resolver = s_self.resolver.Value
-                            
-                        }
-                        
-                    }
-                    
-                }
-                
-            }
-            
-            export type list = {
-                readonly 'constraints': s_self.resolver.Value.type_.list.constraints
-                readonly 'value': s_self.resolver.Value.type_.list.value
-            }
-            
-            export namespace list {
-                
-                export type constraints = {
-                    readonly 'definition': s_self.resolver.Value.type_.list.constraints.definition
-                }
-                
-                export namespace constraints {
-                    
-                    export type definition = s_self.structure.Value.type_.list
-                    
-                }
-                
-                export type value = {
-                    readonly 'resolver': s_self.resolver.Value.type_.list.value.resolver
-                    readonly 'result': s_self.resolver.Value.type_.list.value.result
-                }
-                
-                export namespace value {
-                    
-                    export type resolver = s_self.resolver.Value
-                    
-                    export type result = p_.Optional_Value<s_self.resolver.Value.type_.list.value.result.O>
-                    
-                    export namespace result {
-                        
-                        export type O = {
-                            readonly 'constraints': s_self.resolver.Value.type_.list.value.result.O.constraints
-                            readonly 'value': s_self.resolver.Value.type_.list.value.result.O.value
-                        }
-                        
-                        export namespace O {
-                            
-                            export type constraints = {
-                                readonly 'definition': s_self.resolver.Value.type_.list.value.result.O.constraints.definition
-                                readonly 'result': s_self.resolver.Value.type_.list.value.result.O.constraints.result
-                            }
-                            
-                            export namespace constraints {
+                            export namespace selection {
                                 
-                                export type definition = s_self.structure.Value.type_.list
-                                
-                                export type result = s_self.structure.Optional_Result.O
-                                
-                            }
-                            
-                            export type value = {
-                                readonly 'initial': s_self.resolver.Value.type_.list.value.result.O.value.initial
-                                readonly 'next': s_self.resolver.Value.type_.list.value.result.O.value.next
-                            }
-                            
-                            export namespace value {
-                                
-                                export type initial = s_self.resolver.Guaranteed_Value_Selection
-                                
-                                export type next = s_self.resolver.Result_Selection
-                                
-                            }
-                            
-                        }
-                        
-                    }
-                    
-                }
-                
-            }
-            
-            export type nothing = {
-                readonly 'constraints': s_self.resolver.Value.type_.nothing.constraints
-                readonly 'value': s_self.resolver.Value.type_.nothing.value
-            }
-            
-            export namespace nothing {
-                
-                export type constraints = {
-                    readonly 'definition': s_self.resolver.Value.type_.nothing.constraints.definition
-                }
-                
-                export namespace constraints {
-                    
-                    export type definition = s_self.structure.Value.type_.nothing
-                    
-                }
-                
-                export type value = null
-                
-            }
-            
-            export type simple = {
-                readonly 'constraints': s_self.resolver.Value.type_.simple.constraints
-                readonly 'value': s_self.resolver.Value.type_.simple.value
-            }
-            
-            export namespace simple {
-                
-                export type constraints = {
-                    readonly 'definition': s_self.resolver.Value.type_.simple.constraints.definition
-                }
-                
-                export namespace constraints {
-                    
-                    export type definition = s_self.structure.Value.type_.simple.value
-                    
-                }
-                
-                export type value = null
-                
-            }
-            
-            export type optional = {
-                readonly 'constraints': s_self.resolver.Value.type_.optional.constraints
-                readonly 'value': s_self.resolver.Value.type_.optional.value
-            }
-            
-            export namespace optional {
-                
-                export type constraints = {
-                    readonly 'definition': s_self.resolver.Value.type_.optional.constraints.definition
-                }
-                
-                export namespace constraints {
-                    
-                    export type definition = s_self.structure.Value.type_.optional
-                    
-                }
-                
-                export type value = {
-                    readonly 'presence': s_self.resolver.Value.type_.optional.value.presence
-                    readonly 'constraints': s_self.resolver.Value.type_.optional.value.constraints
-                    readonly 'resolver': s_self.resolver.Value.type_.optional.value.resolver
-                    readonly 'not set constraints': s_self.resolver.Value.type_.optional.value.not_set_constraints
-                    readonly 'result': s_self.resolver.Value.type_.optional.value.result
-                    readonly 'checks': s_self.resolver.Value.type_.optional.value.checks
-                }
-                
-                export namespace value {
-                    
-                    export type presence = p_.Optional_Value<s_self.resolver.Value.type_.optional.value.presence.O>
-                    
-                    export namespace presence {
-                        
-                        export type O = s_self.resolver.Possible_Value_Selection
-                        
-                    }
-                    
-                    export type constraints = s_self.resolver.Option_Constraints
-                    
-                    export type resolver = s_self.resolver.Value
-                    
-                    export type not_set_constraints = p_.Optional_Value<s_self.resolver.Value.type_.optional.value.not_set_constraints.O>
-                    
-                    export namespace not_set_constraints {
-                        
-                        export type O = p_.Dictionary<s_self.resolver.Value.type_.optional.value.not_set_constraints.O.D>
-                        
-                        export namespace O {
-                            
-                            export type D = s_self.resolver.Possible_Value_Selection
-                            
-                        }
-                        
-                    }
-                    
-                    export type result = p_.Optional_Value<s_self.resolver.Value.type_.optional.value.result.O>
-                    
-                    export namespace result {
-                        
-                        export type O = {
-                            readonly 'constraints': s_self.resolver.Value.type_.optional.value.result.O.constraints
-                            readonly 'value': s_self.resolver.Value.type_.optional.value.result.O.value
-                        }
-                        
-                        export namespace O {
-                            
-                            export type constraints = {
-                                readonly 'definition': s_self.resolver.Value.type_.optional.value.result.O.constraints.definition
-                                readonly 'result': s_self.resolver.Value.type_.optional.value.result.O.constraints.result
-                            }
-                            
-                            export namespace constraints {
-                                
-                                export type definition = s_self.structure.Value.type_.optional
-                                
-                                export type result = s_self.structure.Optional_Result.O
-                                
-                            }
-                            
-                            export type value = s_self.resolver.Result_Selection
-                            
-                        }
-                        
-                    }
-                    
-                    export type checks = s_self.resolver.Checks
-                    
-                }
-                
-            }
-            
-            export type reference = {
-                readonly 'constraints': s_self.resolver.Value.type_.reference.constraints
-                readonly 'value': s_self.resolver.Value.type_.reference.value
-            }
-            
-            export namespace reference {
-                
-                export type constraints = {
-                    readonly 'definition': s_self.resolver.Value.type_.reference.constraints.definition
-                }
-                
-                export namespace constraints {
-                    
-                    export type definition = s_self.structure.Value.type_.reference
-                    
-                }
-                
-                export type value = {
-                    readonly 'type': s_self.resolver.Value.type_.reference.value.type_
-                }
-                
-                export namespace value {
-                    
-                    export type type_ = {
-                        readonly 'lookup': s_self.resolver.Value.type_.reference.value.type_.lookup
-                        readonly 'constraints': s_self.resolver.Value.type_.reference.value.type_.constraints
-                    }
-                    
-                    export namespace type_ {
-                        
-                        export type lookup = s_self.resolver.Lookup_Selection
-                        
-                        export type constraints = s_self.resolver.Reference_Constraints
-                        
-                    }
-                    
-                }
-                
-            }
-            
-            export type state = {
-                readonly 'constraints': s_self.resolver.Value.type_.state.constraints
-                readonly 'value': s_self.resolver.Value.type_.state.value
-            }
-            
-            export namespace state {
-                
-                export type constraints = {
-                    readonly 'definition': s_self.resolver.Value.type_.state.constraints.definition
-                }
-                
-                export namespace constraints {
-                    
-                    export type definition = s_self.structure.Value.type_.state
-                    
-                }
-                
-                export type value = {
-                    readonly 'options': s_self.resolver.Value.type_.state.value.options
-                }
-                
-                export namespace value {
-                    
-                    export type options = p_.Dictionary<s_self.resolver.Value.type_.state.value.options.D>
-                    
-                    export namespace options {
-                        
-                        export type D = {
-                            readonly 'benchmark': s_self.resolver.Value.type_.state.value.options.D.benchmark
-                            readonly 'value': s_self.resolver.Value.type_.state.value.options.D.value
-                        }
-                        
-                        export namespace D {
-                            
-                            export type benchmark = s_self.structure.Value.type_.state.options.D
-                            
-                            export type value = {
-                                readonly 'constraints': s_self.resolver.Value.type_.state.value.options.D.value.constraints
-                                readonly 'resolver': s_self.resolver.Value.type_.state.value.options.D.value.resolver
-                                readonly 'result': s_self.resolver.Value.type_.state.value.options.D.value.result
-                                readonly 'checks': s_self.resolver.Value.type_.state.value.options.D.value.checks
-                            }
-                            
-                            export namespace value {
-                                
-                                export type constraints = s_self.resolver.Option_Constraints
-                                
-                                export type resolver = s_self.resolver.Value
-                                
-                                export type result = p_.Optional_Value<s_self.resolver.Value.type_.state.value.options.D.value.result.O>
-                                
-                                export namespace result {
+                                export namespace constraints {
                                     
-                                    export type O = {
-                                        readonly 'constraints': s_self.resolver.Value.type_.state.value.options.D.value.result.O.constraints
-                                        readonly 'value': s_self.resolver.Value.type_.state.value.options.D.value.result.O.value
-                                    }
-                                    
-                                    export namespace O {
-                                        
-                                        export type constraints = {
-                                            readonly 'result': s_self.resolver.Value.type_.state.value.options.D.value.result.O.constraints.result
-                                        }
-                                        
-                                        export namespace constraints {
-                                            
-                                            export type result = s_self.structure.Optional_Result.O
-                                            
-                                        }
-                                        
-                                        export type value = s_self.resolver.Result_Selection
-                                        
-                                    }
-                                    
+                                    export type dictionary = self.structure.Value.dictionary
                                 }
                                 
-                                export type checks = s_self.resolver.Checks
+                                export type constraints = {
+                                    readonly 'dictionary': self.resolver.Value.dictionary.value.benchmark.O.value.selection.constraints.dictionary
+                                }
                                 
+                                export type value = self.resolver.Guaranteed_Value_Selection
                             }
                             
+                            export type selection = {
+                                readonly 'constraints': self.resolver.Value.dictionary.value.benchmark.O.value.selection.constraints
+                                readonly 'value': self.resolver.Value.dictionary.value.benchmark.O.value.selection.value
+                            }
                         }
                         
+                        export type value = {
+                            readonly 'selection': self.resolver.Value.dictionary.value.benchmark.O.value.selection
+                        }
                     }
                     
+                    export type O = {
+                        readonly 'constraints': self.resolver.Value.dictionary.value.benchmark.O.constraints
+                        readonly 'value': self.resolver.Value.dictionary.value.benchmark.O.value
+                    }
                 }
                 
+                export type benchmark = p_.Optional_Value<self.resolver.Value.dictionary.value.benchmark.O>
             }
             
+            export type value = {
+                readonly 'resolver': self.resolver.Value.dictionary.value.resolver
+                readonly 'benchmark': self.resolver.Value.dictionary.value.benchmark
+            }
         }
         
+        export type dictionary = {
+            readonly 'constraints': self.resolver.Value.dictionary.constraints
+            readonly 'value': self.resolver.Value.dictionary.value
+        }
+        
+        export namespace group {
+            
+            export namespace constraints {
+                
+                export type definition = self.structure.Value.group
+            }
+            
+            export type constraints = {
+                readonly 'definition': self.resolver.Value.group.constraints.definition
+            }
+            
+            export namespace value {
+                
+                export namespace D {
+                    
+                    export type benchmark = self.structure.Group.D
+                    
+                    export namespace value {
+                        
+                        export type resolver = self.resolver.Value
+                    }
+                    
+                    export type value = {
+                        readonly 'resolver': self.resolver.Value.group.value.D.value.resolver
+                    }
+                }
+                
+                export type D = {
+                    readonly 'benchmark': self.resolver.Value.group.value.D.benchmark
+                    readonly 'value': self.resolver.Value.group.value.D.value
+                }
+            }
+            
+            export type value = p_.Dictionary<self.resolver.Value.group.value.D>
+        }
+        
+        export type group = {
+            readonly 'constraints': self.resolver.Value.group.constraints
+            readonly 'value': self.resolver.Value.group.value
+        }
+        
+        export namespace list {
+            
+            export namespace constraints {
+                
+                export type definition = self.structure.Value.list
+            }
+            
+            export type constraints = {
+                readonly 'definition': self.resolver.Value.list.constraints.definition
+            }
+            
+            export namespace value {
+                
+                export type resolver = self.resolver.Value
+                
+                export namespace result {
+                    
+                    export namespace O {
+                        
+                        export namespace constraints {
+                            
+                            export type definition = self.structure.Value.list
+                            
+                            export type result = self.structure.Optional_Result.O
+                        }
+                        
+                        export type constraints = {
+                            readonly 'definition': self.resolver.Value.list.value.result.O.constraints.definition
+                            readonly 'result': self.resolver.Value.list.value.result.O.constraints.result
+                        }
+                        
+                        export namespace value {
+                            
+                            export type initial = self.resolver.Guaranteed_Value_Selection
+                            
+                            export type next = self.resolver.Result_Selection
+                        }
+                        
+                        export type value = {
+                            readonly 'initial': self.resolver.Value.list.value.result.O.value.initial
+                            readonly 'next': self.resolver.Value.list.value.result.O.value.next
+                        }
+                    }
+                    
+                    export type O = {
+                        readonly 'constraints': self.resolver.Value.list.value.result.O.constraints
+                        readonly 'value': self.resolver.Value.list.value.result.O.value
+                    }
+                }
+                
+                export type result = p_.Optional_Value<self.resolver.Value.list.value.result.O>
+            }
+            
+            export type value = {
+                readonly 'resolver': self.resolver.Value.list.value.resolver
+                readonly 'result': self.resolver.Value.list.value.result
+            }
+        }
+        
+        export type list = {
+            readonly 'constraints': self.resolver.Value.list.constraints
+            readonly 'value': self.resolver.Value.list.value
+        }
+        
+        export namespace nothing {
+            
+            export namespace constraints {
+                
+                export type definition = self.structure.Value.nothing
+            }
+            
+            export type constraints = {
+                readonly 'definition': self.resolver.Value.nothing.constraints.definition
+            }
+            
+            export type value = null
+        }
+        
+        export type nothing = {
+            readonly 'constraints': self.resolver.Value.nothing.constraints
+            readonly 'value': self.resolver.Value.nothing.value
+        }
+        
+        export namespace simple {
+            
+            export namespace constraints {
+                
+                export type definition = self.structure.Value.simple.value
+            }
+            
+            export type constraints = {
+                readonly 'definition': self.resolver.Value.simple.constraints.definition
+            }
+            
+            export type value = null
+        }
+        
+        export type simple = {
+            readonly 'constraints': self.resolver.Value.simple.constraints
+            readonly 'value': self.resolver.Value.simple.value
+        }
+        
+        export namespace optional {
+            
+            export namespace constraints {
+                
+                export type definition = self.structure.Value.optional
+            }
+            
+            export type constraints = {
+                readonly 'definition': self.resolver.Value.optional.constraints.definition
+            }
+            
+            export namespace value {
+                
+                export namespace presence {
+                    
+                    export type O = self.resolver.Possible_Value_Selection
+                }
+                
+                export type presence = p_.Optional_Value<self.resolver.Value.optional.value.presence.O>
+                
+                export type constraints = self.resolver.Option_Constraints
+                
+                export type resolver = self.resolver.Value
+                
+                export namespace not_set_constraints {
+                    
+                    export namespace O {
+                        
+                        export type D = self.resolver.Possible_Value_Selection
+                    }
+                    
+                    export type O = p_.Dictionary<self.resolver.Value.optional.value.not_set_constraints.O.D>
+                }
+                
+                export type not_set_constraints = p_.Optional_Value<self.resolver.Value.optional.value.not_set_constraints.O>
+                
+                export namespace result {
+                    
+                    export namespace O {
+                        
+                        export namespace constraints {
+                            
+                            export type definition = self.structure.Value.optional
+                            
+                            export type result = self.structure.Optional_Result.O
+                        }
+                        
+                        export type constraints = {
+                            readonly 'definition': self.resolver.Value.optional.value.result.O.constraints.definition
+                            readonly 'result': self.resolver.Value.optional.value.result.O.constraints.result
+                        }
+                        
+                        export type value = self.resolver.Result_Selection
+                    }
+                    
+                    export type O = {
+                        readonly 'constraints': self.resolver.Value.optional.value.result.O.constraints
+                        readonly 'value': self.resolver.Value.optional.value.result.O.value
+                    }
+                }
+                
+                export type result = p_.Optional_Value<self.resolver.Value.optional.value.result.O>
+                
+                export type checks = self.resolver.Checks
+            }
+            
+            export type value = {
+                readonly 'presence': self.resolver.Value.optional.value.presence
+                readonly 'constraints': self.resolver.Value.optional.value.constraints
+                readonly 'resolver': self.resolver.Value.optional.value.resolver
+                readonly 'not set constraints': self.resolver.Value.optional.value.not_set_constraints
+                readonly 'result': self.resolver.Value.optional.value.result
+                readonly 'checks': self.resolver.Value.optional.value.checks
+            }
+        }
+        
+        export type optional = {
+            readonly 'constraints': self.resolver.Value.optional.constraints
+            readonly 'value': self.resolver.Value.optional.value
+        }
+        
+        export namespace reference {
+            
+            export namespace constraints {
+                
+                export type definition = self.structure.Value.reference
+            }
+            
+            export type constraints = {
+                readonly 'definition': self.resolver.Value.reference.constraints.definition
+            }
+            
+            export namespace value {
+                
+                export namespace type_ {
+                    
+                    export type lookup = self.resolver.Lookup_Selection
+                    
+                    export type constraints = self.resolver.Reference_Constraints
+                }
+                
+                export type type_ = {
+                    readonly 'lookup': self.resolver.Value.reference.value.type_.lookup
+                    readonly 'constraints': self.resolver.Value.reference.value.type_.constraints
+                }
+            }
+            
+            export type value = {
+                readonly 'type': self.resolver.Value.reference.value.type_
+            }
+        }
+        
+        export type reference = {
+            readonly 'constraints': self.resolver.Value.reference.constraints
+            readonly 'value': self.resolver.Value.reference.value
+        }
+        
+        export namespace state {
+            
+            export namespace constraints {
+                
+                export type definition = self.structure.Value.state
+            }
+            
+            export type constraints = {
+                readonly 'definition': self.resolver.Value.state.constraints.definition
+            }
+            
+            export namespace value {
+                
+                export namespace options {
+                    
+                    export namespace D {
+                        
+                        export type benchmark = self.structure.Value.state.options.D
+                        
+                        export namespace value {
+                            
+                            export type constraints = self.resolver.Option_Constraints
+                            
+                            export type resolver = self.resolver.Value
+                            
+                            export namespace result {
+                                
+                                export namespace O {
+                                    
+                                    export namespace constraints {
+                                        
+                                        export type result = self.structure.Optional_Result.O
+                                    }
+                                    
+                                    export type constraints = {
+                                        readonly 'result': self.resolver.Value.state.value.options.D.value.result.O.constraints.result
+                                    }
+                                    
+                                    export type value = self.resolver.Result_Selection
+                                }
+                                
+                                export type O = {
+                                    readonly 'constraints': self.resolver.Value.state.value.options.D.value.result.O.constraints
+                                    readonly 'value': self.resolver.Value.state.value.options.D.value.result.O.value
+                                }
+                            }
+                            
+                            export type result = p_.Optional_Value<self.resolver.Value.state.value.options.D.value.result.O>
+                            
+                            export type checks = self.resolver.Checks
+                        }
+                        
+                        export type value = {
+                            readonly 'constraints': self.resolver.Value.state.value.options.D.value.constraints
+                            readonly 'resolver': self.resolver.Value.state.value.options.D.value.resolver
+                            readonly 'result': self.resolver.Value.state.value.options.D.value.result
+                            readonly 'checks': self.resolver.Value.state.value.options.D.value.checks
+                        }
+                    }
+                    
+                    export type D = {
+                        readonly 'benchmark': self.resolver.Value.state.value.options.D.benchmark
+                        readonly 'value': self.resolver.Value.state.value.options.D.value
+                    }
+                }
+                
+                export type options = p_.Dictionary<self.resolver.Value.state.value.options.D>
+            }
+            
+            export type value = {
+                readonly 'options': self.resolver.Value.state.value.options
+            }
+        }
+        
+        export type state = {
+            readonly 'constraints': self.resolver.Value.state.constraints
+            readonly 'value': self.resolver.Value.state.value
+        }
     }
     
+    export type Value =
+        | readonly ['component', self.resolver.Value.component]
+        | readonly ['dictionary', self.resolver.Value.dictionary]
+        | readonly ['group', self.resolver.Value.group]
+        | readonly ['list', self.resolver.Value.list]
+        | readonly ['nothing', self.resolver.Value.nothing]
+        | readonly ['simple', self.resolver.Value.simple]
+        | readonly ['optional', self.resolver.Value.optional]
+        | readonly ['reference', self.resolver.Value.reference]
+        | readonly ['state', self.resolver.Value.state]
+}
+
+export namespace Directory {
+    
+    export namespace group {
+        
+        export namespace nodes {
+            
+            export type D = self.Node
+        }
+        
+        export type nodes = p_.Dictionary<self.Directory.group.nodes.D>
+    }
+    
+    export type group = {
+        readonly 'nodes': self.Directory.group.nodes
+    }
+    
+    export namespace dictionary {
+        
+        export type node = self.Node
+    }
+    
+    export type dictionary = {
+        readonly 'node': self.Directory.dictionary.node
+    }
+}
+
+export type Directory =
+    | readonly ['group', self.Directory.group]
+    | readonly ['dictionary', self.Directory.dictionary]
+
+export namespace Node {
+    
+    export namespace file {
+        
+        export type file_extension = string
+        
+        export namespace type_ {
+            
+            export namespace constraints {
+                
+                export type public_ = self.structure.Type.visibility.public_
+            }
+            
+            export type constraints = {
+                readonly 'public': self.Node.file.type_.constraints.public_
+            }
+            
+            export namespace value {
+                
+                export type l_entry = self.structure.Types.D
+                
+                export type l_id = string
+            }
+            
+            export type value = {
+                readonly 'l entry': self.Node.file.type_.value.l_entry
+                readonly 'l id': self.Node.file.type_.value.l_id
+            }
+        }
+        
+        export type type_ = {
+            readonly 'constraints': self.Node.file.type_.constraints
+            readonly 'value': self.Node.file.type_.value
+        }
+    }
+    
+    export type file = {
+        readonly 'file extension': self.Node.file.file_extension
+        readonly 'type': self.Node.file.type_
+    }
+    
+    export type directory = self.Directory
+}
+
+export type Node =
+    | readonly ['file', self.Node.file]
+    | readonly ['directory', self.Node.directory]
+
+export namespace Type_Specification {
+    
+    export namespace schema {
+        
+        export type structure = self.structure.Structure
+        
+        export namespace resolver {
+            
+            export type declarations = self.declarations.Namespace
+            
+            export type implementations = self.resolver.Resolver
+        }
+        
+        export type resolver = {
+            readonly 'declarations': self.Type_Specification.schema.resolver.declarations
+            readonly 'implementations': self.Type_Specification.schema.resolver.implementations
+        }
+    }
+    
+    export type schema = {
+        readonly 'structure': self.Type_Specification.schema.structure
+        readonly 'resolver': self.Type_Specification.schema.resolver
+    }
+    
+    export type directory = self.Directory
+}
+
+export type Type_Specification = {
+    readonly 'schema': self.Type_Specification.schema
+    readonly 'directory': self.Type_Specification.directory
 }

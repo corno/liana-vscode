@@ -1,103 +1,91 @@
-import type * as p_ from 'pareto-core/schema'
+import type * as p_ from "pareto-core/schema"
 
-import type * as s_self from "./astn_document.js"
+import type * as self from "./astn_document.js"
 
-export type Value = {
-    readonly 'type': s_self.Value.type_
-}
 
 export namespace Value {
     
-    export type type_ =
-        | readonly ['dictionary', s_self.Value.type_.type_.dictionary]
-        | readonly ['group', s_self.Value.type_.type_.group]
-        | readonly ['list', s_self.Value.type_.type_.list]
-        | readonly ['nothing', s_self.Value.type_.type_.nothing]
-        | readonly ['optional', s_self.Value.type_.type_.optional]
-        | readonly ['reference', s_self.Value.type_.type_.reference]
-        | readonly ['state', s_self.Value.type_.type_.state]
-        | readonly ['text', s_self.Value.type_.type_.text]
-    
     export namespace type_ {
-        export namespace type_ {
+        
+        export namespace dictionary {
             
-            export type dictionary = {
-                readonly 'entries': s_self.Value.type_.type_.dictionary.entries
+            export namespace entries {
+                
+                export type D = self.Value
             }
             
-            export namespace dictionary {
-                
-                export type entries = p_.Dictionary<s_self.Value.type_.type_.dictionary.entries.D>
-                
-                export namespace entries {
-                    
-                    export type D = s_self.Value
-                    
-                }
-                
-            }
-            
-            export type group = {
-                readonly 'properties': s_self.Value.type_.type_.group.properties
-            }
-            
-            export namespace group {
-                
-                export type properties = p_.Dictionary<s_self.Value.type_.type_.group.properties.D>
-                
-                export namespace properties {
-                    
-                    export type D = s_self.Value
-                    
-                }
-                
-            }
-            
-            export type list = {
-                readonly 'items': s_self.Value.type_.type_.list.items
-            }
-            
-            export namespace list {
-                
-                export type items = p_.List<s_self.Value.type_.type_.list.items.L>
-                
-                export namespace items {
-                    
-                    export type L = s_self.Value
-                    
-                }
-                
-            }
-            
-            export type nothing = null
-            
-            export type optional = p_.Optional_Value<s_self.Value.type_.type_.optional.O>
-            
-            export namespace optional {
-                
-                export type O = s_self.Value
-                
-            }
-            
-            export type reference = string
-            
-            export type state = {
-                readonly 'option': s_self.Value.type_.type_.state.option
-                readonly 'value': s_self.Value.type_.type_.state.value
-            }
-            
-            export namespace state {
-                
-                export type option = string
-                
-                export type value = s_self.Value
-                
-            }
-            
-            export type text = string
-            
+            export type entries = p_.Dictionary<self.Value.type_.dictionary.entries.D>
         }
         
+        export type dictionary = {
+            readonly 'entries': self.Value.type_.dictionary.entries
+        }
+        
+        export namespace group {
+            
+            export namespace properties {
+                
+                export type D = self.Value
+            }
+            
+            export type properties = p_.Dictionary<self.Value.type_.group.properties.D>
+        }
+        
+        export type group = {
+            readonly 'properties': self.Value.type_.group.properties
+        }
+        
+        export namespace list {
+            
+            export namespace items {
+                
+                export type L = self.Value
+            }
+            
+            export type items = p_.List<self.Value.type_.list.items.L>
+        }
+        
+        export type list = {
+            readonly 'items': self.Value.type_.list.items
+        }
+        
+        export type nothing = null
+        
+        export namespace optional {
+            
+            export type O = self.Value
+        }
+        
+        export type optional = p_.Optional_Value<self.Value.type_.optional.O>
+        
+        export type reference = string
+        
+        export namespace state {
+            
+            export type option = string
+            
+            export type value = self.Value
+        }
+        
+        export type state = {
+            readonly 'option': self.Value.type_.state.option
+            readonly 'value': self.Value.type_.state.value
+        }
+        
+        export type text = string
     }
     
+    export type type_ =
+        | readonly ['dictionary', self.Value.type_.dictionary]
+        | readonly ['group', self.Value.type_.group]
+        | readonly ['list', self.Value.type_.list]
+        | readonly ['nothing', self.Value.type_.nothing]
+        | readonly ['optional', self.Value.type_.optional]
+        | readonly ['reference', self.Value.type_.reference]
+        | readonly ['state', self.Value.type_.state]
+        | readonly ['text', self.Value.type_.text]
+}
+
+export type Value = {
+    readonly 'type': self.Value.type_
 }

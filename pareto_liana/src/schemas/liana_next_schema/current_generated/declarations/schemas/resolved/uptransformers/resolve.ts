@@ -5,32 +5,6 @@ import type * as s_source from "../../../../structure/schemas/unresolved.js"
 import type * as s_target from "../../../../structure/schemas/resolved.js"
 import type * as s_error from "../../../../structure/schemas/resolving.js"
 
-export type Directory = p_.Transformer_With_Error_With_Source_Value_With_Values_And_Lookups<
-    s_target.Directory,
-    s_error.Error,
-    s_source.Directory,
-    {
-        readonly 'types': s_target.structure.Types
-    },
-    null
->
-
-export type Node = p_.Transformer_With_Error_With_Source_Value_With_Values_And_Lookups<
-    s_target.Node,
-    s_error.Error,
-    s_source.Node,
-    {
-        readonly 'types': s_target.structure.Types
-    },
-    null
->
-
-export type Type_Specification = p_.Transformer_With_Error_With_Source_Value<
-    s_target.Type_Specification,
-    s_error.Error,
-    s_source.Type_Specification
->
-
 export namespace structure {
     
     export type Basic_Types = p_.Transformer_With_Error_With_Source_Value<
@@ -369,7 +343,7 @@ export namespace resolver {
         s_source.resolver.Possible_Value_Branches,
         {
             readonly 'target': s_target.structure.Value
-            readonly 'options': s_target.structure.Value.type_.state.options
+            readonly 'options': s_target.structure.Value.state.options
             readonly 'types': s_target.structure.Types
             readonly 'child namespaces': s_target.structure.Namespaces
             readonly 'sibling namespaces': p_schema_deprecated.Optional_Value<s_target.structure.Namespaces>
@@ -531,3 +505,29 @@ export namespace resolver {
         }
     >
 }
+
+export type Directory = p_.Transformer_With_Error_With_Source_Value_With_Values_And_Lookups<
+    s_target.Directory,
+    s_error.Error,
+    s_source.Directory,
+    {
+        readonly 'types': s_target.structure.Types
+    },
+    null
+>
+
+export type Node = p_.Transformer_With_Error_With_Source_Value_With_Values_And_Lookups<
+    s_target.Node,
+    s_error.Error,
+    s_source.Node,
+    {
+        readonly 'types': s_target.structure.Types
+    },
+    null
+>
+
+export type Type_Specification = p_.Transformer_With_Error_With_Source_Value<
+    s_target.Type_Specification,
+    s_error.Error,
+    s_source.Type_Specification
+>

@@ -15,14 +15,14 @@ import * as types from "../types"
 export default ((deps) => async () => {
 	const editor = vscode.window.activeTextEditor
 	if (!editor) {
-		vscode.window.showInformationMessage('Open a Liana schema file first to publish it to an authoring environment')
+		vscode.window.showInformationMessage('Open a Liana schema file first to deploy it to an authoring environment')
 		return
 	}
 	const has_errors = vscode.languages.getDiagnostics(editor.document.uri).some(diagnostic =>
 		diagnostic.severity === vscode.DiagnosticSeverity.Error
 	)
 	if (has_errors) {
-		vscode.window.showErrorMessage('Cannot publish schema because the document has errors. Fix them first.')
+		vscode.window.showErrorMessage('Cannot deploy schema because the document has errors. Fix them first.')
 		return
 	}
 	const schema_file_uri = editor.document.uri.toString()
@@ -33,11 +33,11 @@ export default ((deps) => async () => {
 			p_.from.state($.type).decide(($): null => {
 				switch ($[0]) {
 					case 'read file': return p_.option($, ($) => {
-						vscode.window.showErrorMessage('Cannot publish schema because no .liana/schema.slna file could be found in an ancestor directory of the Liana file: ' + $.error.message)
+						vscode.window.showErrorMessage('Cannot deploy schema because no .liana/schema.slna file could be found in an ancestor directory of the Liana file: ' + $.error.message)
 						return null
 					})
 					case 'parse schema': return p_.option($, ($) => {
-						vscode.window.showErrorMessage('Cannot publish schema because the .liana/schema.slna file is not a valid schema: ' + $.error)
+						vscode.window.showErrorMessage('Cannot deploy schema because the .liana/schema.slna file is not a valid schema: ' + $.error)
 						return null
 					})
 					default: return p_.exhaustive($[0])
@@ -48,7 +48,7 @@ export default ((deps) => async () => {
 			p_create_refinement_context<p_schema.List<string>, string>(
 				(abort) => ttt_seal(
 					editor.document.getText(),
-					($) => abort("Cannot publish schema because the file is not valid Liana."),
+					($) => abort("Cannot deploy schema because the file is not valid Liana."),
 					{
 						'unmarshall': {
 							'type': root_type,
@@ -73,8 +73,8 @@ export default ((deps) => async () => {
 						canSelectFiles: false,
 						canSelectFolders: true,
 						canSelectMany: false,
-						openLabel: 'Publish',
-						title: 'Select authoring environment directory to publish .liana/schema.slna to',
+						openLabel: 'Deploy',
+						title: 'Select authoring environment directory to deploy .liana/schema.slna to',
 						defaultUri: default_uri,
 					}).then((target_uris) => {
 
@@ -108,13 +108,13 @@ export default ((deps) => async () => {
 						// Make the schema file readonly at OS level
 						fs.chmodSync(schema_file_path, 0o444)
 
-						vscode.window.showInformationMessage(`Schema published to ${target_path}`)
+						vscode.window.showInformationMessage(`Schema deployed to ${target_path}`)
 
 					})
 
 				},
 				($) => {
-					vscode.window.showErrorMessage(`Cannot publish schema: ${$}`)
+					vscode.window.showErrorMessage(`Cannot deploy schema: ${$}`)
 				}
 			)
 		}

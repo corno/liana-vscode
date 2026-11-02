@@ -3,21 +3,6 @@ import type * as p_ from 'pareto-core/transformer/declaration'
 import type * as s_source from "../../../../structure/schemas/unresolved.js"
 import type * as s_target from "../../../../structure/schemas/astn_document.js"
 
-export type Directory = p_.Transformer_With_Source_Value<
-    s_target.Value,
-    s_source.Directory
->
-
-export type Node = p_.Transformer_With_Source_Value<
-    s_target.Value,
-    s_source.Node
->
-
-export type Type_Specification = p_.Transformer_With_Source_Value<
-    s_target.Value,
-    s_source.Type_Specification
->
-
 export namespace structure {
     
     export type Basic_Types = p_.Transformer_With_Source_Value<
@@ -191,3 +176,18 @@ export namespace resolver {
         s_source.resolver.Value
     >
 }
+
+export type Directory = p_.Transformer_With_Source_Value<
+    s_target.Value,
+    s_source.Directory
+>
+
+export type Node = p_.Transformer_With_Source_Value<
+    s_target.Value,
+    s_source.Node
+>
+
+export type Type_Specification = p_.Transformer_With_Source_Value<
+    s_target.Value,
+    s_source.Type_Specification
+>

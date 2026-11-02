@@ -5,7 +5,7 @@ import convert_to_json from './commands/convert_to_json'
 import create_liana_file from './commands/create_liana_file'
 import extract_root_value from './commands/extract_root_value'
 import inline_include from './commands/inline_include'
-import publish_schema_to_authoring_environment from './commands/publish_schema_to_authoring_environment'
+import deploy_schema_to_authoring_environment from './commands/deploy_schema_to_authoring_environment'
 import initialize_liana_schema_authoring_environment from './commands/initialize_liana_schema_authoring_environment'
 import jump_to_next_missing_data from './commands/jump_to_next_missing_data'
 import save_as_json from './commands/save_as_json'
@@ -25,7 +25,7 @@ export function register_commands(deps: types.Command_Dependencies): void {
 		vscode.commands.registerCommand('liana.extract_root_value', extract_root_value(deps)),
 		vscode.commands.registerCommand('liana.inline_include', inline_include(deps)),
 		vscode.commands.registerCommand('liana.initialize_liana_schema_authoring_environment', initialize_liana_schema_authoring_environment(deps)),
-		vscode.commands.registerCommand('liana.publish_schema_to_authoring_environment', publish_schema_to_authoring_environment(deps)),
+		vscode.commands.registerCommand('liana.deploy_schema_to_authoring_environment', deploy_schema_to_authoring_environment(deps)),
 		vscode.commands.registerCommand('liana.jump_to_next_missing_data', jump_to_next_missing_data(deps)),
 		vscode.commands.registerCommand('liana.jump_to_next_missing_data_opposite_style', jump_to_next_missing_data(deps, true)),
 		vscode.commands.registerCommand('liana.save_as_json_disabled', save_as_json_disabled(deps)),

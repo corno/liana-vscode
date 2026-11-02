@@ -4,91 +4,12 @@ import type * as d from "../../../../declarations/schemas/resolved/downtransform
 
 import type * as s_target from "../../../../structure/schemas/unresolved.js"
 
-export const Directory: d.Directory = ($) => p.with.decide_state(
-    $,
-    ($s): s_target.Directory => {
-        switch ($s[0]) {
-            case 'group': return p.option($s, ($): s_target.Directory => ['group', p.initialize.group(() => {
-                const $property_nodes: s_target.Directory.type_.group.nodes = p.with.change_context($['nodes'], ($) => p.with.map_dictionary(
-                    $,
-                    ($, $id): s_target.Directory.type_.group.nodes.D => Node(
-                        $,
-                    ),
-                ))
-                return {
-                    'nodes': $property_nodes,
-                }
-            })])
-            case 'dictionary': return p.option($s, ($): s_target.Directory => ['dictionary', p.initialize.group(() => {
-                const $property_node: s_target.Directory.type_.dictionary.node = p.with.change_context($['node'], ($) => Node(
-                    $,
-                ))
-                return {
-                    'node': $property_node,
-                }
-            })])
-            default: return p.exhaustive($s[0])
-        }
-    },
-)
-
-export const Node: d.Node = ($) => p.with.decide_state(
-    $,
-    ($s): s_target.Node => {
-        switch ($s[0]) {
-            case 'file': return p.option($s, ($): s_target.Node => ['file', p.initialize.group(() => {
-                const $property_file_extension: s_target.Node.type_.file.file_extension = p.with.change_context($['file extension'], ($) => $)
-                const $property_type_: s_target.Node.type_.file.type_ = p.with.change_context($['type'], ($) => p.with.change_context($['value'], ($) => $['l id']))
-                return {
-                    'file extension': $property_file_extension,
-                    'type': $property_type_,
-                }
-            })])
-            case 'directory': return p.option($s, ($): s_target.Node => ['directory', Directory(
-                $,
-            )])
-            default: return p.exhaustive($s[0])
-        }
-    },
-)
-
-export const Type_Specification: d.Type_Specification = ($) => p.initialize.group(() => {
-    const $property_schema: s_target.Type_Specification.schema = p.with.change_context($['schema'], ($) => p.initialize.group(() => {
-        const $property_structure: s_target.Type_Specification.schema.structure = p.with.change_context($['structure'], ($) => structure.Structure(
-            $,
-        ))
-        const $property_resolver: s_target.Type_Specification.schema.resolver = p.with.change_context($['resolver'], ($) => p.initialize.group(() => {
-            const $property_declarations: s_target.Type_Specification.schema.resolver.declarations = p.with.change_context($['declarations'], ($) => declarations.Namespace(
-                $,
-            ))
-            const $property_implementations: s_target.Type_Specification.schema.resolver.implementations = p.with.change_context($['implementations'], ($) => resolver.Resolver(
-                $,
-            ))
-            return {
-                'declarations': $property_declarations,
-                'implementations': $property_implementations,
-            }
-        }))
-        return {
-            'structure': $property_structure,
-            'resolver': $property_resolver,
-        }
-    }))
-    const $property_directory: s_target.Type_Specification.directory = p.with.change_context($['directory'], ($) => Directory(
-        $,
-    ))
-    return {
-        'schema': $property_schema,
-        'directory': $property_directory,
-    }
-})
-
 export namespace structure {
     
     export const Basic_Types: d.structure.Basic_Types = ($) => p.with.map_dictionary(
         $,
         ($, $id): s_target.structure.Basic_Types.D => p.initialize.group(() => {
-            const $property_type_: s_target.structure.Basic_Types.D.type_ = p.with.change_context($['type'], ($) => p.with.decide_state(
+            const $property_type: s_target.structure.Basic_Types.D.type_ = p.with.change_context($['type'], ($) => p.with.decide_state(
                 $,
                 ($s): s_target.structure.Basic_Types.D.type_ => {
                     switch ($s[0]) {
@@ -116,7 +37,7 @@ export namespace structure {
                 }),
             ))
             return {
-                'type': $property_type_,
+                'type': $property_type,
                 'regular expression': $property_regular_expression,
                 'hyperlink': $property_hyperlink,
             }
@@ -180,45 +101,45 @@ export namespace structure {
         ($s): s_target.structure.Value => {
             switch ($s[0]) {
                 case 'component': return p.option($s, ($): s_target.structure.Value => ['component', p.initialize.group(() => {
-                    const $property_type_: s_target.structure.Value.type_.component.type_ = p.with.change_context($['type'], ($) => p.with.decide_state(
+                    const $property_type: s_target.structure.Value.component.type_ = p.with.change_context($['type'], ($) => p.with.decide_state(
                         $,
-                        ($s): s_target.structure.Value.type_.component.type_ => {
+                        ($s): s_target.structure.Value.component.type_ => {
                             switch ($s[0]) {
-                                case 'simple': return p.option($s, ($): s_target.structure.Value.type_.component.type_ => ['simple', p.with.change_context($['value'], ($) => p.with.decide_state(
+                                case 'simple': return p.option($s, ($): s_target.structure.Value.component.type_ => ['simple', p.with.change_context($['value'], ($) => p.with.decide_state(
                                     $,
-                                    ($s): s_target.structure.Value.type_.component.type_.type_.simple => {
+                                    ($s): s_target.structure.Value.component.type_.simple => {
                                         switch ($s[0]) {
-                                            case 'local': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple => ['local', $['l id']])
-                                            case 'child namespace': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple => ['child namespace', p.initialize.group(() => {
-                                                const $property_namespace: s_target.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.namespace = p.with.change_context($['namespace'], ($) => $['l id'])
-                                                const $property_type_: s_target.structure.Value.type_.component.type_.type_.simple.type_.child_namespace.type_ = p.with.change_context($['type'], ($) => p.with.change_context($['value'], ($) => $['l id']))
+                                            case 'local': return p.option($s, ($): s_target.structure.Value.component.type_.simple => ['local', $['l id']])
+                                            case 'child namespace': return p.option($s, ($): s_target.structure.Value.component.type_.simple => ['child namespace', p.initialize.group(() => {
+                                                const $property_namespace: s_target.structure.Value.component.type_.simple.child_namespace.namespace = p.with.change_context($['namespace'], ($) => $['l id'])
+                                                const $property_type: s_target.structure.Value.component.type_.simple.child_namespace.type_ = p.with.change_context($['type'], ($) => $['value']['l id'])
                                                 return {
                                                     'namespace': $property_namespace,
-                                                    'type': $property_type_,
+                                                    'type': $property_type,
                                                 }
                                             })])
-                                            case 'sibling namespace': return p.option($s, ($): s_target.structure.Value.type_.component.type_.type_.simple => ['sibling namespace', p.initialize.group(() => {
-                                                const $property_namespace: s_target.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.namespace = p.with.change_context($['namespace'], ($) => $['l id'])
-                                                const $property_type_: s_target.structure.Value.type_.component.type_.type_.simple.type_.sibling_namespace.type_ = p.with.change_context($['type'], ($) => p.with.change_context($['value'], ($) => $['l id']))
+                                            case 'sibling namespace': return p.option($s, ($): s_target.structure.Value.component.type_.simple => ['sibling namespace', p.initialize.group(() => {
+                                                const $property_namespace: s_target.structure.Value.component.type_.simple.sibling_namespace.namespace = p.with.change_context($['namespace'], ($) => $['l id'])
+                                                const $property_type: s_target.structure.Value.component.type_.simple.sibling_namespace.type_ = p.with.change_context($['type'], ($) => $['value']['l id'])
                                                 return {
                                                     'namespace': $property_namespace,
-                                                    'type': $property_type_,
+                                                    'type': $property_type,
                                                 }
                                             })])
                                             default: return p.exhaustive($s[0])
                                         }
                                     },
                                 ))])
-                                case 'cyclic': return p.option($s, ($): s_target.structure.Value.type_.component.type_ => ['cyclic', $['l id']])
+                                case 'cyclic': return p.option($s, ($): s_target.structure.Value.component.type_ => ['cyclic', $['l id']])
                                 default: return p.exhaustive($s[0])
                             }
                         },
                     ))
-                    const $property_constraints: s_target.structure.Value.type_.component.constraints = p.with.change_context($['constraints'], ($) => Reference_Constraints(
+                    const $property_constraints: s_target.structure.Value.component.constraints = p.with.change_context($['constraints'], ($) => Reference_Constraints(
                         $,
                     ))
                     return {
-                        'type': $property_type_,
+                        'type': $property_type,
                         'constraints': $property_constraints,
                     }
                 })])
@@ -229,10 +150,10 @@ export namespace structure {
                     $,
                 )])
                 case 'list': return p.option($s, ($): s_target.structure.Value => ['list', p.initialize.group(() => {
-                    const $property_value: s_target.structure.Value.type_.list.value = p.with.change_context($['value'], ($) => Value(
+                    const $property_value: s_target.structure.Value.list.value = p.with.change_context($['value'], ($) => Value(
                         $,
                     ))
-                    const $property_result: s_target.structure.Value.type_.list.result = p.with.change_context($['result'], ($) => Optional_Result(
+                    const $property_result: s_target.structure.Value.list.result = p.with.change_context($['result'], ($) => Optional_Result(
                         $,
                     ))
                     return {
@@ -243,13 +164,13 @@ export namespace structure {
                 case 'nothing': return p.option($s, ($): s_target.structure.Value => ['nothing', null])
                 case 'simple': return p.option($s, ($): s_target.structure.Value => ['simple', p.with.change_context($['value'], ($) => $['l id'])])
                 case 'optional': return p.option($s, ($): s_target.structure.Value => ['optional', p.initialize.group(() => {
-                    const $property_constraints: s_target.structure.Value.type_.optional.constraints = p.with.change_context($['constraints'], ($) => Option_Constraints(
+                    const $property_constraints: s_target.structure.Value.optional.constraints = p.with.change_context($['constraints'], ($) => Option_Constraints(
                         $,
                     ))
-                    const $property_value: s_target.structure.Value.type_.optional.value = p.with.change_context($['value'], ($) => Value(
+                    const $property_value: s_target.structure.Value.optional.value = p.with.change_context($['value'], ($) => Value(
                         $,
                     ))
-                    const $property_result: s_target.structure.Value.type_.optional.result = p.with.change_context($['result'], ($) => Optional_Result(
+                    const $property_result: s_target.structure.Value.optional.result = p.with.change_context($['result'], ($) => Optional_Result(
                         $,
                     ))
                     return {
@@ -262,17 +183,17 @@ export namespace structure {
                     $,
                 )])
                 case 'state': return p.option($s, ($): s_target.structure.Value => ['state', p.initialize.group(() => {
-                    const $property_options: s_target.structure.Value.type_.state.options = p.with.change_context($['options'], ($) => p.with.map_dictionary(
+                    const $property_options: s_target.structure.Value.state.options = p.with.change_context($['options'], ($) => p.with.map_dictionary(
                         $,
-                        ($, $id): s_target.structure.Value.type_.state.options.D => p.initialize.group(() => {
-                            const $property_description: s_target.structure.Value.type_.state.options.D.description = p.with.change_context($['description'], ($) => p.with.map_optional(
+                        ($, $id): s_target.structure.Value.state.options.D => p.initialize.group(() => {
+                            const $property_description: s_target.structure.Value.state.options.D.description = p.with.change_context($['description'], ($) => p.with.map_optional(
                                 $,
-                                ($): s_target.structure.Value.type_.state.options.D.description.O => $,
+                                ($): s_target.structure.Value.state.options.D.description.O => $,
                             ))
-                            const $property_constraints: s_target.structure.Value.type_.state.options.D.constraints = p.with.change_context($['constraints'], ($) => Option_Constraints(
+                            const $property_constraints: s_target.structure.Value.state.options.D.constraints = p.with.change_context($['constraints'], ($) => Option_Constraints(
                                 $,
                             ))
-                            const $property_value: s_target.structure.Value.type_.state.options.D.value = p.with.change_context($['value'], ($) => Value(
+                            const $property_value: s_target.structure.Value.state.options.D.value = p.with.change_context($['value'], ($) => Value(
                                 $,
                             ))
                             return {
@@ -282,7 +203,7 @@ export namespace structure {
                             }
                         }),
                     ))
-                    const $property_result: s_target.structure.Value.type_.state.result = p.with.change_context($['result'], ($) => Optional_Result(
+                    const $property_result: s_target.structure.Value.state.result = p.with.change_context($['result'], ($) => Optional_Result(
                         $,
                     ))
                     return {
@@ -328,26 +249,26 @@ export namespace structure {
     })
     
     export const Value_Reference: d.structure.Value_Reference = ($) => p.initialize.group(() => {
-        const $property_type_: s_target.structure.Value_Reference.type_ = p.with.change_context($['type'], ($) => p.initialize.group(() => {
+        const $property_type: s_target.structure.Value_Reference.type_ = p.with.change_context($['type'], ($) => p.initialize.group(() => {
             const $property_location: s_target.structure.Value_Reference.type_.location = p.with.change_context($['location'], ($) => p.with.change_context($['value'], ($) => p.with.decide_state(
                 $,
                 ($s): s_target.structure.Value_Reference.type_.location => {
                     switch ($s[0]) {
                         case 'local': return p.option($s, ($): s_target.structure.Value_Reference.type_.location => ['local', $['l id']])
                         case 'child namespace': return p.option($s, ($): s_target.structure.Value_Reference.type_.location => ['child namespace', p.initialize.group(() => {
-                            const $property_namespace: s_target.structure.Value_Reference.type_.location.type_.child_namespace.namespace = p.with.change_context($['namespace'], ($) => $['l id'])
-                            const $property_type_: s_target.structure.Value_Reference.type_.location.type_.child_namespace.type_ = p.with.change_context($['type'], ($) => $['l id'])
+                            const $property_namespace: s_target.structure.Value_Reference.type_.location.child_namespace.namespace = p.with.change_context($['namespace'], ($) => $['l id'])
+                            const $property_type: s_target.structure.Value_Reference.type_.location.child_namespace.type_ = p.with.change_context($['type'], ($) => $['l id'])
                             return {
                                 'namespace': $property_namespace,
-                                'type': $property_type_,
+                                'type': $property_type,
                             }
                         })])
                         case 'sibling namespace': return p.option($s, ($): s_target.structure.Value_Reference.type_.location => ['sibling namespace', p.initialize.group(() => {
-                            const $property_namespace: s_target.structure.Value_Reference.type_.location.type_.sibling_namespace.namespace = p.with.change_context($['namespace'], ($) => $['l id'])
-                            const $property_type_: s_target.structure.Value_Reference.type_.location.type_.sibling_namespace.type_ = p.with.change_context($['type'], ($) => $['l id'])
+                            const $property_namespace: s_target.structure.Value_Reference.type_.location.sibling_namespace.namespace = p.with.change_context($['namespace'], ($) => $['l id'])
+                            const $property_type: s_target.structure.Value_Reference.type_.location.sibling_namespace.type_ = p.with.change_context($['type'], ($) => $['l id'])
                             return {
                                 'namespace': $property_namespace,
-                                'type': $property_type_,
+                                'type': $property_type,
                             }
                         })])
                         default: return p.exhaustive($s[0])
@@ -380,7 +301,7 @@ export namespace structure {
             }
         }))
         return {
-            'type': $property_type_,
+            'type': $property_type,
             'path': $property_path,
         }
     })
@@ -399,7 +320,7 @@ export namespace structure {
         const $property_referent: s_target.structure.Reference.referent = p.with.change_context($['referent'], ($) => p.with.change_context($['value'], ($) => Value_Reference(
             $,
         )))
-        const $property_type_: s_target.structure.Reference.type_ = p.with.change_context($['type'], ($) => p.initialize.group(() => {
+        const $property_type: s_target.structure.Reference.type_ = p.with.change_context($['type'], ($) => p.initialize.group(() => {
             const $property_dependency: s_target.structure.Reference.type_.dependency = p.with.change_context($['dependency'], ($) => p.with.decide_state(
                 $,
                 ($s): s_target.structure.Reference.type_.dependency => {
@@ -420,7 +341,7 @@ export namespace structure {
         }))
         return {
             'referent': $property_referent,
-            'type': $property_type_,
+            'type': $property_type,
         }
     })
     
@@ -443,27 +364,27 @@ export namespace structure {
                 case 'character set': return p.option($s, ($): s_target.structure.Regular_Expression => ['character set', $])
                 case 'sequence': return p.option($s, ($): s_target.structure.Regular_Expression => ['sequence', p.with.map_list(
                     $,
-                    ($, $index): s_target.structure.Regular_Expression.type_.sequence.L => Regular_Expression(
+                    ($, $index): s_target.structure.Regular_Expression.sequence.L => Regular_Expression(
                         $,
                     ),
                 )])
                 case 'choice': return p.option($s, ($): s_target.structure.Regular_Expression => ['choice', p.with.map_list(
                     $,
-                    ($, $index): s_target.structure.Regular_Expression.type_.choice.L => Regular_Expression(
+                    ($, $index): s_target.structure.Regular_Expression.choice.L => Regular_Expression(
                         $,
                     ),
                 )])
                 case 'repetition': return p.option($s, ($): s_target.structure.Regular_Expression => ['repetition', p.initialize.group(() => {
-                    const $property_expression: s_target.structure.Regular_Expression.type_.repetition.expression = p.with.change_context($['expression'], ($) => Regular_Expression(
+                    const $property_expression: s_target.structure.Regular_Expression.repetition.expression = p.with.change_context($['expression'], ($) => Regular_Expression(
                         $,
                     ))
-                    const $property_quantity: s_target.structure.Regular_Expression.type_.repetition.quantity = p.with.change_context($['quantity'], ($) => p.with.decide_state(
+                    const $property_quantity: s_target.structure.Regular_Expression.repetition.quantity = p.with.change_context($['quantity'], ($) => p.with.decide_state(
                         $,
-                        ($s): s_target.structure.Regular_Expression.type_.repetition.quantity => {
+                        ($s): s_target.structure.Regular_Expression.repetition.quantity => {
                             switch ($s[0]) {
-                                case 'optional': return p.option($s, ($): s_target.structure.Regular_Expression.type_.repetition.quantity => ['optional', null])
-                                case 'zero or more': return p.option($s, ($): s_target.structure.Regular_Expression.type_.repetition.quantity => ['zero or more', null])
-                                case 'one or more': return p.option($s, ($): s_target.structure.Regular_Expression.type_.repetition.quantity => ['one or more', null])
+                                case 'optional': return p.option($s, ($): s_target.structure.Regular_Expression.repetition.quantity => ['optional', null])
+                                case 'zero or more': return p.option($s, ($): s_target.structure.Regular_Expression.repetition.quantity => ['zero or more', null])
+                                case 'one or more': return p.option($s, ($): s_target.structure.Regular_Expression.repetition.quantity => ['one or more', null])
                                 default: return p.exhaustive($s[0])
                             }
                         },
@@ -517,26 +438,26 @@ export namespace declarations {
     )
     
     export const Signature_Value_Reference: d.declarations.Signature_Value_Reference = ($) => p.initialize.group(() => {
-        const $property_type_: s_target.declarations.Signature_Value_Reference.type_ = p.with.change_context($['type'], ($) => p.initialize.group(() => {
+        const $property_type: s_target.declarations.Signature_Value_Reference.type_ = p.with.change_context($['type'], ($) => p.initialize.group(() => {
             const $property_location: s_target.declarations.Signature_Value_Reference.type_.location = p.with.change_context($['location'], ($) => p.with.change_context($['value'], ($) => p.with.decide_state(
                 $,
                 ($s): s_target.declarations.Signature_Value_Reference.type_.location => {
                     switch ($s[0]) {
                         case 'local': return p.option($s, ($): s_target.declarations.Signature_Value_Reference.type_.location => ['local', $['l id']])
                         case 'child namespace': return p.option($s, ($): s_target.declarations.Signature_Value_Reference.type_.location => ['child namespace', p.initialize.group(() => {
-                            const $property_namespace: s_target.declarations.Signature_Value_Reference.type_.location.type_.child_namespace.namespace = p.with.change_context($['namespace'], ($) => $['l id'])
-                            const $property_type_: s_target.declarations.Signature_Value_Reference.type_.location.type_.child_namespace.type_ = p.with.change_context($['type'], ($) => $['l id'])
+                            const $property_namespace: s_target.declarations.Signature_Value_Reference.type_.location.child_namespace.namespace = p.with.change_context($['namespace'], ($) => $['l id'])
+                            const $property_type: s_target.declarations.Signature_Value_Reference.type_.location.child_namespace.type_ = p.with.change_context($['type'], ($) => $['l id'])
                             return {
                                 'namespace': $property_namespace,
-                                'type': $property_type_,
+                                'type': $property_type,
                             }
                         })])
                         case 'sibling namespace': return p.option($s, ($): s_target.declarations.Signature_Value_Reference.type_.location => ['sibling namespace', p.initialize.group(() => {
-                            const $property_namespace: s_target.declarations.Signature_Value_Reference.type_.location.type_.sibling_namespace.namespace = p.with.change_context($['namespace'], ($) => $['l id'])
-                            const $property_type_: s_target.declarations.Signature_Value_Reference.type_.location.type_.sibling_namespace.type_ = p.with.change_context($['type'], ($) => $['l id'])
+                            const $property_namespace: s_target.declarations.Signature_Value_Reference.type_.location.sibling_namespace.namespace = p.with.change_context($['namespace'], ($) => $['l id'])
+                            const $property_type: s_target.declarations.Signature_Value_Reference.type_.location.sibling_namespace.type_ = p.with.change_context($['type'], ($) => $['l id'])
                             return {
                                 'namespace': $property_namespace,
-                                'type': $property_type_,
+                                'type': $property_type,
                             }
                         })])
                         default: return p.exhaustive($s[0])
@@ -569,7 +490,7 @@ export namespace declarations {
             }
         }))
         return {
-            'type': $property_type_,
+            'type': $property_type,
             'subselection': $property_subselection,
         }
     })
@@ -596,7 +517,7 @@ export namespace declarations {
                 const $property_referent: s_target.declarations.Signature.lookups.D.referent = p.with.change_context($['referent'], ($) => p.with.change_context($['value'], ($) => Signature_Value_Reference(
                     $,
                 )))
-                const $property_type_: s_target.declarations.Signature.lookups.D.type_ = p.with.change_context($['type'], ($) => p.with.decide_state(
+                const $property_type: s_target.declarations.Signature.lookups.D.type_ = p.with.change_context($['type'], ($) => p.with.decide_state(
                     $,
                     ($s): s_target.declarations.Signature.lookups.D.type_ => {
                         switch ($s[0]) {
@@ -611,7 +532,7 @@ export namespace declarations {
                 ))
                 return {
                     'referent': $property_referent,
-                    'type': $property_type_,
+                    'type': $property_type,
                     'presence': $property_presence,
                 }
             }),
@@ -671,26 +592,26 @@ export namespace declarations {
 export namespace resolver {
     
     export const Value_Reference: d.resolver.Value_Reference = ($) => p.initialize.group(() => {
-        const $property_type_: s_target.resolver.Value_Reference.type_ = p.with.change_context($['type'], ($) => p.initialize.group(() => {
+        const $property_type: s_target.resolver.Value_Reference.type_ = p.with.change_context($['type'], ($) => p.initialize.group(() => {
             const $property_location: s_target.resolver.Value_Reference.type_.location = p.with.change_context($['location'], ($) => p.with.change_context($['value'], ($) => p.with.decide_state(
                 $,
                 ($s): s_target.resolver.Value_Reference.type_.location => {
                     switch ($s[0]) {
                         case 'local': return p.option($s, ($): s_target.resolver.Value_Reference.type_.location => ['local', $['l id']])
                         case 'child namespace': return p.option($s, ($): s_target.resolver.Value_Reference.type_.location => ['child namespace', p.initialize.group(() => {
-                            const $property_namespace: s_target.resolver.Value_Reference.type_.location.type_.child_namespace.namespace = p.with.change_context($['namespace'], ($) => $['l id'])
-                            const $property_type_: s_target.resolver.Value_Reference.type_.location.type_.child_namespace.type_ = p.with.change_context($['type'], ($) => $['l id'])
+                            const $property_namespace: s_target.resolver.Value_Reference.type_.location.child_namespace.namespace = p.with.change_context($['namespace'], ($) => $['l id'])
+                            const $property_type: s_target.resolver.Value_Reference.type_.location.child_namespace.type_ = p.with.change_context($['type'], ($) => $['l id'])
                             return {
                                 'namespace': $property_namespace,
-                                'type': $property_type_,
+                                'type': $property_type,
                             }
                         })])
                         case 'sibling namespace': return p.option($s, ($): s_target.resolver.Value_Reference.type_.location => ['sibling namespace', p.initialize.group(() => {
-                            const $property_namespace: s_target.resolver.Value_Reference.type_.location.type_.sibling_namespace.namespace = p.with.change_context($['namespace'], ($) => $['l id'])
-                            const $property_type_: s_target.resolver.Value_Reference.type_.location.type_.sibling_namespace.type_ = p.with.change_context($['type'], ($) => $['l id'])
+                            const $property_namespace: s_target.resolver.Value_Reference.type_.location.sibling_namespace.namespace = p.with.change_context($['namespace'], ($) => $['l id'])
+                            const $property_type: s_target.resolver.Value_Reference.type_.location.sibling_namespace.type_ = p.with.change_context($['type'], ($) => $['l id'])
                             return {
                                 'namespace': $property_namespace,
-                                'type': $property_type_,
+                                'type': $property_type,
                             }
                         })])
                         default: return p.exhaustive($s[0])
@@ -723,7 +644,7 @@ export namespace resolver {
             }
         }))
         return {
-            'type': $property_type_,
+            'type': $property_type,
             'path': $property_path,
         }
     })
@@ -739,8 +660,8 @@ export namespace resolver {
                             $,
                         )])
                         case 'component constraint': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L => ['component constraint', p.with.change_context($['value'], ($) => p.initialize.group(() => {
-                            const $property_name: s_target.resolver.Relative_Value_Selection.path.L.type_.component_constraint.name = p.with.change_context($['name'], ($) => $['l id'])
-                            const $property_target: s_target.resolver.Relative_Value_Selection.path.L.type_.component_constraint.target = p.with.change_context($['target'], ($) => Value_Reference(
+                            const $property_name: s_target.resolver.Relative_Value_Selection.path.L.component_constraint.name = p.with.change_context($['name'], ($) => $['l id'])
+                            const $property_target: s_target.resolver.Relative_Value_Selection.path.L.component_constraint.target = p.with.change_context($['target'], ($) => Value_Reference(
                                 $,
                             ))
                             return {
@@ -753,8 +674,8 @@ export namespace resolver {
                         case 'group': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L => ['group', p.with.change_context($['value'], ($) => $['l id'])])
                         case 'list result': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L => ['list result', p.with.change_context($['value'], ($) => null)])
                         case 'option constraint': return p.option($s, ($): s_target.resolver.Relative_Value_Selection.path.L => ['option constraint', p.with.change_context($['value'], ($) => p.initialize.group(() => {
-                            const $property_option: s_target.resolver.Relative_Value_Selection.path.L.type_.option_constraint.option = p.with.change_context($['option'], ($) => $['l id'])
-                            const $property_constraint: s_target.resolver.Relative_Value_Selection.path.L.type_.option_constraint.constraint = p.with.change_context($['constraint'], ($) => $['l id'])
+                            const $property_option: s_target.resolver.Relative_Value_Selection.path.L.option_constraint.option = p.with.change_context($['option'], ($) => $['l id'])
+                            const $property_constraint: s_target.resolver.Relative_Value_Selection.path.L.option_constraint.constraint = p.with.change_context($['constraint'], ($) => $['l id'])
                             return {
                                 'option': $property_option,
                                 'constraint': $property_constraint,
@@ -797,13 +718,13 @@ export namespace resolver {
         ($s): s_target.resolver.Possible_Value_Selection => {
             switch ($s[0]) {
                 case 'decide state': return p.option($s, ($): s_target.resolver.Possible_Value_Selection => ['decide state', p.initialize.group(() => {
-                    const $property_target: s_target.resolver.Possible_Value_Selection.type_.decide_state.target = p.with.change_context($['target'], ($) => Value_Reference(
+                    const $property_target: s_target.resolver.Possible_Value_Selection.decide_state.target = p.with.change_context($['target'], ($) => Value_Reference(
                         $,
                     ))
-                    const $property_selection: s_target.resolver.Possible_Value_Selection.type_.decide_state.selection = p.with.change_context($['selection'], ($) => p.with.change_context($['value'], ($) => Guaranteed_Value_Selection(
+                    const $property_selection: s_target.resolver.Possible_Value_Selection.decide_state.selection = p.with.change_context($['selection'], ($) => p.with.change_context($['value'], ($) => Guaranteed_Value_Selection(
                         $,
                     )))
-                    const $property_options: s_target.resolver.Possible_Value_Selection.type_.decide_state.options = p.with.change_context($['options'], ($) => Possible_Value_Branches(
+                    const $property_options: s_target.resolver.Possible_Value_Selection.decide_state.options = p.with.change_context($['options'], ($) => Possible_Value_Branches(
                         $,
                     ))
                     return {
@@ -813,10 +734,10 @@ export namespace resolver {
                     }
                 })])
                 case 'optional value': return p.option($s, ($): s_target.resolver.Possible_Value_Selection => ['optional value', p.initialize.group(() => {
-                    const $property_selection: s_target.resolver.Possible_Value_Selection.type_.optional_value.selection = p.with.change_context($['selection'], ($) => p.with.change_context($['value'], ($) => Guaranteed_Value_Selection(
+                    const $property_selection: s_target.resolver.Possible_Value_Selection.optional_value.selection = p.with.change_context($['selection'], ($) => p.with.change_context($['value'], ($) => Guaranteed_Value_Selection(
                         $,
                     )))
-                    const $property_tail: s_target.resolver.Possible_Value_Selection.type_.optional_value.tail = p.with.change_context($['tail'], ($) => Relative_Value_Selection(
+                    const $property_tail: s_target.resolver.Possible_Value_Selection.optional_value.tail = p.with.change_context($['tail'], ($) => Relative_Value_Selection(
                         $,
                     ))
                     return {
@@ -827,16 +748,16 @@ export namespace resolver {
                 case 'parameter': return p.option($s, ($): s_target.resolver.Possible_Value_Selection => ['parameter', $['l id']])
                 case 'result': return p.option($s, ($): s_target.resolver.Possible_Value_Selection => ['result', p.with.change_context($['value'], ($) => p.with.decide_state(
                     $,
-                    ($s): s_target.resolver.Possible_Value_Selection.type_.result => {
+                    ($s): s_target.resolver.Possible_Value_Selection.result => {
                         switch ($s[0]) {
-                            case 'state': return p.option($s, ($): s_target.resolver.Possible_Value_Selection.type_.result => ['state', p.initialize.group(() => {
-                                const $property_property: s_target.resolver.Possible_Value_Selection.type_.result.type_.state.property = p.with.change_context($['property'], ($) => p.with.change_context($['value'], ($) => $['l id']))
+                            case 'state': return p.option($s, ($): s_target.resolver.Possible_Value_Selection.result => ['state', p.initialize.group(() => {
+                                const $property_property: s_target.resolver.Possible_Value_Selection.result.state.property = p.with.change_context($['property'], ($) => $['value']['l id'])
                                 return {
                                     'property': $property_property,
                                 }
                             })])
-                            case 'optional value': return p.option($s, ($): s_target.resolver.Possible_Value_Selection.type_.result => ['optional value', p.initialize.group(() => {
-                                const $property_property: s_target.resolver.Possible_Value_Selection.type_.result.type_.optional_value.property = p.with.change_context($['property'], ($) => p.with.change_context($['value'], ($) => $['l id']))
+                            case 'optional value': return p.option($s, ($): s_target.resolver.Possible_Value_Selection.result => ['optional value', p.initialize.group(() => {
+                                const $property_property: s_target.resolver.Possible_Value_Selection.result.optional_value.property = p.with.change_context($['property'], ($) => $['value']['l id'])
                                 return {
                                     'property': $property_property,
                                 }
@@ -859,10 +780,10 @@ export namespace resolver {
                 ($s): s_target.resolver.Option_Constraints.O.D => {
                     switch ($s[0]) {
                         case 'state': return p.option($s, ($): s_target.resolver.Option_Constraints.O.D => ['state', p.initialize.group(() => {
-                            const $property_selection: s_target.resolver.Option_Constraints.O.D.type_.state.selection = p.with.change_context($['selection'], ($) => p.with.change_context($['value'], ($) => Guaranteed_Value_Selection(
+                            const $property_selection: s_target.resolver.Option_Constraints.O.D.state.selection = p.with.change_context($['selection'], ($) => p.with.change_context($['value'], ($) => Guaranteed_Value_Selection(
                                 $,
                             )))
-                            const $property_option: s_target.resolver.Option_Constraints.O.D.type_.state.option = p.with.change_context($['option'], ($) => $['l id'])
+                            const $property_option: s_target.resolver.Option_Constraints.O.D.state.option = p.with.change_context($['option'], ($) => $['l id'])
                             return {
                                 'selection': $property_selection,
                                 'option': $property_option,
@@ -884,10 +805,10 @@ export namespace resolver {
             ($s): s_target.resolver.Guaranteed_Value_Selection.start => {
                 switch ($s[0]) {
                     case 'optional fallback': return p.option($s, ($): s_target.resolver.Guaranteed_Value_Selection.start => ['optional fallback', p.initialize.group(() => {
-                        const $property_selection: s_target.resolver.Guaranteed_Value_Selection.start.type_.optional_fallback.selection = p.with.change_context($['selection'], ($) => Possible_Value_Selection(
+                        const $property_selection: s_target.resolver.Guaranteed_Value_Selection.start.optional_fallback.selection = p.with.change_context($['selection'], ($) => Possible_Value_Selection(
                             $,
                         ))
-                        const $property_fallback: s_target.resolver.Guaranteed_Value_Selection.start.type_.optional_fallback.fallback = p.with.change_context($['fallback'], ($) => Guaranteed_Value_Selection(
+                        const $property_fallback: s_target.resolver.Guaranteed_Value_Selection.start.optional_fallback.fallback = p.with.change_context($['fallback'], ($) => Guaranteed_Value_Selection(
                             $,
                         ))
                         return {
@@ -903,19 +824,19 @@ export namespace resolver {
                     case 'linked entry': return p.option($s, ($): s_target.resolver.Guaranteed_Value_Selection.start => ['linked entry', p.with.change_context($['value'], ($) => null)])
                     case 'constraint': return p.option($s, ($): s_target.resolver.Guaranteed_Value_Selection.start => ['constraint', p.with.change_context($['value'], ($) => p.with.decide_state(
                         $,
-                        ($s): s_target.resolver.Guaranteed_Value_Selection.start.type_.constraint => {
+                        ($s): s_target.resolver.Guaranteed_Value_Selection.start.constraint => {
                             switch ($s[0]) {
-                                case 'component': return p.option($s, ($): s_target.resolver.Guaranteed_Value_Selection.start.type_.constraint => ['component', p.initialize.group(() => {
-                                    const $property_property: s_target.resolver.Guaranteed_Value_Selection.start.type_.constraint.type_.component.property = p.with.change_context($['property'], ($) => p.with.change_context($['value'], ($) => $['l id']))
-                                    const $property_constraint: s_target.resolver.Guaranteed_Value_Selection.start.type_.constraint.type_.component.constraint = p.with.change_context($['constraint'], ($) => $['l id'])
+                                case 'component': return p.option($s, ($): s_target.resolver.Guaranteed_Value_Selection.start.constraint => ['component', p.initialize.group(() => {
+                                    const $property_property: s_target.resolver.Guaranteed_Value_Selection.start.constraint.component.property = p.with.change_context($['property'], ($) => $['value']['l id'])
+                                    const $property_constraint: s_target.resolver.Guaranteed_Value_Selection.start.constraint.component.constraint = p.with.change_context($['constraint'], ($) => $['l id'])
                                     return {
                                         'property': $property_property,
                                         'constraint': $property_constraint,
                                     }
                                 })])
-                                case 'reference': return p.option($s, ($): s_target.resolver.Guaranteed_Value_Selection.start.type_.constraint => ['reference', p.initialize.group(() => {
-                                    const $property_property: s_target.resolver.Guaranteed_Value_Selection.start.type_.constraint.type_.reference.property = p.with.change_context($['property'], ($) => p.with.change_context($['value'], ($) => $['l id']))
-                                    const $property_constraint: s_target.resolver.Guaranteed_Value_Selection.start.type_.constraint.type_.reference.constraint = p.with.change_context($['constraint'], ($) => $['l id'])
+                                case 'reference': return p.option($s, ($): s_target.resolver.Guaranteed_Value_Selection.start.constraint => ['reference', p.initialize.group(() => {
+                                    const $property_property: s_target.resolver.Guaranteed_Value_Selection.start.constraint.reference.property = p.with.change_context($['property'], ($) => $['value']['l id'])
+                                    const $property_constraint: s_target.resolver.Guaranteed_Value_Selection.start.constraint.reference.constraint = p.with.change_context($['constraint'], ($) => $['l id'])
                                     return {
                                         'property': $property_property,
                                         'constraint': $property_constraint,
@@ -928,16 +849,16 @@ export namespace resolver {
                     case 'parameter': return p.option($s, ($): s_target.resolver.Guaranteed_Value_Selection.start => ['parameter', $['l id']])
                     case 'result': return p.option($s, ($): s_target.resolver.Guaranteed_Value_Selection.start => ['result', p.with.change_context($['value'], ($) => p.with.decide_state(
                         $,
-                        ($s): s_target.resolver.Guaranteed_Value_Selection.start.type_.result => {
+                        ($s): s_target.resolver.Guaranteed_Value_Selection.start.result => {
                             switch ($s[0]) {
-                                case 'list': return p.option($s, ($): s_target.resolver.Guaranteed_Value_Selection.start.type_.result => ['list', p.initialize.group(() => {
-                                    const $property_property: s_target.resolver.Guaranteed_Value_Selection.start.type_.result.type_.list.property = p.with.change_context($['property'], ($) => p.with.change_context($['value'], ($) => $['l id']))
+                                case 'list': return p.option($s, ($): s_target.resolver.Guaranteed_Value_Selection.start.result => ['list', p.initialize.group(() => {
+                                    const $property_property: s_target.resolver.Guaranteed_Value_Selection.start.result.list.property = p.with.change_context($['property'], ($) => $['value']['l id'])
                                     return {
                                         'property': $property_property,
                                     }
                                 })])
-                                case 'state': return p.option($s, ($): s_target.resolver.Guaranteed_Value_Selection.start.type_.result => ['state', p.initialize.group(() => {
-                                    const $property_property: s_target.resolver.Guaranteed_Value_Selection.start.type_.result.type_.state.property = p.with.change_context($['property'], ($) => p.with.change_context($['value'], ($) => $['l id']))
+                                case 'state': return p.option($s, ($): s_target.resolver.Guaranteed_Value_Selection.start.result => ['state', p.initialize.group(() => {
+                                    const $property_property: s_target.resolver.Guaranteed_Value_Selection.start.result.state.property = p.with.change_context($['property'], ($) => $['value']['l id'])
                                     return {
                                         'property': $property_property,
                                     }
@@ -960,17 +881,17 @@ export namespace resolver {
     })
     
     export const Lookup_Selection: d.resolver.Lookup_Selection = ($) => p.initialize.group(() => {
-        const $property_type_: s_target.resolver.Lookup_Selection.type_ = p.with.change_context($['type'], ($) => p.with.change_context($['value'], ($) => p.with.decide_state(
+        const $property_type: s_target.resolver.Lookup_Selection.type_ = p.with.change_context($['type'], ($) => p.with.change_context($['value'], ($) => p.with.decide_state(
             $,
             ($s): s_target.resolver.Lookup_Selection.type_ => {
                 switch ($s[0]) {
                     case 'acyclic': return p.option($s, ($): s_target.resolver.Lookup_Selection.type_ => ['acyclic', p.with.change_context($['value'], ($) => p.with.decide_state(
                         $,
-                        ($s): s_target.resolver.Lookup_Selection.type_.type_.acyclic => {
+                        ($s): s_target.resolver.Lookup_Selection.type_.acyclic => {
                             switch ($s[0]) {
-                                case 'siblings': return p.option($s, ($): s_target.resolver.Lookup_Selection.type_.type_.acyclic => ['siblings', p.with.change_context($['value'], ($) => null)])
-                                case 'resolved dictionary': return p.option($s, ($): s_target.resolver.Lookup_Selection.type_.type_.acyclic => ['resolved dictionary', p.initialize.group(() => {
-                                    const $property_selection: s_target.resolver.Lookup_Selection.type_.type_.acyclic.type_.resolved_dictionary.selection = p.with.change_context($['selection'], ($) => p.with.change_context($['value'], ($) => Guaranteed_Value_Selection(
+                                case 'siblings': return p.option($s, ($): s_target.resolver.Lookup_Selection.type_.acyclic => ['siblings', p.with.change_context($['value'], ($) => null)])
+                                case 'resolved dictionary': return p.option($s, ($): s_target.resolver.Lookup_Selection.type_.acyclic => ['resolved dictionary', p.initialize.group(() => {
+                                    const $property_selection: s_target.resolver.Lookup_Selection.type_.acyclic.resolved_dictionary.selection = p.with.change_context($['selection'], ($) => p.with.change_context($['value'], ($) => Guaranteed_Value_Selection(
                                         $,
                                     )))
                                     return {
@@ -983,9 +904,9 @@ export namespace resolver {
                     ))])
                     case 'cyclic': return p.option($s, ($): s_target.resolver.Lookup_Selection.type_ => ['cyclic', p.with.change_context($['value'], ($) => p.with.decide_state(
                         $,
-                        ($s): s_target.resolver.Lookup_Selection.type_.type_.cyclic => {
+                        ($s): s_target.resolver.Lookup_Selection.type_.cyclic => {
                             switch ($s[0]) {
-                                case 'siblings': return p.option($s, ($): s_target.resolver.Lookup_Selection.type_.type_.cyclic => ['siblings', p.with.change_context($['value'], ($) => null)])
+                                case 'siblings': return p.option($s, ($): s_target.resolver.Lookup_Selection.type_.cyclic => ['siblings', p.with.change_context($['value'], ($) => null)])
                                 default: return p.exhaustive($s[0])
                             }
                         },
@@ -996,7 +917,7 @@ export namespace resolver {
             },
         )))
         return {
-            'type': $property_type_,
+            'type': $property_type,
         }
     })
     
@@ -1019,12 +940,12 @@ export namespace resolver {
                     const $property_selection: s_target.resolver.Reference_Constraints.O.D.constraint.selection = p.with.change_context($['selection'], ($) => Relative_Value_Selection(
                         $,
                     ))
-                    const $property_type_: s_target.resolver.Reference_Constraints.O.D.constraint.type_ = p.with.change_context($['type'], ($) => p.with.change_context($['value'], ($) => p.with.decide_state(
+                    const $property_type: s_target.resolver.Reference_Constraints.O.D.constraint.type_ = p.with.change_context($['type'], ($) => p.with.change_context($['value'], ($) => p.with.decide_state(
                         $,
                         ($s): s_target.resolver.Reference_Constraints.O.D.constraint.type_ => {
                             switch ($s[0]) {
                                 case 'state': return p.option($s, ($): s_target.resolver.Reference_Constraints.O.D.constraint.type_ => ['state', p.with.change_context($['value'], ($) => p.initialize.group(() => {
-                                    const $property_option: s_target.resolver.Reference_Constraints.O.D.constraint.type_.type_.state.option = p.with.change_context($['option'], ($) => $['l id'])
+                                    const $property_option: s_target.resolver.Reference_Constraints.O.D.constraint.type_.state.option = p.with.change_context($['option'], ($) => $['l id'])
                                     return {
                                         'option': $property_option,
                                     }
@@ -1036,7 +957,7 @@ export namespace resolver {
                     )))
                     return {
                         'selection': $property_selection,
-                        'type': $property_type_,
+                        'type': $property_type,
                     }
                 }))
                 return {
@@ -1110,22 +1031,22 @@ export namespace resolver {
         ($s): s_target.resolver.Value => {
             switch ($s[0]) {
                 case 'component': return p.option($s, ($): s_target.resolver.Value => ['component', p.with.change_context($['value'], ($) => p.initialize.group(() => {
-                    const $property_location: s_target.resolver.Value.type_.component.location = p.with.change_context($['location'], ($) => p.with.change_context($['value'], ($) => p.with.decide_state(
+                    const $property_location: s_target.resolver.Value.component.location = p.with.change_context($['location'], ($) => p.with.change_context($['value'], ($) => p.with.decide_state(
                         $,
-                        ($s): s_target.resolver.Value.type_.component.location => {
+                        ($s): s_target.resolver.Value.component.location => {
                             switch ($s[0]) {
-                                case 'local': return p.option($s, ($): s_target.resolver.Value.type_.component.location => ['local', $['l id']])
-                                case 'child namespace': return p.option($s, ($): s_target.resolver.Value.type_.component.location => ['child namespace', p.initialize.group(() => {
-                                    const $property_namespace: s_target.resolver.Value.type_.component.location.type_.child_namespace.namespace = p.with.change_context($['namespace'], ($) => $['l id'])
-                                    const $property_resolver: s_target.resolver.Value.type_.component.location.type_.child_namespace.resolver = p.with.change_context($['resolver'], ($) => p.with.change_context($['value'], ($) => $['l id']))
+                                case 'local': return p.option($s, ($): s_target.resolver.Value.component.location => ['local', $['l id']])
+                                case 'child namespace': return p.option($s, ($): s_target.resolver.Value.component.location => ['child namespace', p.initialize.group(() => {
+                                    const $property_namespace: s_target.resolver.Value.component.location.child_namespace.namespace = p.with.change_context($['namespace'], ($) => $['l id'])
+                                    const $property_resolver: s_target.resolver.Value.component.location.child_namespace.resolver = p.with.change_context($['resolver'], ($) => $['value']['l id'])
                                     return {
                                         'namespace': $property_namespace,
                                         'resolver': $property_resolver,
                                     }
                                 })])
-                                case 'sibling namespace': return p.option($s, ($): s_target.resolver.Value.type_.component.location => ['sibling namespace', p.with.change_context($['value'], ($) => p.initialize.group(() => {
-                                    const $property_namespace: s_target.resolver.Value.type_.component.location.type_.sibling_namespace.namespace = p.with.change_context($['namespace'], ($) => $['l id'])
-                                    const $property_resolver: s_target.resolver.Value.type_.component.location.type_.sibling_namespace.resolver = p.with.change_context($['resolver'], ($) => p.with.change_context($['value'], ($) => $['l id']))
+                                case 'sibling namespace': return p.option($s, ($): s_target.resolver.Value.component.location => ['sibling namespace', p.with.change_context($['value'], ($) => p.initialize.group(() => {
+                                    const $property_namespace: s_target.resolver.Value.component.location.sibling_namespace.namespace = p.with.change_context($['namespace'], ($) => $['l id'])
+                                    const $property_resolver: s_target.resolver.Value.component.location.sibling_namespace.resolver = p.with.change_context($['resolver'], ($) => $['value']['l id'])
                                     return {
                                         'namespace': $property_namespace,
                                         'resolver': $property_resolver,
@@ -1135,53 +1056,53 @@ export namespace resolver {
                             }
                         },
                     )))
-                    const $property_arguments_: s_target.resolver.Value.type_.component.arguments_ = p.with.change_context($['arguments'], ($) => p.with.map_optional(
+                    const $property_arguments: s_target.resolver.Value.component.arguments_ = p.with.change_context($['arguments'], ($) => p.with.map_optional(
                         $,
-                        ($): s_target.resolver.Value.type_.component.arguments_.O => p.initialize.group(() => {
-                            const $property_types: s_target.resolver.Value.type_.component.arguments_.O.types = p.with.change_context($['types'], ($) => p.with.map_optional(
+                        ($): s_target.resolver.Value.component.arguments_.O => p.initialize.group(() => {
+                            const $property_types: s_target.resolver.Value.component.arguments_.O.types = p.with.change_context($['types'], ($) => p.with.map_optional(
                                 $,
-                                ($): s_target.resolver.Value.type_.component.arguments_.O.types.O => p.with.map_dictionary(
+                                ($): s_target.resolver.Value.component.arguments_.O.types.O => p.with.map_dictionary(
                                     $,
-                                    ($, $id): s_target.resolver.Value.type_.component.arguments_.O.types.O.D => p.with.change_context($['value'], ($) => p.with.decide_state(
+                                    ($, $id): s_target.resolver.Value.component.arguments_.O.types.O.D => p.with.change_context($['value'], ($) => p.with.decide_state(
                                         $,
-                                        ($s): s_target.resolver.Value.type_.component.arguments_.O.types.O.D => {
+                                        ($s): s_target.resolver.Value.component.arguments_.O.types.O.D => {
                                             switch ($s[0]) {
-                                                case 'optional': return p.option($s, ($): s_target.resolver.Value.type_.component.arguments_.O.types.O.D => ['optional', p.with.decide_state(
+                                                case 'optional': return p.option($s, ($): s_target.resolver.Value.component.arguments_.O.types.O.D => ['optional', p.with.decide_state(
                                                     $,
-                                                    ($s): s_target.resolver.Value.type_.component.arguments_.O.types.O.D.type_.optional => {
+                                                    ($s): s_target.resolver.Value.component.arguments_.O.types.O.D.optional => {
                                                         switch ($s[0]) {
-                                                            case 'not set': return p.option($s, ($): s_target.resolver.Value.type_.component.arguments_.O.types.O.D.type_.optional => ['not set', null])
-                                                            case 'set': return p.option($s, ($): s_target.resolver.Value.type_.component.arguments_.O.types.O.D.type_.optional => ['set', Guaranteed_Value_Selection(
+                                                            case 'not set': return p.option($s, ($): s_target.resolver.Value.component.arguments_.O.types.O.D.optional => ['not set', null])
+                                                            case 'set': return p.option($s, ($): s_target.resolver.Value.component.arguments_.O.types.O.D.optional => ['set', Guaranteed_Value_Selection(
                                                                 $,
                                                             )])
-                                                            case 'selection': return p.option($s, ($): s_target.resolver.Value.type_.component.arguments_.O.types.O.D.type_.optional => ['selection', Possible_Value_Selection(
+                                                            case 'selection': return p.option($s, ($): s_target.resolver.Value.component.arguments_.O.types.O.D.optional => ['selection', Possible_Value_Selection(
                                                                 $,
                                                             )])
                                                             default: return p.exhaustive($s[0])
                                                         }
                                                     },
                                                 )])
-                                                case 'required': return p.option($s, ($): s_target.resolver.Value.type_.component.arguments_.O.types.O.D => ['required', Guaranteed_Value_Selection(
+                                                case 'required': return p.option($s, ($): s_target.resolver.Value.component.arguments_.O.types.O.D => ['required', Guaranteed_Value_Selection(
                                                     $,
                                                 )])
-                                                case 'parameter': return p.option($s, ($): s_target.resolver.Value.type_.component.arguments_.O.types.O.D => ['parameter', $['l id']])
+                                                case 'parameter': return p.option($s, ($): s_target.resolver.Value.component.arguments_.O.types.O.D => ['parameter', $['l id']])
                                                 default: return p.exhaustive($s[0])
                                             }
                                         },
                                     )),
                                 ),
                             ))
-                            const $property_lookups: s_target.resolver.Value.type_.component.arguments_.O.lookups = p.with.change_context($['lookups'], ($) => p.with.map_optional(
+                            const $property_lookups: s_target.resolver.Value.component.arguments_.O.lookups = p.with.change_context($['lookups'], ($) => p.with.map_optional(
                                 $,
-                                ($): s_target.resolver.Value.type_.component.arguments_.O.lookups.O => p.with.map_dictionary(
+                                ($): s_target.resolver.Value.component.arguments_.O.lookups.O => p.with.map_dictionary(
                                     $,
-                                    ($, $id): s_target.resolver.Value.type_.component.arguments_.O.lookups.O.D => p.with.change_context($['value'], ($) => p.with.decide_state(
+                                    ($, $id): s_target.resolver.Value.component.arguments_.O.lookups.O.D => p.with.change_context($['value'], ($) => p.with.decide_state(
                                         $,
-                                        ($s): s_target.resolver.Value.type_.component.arguments_.O.lookups.O.D => {
+                                        ($s): s_target.resolver.Value.component.arguments_.O.lookups.O.D => {
                                             switch ($s[0]) {
-                                                case 'acyclic': return p.option($s, ($): s_target.resolver.Value.type_.component.arguments_.O.lookups.O.D => ['acyclic', null])
-                                                case 'cyclic': return p.option($s, ($): s_target.resolver.Value.type_.component.arguments_.O.lookups.O.D => ['cyclic', null])
-                                                case 'selection': return p.option($s, ($): s_target.resolver.Value.type_.component.arguments_.O.lookups.O.D => ['selection', Lookup_Selection(
+                                                case 'acyclic': return p.option($s, ($): s_target.resolver.Value.component.arguments_.O.lookups.O.D => ['acyclic', null])
+                                                case 'cyclic': return p.option($s, ($): s_target.resolver.Value.component.arguments_.O.lookups.O.D => ['cyclic', null])
+                                                case 'selection': return p.option($s, ($): s_target.resolver.Value.component.arguments_.O.lookups.O.D => ['selection', Lookup_Selection(
                                                     $,
                                                 )])
                                                 default: return p.exhaustive($s[0])
@@ -1196,23 +1117,23 @@ export namespace resolver {
                             }
                         }),
                     ))
-                    const $property_constraints: s_target.resolver.Value.type_.component.constraints = p.with.change_context($['constraints'], ($) => Reference_Constraints(
+                    const $property_constraints: s_target.resolver.Value.component.constraints = p.with.change_context($['constraints'], ($) => Reference_Constraints(
                         $,
                     ))
                     return {
                         'location': $property_location,
-                        'arguments': $property_arguments_,
+                        'arguments': $property_arguments,
                         'constraints': $property_constraints,
                     }
                 }))])
                 case 'dictionary': return p.option($s, ($): s_target.resolver.Value => ['dictionary', p.with.change_context($['value'], ($) => p.initialize.group(() => {
-                    const $property_resolver: s_target.resolver.Value.type_.dictionary.resolver = p.with.change_context($['resolver'], ($) => Value(
+                    const $property_resolver: s_target.resolver.Value.dictionary.resolver = p.with.change_context($['resolver'], ($) => Value(
                         $,
                     ))
-                    const $property_benchmark: s_target.resolver.Value.type_.dictionary.benchmark = p.with.change_context($['benchmark'], ($) => p.with.map_optional(
+                    const $property_benchmark: s_target.resolver.Value.dictionary.benchmark = p.with.change_context($['benchmark'], ($) => p.with.map_optional(
                         $,
-                        ($): s_target.resolver.Value.type_.dictionary.benchmark.O => p.with.change_context($['value'], ($) => p.initialize.group(() => {
-                            const $property_selection: s_target.resolver.Value.type_.dictionary.benchmark.O.selection = p.with.change_context($['selection'], ($) => p.with.change_context($['value'], ($) => Guaranteed_Value_Selection(
+                        ($): s_target.resolver.Value.dictionary.benchmark.O => p.with.change_context($['value'], ($) => p.initialize.group(() => {
+                            const $property_selection: s_target.resolver.Value.dictionary.benchmark.O.selection = p.with.change_context($['selection'], ($) => p.with.change_context($['value'], ($) => Guaranteed_Value_Selection(
                                 $,
                             )))
                             return {
@@ -1227,8 +1148,8 @@ export namespace resolver {
                 }))])
                 case 'group': return p.option($s, ($): s_target.resolver.Value => ['group', p.with.change_context($['value'], ($) => p.with.map_dictionary(
                     $,
-                    ($, $id): s_target.resolver.Value.type_.group.D => p.with.change_context($['value'], ($) => p.initialize.group(() => {
-                        const $property_resolver: s_target.resolver.Value.type_.group.D.resolver = p.with.change_context($['resolver'], ($) => Value(
+                    ($, $id): s_target.resolver.Value.group.D => p.with.change_context($['value'], ($) => p.initialize.group(() => {
+                        const $property_resolver: s_target.resolver.Value.group.D.resolver = p.with.change_context($['resolver'], ($) => Value(
                             $,
                         ))
                         return {
@@ -1237,16 +1158,16 @@ export namespace resolver {
                     })),
                 ))])
                 case 'list': return p.option($s, ($): s_target.resolver.Value => ['list', p.with.change_context($['value'], ($) => p.initialize.group(() => {
-                    const $property_resolver: s_target.resolver.Value.type_.list.resolver = p.with.change_context($['resolver'], ($) => Value(
+                    const $property_resolver: s_target.resolver.Value.list.resolver = p.with.change_context($['resolver'], ($) => Value(
                         $,
                     ))
-                    const $property_result: s_target.resolver.Value.type_.list.result = p.with.change_context($['result'], ($) => p.with.map_optional(
+                    const $property_result: s_target.resolver.Value.list.result = p.with.change_context($['result'], ($) => p.with.map_optional(
                         $,
-                        ($): s_target.resolver.Value.type_.list.result.O => p.with.change_context($['value'], ($) => p.initialize.group(() => {
-                            const $property_initial: s_target.resolver.Value.type_.list.result.O.initial = p.with.change_context($['initial'], ($) => Guaranteed_Value_Selection(
+                        ($): s_target.resolver.Value.list.result.O => p.with.change_context($['value'], ($) => p.initialize.group(() => {
+                            const $property_initial: s_target.resolver.Value.list.result.O.initial = p.with.change_context($['initial'], ($) => Guaranteed_Value_Selection(
                                 $,
                             ))
-                            const $property_next: s_target.resolver.Value.type_.list.result.O.next = p.with.change_context($['next'], ($) => Result_Selection(
+                            const $property_next: s_target.resolver.Value.list.result.O.next = p.with.change_context($['next'], ($) => Result_Selection(
                                 $,
                             ))
                             return {
@@ -1263,34 +1184,34 @@ export namespace resolver {
                 case 'nothing': return p.option($s, ($): s_target.resolver.Value => ['nothing', p.with.change_context($['value'], ($) => null)])
                 case 'simple': return p.option($s, ($): s_target.resolver.Value => ['simple', p.with.change_context($['value'], ($) => null)])
                 case 'optional': return p.option($s, ($): s_target.resolver.Value => ['optional', p.with.change_context($['value'], ($) => p.initialize.group(() => {
-                    const $property_presence: s_target.resolver.Value.type_.optional.presence = p.with.change_context($['presence'], ($) => p.with.map_optional(
+                    const $property_presence: s_target.resolver.Value.optional.presence = p.with.change_context($['presence'], ($) => p.with.map_optional(
                         $,
-                        ($): s_target.resolver.Value.type_.optional.presence.O => Possible_Value_Selection(
+                        ($): s_target.resolver.Value.optional.presence.O => Possible_Value_Selection(
                             $,
                         ),
                     ))
-                    const $property_constraints: s_target.resolver.Value.type_.optional.constraints = p.with.change_context($['constraints'], ($) => Option_Constraints(
+                    const $property_constraints: s_target.resolver.Value.optional.constraints = p.with.change_context($['constraints'], ($) => Option_Constraints(
                         $,
                     ))
-                    const $property_resolver: s_target.resolver.Value.type_.optional.resolver = p.with.change_context($['resolver'], ($) => Value(
+                    const $property_resolver: s_target.resolver.Value.optional.resolver = p.with.change_context($['resolver'], ($) => Value(
                         $,
                     ))
-                    const $property_not_set_constraints: s_target.resolver.Value.type_.optional.not_set_constraints = p.with.change_context($['not set constraints'], ($) => p.with.map_optional(
+                    const $property_not_set_constraints: s_target.resolver.Value.optional.not_set_constraints = p.with.change_context($['not set constraints'], ($) => p.with.map_optional(
                         $,
-                        ($): s_target.resolver.Value.type_.optional.not_set_constraints.O => p.with.map_dictionary(
+                        ($): s_target.resolver.Value.optional.not_set_constraints.O => p.with.map_dictionary(
                             $,
-                            ($, $id): s_target.resolver.Value.type_.optional.not_set_constraints.O.D => Possible_Value_Selection(
+                            ($, $id): s_target.resolver.Value.optional.not_set_constraints.O.D => Possible_Value_Selection(
                                 $,
                             ),
                         ),
                     ))
-                    const $property_result: s_target.resolver.Value.type_.optional.result = p.with.change_context($['result'], ($) => p.with.map_optional(
+                    const $property_result: s_target.resolver.Value.optional.result = p.with.change_context($['result'], ($) => p.with.map_optional(
                         $,
-                        ($): s_target.resolver.Value.type_.optional.result.O => p.with.change_context($['value'], ($) => Result_Selection(
+                        ($): s_target.resolver.Value.optional.result.O => p.with.change_context($['value'], ($) => Result_Selection(
                             $,
                         )),
                     ))
-                    const $property_checks: s_target.resolver.Value.type_.optional.checks = p.with.change_context($['checks'], ($) => Checks(
+                    const $property_checks: s_target.resolver.Value.optional.checks = p.with.change_context($['checks'], ($) => Checks(
                         $,
                     ))
                     return {
@@ -1303,11 +1224,11 @@ export namespace resolver {
                     }
                 }))])
                 case 'reference': return p.option($s, ($): s_target.resolver.Value => ['reference', p.with.change_context($['value'], ($) => p.initialize.group(() => {
-                    const $property_type_: s_target.resolver.Value.type_.reference.type_ = p.with.change_context($['type'], ($) => p.initialize.group(() => {
-                        const $property_lookup: s_target.resolver.Value.type_.reference.type_.lookup = p.with.change_context($['lookup'], ($) => Lookup_Selection(
+                    const $property_type: s_target.resolver.Value.reference.type_ = p.with.change_context($['type'], ($) => p.initialize.group(() => {
+                        const $property_lookup: s_target.resolver.Value.reference.type_.lookup = p.with.change_context($['lookup'], ($) => Lookup_Selection(
                             $,
                         ))
-                        const $property_constraints: s_target.resolver.Value.type_.reference.type_.constraints = p.with.change_context($['constraints'], ($) => Reference_Constraints(
+                        const $property_constraints: s_target.resolver.Value.reference.type_.constraints = p.with.change_context($['constraints'], ($) => Reference_Constraints(
                             $,
                         ))
                         return {
@@ -1316,26 +1237,26 @@ export namespace resolver {
                         }
                     }))
                     return {
-                        'type': $property_type_,
+                        'type': $property_type,
                     }
                 }))])
                 case 'state': return p.option($s, ($): s_target.resolver.Value => ['state', p.with.change_context($['value'], ($) => p.initialize.group(() => {
-                    const $property_options: s_target.resolver.Value.type_.state.options = p.with.change_context($['options'], ($) => p.with.map_dictionary(
+                    const $property_options: s_target.resolver.Value.state.options = p.with.change_context($['options'], ($) => p.with.map_dictionary(
                         $,
-                        ($, $id): s_target.resolver.Value.type_.state.options.D => p.with.change_context($['value'], ($) => p.initialize.group(() => {
-                            const $property_constraints: s_target.resolver.Value.type_.state.options.D.constraints = p.with.change_context($['constraints'], ($) => Option_Constraints(
+                        ($, $id): s_target.resolver.Value.state.options.D => p.with.change_context($['value'], ($) => p.initialize.group(() => {
+                            const $property_constraints: s_target.resolver.Value.state.options.D.constraints = p.with.change_context($['constraints'], ($) => Option_Constraints(
                                 $,
                             ))
-                            const $property_resolver: s_target.resolver.Value.type_.state.options.D.resolver = p.with.change_context($['resolver'], ($) => Value(
+                            const $property_resolver: s_target.resolver.Value.state.options.D.resolver = p.with.change_context($['resolver'], ($) => Value(
                                 $,
                             ))
-                            const $property_result: s_target.resolver.Value.type_.state.options.D.result = p.with.change_context($['result'], ($) => p.with.map_optional(
+                            const $property_result: s_target.resolver.Value.state.options.D.result = p.with.change_context($['result'], ($) => p.with.map_optional(
                                 $,
-                                ($): s_target.resolver.Value.type_.state.options.D.result.O => p.with.change_context($['value'], ($) => Result_Selection(
+                                ($): s_target.resolver.Value.state.options.D.result.O => p.with.change_context($['value'], ($) => Result_Selection(
                                     $,
                                 )),
                             ))
-                            const $property_checks: s_target.resolver.Value.type_.state.options.D.checks = p.with.change_context($['checks'], ($) => Checks(
+                            const $property_checks: s_target.resolver.Value.state.options.D.checks = p.with.change_context($['checks'], ($) => Checks(
                                 $,
                             ))
                             return {
@@ -1355,3 +1276,82 @@ export namespace resolver {
         },
     )
 }
+
+export const Directory: d.Directory = ($) => p.with.decide_state(
+    $,
+    ($s): s_target.Directory => {
+        switch ($s[0]) {
+            case 'group': return p.option($s, ($): s_target.Directory => ['group', p.initialize.group(() => {
+                const $property_nodes: s_target.Directory.group.nodes = p.with.change_context($['nodes'], ($) => p.with.map_dictionary(
+                    $,
+                    ($, $id): s_target.Directory.group.nodes.D => Node(
+                        $,
+                    ),
+                ))
+                return {
+                    'nodes': $property_nodes,
+                }
+            })])
+            case 'dictionary': return p.option($s, ($): s_target.Directory => ['dictionary', p.initialize.group(() => {
+                const $property_node: s_target.Directory.dictionary.node = p.with.change_context($['node'], ($) => Node(
+                    $,
+                ))
+                return {
+                    'node': $property_node,
+                }
+            })])
+            default: return p.exhaustive($s[0])
+        }
+    },
+)
+
+export const Node: d.Node = ($) => p.with.decide_state(
+    $,
+    ($s): s_target.Node => {
+        switch ($s[0]) {
+            case 'file': return p.option($s, ($): s_target.Node => ['file', p.initialize.group(() => {
+                const $property_file_extension: s_target.Node.file.file_extension = p.with.change_context($['file extension'], ($) => $)
+                const $property_type: s_target.Node.file.type_ = p.with.change_context($['type'], ($) => $['value']['l id'])
+                return {
+                    'file extension': $property_file_extension,
+                    'type': $property_type,
+                }
+            })])
+            case 'directory': return p.option($s, ($): s_target.Node => ['directory', Directory(
+                $,
+            )])
+            default: return p.exhaustive($s[0])
+        }
+    },
+)
+
+export const Type_Specification: d.Type_Specification = ($) => p.initialize.group(() => {
+    const $property_schema: s_target.Type_Specification.schema = p.with.change_context($['schema'], ($) => p.initialize.group(() => {
+        const $property_structure: s_target.Type_Specification.schema.structure = p.with.change_context($['structure'], ($) => structure.Structure(
+            $,
+        ))
+        const $property_resolver: s_target.Type_Specification.schema.resolver = p.with.change_context($['resolver'], ($) => p.initialize.group(() => {
+            const $property_declarations: s_target.Type_Specification.schema.resolver.declarations = p.with.change_context($['declarations'], ($) => declarations.Namespace(
+                $,
+            ))
+            const $property_implementations: s_target.Type_Specification.schema.resolver.implementations = p.with.change_context($['implementations'], ($) => resolver.Resolver(
+                $,
+            ))
+            return {
+                'declarations': $property_declarations,
+                'implementations': $property_implementations,
+            }
+        }))
+        return {
+            'structure': $property_structure,
+            'resolver': $property_resolver,
+        }
+    }))
+    const $property_directory: s_target.Type_Specification.directory = p.with.change_context($['directory'], ($) => Directory(
+        $,
+    ))
+    return {
+        'schema': $property_schema,
+        'directory': $property_directory,
+    }
+})

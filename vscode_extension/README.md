@@ -51,7 +51,7 @@ The following commands are also available in the editor context menu:
 - **Convert document to JSON notation** - Refactor code action (`Ctrl+.`) that changes the notation of the whole document while preserving its Liana content
 - **Sort dictionary (shallow) / Sort dictionaries (deep)** - Refactor code actions (`Ctrl+.`). Shallow sorts the dictionary around the cursor; deep also sorts the dictionaries nested in it, or every dictionary in the document when the cursor is not in a dictionary. Comments move with their entries. When entries depend on each other (acyclic references to siblings), choose once between alphabetical, topological then alphabetical, or topological only (dependencies first, otherwise keep the current order); dictionaries without dependencies are sorted alphabetically. Liana itself does not require any order
 - **Toggle notation style** - Switch between verbose/concise notation
-- **Publish this Liana schema to an authoring environment...** - Write the schema as a read-only `.liana/schema.slna` into a chosen directory; the directory is remembered per schema for later updates (only offered when the document has no errors)
+- **Deploy this Liana schema to an authoring environment...** - Seal the schema as a read-only `.liana/schema.slna` in a chosen directory; the directory is remembered per schema for later updates (only offered when the document has no errors)
 - **Seal document** - Mark document as finalized (only offered when the document has no errors)
 
 ## Notation Styles
@@ -438,9 +438,9 @@ If all went well, you ended up with a file that looks like this
 )
 ````
 
-## publish this schema to an authoring environment
+## deploy this schema to an authoring environment
 - save the file
-- right click on the content and select `Publish this Liana schema to an authoring environment...` and choose the directory of the authoring environment. Run it again after changing the schema to publish the update.
+- right click on the content and select `Deploy this Liana schema to an authoring environment...` and choose the directory of the authoring environment. Run it again after changing the schema to deploy the update.
 - Now you can create your first file that conforms to the language you just created; right-click on the folder, select 'New Liana file'. Give a name that ends with .lna. My advise would be to add the language name in the file, according to this format; .my_lang.lna
 - Again, you should see a '#'. ctrl-d should suggest the `message` property and
   a quoted text value.

@@ -4,24 +4,6 @@ import type * as s_source from "../../../../structure/schemas/astn_document.js"
 import type * as s_target from "../../../../structure/schemas/unresolved.js"
 import type * as s_error from "../../../../structure/schemas/unmarshalling.js"
 
-export type Directory = p_.Transformer_With_Error_With_Source_Value<
-    s_target.Directory,
-    s_error.Error,
-    s_source.Value
->
-
-export type Node = p_.Transformer_With_Error_With_Source_Value<
-    s_target.Node,
-    s_error.Error,
-    s_source.Value
->
-
-export type Type_Specification = p_.Transformer_With_Error_With_Source_Value<
-    s_target.Type_Specification,
-    s_error.Error,
-    s_source.Value
->
-
 export namespace structure {
     
     export type Basic_Types = p_.Transformer_With_Error_With_Source_Value<
@@ -228,3 +210,21 @@ export namespace resolver {
         s_source.Value
     >
 }
+
+export type Directory = p_.Transformer_With_Error_With_Source_Value<
+    s_target.Directory,
+    s_error.Error,
+    s_source.Value
+>
+
+export type Node = p_.Transformer_With_Error_With_Source_Value<
+    s_target.Node,
+    s_error.Error,
+    s_source.Value
+>
+
+export type Type_Specification = p_.Transformer_With_Error_With_Source_Value<
+    s_target.Type_Specification,
+    s_error.Error,
+    s_source.Value
+>

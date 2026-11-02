@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 ### Changed
+- Renamed schema deployment to "Deploy this Liana schema to an authoring
+  environment..." with command id `liana.deploy_schema_to_authoring_environment`.
+  Deployment still seals the schema into a read-only `.liana/schema.slna`.
 - Upgraded the verbatim generated Liana model, bundled context, and maintained
   schema fixtures. Simple components now select acyclic local/child/sibling
   targets; cyclic components use local references. Relative selections use
@@ -105,10 +108,10 @@
 - Moved Convert to JSON notation into the Refactor code actions. It changes the
   whole document's notation while preserving its Liana content.
 - Renamed "Initialize or update authoring environment with this Liana schema"
-  to "Publish this Liana schema to an authoring environment..." (command id
-  `liana.publish_schema_to_authoring_environment`) and removed the prompt to
+  to "Deploy this Liana schema to an authoring environment..." (command id
+  `liana.deploy_schema_to_authoring_environment`) and removed the prompt to
   open the authoring environment afterwards.
-- Publishing a schema is refused, and hidden from the editor context menu,
+- Deploying a schema is refused, and hidden from the editor context menu,
   when the document has errors.
 
 ### Removed
