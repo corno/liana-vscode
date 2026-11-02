@@ -96,6 +96,39 @@ const selected = (schema, directories, file) => file_type(schema, {
 const header = (schema, directories, file, body) =>
     `! (\`path\`: (\`directories\`: [${directories.map(directory => JSON.stringify(directory)).join(' ')}] \`file name\`: ${JSON.stringify(file)}) \`schema\`: ${schema})\n${body}`
 
+test('schema signature headers preserve the schema body during direct and filesystem loading', async () => {
+    const schema = specification(dictionary('data', 'Text'))
+    const signed = `!(\`schema-signature\`:"${'8'.repeat(64)}")${schema}`
+    assert.deepEqual(sealed_target.Directory(parse(signed).directory), sealed_target.Directory(parse(schema).directory))
+    const directory = mkdtempSync(join(tmpdir(), 'liana-signed-schema-'))
+    try {
+        mkdirSync(join(directory, '.liana'))
+        writeFileSync(join(directory, '.liana', 'schema.slna'), signed)
+        const file = join(directory, 'document.data.lna')
+        const source = '"hello"'
+        const loaded = await load(file, source)
+        if (loaded[0] === 'error') assert.fail(JSON.stringify(loaded[1]))
+        assert.equal(loaded[0], 'success')
+        const client = await client_load(file, source)
+        if (client[0] === 'error') assert.fail(JSON.stringify(client[1]))
+        assert.equal(client[0], 'success')
+        const document = TextDocument.create(pathToFileURL(file).href, 'liana', 1, source)
+        const { create_on_code_action } = require('../server/out/connection/on_code_action.js')
+        const actions = await create_on_code_action({
+            documents: { get: () => document },
+            cache: fresh_cache(),
+            'document notation styles': new Map(),
+        })({
+            textDocument: { uri: document.uri },
+            range: { start: document.positionAt(0), end: document.positionAt(0) },
+            context: { diagnostics: [], only: ['quickfix'] },
+        })
+        assert.deepEqual(actions, [])
+    } finally {
+        rmSync(directory, { recursive: true, force: true })
+    }
+})
+
 test('diagnostics settle after an edit invalidates an in-flight document load', { timeout: 5000 }, async () => {
     const directory = mkdtempSync(join(tmpdir(), 'liana-diagnostics-'))
     try {

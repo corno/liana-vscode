@@ -38,6 +38,9 @@
   per-option payload/context selections; typed consumers verify producer types.
 
 ### Fixed
+- Load sealed schemas with `schema-signature` headers using the shared ASTN
+  parser, avoiding a spurious parse error at the header's colon and failed
+  code-action requests for documents using those schemas.
 - "Sort dictionary alphabetically" was not implemented and only showed an error.
   It is replaced by the refactor code actions (`Ctrl+.`) "Sort dictionary
   (shallow)", for the innermost dictionary around the cursor, and "Sort
