@@ -76,8 +76,10 @@ export const create_on_code_action_resolve: (
 					}),
 					{
 						'conversion': {
-							'style': [style, null],
-							'impact': shallow
+							'style': [style === 'concise from dictionaries' ? 'verbose' : style, null],
+							'impact': style === 'concise from dictionaries'
+								? ['concise from dictionaries', null]
+								: shallow
 								? ['shallow with entities', null]
 								: ['deep', null]
 						},

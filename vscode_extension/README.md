@@ -63,6 +63,14 @@ Liana documents are written in ASTN, which has two notation styles:
 
 Toggle the document's default style with `Ctrl+Alt+N`; all values that will be code-completed will use the selected verbose or concise notation. Use code actions (right-click → Refactor) for selective conversion of existing values.
 
+**Convert to concise from dictionaries** is a third conversion option in the
+Refactor actions. It makes groups verbose until a dictionary is reached, then
+uses concise notation for all values beneath that dictionary, including nested
+groups, lists, and child dictionaries. Other branches remain verbose. Invoke it
+at the document's root value to apply this layout to the whole document, or at a
+nested value to convert just that subtree. It does not change the default style
+for future completions, and ordinary Format Document still preserves notation.
+
 For a one-off exception, use `Ctrl+Shift+D` instead of `Ctrl+D`: it follows the
 same next-`#` navigation but requests verbose completions when concise is selected,
 or concise completions when verbose is selected. Your selected style and status

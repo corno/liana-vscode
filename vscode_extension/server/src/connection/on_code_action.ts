@@ -24,6 +24,7 @@ export const create_on_code_action: (
 					['Convert to verbose notation (deep)', 'verbose', false],
 					['Convert to concise notation (shallow)', 'concise', true],
 					['Convert to concise notation (deep)', 'concise', false],
+					['Convert to concise from dictionaries', 'concise from dictionaries', false],
 				] as const
 			).map(([action_title, style, shallow]) => ({
 				title: action_title,

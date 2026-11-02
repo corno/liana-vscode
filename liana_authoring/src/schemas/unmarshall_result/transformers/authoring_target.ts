@@ -69,6 +69,7 @@ export const Non_Entity: declarations_.Non_Entity = ($, $p) => {
                         case 'shallow with entities': return p_.option($, ($) => ['shallow without entities', null])
                         case 'shallow without entities': return p_.option($, ($) => x['impact'])
                         case 'deep': return p_.option($, ($) => x['impact'])
+                        case 'concise from dictionaries': return p_.option($, ($) => x['impact'])
                         default: return p_.exhaustive($[0])
                     }
                 }),
@@ -91,6 +92,7 @@ export const Entity: declarations_.Entity = ($, $p) => {
                 ))
                 case 'shallow without entities': return p_.option($, ($) => t_parse_tree_to_authoring_target.Value(value.instance))
                 case 'deep': return p_.option($, ($) => Any_Value(value, $p))
+                case 'concise from dictionaries': return p_.option($, ($) => Any_Value(value, $p))
                 default: return p_.exhaustive($[0])
             }
         })
@@ -127,7 +129,11 @@ export const Any_Value: declarations_.Any_Value = ($, $p) => {
                                             'value': p_.from.state($.value).decide(
                                                 ($) => {
                                                     switch ($[0]) {
-                                                        case 'set': return p_.option($, ($) => p_.literal.set(Entity($, $p)))
+                                                        case 'set': return p_.option($, ($) => p_.literal.set(Entity($,
+                                                            $p.impact[0] === 'concise from dictionaries'
+                                                                ? { style: ['concise', null], impact: ['deep', null] }
+                                                                : $p,
+                                                        )))
                                                         case 'not set': return p_.option($, ($) => p_.literal.not_set())
                                                         default: return p_.exhaustive($[0])
                                                     }

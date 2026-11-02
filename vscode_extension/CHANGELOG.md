@@ -8,6 +8,9 @@
   Schema-independent refactorings remain available.
 
 ### Changed
+- Add "Convert to concise from dictionaries" to notation refactorings: groups
+  remain verbose until the first dictionary on each branch, then all descendants
+  use concise notation. Existing shallow/deep conversion and formatting remain unchanged.
 - Add a Copy error report action to extension error notifications and a
   "Liana: Copy error report" command for active-document error diagnostics.
   Reports include the error, versions, and schema keys; nothing is sent.

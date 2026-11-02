@@ -1712,6 +1712,112 @@ const actionsAt = (source, schema, offset, only) => {
     })
 }
 
+test('concise from dictionaries keeps surrounding groups verbose and converts all dictionary descendants', async () => {
+    const leaf = "| `group` { 'value': (`description`: _ `value`: | `nothing` ~) }"
+    const dictionary = value => `| \`dictionary\` (\`value\`: ${value} \`benchmark\`: _)`
+    const list = value => `| \`list\` (\`value\`: ${value} \`result\`: _)`
+    const optional = value => `| \`optional\` (\`value\`: ${value} \`constraints\`: _ \`result\`: _)`
+    const root = `| \`group\` {
+        'outside': (\`description\`: _ \`value\`: ${leaf})
+        'items': (\`description\`: _ \`value\`: ${dictionary(`| \`group\` {
+            'child': (\`description\`: _ \`value\`: ${leaf})
+            'nested': (\`description\`: _ \`value\`: ${dictionary(leaf)})
+            'list': (\`description\`: _ \`value\`: ${list(leaf)})
+        }`)})
+        'wrapped': (\`description\`: _ \`value\`: ${optional(list(dictionary(leaf)))})
+        'after': (\`description\`: _ \`value\`: ${leaf})
+    }`
+    const leafResolver = "| `group` { 'value': (`resolver`: | `nothing` ~) }"
+    const dictionaryResolver = value => `| \`dictionary\` (\`resolver\`: ${value} \`benchmark\`: _)`
+    const schema = specification(root, `| \`group\` {
+        'outside': (\`resolver\`: ${leafResolver})
+        'items': (\`resolver\`: ${dictionaryResolver(`| \`group\` {
+            'child': (\`resolver\`: ${leafResolver})
+            'nested': (\`resolver\`: ${dictionaryResolver(leafResolver)})
+            'list': (\`resolver\`: | \`list\` (\`resolver\`: ${leafResolver} \`result\`: _))
+        }`)})
+        'wrapped': (\`resolver\`: | \`optional\` (\`presence\`: _ \`checks\`: _ \`constraints\`: _
+            \`not set constraints\`: _ \`result\`: _ \`resolver\`: | \`list\` (
+                \`result\`: _ \`resolver\`: ${dictionaryResolver(leafResolver)})))
+        'after': (\`resolver\`: ${leafResolver})
+    }`)
+    const source = `(
+        \`outside\`: < ~ >
+        \`items\`: { 'one': (
+            \`child\`: (\`value\`: ~)
+            \`nested\`: { 'two': (\`value\`: ~) }
+            \`list\`: [(\`value\`: ~)]
+        ) }
+        \`wrapped\`: * [ { 'three': (\`value\`: ~) } ]
+        \`after\`: < ~ >
+    )`
+    const convert = source => serialized_authoring_target.Value(
+        authoring_target.Document(document(source, schema), {
+            style: ['verbose', null], impact: ['concise from dictionaries', null],
+        }).content,
+        { paragraph: { indentation: '    ' }, value: { 'write delimiters': true } },
+    ).__get_raw().join('\n')
+    const converted = convert(source)
+    assert.deepEqual(unmarshal_diagnostics.Document(document(converted, schema)).__get_raw(), [])
+    assert.equal(sealed(converted, schema), sealed(source, schema))
+    assert.equal(convert(converted), converted)
+    assert.match(converted, /`outside`:\s*\(\s*`value`:/)
+    assert.match(converted, /`after`:\s*\(\s*`value`:/)
+    const parsed = document(converted, schema).content['unmarshall result'][1][1]
+    assert.equal(parsed.derived.style[0], 'verbose')
+    const items = entry(parsed.derived.properties, 'items').result[1]['unmarshall result'][1][1]
+    const item = items.intermediate['entries as list'].__get_raw()[0].value[1]['unmarshall result'][1][1]
+    assert.equal(item.derived.style[0], 'concise')
+    assert.doesNotMatch(converted.slice(converted.indexOf('`items`:'),
+        converted.indexOf('`wrapped`:')), /`child`:|`nested`:|`list`:|`value`:/)
+
+    const actions = await actionsAt(source, schema, 0, ['refactor'])
+    const action = actions.find(action => action.title === 'Convert to concise from dictionaries')
+    assert.ok(action)
+    const resolved = await requestAt(source, schema, 0, context => () =>
+        create_on_code_action_resolve({
+            ...context, connection: { console: { log() {} } },
+        })(action))
+    const edits = Object.values(resolved.edit.changes)[0]
+    const edited = TextDocument.applyEdits(TextDocument.create(action.data.uri, 'liana', 1, source), edits)
+    assert.equal(edited, converted)
+})
+
+test('concise from dictionaries makes a dictionary root concise and a dictionary-free root verbose', () => {
+    for (const [value, resolver, source, expected] of [
+        ["| `dictionary` (`value`: | `group` { 'x': (`description`: _ `value`: | `nothing` ~) } `benchmark`: _)",
+            "| `dictionary` (`resolver`: | `group` { 'x': (`resolver`: | `nothing` ~) } `benchmark`: _)",
+            "{ 'item': (`x`: ~) }", /<\s*~\s*>/],
+        ["| `group` { 'x': (`description`: _ `value`: | `nothing` ~) }",
+            "| `group` { 'x': (`resolver`: | `nothing` ~) }", '< ~ >', /`x`:\s*~/],
+    ]) {
+        const schema = specification(value, resolver)
+        const converted = serialized_authoring_target.Value(
+            authoring_target.Document(document(source, schema), {
+                style: ['verbose', null], impact: ['concise from dictionaries', null],
+            }).content,
+            { paragraph: { indentation: '    ' }, value: { 'write delimiters': true } },
+        ).__get_raw().join('\n')
+        assert.match(converted, expected)
+        assert.equal(sealed(converted, schema), sealed(source, schema))
+    }
+})
+
+test('concise from dictionaries preserves the maintained Liana schema through components and states', () => {
+    const schema = readFileSync(new URL('./fixtures/latest_liana/.liana/schema.slna', import.meta.url), 'utf8')
+    const source = readFileSync(new URL('./fixtures/latest_liana/liana.liana.lna', import.meta.url), 'utf8')
+    const converted = serialized_authoring_target.Value(
+        authoring_target.Document(document(source, schema), {
+            style: ['verbose', null], impact: ['concise from dictionaries', null],
+        }).content,
+        { paragraph: { indentation: '    ' }, value: { 'write delimiters': true } },
+    ).__get_raw().join('\n')
+    assert.deepEqual(unmarshal_diagnostics.Document(document(converted, schema)).__get_raw(), [])
+    assert.equal(sealed(converted, schema), sealed(source, schema))
+    assert.match(converted, /^\(\s*`schema`:\s*\(/)
+    assert.match(converted, /`structure`:\s*\(/)
+})
+
 test('code actions skip structural fixes for source parse errors while diagnostics retain the error', async () => {
     const { create_on_diagnostics } = require('../server/out/connection/on_diagnostics.js')
     const { missing_entry_actions } = require('../server/out/helpers/missing_entry_actions.js')
@@ -1719,7 +1825,7 @@ test('code actions skip structural fixes for source parse errors while diagnosti
     for (const source of ['"unterminated', "'unterminated", '`unterminated', '< {']) {
         const schema = benchmarkSchema(true)
         assert.deepEqual(await actionsAt(source, schema, 0, ['quickfix']), [])
-        assert.equal((await actionsAt(source, schema, 0)).length, 7)
+        assert.equal((await actionsAt(source, schema, 0)).length, 8)
         await requestAt(source, schema, 0, context => async params => {
             const actions = {
                 ...params, range: { start: params.position, end: params.position },
@@ -1750,7 +1856,7 @@ test('schema loading failures remain diagnostics without failing code-action req
         ['!()~', specification(), undefined],
     ]) {
         assert.deepEqual(await actionsAt(source, schema, 0, ['quickfix']), [])
-        assert.equal((await actionsAt(source, schema, 0)).length, 7)
+        assert.equal((await actionsAt(source, schema, 0)).length, 8)
         await requestAt(source, schema, 0, context => async params => {
             const actions = {
                 ...params, range: { start: params.position, end: params.position },
@@ -1839,7 +1945,7 @@ test('one quick fix inserts every missing dense entry without rewriting supplied
     assert.deepEqual(resolveDiagnostics.Document(await loadWithSchema(updated, benchmarkSchema(true))).__get_raw(), [])
     assert.deepEqual(await create_on_code_action_resolve({})(actions[0]), actions[0])
     assert.deepEqual(await actionsAt(updated, benchmarkSchema(true), updated.indexOf('{'), ['quickfix']), [])
-    assert.equal((await actionsAt(source, benchmarkSchema(true), source.indexOf('{'), ['refactor'])).length, 8)
+    assert.equal((await actionsAt(source, benchmarkSchema(true), source.indexOf('{'), ['refactor'])).length, 9)
 })
 
 test('missing-entry fixes ignore sparse, unavailable, and duplicate benchmark keys', async () => {
@@ -2076,7 +2182,7 @@ test('benchmark creation fixes require an unexpected nonduplicate key and an ava
     }
     const source = "< { 'foo': ~ } {} >"
     assert.deepEqual(await actionsAt(source, benchmarkSchema(false), source.lastIndexOf('}'), ['quickfix']), [])
-    assert.equal((await actionsAt(source, benchmarkSchema(false), source.indexOf("'foo'") + 2, ['refactor'])).length, 8)
+    assert.equal((await actionsAt(source, benchmarkSchema(false), source.indexOf("'foo'") + 2, ['refactor'])).length, 9)
 })
 
 test('generated dictionary identifiers always use escaped single quotation marks', () => {
