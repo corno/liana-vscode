@@ -20,7 +20,7 @@ test('upgrade copies the authoritative core and computes the body key before rep
     const source = join(root, 'clean_start/instance/liana/.liana/schema.slna')
     const template = join(workspace, 'vscode_extension/liana_authoring_environment_template/.liana/schema.slna')
     const fixture = join(workspace, 'vscode_extension/test/fixtures/latest_liana/.liana/schema.slna')
-    const input = join(root, 'clean_start/test_results/expected/generate_typescript_from_liana_via_pareto/liana/model.ts')
+    const input = join(root, 'clean_start/meta/shared/src/liana/liana/model.ts')
     const shared = join(root, 'clean_start/meta/shared/src/sealed_artifact')
     try {
         for (const file of [source, template, fixture, input, join(workspace, generated, 'current_generated/model.ts')]) {

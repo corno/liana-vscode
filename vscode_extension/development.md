@@ -21,9 +21,14 @@ npm run bundle
 ```
 
 The backend and bundled authoring template use the promoted, namespace-aware
-Liana contract exclusively. `Type Specification` contains `schema` and a recursive
-`directory` file tree. Each file node declares its `file extension` and selects
-an entry in `schema.structure.types`.
+Liana contract exclusively. `Authoring Specification` contains `schema` and a recursive
+`directory` file tree. Each file node contains only `type`, selecting a public
+entry in `schema.structure.types`. Group names match paths exactly; dictionary
+nodes accept arbitrary names without suffix enforcement. No schema-extension
+metadata is present. File creation and extraction preserve configured or entered
+names; source suffixes are conventions only.
+The shared `Schema` contains `structure` and `resolver`; `Document Specification`
+contains that `schema` and a public `root type` reference in the root namespace.
 Data values may use ASTN includes (`@ "relative/path"`). The path is relative to
 the including file and is resolved through the same directory specification.
 The included file's resolved root type must be the exact type required at the
@@ -33,7 +38,7 @@ their resolved results, so changing an included file re-resolves direct and
 transitive includers without unmarshalling those documents again.
 Code actions can inline an include by replacing it with the included root value,
 then ask whether to delete the source file. Extract actions move a value only
-when its structural type is a file root declared in the Type Specification.
+when its structural type is a file root declared in the Authoring Specification.
 The export wizard suggests matching locations, rejects paths outside those
 declared locations, and never overwrites an existing file.
 The schema has separate `structure` and `resolver` trees:
@@ -111,9 +116,16 @@ selection and filesystem/UI operations remain outside the core. The low-level
 `$$` sealing helper remains a body-only API for existing callers.
 Canonical-body fingerprints are tested against the four maintained CLI schema
 artifacts, and full artifact bytes have been compared using identical presealed
-CLI inputs. Semantic validation is not part of this copied core: the CLI still
+CLI inputs. Current fingerprints come from CLI invocation outputs, not the
+owner-managed, unpromoted expected snapshots. Sealed output naming belongs to
+callers, conventionally `<name>.a.liana.slna`, `<name>.d.astn.slna`,
+`<name>.s.astn.slna`, or `<name>.m.pto.slna`. ASTN source names conventionally use
+`.astn.lna`, not `.astn_d.lna`. Registry publication and registry configuration
+loading are not implemented.
+Semantic validation is not part of this copied core: the CLI still
 uses its handwritten resolver while the editor has include-aware resolution and
-diagnostics. Unifying those validation adapters, including explicit include
+diagnostics. The generated resolvers still omit some optional/state identity
+checks; the handwritten seal is authoritative. Unifying those validation adapters, including explicit include
 resolution during sealing, remains separate work; canonical parity alone is
 not proof of semantic parity.
 

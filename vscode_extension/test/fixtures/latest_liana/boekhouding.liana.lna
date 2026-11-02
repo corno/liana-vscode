@@ -1168,5 +1168,5 @@
             )
         )
     )
-    `directory`: | `dictionary` < | `file` < "boekhouding" 'Root' > >
+    `directory`: | `dictionary` < | `file` < 'Root' > >
 )

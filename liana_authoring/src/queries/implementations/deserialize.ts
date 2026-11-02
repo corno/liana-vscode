@@ -20,7 +20,7 @@ export type Include_Results = { get(path: string): ['resolved', s_resolve_result
 
 const resolve_document = (
     unmarshalled: import('../../schemas/unmarshall_result/schema.js').Document,
-    specification: s_schema.Type_Specification,
+    specification: s_schema.Authoring_Specification,
     root_type: s_schema.Node.file.type_.value,
     includes: Include_Results,
 ): s_resolve_result.Document => {

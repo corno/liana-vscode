@@ -5,7 +5,6 @@ import type * as schema from '../liana_next_schema/current_generated/structure/s
 
 export type File_Path = { directories: core.List<string>, 'file name': string }
 type Abort = (message: string) => never
-const characters = (text: string) => list_from_text(text, ($) => $).__get_raw()
 
 const valid_segment = (name: string, abort: Abort): void => {
     if (name === '' || name === '.' || name === '..') abort(`Invalid path segment: "${name}"`)
@@ -15,27 +14,7 @@ const valid_segment = (name: string, abort: Abort): void => {
     })
 }
 
-const has_suffix = (file_name: string, ending: string): boolean => {
-    const file = characters(file_name)
-    const suffix = characters(ending)
-    if (file.length <= suffix.length) return false
-    for (let index = 0; index < suffix.length; index += 1) {
-        if (file[file.length - suffix.length + index] !== suffix[index]) return false
-    }
-    return true
-}
-
-const matches_extension = (file_name: string, extension: string): boolean => extension === '' ||
-    has_suffix(file_name, `.${extension}`) ||
-    has_suffix(file_name, `.${extension}.lna`) ||
-    has_suffix(file_name, `.${extension}.slna`)
-
-const matches_name = (file_name: string, name: string, extension: string): boolean => {
-    const logical = extension === '' ? name : `${name}.${extension}`
-    return file_name === logical || file_name === `${logical}.lna` || file_name === `${logical}.slna`
-}
-
-export const file_directory = (specification: schema.Type_Specification, directories: core.List<string>, abort: Abort): schema.Directory => {
+export const file_directory = (specification: schema.Authoring_Specification, directories: core.List<string>, abort: Abort): schema.Directory => {
     let directory = specification.directory
     p.from.list(directories).map((name) => {
         valid_segment(name, abort)
@@ -51,19 +30,15 @@ export const file_directory = (specification: schema.Type_Specification, directo
     return directory
 }
 
-export const file_type = (specification: schema.Type_Specification, path: File_Path, abort: Abort): schema.Node.file.type_.value => {
+export const file_type = (specification: schema.Authoring_Specification, path: File_Path, abort: Abort): schema.Node.file.type_.value => {
     const directory = file_directory(specification, path.directories, abort)
     valid_segment(path['file name'], abort)
     const file_name = path['file name']
     const file = directory[0] === 'dictionary' ? directory[1].node
-        : p.from.dictionary(p.from.dictionary(directory[1].nodes).filter((node, name) =>
-            node[0] === 'file' && matches_name(file_name, name, node[1]['file extension']),
-        )).on_has_single_entry(
+        : p.from.dictionary(directory[1].nodes).get_possible_entry(file_name,
             ($) => $,
-            () => abort(`Ambiguous file node: ${file_name}`),
             () => abort(`No such file node: ${file_name}`),
         )
     if (file[0] !== 'file') return abort(`Expected file node: ${file_name}`)
-    if (!matches_extension(file_name, file[1]['file extension'])) return abort(`File extension mismatch: ${file_name}`)
     return file[1].type.value
 }

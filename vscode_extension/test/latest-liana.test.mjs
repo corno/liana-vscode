@@ -17,7 +17,7 @@ const { error_message } = require('pareto-liana/schemas/temp_type_specifier/read
 const { load_document } = require('../server/out/to_be_backend/load_document.js')
 const { load_applicable_schema, load_directory_schema } = require('../client/out/to_be_backend/load_applicable_schema.js')
 const { file_choices, new_file_name, validate_new_file } = require('../client/out/helpers/new_file_name.js')
-const { validate_extract_target } = require('../client/out/helpers/extract_target.js')
+const { validate_extract_target, extract_target_suggestion } = require('../client/out/helpers/extract_target.js')
 const { create_cache } = require('../server/out/core/cache.js')
 const unmarshal_diagnostics = require('liana-authoring/schemas/unmarshall_result/transformers/diagnostics')
 const resolve_diagnostics = require('liana-authoring/schemas/resolve_result/transformers/diagnostics')
@@ -48,25 +48,25 @@ const client_load = (file, source) => new Promise(resolve => load_applicable_sch
     { uri: { fsPath: file }, getText: () => source },
     error => resolve(['error', error]), (specification, type) => resolve(['success', { specification, type }]),
 ))
-const dictionary = (extension, type) => `| \`dictionary\` (\`node\`: | \`file\` (\`file extension\`: "${extension}" \`type\`: '${type}'))`
+const dictionary = type => `| \`dictionary\` (\`node\`: | \`file\` (\`type\`: '${type}'))`
 const tree = `| \`group\` (\`nodes\`: {
-    'settings': | \`file\` (\`file extension\`: "cfg" \`type\`: 'Text')
+    'settings.cfg.lna': | \`file\` (\`type\`: 'Text')
     'nested': | \`directory\` | \`group\` (\`nodes\`: {
-        'empty': | \`file\` (\`file extension\`: "" \`type\`: 'Nothing')
-        'items': | \`directory\` ${dictionary('item', 'Text')}
+        'empty': | \`file\` (\`type\`: 'Nothing')
+        'items': | \`directory\` ${dictionary('Text')}
     })
 })`
 const include_tree = mainType => `| \`group\` (\`nodes\`: {
-    'main': | \`file\` (\`file extension\`: "data" \`type\`: '${mainType}')
-    'piece': | \`file\` (\`file extension\`: "part" \`type\`: 'Text')
-    'base': | \`file\` (\`file extension\`: "leaf" \`type\`: 'Text')
+    'main.data.lna': | \`file\` (\`type\`: '${mainType}')
+    'piece.part.lna': | \`file\` (\`type\`: 'Text')
+    'base.leaf.lna': | \`file\` (\`type\`: 'Text')
 })`
 const nested_include_tree = `| \`group\` (\`nodes\`: {
-    'main': | \`file\` (\`file extension\`: "data" \`type\`: 'Text')
+    'main.data.lna': | \`file\` (\`type\`: 'Text')
     'nested': | \`directory\` | \`group\` (\`nodes\`: {
-        'piece': | \`file\` (\`file extension\`: "part" \`type\`: 'Text')
+        'piece.part.lna': | \`file\` (\`type\`: 'Text')
     })
-    'base': | \`file\` (\`file extension\`: "leaf" \`type\`: 'Text')
+    'base.leaf.lna': | \`file\` (\`type\`: 'Text')
 })`
 const specification = (directory = tree) => `(
     \`schema\`: (
@@ -98,7 +98,7 @@ const header = (schema, directories, file, body) =>
     `! (\`path\`: (\`directories\`: [${directories.map(directory => JSON.stringify(directory)).join(' ')}] \`file name\`: ${JSON.stringify(file)}) \`schema\`: ${schema})\n${body}`
 
 test('schema signature headers preserve the schema body during direct and filesystem loading', async () => {
-    const schema = specification(dictionary('data', 'Text'))
+    const schema = specification(dictionary('Text'))
     const signed = `${schema_signature_header}${schema}`
     assert.deepEqual(sealed_target.Directory(parse(signed).directory), sealed_target.Directory(parse(schema).directory))
     const directory = mkdtempSync(join(tmpdir(), 'liana-signed-schema-'))
@@ -177,7 +177,7 @@ test('diagnostics settle after an edit invalidates an in-flight document load', 
     const directory = mkdtempSync(join(tmpdir(), 'liana-diagnostics-'))
     try {
         mkdirSync(join(directory, '.liana'))
-        writeFileSync(join(directory, '.liana/schema.slna'), signed_schema(specification(dictionary('data', 'Text'))))
+        writeFileSync(join(directory, '.liana/schema.slna'), signed_schema(specification(dictionary('Text'))))
         const uri = pathToFileURL(join(directory, 'document.data.lna')).href
         const cache = fresh_cache()
         let document = TextDocument.create(uri, 'liana', 1, '~')
@@ -295,7 +295,7 @@ test('include refactor offers inlining at include values and export only at decl
         const extract_action = export_actions.find(action => action.title === 'Extract root value to a file…')
         assert.ok(extract_action)
         assert.equal(extract_action.command.command, 'liana.extract_root_value')
-        assert.ok(extract_action.command.arguments[0].candidates.some(candidate => candidate.name === 'piece'))
+        assert.ok(extract_action.command.arguments[0].candidates.some(candidate => candidate.name === 'piece.part.lna'))
     } finally {
         rmSync(directory, { recursive: true, force: true })
     }
@@ -353,57 +353,67 @@ test('include cycles are reported during resolution even when both files load co
     }
 })
 
-test('latest file-tree selection covers named, nested, dictionary and encoded files', () => {
+test('path-only selection matches group names exactly and accepts arbitrary dictionary filenames', () => {
     const schema = parse(specification())
-    for (const file of ['settings.cfg', 'settings.cfg.lna', 'settings.cfg.slna']) {
-        assert.equal(selected(schema, [], file)['l id'], 'Text')
+    assert.equal(selected(schema, [], 'settings.cfg.lna')['l id'], 'Text')
+    for (const file of ['settings', 'settings.cfg', 'settings.cfg.slna']) {
+        assert.throws(() => selected(schema, [], file), /No such file node/)
     }
-    for (const file of ['empty', 'empty.lna', 'empty.slna']) {
-        assert.equal(selected(schema, ['nested'], file)['l id'], 'Nothing')
+    assert.equal(selected(schema, ['nested'], 'empty')['l id'], 'Nothing')
+    for (const file of ['empty.lna', 'empty.slna']) {
+        assert.throws(() => selected(schema, ['nested'], file), /No such file node/)
     }
-    for (const file of ['a.item', 'a.item.lna', 'a.item.slna']) {
+    for (const file of ['a.item', 'a.item.lna', 'a.item.slna', 'a', 'a.wrong', '.item']) {
         assert.equal(selected(schema, ['nested', 'items'], file)['l id'], 'Text')
     }
-    const nested_dictionary = parse(specification(`| \`dictionary\` (\`node\`: | \`directory\` ${dictionary('', 'Nothing')})`))
+    const nested_dictionary = parse(specification(`| \`dictionary\` (\`node\`: | \`directory\` ${dictionary('Nothing')})`))
     assert.equal(selected(nested_dictionary, ['arbitrary'], 'file')['l id'], 'Nothing')
 })
 
-test('new-file names use the selected directory extension without duplicating supplied suffixes', () => {
+test('new-file names preserve user input and group choices preserve exact configured names', () => {
     const schema = parse(specification())
     const directories = p.literal.list(['nested', 'items'])
-    assert.deepEqual(file_choices(schema, directories, fail), [{ name: null, extension: 'item' }])
+    assert.deepEqual(file_choices(schema, directories, fail), [{ name: null }])
     for (const name of ['my_file', 'my_file.lna', 'my_file.item', 'my_file.item.lna', 'my_file.item.slna']) {
-        const filename = new_file_name(name, 'item')
-        assert.equal(filename, 'my_file.item.lna')
+        const filename = new_file_name(name)
+        assert.equal(filename, name)
         assert.doesNotThrow(() => validate_new_file(schema, directories, filename))
     }
-    assert.equal(new_file_name('my_file', ''), 'my_file.lna')
-    for (const name of ['', ' ', '.', '..', '.lna', '../escape', 'nested/file', 'nested\\file', 'bad\0name']) {
-        assert.throws(() => new_file_name(name, 'item'), /filename|Filename/)
+    for (const name of ['', ' ', '.', '..', '../escape', 'nested/file', 'nested\\file', 'bad\0name']) {
+        assert.throws(() => new_file_name(name), /filename|Filename/)
     }
-    assert.deepEqual(file_choices(schema, p.literal.list([]), fail), [{ name: 'settings', extension: 'cfg' }])
-    assert.deepEqual(file_choices(schema, p.literal.list(['nested']), fail), [{ name: 'empty', extension: '' }])
-    assert.throws(() => file_choices(parse(specification(`| \`dictionary\` (\`node\`: | \`directory\` ${dictionary('', 'Nothing')})`)), p.literal.list([]), fail), /subdirectories/)
+    assert.deepEqual(file_choices(schema, p.literal.list([]), fail), [{ name: 'settings.cfg.lna' }])
+    assert.deepEqual(file_choices(schema, p.literal.list(['nested']), fail), [{ name: 'empty' }])
+    assert.throws(() => file_choices(parse(specification(`| \`dictionary\` (\`node\`: | \`directory\` ${dictionary('Nothing')})`)), p.literal.list([]), fail), /subdirectories/)
     assert.throws(() => file_choices(schema, p.literal.list(['unknown']), fail), /No such directory/)
 })
 
 test('extraction destinations must match a declared file root and stay inside its schema directory', () => {
     const schema = parse(specification())
     const schema_root = '/workspace/project'
-    const candidates = [{ directories: ['nested', 'items'], name: null, extension: 'item' }]
+    const candidates = [{ directories: ['nested', 'items'], name: null }]
     assert.equal(
         validate_extract_target(schema, schema_root, schema_root, 'nested/items/new.item.lna', 'Text', candidates),
         join(schema_root, 'nested', 'items', 'new.item.lna'),
     )
     assert.throws(() => validate_extract_target(
-        schema, schema_root, schema_root, 'nested/empty.lna', 'Nothing', candidates,
+        schema, schema_root, schema_root, 'nested/empty', 'Nothing', candidates,
     ), /not declared for the selected root type/)
     assert.throws(() => validate_extract_target(
         schema, schema_root, schema_root, '../outside.item.lna', 'Text', candidates,
     ), /inside the active schema directory/)
-    assert.throws(() => validate_extract_target(
+    assert.equal(validate_extract_target(
         schema, schema_root, schema_root, 'nested/items/new.other.lna', 'Text', candidates,
-    ), /File extension mismatch/)
+    ), join(schema_root, 'nested', 'items', 'new.other.lna'))
+    const fixed = [{ directories: [], name: 'settings.cfg.lna' }]
+    assert.equal(extract_target_suggestion(schema_root, schema_root, fixed[0]), 'settings.cfg.lna')
+    assert.equal(extract_target_suggestion(schema_root, schema_root, candidates[0]), 'nested/items/my_file.lna')
+    assert.equal(validate_extract_target(
+        schema, schema_root, schema_root, 'settings.cfg.lna', 'Text', fixed,
+    ), join(schema_root, 'settings.cfg.lna'))
+    assert.throws(() => validate_extract_target(
+        schema, schema_root, schema_root, 'settings.cfg.slna', 'Text', fixed,
+    ), /No such file node/)
 })
 
 test('new-file command loads ancestor schemas, creates matching filenames and never overwrites files', async () => {
@@ -447,10 +457,10 @@ test('new-file command loads ancestor schemas, creates matching filenames and ne
         writeFileSync(join(dir, '.liana', 'schema.slna'), signed_schema(specification()))
         const folder = { fsPath: join(dir, 'nested', 'items') }
         await create_file(folder)
-        const created = join(folder.fsPath, 'my_file.item.lna')
+        const created = join(folder.fsPath, 'my_file')
         assert.equal(readFileSync(created, 'utf8'), '#')
         assert.deepEqual(opened, [created])
-        assert.equal(prompts[0].placeHolder, 'my_file.item.lna')
+        assert.equal(prompts[0].placeHolder, 'my_file.lna')
         assert.deepEqual(errors, [])
         writeFileSync(created, 'do not overwrite')
         await create_file(folder)
@@ -463,8 +473,8 @@ test('new-file command loads ancestor schemas, creates matching filenames and ne
 
         // Fixed-name groups offer only declared file nodes, not arbitrary entry names.
         const grouped = specification(tree.replace(
-            "'settings': | `file` (`file extension`: \"cfg\" `type`: 'Text')",
-            "'settings': | `file` (`file extension`: \"cfg\" `type`: 'Text') 'other': | `file` (`file extension`: \"txt\" `type`: 'Text')",
+            "'settings.cfg.lna': | `file` (`type`: 'Text')",
+            "'settings.cfg.lna': | `file` (`type`: 'Text') 'other': | `file` (`type`: 'Text')",
         ))
         writeFileSync(join(dir, '.liana', 'schema.slna'), signed_schema(grouped))
         await create_file({ fsPath: dir })
@@ -501,22 +511,22 @@ test('directory schema loading does not fall back past an invalid nearest contex
     }
 })
 
-test('invalid, unknown, mismatched and ambiguous paths are rejected without root fallback', () => {
+test('invalid and unknown paths are rejected without root fallback or suffix aliases', () => {
     const schema = parse(specification())
     for (const segment of ['', '.', '..', 'a/b', 'a\\b', 'a\0b']) {
         assert.throws(() => selected(schema, [segment], 'empty'), /Invalid path segment/)
         assert.throws(() => selected(schema, [], segment), /Invalid path segment/)
     }
     assert.throws(() => selected(schema, ['unknown'], 'empty'), /No such directory/)
-    assert.throws(() => selected(schema, ['settings'], 'empty'), /Expected directory/)
-    assert.throws(() => selected(schema, [], 'nested'), /No such file/)
-    assert.throws(() => selected(schema, ['nested', 'items'], 'a.wrong'), /extension mismatch/)
-    assert.throws(() => selected(schema, ['nested', 'items'], '.item'), /extension mismatch/)
-    const ambiguous = parse(specification(`| \`group\` (\`nodes\`: {
-        'name': | \`file\` (\`file extension\`: "cfg" \`type\`: 'Text')
-        'name.cfg': | \`file\` (\`file extension\`: "" \`type\`: 'Nothing')
+    assert.throws(() => selected(schema, ['settings.cfg.lna'], 'empty'), /Expected directory/)
+    assert.throws(() => selected(schema, [], 'nested'), /Expected file/)
+    const distinct = parse(specification(`| \`group\` (\`nodes\`: {
+        'name': | \`file\` (\`type\`: 'Text')
+        'name.cfg': | \`file\` (\`type\`: 'Nothing')
     })`))
-    assert.throws(() => selected(ambiguous, [], 'name.cfg'), /Ambiguous/)
+    assert.equal(selected(distinct, [], 'name')['l id'], 'Text')
+    assert.equal(selected(distinct, [], 'name.cfg')['l id'], 'Nothing')
+    assert.throws(() => selected(distinct, [], 'name.cfg.lna'), /No such file/)
 })
 
 test('server and client choose distinct roots per file while the server caches one specification', async () => {
@@ -527,7 +537,7 @@ test('server and client choose distinct roots per file while the server caches o
         writeFileSync(join(dir, '.liana', 'schema.slna'), signed_schema(specification()))
         const cache = fresh_cache()
         for (const [relative, body, kind] of [
-            ['settings.cfg.lna', '"hello"', 'simple'], ['nested/empty.slna', '~', 'nothing'],
+            ['settings.cfg.lna', '"hello"', 'simple'], ['nested/empty', '~', 'nothing'],
             ['nested/items/a.item.lna', '"item"', 'simple'],
         ]) {
             const file = join(dir, relative)
@@ -838,7 +848,7 @@ test('sorting dictionaries deep sorts the nested dictionaries as well', () => {
 
 test('optional fallback branches must resolve to the exact same structural target', () => {
     const selection = "(`start`: | `optional fallback` (`selection`: | `parameter` 'input' `fallback`: (`start`: | `parameter` 'fallback' `tail`: (`path`: []))) `tail`: (`path`: []))"
-    const source = specification(dictionary('', 'Nothing'))
+    const source = specification(dictionary('Nothing'))
         .replace("'Nothing': (`signature`: | `local` (`lookups`: {} `values`: {}))", `'Nothing': (\`signature\`: | \`local\` (\`lookups\`: {} \`values\`: {
             'input': ${signature_value('Nothing', 'optional')}
             'fallback': ${signature_value('Nothing', 'required')}
@@ -856,19 +866,17 @@ test('optional fallback branches must resolve to the exact same structural targe
 })
 
 test('current generated schema diagnostics describe invalid token syntax explicitly', () => {
-    assert.throws(() => Type_Specifier(chars(signed_schema(specification().replace('"cfg"', "'cfg'"))), error => {
-        assert.match(error_message(error), /Expected text, found reference/)
-        throw error
-    }, { 'tab size': 1 }))
+    const invalid_text = specification().replace('`hyperlink`: _', '`hyperlink`: * (`prefix`: \'cfg\' `suffix`: "")')
+    assert.throws(() => Type_Specifier(chars(signed_schema(invalid_text)), error => {
+        throw new Error(error_message(error))
+    }, { 'tab size': 1 }), /Expected text, found reference/)
     assert.throws(() => Type_Specifier(chars(signed_schema(specification().replace('`directory`:', '`root type`:'))), error => {
-        assert.match(error_message(error), /Unexpected properties: "root type"; expected properties: "schema", "directory"/)
-        assert.doesNotMatch(error_message(error), /FIXME/)
-        throw error
-    }, { 'tab size': 1 }))
+        throw new Error(error_message(error))
+    }, { 'tab size': 1 }), /Missing property: directory/)
 })
 
 test('optional producer results select the declared payload and remain absent when not set', async () => {
-    const source = specification(dictionary('', 'Nothing'))
+    const source = specification(dictionary('Nothing'))
         .replace("'Nothing': (`visibility`: | `public` ~ `root value`: | `nothing` ~)", `'Nothing': (\`visibility\`: | \`public\` ~ \`root value\`: | \`optional\` (
             \`constraints\`: _ \`value\`: | \`component\` (\`type\`: | \`simple\` | \`local\` 'Text' \`constraints\`: _)
             \`result\`: * (\`type\`: (\`location\`: | \`local\` 'Text') \`path\`: (\`tail\`: []))))`)

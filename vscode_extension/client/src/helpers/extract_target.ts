@@ -6,7 +6,6 @@ import { file_type } from 'pareto-liana/schemas/temp_type_specifier/file_type'
 export type Extract_Target = {
   directories: string[]
   name: string | null
-  extension: string
 }
 
 export const extract_target_suggestion = (
@@ -14,9 +13,7 @@ export const extract_target_suggestion = (
   schema_root: string,
   target: Extract_Target,
 ): string => {
-  const file = target.name === null
-    ? `my_file${target.extension === '' ? '' : `.${target.extension}`}.lna`
-    : `${target.name}${target.extension === '' ? '' : `.${target.extension}`}.lna`
+  const file = target.name ?? 'my_file.lna'
   const target_directory = path.join(schema_root, ...target.directories)
   return path.relative(source_directory, path.join(target_directory, file)).split(path.sep).join('/')
 }
@@ -24,21 +21,11 @@ export const extract_target_suggestion = (
 const candidate_matches = (candidate: Extract_Target, directories: string[], file_name: string): boolean => {
   if (candidate.directories.length !== directories.length
     || candidate.directories.some((segment, index) => segment !== directories[index])) return false
-  if (candidate.name === null) {
-    if (candidate.extension === '') return file_name !== '' && file_name !== '.' && file_name !== '..'
-    const suffixes = [
-      `.${candidate.extension}`,
-      `.${candidate.extension}.lna`,
-      `.${candidate.extension}.slna`,
-    ]
-    return suffixes.some(suffix => file_name.length > suffix.length && file_name.endsWith(suffix))
-  }
-  const logical = candidate.extension === '' ? candidate.name : `${candidate.name}.${candidate.extension}`
-  return file_name === logical || file_name === `${logical}.lna` || file_name === `${logical}.slna`
+  return candidate.name === null || file_name === candidate.name
 }
 
 export const validate_extract_target = (
-  specification_: schema.types.Type_Specification,
+  specification_: schema.types.Authoring_Specification,
   schema_root: string,
   source_directory: string,
   value: string,
@@ -62,7 +49,7 @@ export const validate_extract_target = (
   }, message => { throw new Error(message) })
   if (type['l id'] !== root_type
     || !candidates.some(candidate => candidate_matches(candidate, segments, file_name))) {
-    throw new Error('This location is not declared for the selected root type in the Type Specification')
+    throw new Error('This location is not declared for the selected root type in the Authoring Specification')
   }
   return target_path
 }

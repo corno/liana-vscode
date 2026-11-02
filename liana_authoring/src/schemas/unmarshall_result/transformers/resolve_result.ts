@@ -122,7 +122,7 @@ export const Document: p_i_temp.Transformer_With_Lookups_And_Parameter<
     temp.Lookups,
     {
         'definition': s_in_definition.namespaces.resolver.types.Resolver.types.D
-        'resolvers': s_in_definition.types.Type_Specification.schema
+        'resolvers': s_in_definition.types.Authoring_Specification.schema
         'type parameters': p_di.Dictionary<temp.Type_Parameter_Resolve_Status>
     }
 > = ($, $l, $p) => ({

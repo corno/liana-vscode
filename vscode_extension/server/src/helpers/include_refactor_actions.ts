@@ -15,13 +15,12 @@ import { create_range_from_range } from './range'
 type Extract_Target = {
   directories: string[]
   name: string | null
-  extension: string
   rootType: string
   definition: schema.namespaces.structure.types.Value
 }
 
 const collect_targets = (
-  specification: schema.Type_Specification,
+  specification: schema.Authoring_Specification,
   root_definition?: schema.namespaces.structure.types.Value,
 ): Extract_Target[] => {
   const targets: Extract_Target[] = []
@@ -32,7 +31,6 @@ const collect_targets = (
         targets.push({
           directories,
           name: null,
-          extension: node[1]['file extension'],
           rootType: node[1].type.value['l id'],
           definition: node[1].type.value['l entry']['root value'],
         })
@@ -47,7 +45,6 @@ const collect_targets = (
           targets.push({
             directories,
             name,
-            extension: node[1]['file extension'],
             rootType: node[1].type.value['l id'],
             definition: node[1].type.value['l entry']['root value'],
           })
@@ -218,7 +215,7 @@ const document_actions = async (
           sourceVersion: document.version,
           range: create_range_from_range(full_range.Value(selected.unmarshalled.instance)),
           rootType: allowed[0]!.rootType,
-          candidates: allowed.map(({ directories, name, extension }) => ({ directories, name, extension })),
+          candidates: allowed.map(({ directories, name }) => ({ directories, name })),
         }),
       })
     }

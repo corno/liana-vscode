@@ -8,7 +8,7 @@ import type * as s_schema_path from "../retrieval_of_schema_path/schema.js"
 import type * as schema_errors from "pareto-liana/modules/schema.generated/schemas/reader_errors/schema"
 
 export type Constrained_Result = s_resolve_result.Document & {
-    'type specification': s_schema.Type_Specification
+    'type specification': s_schema.Authoring_Specification
     'root type': s_schema.Node.file.type_.value
 }
 

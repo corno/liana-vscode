@@ -4499,12 +4499,6 @@ export const Node: d.Node = ($) => p.with.decide_state(
                         const $property_type: s_target.Value.type_ = ['group', p.initialize.group(() => {
                             const $property_properties: s_target.Value.type_.group.properties = p.initialize.dictionary_from_entries<s_target.Value.type_.group.properties.D>(
                                 [
-                                    ['file extension', p.with.change_context($['file extension'], ($) => p.initialize.group(() => {
-                                        const $property_type: s_target.Value.type_ = ['text', $]
-                                        return {
-                                            'type': $property_type,
-                                        }
-                                    }))],
                                     ['type', p.with.change_context($['type'], ($) => p.initialize.group(() => {
                                         const $property_type: s_target.Value.type_ = ['reference', $]
                                         return {
@@ -4550,37 +4544,23 @@ export const Node: d.Node = ($) => p.with.decide_state(
     },
 )
 
-export const Type_Specification: d.Type_Specification = ($) => p.initialize.group(() => {
+export const Schema: d.Schema = ($) => p.initialize.group(() => {
     const $property_type: s_target.Value.type_ = ['group', p.initialize.group(() => {
         const $property_properties: s_target.Value.type_.group.properties = p.initialize.dictionary_from_entries<s_target.Value.type_.group.properties.D>(
             [
-                ['schema', p.with.change_context($['schema'], ($) => p.initialize.group(() => {
+                ['structure', p.with.change_context($['structure'], ($) => structure.Structure(
+                    $,
+                ))],
+                ['resolver', p.with.change_context($['resolver'], ($) => p.initialize.group(() => {
                     const $property_type: s_target.Value.type_ = ['group', p.initialize.group(() => {
                         const $property_properties: s_target.Value.type_.group.properties = p.initialize.dictionary_from_entries<s_target.Value.type_.group.properties.D>(
                             [
-                                ['structure', p.with.change_context($['structure'], ($) => structure.Structure(
+                                ['declarations', p.with.change_context($['declarations'], ($) => declarations.Namespace(
                                     $,
                                 ))],
-                                ['resolver', p.with.change_context($['resolver'], ($) => p.initialize.group(() => {
-                                    const $property_type: s_target.Value.type_ = ['group', p.initialize.group(() => {
-                                        const $property_properties: s_target.Value.type_.group.properties = p.initialize.dictionary_from_entries<s_target.Value.type_.group.properties.D>(
-                                            [
-                                                ['declarations', p.with.change_context($['declarations'], ($) => declarations.Namespace(
-                                                    $,
-                                                ))],
-                                                ['implementations', p.with.change_context($['implementations'], ($) => resolver.Resolver(
-                                                    $,
-                                                ))],
-                                            ],
-                                        )
-                                        return {
-                                            'properties': $property_properties,
-                                        }
-                                    })]
-                                    return {
-                                        'type': $property_type,
-                                    }
-                                }))],
+                                ['implementations', p.with.change_context($['implementations'], ($) => resolver.Resolver(
+                                    $,
+                                ))],
                             ],
                         )
                         return {
@@ -4591,9 +4571,51 @@ export const Type_Specification: d.Type_Specification = ($) => p.initialize.grou
                         'type': $property_type,
                     }
                 }))],
+            ],
+        )
+        return {
+            'properties': $property_properties,
+        }
+    })]
+    return {
+        'type': $property_type,
+    }
+})
+
+export const Authoring_Specification: d.Authoring_Specification = ($) => p.initialize.group(() => {
+    const $property_type: s_target.Value.type_ = ['group', p.initialize.group(() => {
+        const $property_properties: s_target.Value.type_.group.properties = p.initialize.dictionary_from_entries<s_target.Value.type_.group.properties.D>(
+            [
+                ['schema', p.with.change_context($['schema'], ($) => Schema(
+                    $,
+                ))],
                 ['directory', p.with.change_context($['directory'], ($) => Directory(
                     $,
                 ))],
+            ],
+        )
+        return {
+            'properties': $property_properties,
+        }
+    })]
+    return {
+        'type': $property_type,
+    }
+})
+
+export const Document_Specification: d.Document_Specification = ($) => p.initialize.group(() => {
+    const $property_type: s_target.Value.type_ = ['group', p.initialize.group(() => {
+        const $property_properties: s_target.Value.type_.group.properties = p.initialize.dictionary_from_entries<s_target.Value.type_.group.properties.D>(
+            [
+                ['schema', p.with.change_context($['schema'], ($) => Schema(
+                    $,
+                ))],
+                ['root type', p.with.change_context($['root type'], ($) => p.initialize.group(() => {
+                    const $property_type: s_target.Value.type_ = ['reference', $]
+                    return {
+                        'type': $property_type,
+                    }
+                }))],
             ],
         )
         return {

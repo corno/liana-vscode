@@ -893,7 +893,6 @@ TODO:
                 } _ > >
                 'Node': < | `private` ~ | `state` < {
                     'file': < * "A file whose contents conform to a structural type in this schema" _ | `group` {
-                        'file extension': < * "Extension appended to the node name, without a leading dot" | `simple` 'text' >
                         'type': < _ | `reference` < < < | `child namespace` < 'structure' 'Types' > > < [] > > < | `acyclic` ~ * {
                             'public': < < | `child namespace` < 'structure' 'Type' > > < [
                                 | `group` 'visibility'
@@ -903,15 +902,25 @@ TODO:
                     } >
                     'directory': < * "A nested directory conforming to its own directory definition" _ | `component` < | `cyclic` 'Directory' _ > >
                 } _ > >
-                'Type Specification': < | `public` ~ | `group` {
-                    'schema': < * "The schema defining file contents throughout this tree" | `group` {
+                'Schema': < | `public` ~ | `group` {
                         'structure': < _ | `component` < | `simple` | `child namespace` < 'structure' 'Structure' > _ > >
                         'resolver': < * "Resolver interfaces and their implementations" | `group` {
                             'declarations': < * "Declarations name resolver contracts for each structural namespace" | `component` < | `simple` | `child namespace` < 'declarations' 'Namespace' > _ > >
                             'implementations': < _ | `component` < | `simple` | `child namespace` < 'resolver' 'Resolver' > _ > >
                         } >
-                    } >
+                } >
+                'Authoring Specification': < | `public` ~ | `group` {
+                    'schema': < * "The schema defining file contents throughout this tree" | `component` < | `simple` | `local` 'Schema' _ > >
                     'directory': < * "The root directory of the file tree" | `component` < | `cyclic` 'Directory' _ > >
+                } >
+                'Document Specification': < | `public` ~ | `group` {
+                    'schema': < * "The schema defining this document" | `component` < | `simple` | `local` 'Schema' _ > >
+                    'root type': < * "The public document root type, selected from the root namespace" | `reference` < < < | `child namespace` < 'structure' 'Types' > > < [] > > < | `acyclic` ~ * {
+                        'public': < < | `child namespace` < 'structure' 'Type' > > < [
+                            | `group` 'visibility'
+                            | `state` 'public'
+                        ] > >
+                    } > > >
                 } >
             }
         )
@@ -1105,7 +1114,9 @@ TODO:
                         'types': < < < | `child namespace` < 'structure' 'Types' > > < [] > > | `required` ~ >
                     } {} > >
                     'Node': < | `same as` 'Directory' >
-                    'Type Specification': < | `local` < {} {} > >
+                    'Schema': < | `local` < {} {} > >
+                    'Authoring Specification': < | `local` < {} {} > >
+                    'Document Specification': < | `local` < {} {} > >
                 }
             )
             `implementations`: (
@@ -3168,7 +3179,6 @@ TODO:
                     } > >
                     'Node': < | `state` < {
                         'file': < _ | `group` {
-                            'file extension': < | `simple` ~ >
                             'type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `parameter` 'types' < [] > > > > * {
                                 'public': < | `value` ~ < < [
                                     | `cyclic component` ~
@@ -3178,8 +3188,7 @@ TODO:
                         } _ _ >
                         'directory': < _ | `component` < | `local` 'Directory' * < _ _ > _ > _ _ >
                     } > >
-                    'Type Specification': < | `group` {
-                        'schema': < | `group` {
+                    'Schema': < | `group` {
                             'structure': < | `component` < | `child namespace` < 'structure' 'Structure' > * < * {} * {
                                 'sibling namespaces': | `acyclic` ~
                             } > _ > >
@@ -3202,9 +3211,12 @@ TODO:
                                     'sibling namespaces': | `optional` | `not set` ~
                                 } * {} > _ > >
                             } >
-                        } >
+                    } >
+                    'Authoring Specification': < | `group` {
+                        'schema': < | `component` < | `local` 'Schema' * < * {} * {} > _ > >
                         'directory': < | `component` < | `local` 'Directory' * < * {
                             'types': | `required` < | `sibling property` 'schema' < [
+                                | `component` ~
                                 | `group` 'structure'
                                 | `component` ~
                                 | `group` 'types'
@@ -3212,9 +3224,24 @@ TODO:
                             ] > >
                         } * {} > _ > >
                     } >
+                    'Document Specification': < | `group` {
+                        'schema': < | `component` < | `local` 'Schema' * < * {} * {} > _ > >
+                        'root type': < | `reference` < < < | `acyclic` | `resolved dictionary` < < | `sibling property` 'schema' < [
+                            | `component` ~
+                            | `group` 'structure'
+                            | `component` ~
+                            | `group` 'types'
+                            | `cyclic component` ~
+                        ] > > > > * {
+                            'public': < | `value` ~ < < [
+                                | `cyclic component` ~
+                                | `group` 'visibility'
+                            ] > | `state` < 'public' > > >
+                        } > > >
+                    } >
                 }
             )
         )
     )
-    `directory`: | `dictionary` < | `file` < "liana" 'Type Specification' > >
+    `directory`: | `dictionary` < | `file` < 'Authoring Specification' > >
 )

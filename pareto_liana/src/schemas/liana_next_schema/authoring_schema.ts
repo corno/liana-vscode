@@ -3,9 +3,9 @@ import type * as current from './current_generated/structure/schemas/resolved.js
 export * from './current_generated/structure/schemas/resolved.js'
 
 export namespace types {
-    export type Type_Specification = current.Type_Specification
-    export namespace Type_Specification {
-        export type schema = current.Type_Specification.schema
+    export type Authoring_Specification = current.Authoring_Specification
+    export namespace Authoring_Specification {
+        export type schema = current.Authoring_Specification.schema
     }
 }
 

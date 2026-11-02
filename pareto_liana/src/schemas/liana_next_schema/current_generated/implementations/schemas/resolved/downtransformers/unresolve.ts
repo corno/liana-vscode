@@ -1310,10 +1310,8 @@ export const Node: d.Node = ($) => p.with.decide_state(
     ($s): s_target.Node => {
         switch ($s[0]) {
             case 'file': return p.option($s, ($): s_target.Node => ['file', p.initialize.group(() => {
-                const $property_file_extension: s_target.Node.file.file_extension = p.with.change_context($['file extension'], ($) => $)
                 const $property_type: s_target.Node.file.type_ = p.with.change_context($['type'], ($) => $['value']['l id'])
                 return {
-                    'file extension': $property_file_extension,
                     'type': $property_type,
                 }
             })])
@@ -1325,33 +1323,48 @@ export const Node: d.Node = ($) => p.with.decide_state(
     },
 )
 
-export const Type_Specification: d.Type_Specification = ($) => p.initialize.group(() => {
-    const $property_schema: s_target.Type_Specification.schema = p.with.change_context($['schema'], ($) => p.initialize.group(() => {
-        const $property_structure: s_target.Type_Specification.schema.structure = p.with.change_context($['structure'], ($) => structure.Structure(
+export const Schema: d.Schema = ($) => p.initialize.group(() => {
+    const $property_structure: s_target.Schema.structure = p.with.change_context($['structure'], ($) => structure.Structure(
+        $,
+    ))
+    const $property_resolver: s_target.Schema.resolver = p.with.change_context($['resolver'], ($) => p.initialize.group(() => {
+        const $property_declarations: s_target.Schema.resolver.declarations = p.with.change_context($['declarations'], ($) => declarations.Namespace(
             $,
         ))
-        const $property_resolver: s_target.Type_Specification.schema.resolver = p.with.change_context($['resolver'], ($) => p.initialize.group(() => {
-            const $property_declarations: s_target.Type_Specification.schema.resolver.declarations = p.with.change_context($['declarations'], ($) => declarations.Namespace(
-                $,
-            ))
-            const $property_implementations: s_target.Type_Specification.schema.resolver.implementations = p.with.change_context($['implementations'], ($) => resolver.Resolver(
-                $,
-            ))
-            return {
-                'declarations': $property_declarations,
-                'implementations': $property_implementations,
-            }
-        }))
+        const $property_implementations: s_target.Schema.resolver.implementations = p.with.change_context($['implementations'], ($) => resolver.Resolver(
+            $,
+        ))
         return {
-            'structure': $property_structure,
-            'resolver': $property_resolver,
+            'declarations': $property_declarations,
+            'implementations': $property_implementations,
         }
     }))
-    const $property_directory: s_target.Type_Specification.directory = p.with.change_context($['directory'], ($) => Directory(
+    return {
+        'structure': $property_structure,
+        'resolver': $property_resolver,
+    }
+})
+
+export const Authoring_Specification: d.Authoring_Specification = ($) => p.initialize.group(() => {
+    const $property_schema: s_target.Authoring_Specification.schema = p.with.change_context($['schema'], ($) => Schema(
+        $,
+    ))
+    const $property_directory: s_target.Authoring_Specification.directory = p.with.change_context($['directory'], ($) => Directory(
         $,
     ))
     return {
         'schema': $property_schema,
         'directory': $property_directory,
+    }
+})
+
+export const Document_Specification: d.Document_Specification = ($) => p.initialize.group(() => {
+    const $property_schema: s_target.Document_Specification.schema = p.with.change_context($['schema'], ($) => Schema(
+        $,
+    ))
+    const $property_root_type: s_target.Document_Specification.root_type = p.with.change_context($['root type'], ($) => $['value']['l id'])
+    return {
+        'schema': $property_schema,
+        'root type': $property_root_type,
     }
 })

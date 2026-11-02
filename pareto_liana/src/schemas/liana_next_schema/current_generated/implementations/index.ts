@@ -63,7 +63,9 @@ export const api: d.API = {
                 'types': {
                     'Directory': unresolved_uptransformers_unmarshal.Directory,
                     'Node': unresolved_uptransformers_unmarshal.Node,
-                    'Type Specification': unresolved_uptransformers_unmarshal.Type_Specification,
+                    'Schema': unresolved_uptransformers_unmarshal.Schema,
+                    'Authoring Specification': unresolved_uptransformers_unmarshal.Authoring_Specification,
+                    'Document Specification': unresolved_uptransformers_unmarshal.Document_Specification,
                 },
             },
         },
@@ -122,7 +124,9 @@ export const api: d.API = {
                 'types': {
                     'Directory': unresolved_downtransformers_marshal.Directory,
                     'Node': unresolved_downtransformers_marshal.Node,
-                    'Type Specification': unresolved_downtransformers_marshal.Type_Specification,
+                    'Schema': unresolved_downtransformers_marshal.Schema,
+                    'Authoring Specification': unresolved_downtransformers_marshal.Authoring_Specification,
+                    'Document Specification': unresolved_downtransformers_marshal.Document_Specification,
                 },
             },
         },
@@ -183,7 +187,9 @@ export const api: d.API = {
                 'types': {
                     'Directory': resolved_uptransformers_resolve.Directory,
                     'Node': resolved_uptransformers_resolve.Node,
-                    'Type Specification': resolved_uptransformers_resolve.Type_Specification,
+                    'Schema': resolved_uptransformers_resolve.Schema,
+                    'Authoring Specification': resolved_uptransformers_resolve.Authoring_Specification,
+                    'Document Specification': resolved_uptransformers_resolve.Document_Specification,
                 },
             },
         },
@@ -242,7 +248,9 @@ export const api: d.API = {
                 'types': {
                     'Directory': resolved_downtransformers_unresolve.Directory,
                     'Node': resolved_downtransformers_unresolve.Node,
-                    'Type Specification': resolved_downtransformers_unresolve.Type_Specification,
+                    'Schema': resolved_downtransformers_unresolve.Schema,
+                    'Authoring Specification': resolved_downtransformers_unresolve.Authoring_Specification,
+                    'Document Specification': resolved_downtransformers_unresolve.Document_Specification,
                 },
             },
         },

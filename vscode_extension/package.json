@@ -60,7 +60,8 @@
 				],
 				"extensions": [
 					".liana",
-					".lna"
+					".lna",
+					".slna"
 				],
 				"configuration": "./language-configuration.json"
 			}
@@ -259,7 +260,7 @@
 				},
 				{
 					"command": "liana.deploy_schema_to_authoring_environment",
-					"when": "editorLangId == liana && !liana.has_errors && resourceFilename =~ /\\.liana\\.lna$/",
+					"when": "editorLangId == liana && !liana.has_errors",
 					"group": "1_liana"
 				}
 			],
@@ -271,7 +272,7 @@
 				},
 				{
 					"command": "liana.deploy_schema_to_authoring_environment",
-					"when": "resourceExtname == .lna && resourceFilename =~ /\\.liana\\.lna$/",
+					"when": "resourceLangId == liana",
 					"group": "liana@1"
 				}
 			]

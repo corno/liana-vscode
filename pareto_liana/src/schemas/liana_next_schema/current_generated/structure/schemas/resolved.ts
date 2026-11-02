@@ -3780,8 +3780,6 @@ export namespace Node {
     
     export namespace file {
         
-        export type file_extension = string
-        
         export namespace type_ {
             
             export namespace constraints {
@@ -3813,7 +3811,6 @@ export namespace Node {
     }
     
     export type file = {
-        readonly 'file extension': self.Node.file.file_extension
         readonly 'type': self.Node.file.type_
     }
     
@@ -3824,34 +3821,75 @@ export type Node =
     | readonly ['file', self.Node.file]
     | readonly ['directory', self.Node.directory]
 
-export namespace Type_Specification {
+export namespace Schema {
     
-    export namespace schema {
+    export type structure = self.structure.Structure
+    
+    export namespace resolver {
         
-        export type structure = self.structure.Structure
+        export type declarations = self.declarations.Namespace
         
-        export namespace resolver {
-            
-            export type declarations = self.declarations.Namespace
-            
-            export type implementations = self.resolver.Resolver
-        }
-        
-        export type resolver = {
-            readonly 'declarations': self.Type_Specification.schema.resolver.declarations
-            readonly 'implementations': self.Type_Specification.schema.resolver.implementations
-        }
+        export type implementations = self.resolver.Resolver
     }
     
-    export type schema = {
-        readonly 'structure': self.Type_Specification.schema.structure
-        readonly 'resolver': self.Type_Specification.schema.resolver
+    export type resolver = {
+        readonly 'declarations': self.Schema.resolver.declarations
+        readonly 'implementations': self.Schema.resolver.implementations
     }
+}
+
+export type Schema = {
+    readonly 'structure': self.Schema.structure
+    readonly 'resolver': self.Schema.resolver
+}
+
+export namespace Authoring_Specification {
+    
+    export type schema = self.Schema
     
     export type directory = self.Directory
 }
 
-export type Type_Specification = {
-    readonly 'schema': self.Type_Specification.schema
-    readonly 'directory': self.Type_Specification.directory
+export type Authoring_Specification = {
+    readonly 'schema': self.Authoring_Specification.schema
+    readonly 'directory': self.Authoring_Specification.directory
+}
+
+export namespace Document_Specification {
+    
+    export type schema = self.Schema
+    
+    export namespace root_type {
+        
+        export namespace constraints {
+            
+            export type public_ = self.structure.Type.visibility.public_
+        }
+        
+        export type constraints = {
+            readonly 'public': self.Document_Specification.root_type.constraints.public_
+        }
+        
+        export namespace value {
+            
+            export type l_entry = self.structure.Types.D
+            
+            export type l_id = string
+        }
+        
+        export type value = {
+            readonly 'l entry': self.Document_Specification.root_type.value.l_entry
+            readonly 'l id': self.Document_Specification.root_type.value.l_id
+        }
+    }
+    
+    export type root_type = {
+        readonly 'constraints': self.Document_Specification.root_type.constraints
+        readonly 'value': self.Document_Specification.root_type.value
+    }
+}
+
+export type Document_Specification = {
+    readonly 'schema': self.Document_Specification.schema
+    readonly 'root type': self.Document_Specification.root_type
 }

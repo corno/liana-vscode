@@ -187,7 +187,17 @@ export type Node = p_.Transformer_With_Source_Value<
     s_source.Node
 >
 
-export type Type_Specification = p_.Transformer_With_Source_Value<
+export type Schema = p_.Transformer_With_Source_Value<
     s_target.Value,
-    s_source.Type_Specification
+    s_source.Schema
+>
+
+export type Authoring_Specification = p_.Transformer_With_Source_Value<
+    s_target.Value,
+    s_source.Authoring_Specification
+>
+
+export type Document_Specification = p_.Transformer_With_Source_Value<
+    s_target.Value,
+    s_source.Document_Specification
 >

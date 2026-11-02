@@ -14110,7 +14110,6 @@ export const Node: d.Node = ($, abort, $values, $lookups) => p.with.decide_state
     ($s): s_target.Node => {
         switch ($s[0]) {
             case 'file': return p.option($s, ($): s_target.Node => ['file', p.initialize.group(() => {
-                const $property_file_extension: s_target.Node.file.file_extension = p.with.change_context($['file extension'], ($) => $)
                 const $property_type: s_target.Node.file.type_ = p.with.change_context($['type'], ($) => p.initialize.group(() => {
                     const $property_value: s_target.Node.file.type_.value = p.initialize.group(() => {
                         const $property_l_id: s_target.Node.file.type_.value.l_id = $
@@ -14194,7 +14193,6 @@ export const Node: d.Node = ($, abort, $values, $lookups) => p.with.decide_state
                     }
                 }))
                 return {
-                    'file extension': $property_file_extension,
                     'type': $property_type,
                 }
             })])
@@ -14209,54 +14207,59 @@ export const Node: d.Node = ($, abort, $values, $lookups) => p.with.decide_state
     },
 )
 
-export const Type_Specification: d.Type_Specification = ($, abort) => p.initialize.group(() => {
-    const $property_schema: s_target.Type_Specification.schema = p.with.change_context($['schema'], ($) => p.initialize.group(() => {
-        const $property_structure: s_target.Type_Specification.schema.structure = p.with.change_context($['structure'], ($) => structure.Structure(
-            $,
-            abort,
-            null,
-            {
-                'sibling namespaces': p.lookup.acyclic.not_set(),
-            },
-        ))
-        const $property_resolver: s_target.Type_Specification.schema.resolver = p.with.change_context($['resolver'], ($) => p.initialize.group_with_dependencies(
-            {
-                'structure': $property_structure,
-            },
-            ($parent_captures) => {
-                const $property_declarations: s_target.Type_Specification.schema.resolver.declarations = p.with.change_context($['declarations'], ($) => declarations.Namespace(
-                    $,
-                    abort,
-                    {
-                        'definition': $parent_captures['structure'],
-                    },
-                    {
-                        'sibling namespaces': p.lookup.acyclic.not_set(),
-                    },
-                ))
-                const $property_implementations: s_target.Type_Specification.schema.resolver.implementations = p.with.change_context($['implementations'], ($) => resolver.Resolver(
-                    $,
-                    abort,
-                    {
-                        'definition': $parent_captures['structure'],
-                        'declarations': $property_declarations,
-                        'sibling declarations': p.initialize.not_set(),
-                        'sibling namespaces': p.initialize.not_set(),
-                    },
-                    null,
-                ))
-                return {
-                    'declarations': $property_declarations,
-                    'implementations': $property_implementations,
-                }
-            },
-        ))
-        return {
+export const Schema: d.Schema = ($, abort) => p.initialize.group(() => {
+    const $property_structure: s_target.Schema.structure = p.with.change_context($['structure'], ($) => structure.Structure(
+        $,
+        abort,
+        null,
+        {
+            'sibling namespaces': p.lookup.acyclic.not_set(),
+        },
+    ))
+    const $property_resolver: s_target.Schema.resolver = p.with.change_context($['resolver'], ($) => p.initialize.group_with_dependencies(
+        {
             'structure': $property_structure,
-            'resolver': $property_resolver,
-        }
-    }))
-    const $property_directory: s_target.Type_Specification.directory = p.with.change_context($['directory'], ($) => Directory(
+        },
+        ($parent_captures) => {
+            const $property_declarations: s_target.Schema.resolver.declarations = p.with.change_context($['declarations'], ($) => declarations.Namespace(
+                $,
+                abort,
+                {
+                    'definition': $parent_captures['structure'],
+                },
+                {
+                    'sibling namespaces': p.lookup.acyclic.not_set(),
+                },
+            ))
+            const $property_implementations: s_target.Schema.resolver.implementations = p.with.change_context($['implementations'], ($) => resolver.Resolver(
+                $,
+                abort,
+                {
+                    'definition': $parent_captures['structure'],
+                    'declarations': $property_declarations,
+                    'sibling declarations': p.initialize.not_set(),
+                    'sibling namespaces': p.initialize.not_set(),
+                },
+                null,
+            ))
+            return {
+                'declarations': $property_declarations,
+                'implementations': $property_implementations,
+            }
+        },
+    ))
+    return {
+        'structure': $property_structure,
+        'resolver': $property_resolver,
+    }
+})
+
+export const Authoring_Specification: d.Authoring_Specification = ($, abort) => p.initialize.group(() => {
+    const $property_schema: s_target.Authoring_Specification.schema = p.with.change_context($['schema'], ($) => Schema(
+        $,
+        abort,
+    ))
+    const $property_directory: s_target.Authoring_Specification.directory = p.with.change_context($['directory'], ($) => Directory(
         $,
         abort,
         {
@@ -14267,5 +14270,108 @@ export const Type_Specification: d.Type_Specification = ($, abort) => p.initiali
     return {
         'schema': $property_schema,
         'directory': $property_directory,
+    }
+})
+
+export const Document_Specification: d.Document_Specification = ($, abort) => p.initialize.group(() => {
+    const $property_schema: s_target.Document_Specification.schema = p.with.change_context($['schema'], ($) => Schema(
+        $,
+        abort,
+    ))
+    const $property_root_type: s_target.Document_Specification.root_type = p.with.change_context($['root type'], ($) => p.initialize.group_with_dependencies(
+        {
+            'schema': $property_schema,
+        },
+        ($parent_captures) => {
+            const $property_value: s_target.Document_Specification.root_type.value = p.initialize.group_with_dependencies(
+                {
+                    'schema': $parent_captures['schema'],
+                },
+                ($parent_captures) => {
+                    const $property_l_id: s_target.Document_Specification.root_type.value.l_id = $
+                    const $property_l_entry: s_target.Document_Specification.root_type.value.l_entry = p.lookup.acyclic.from_resolved_dictionary($parent_captures['schema']['structure']['types']).get_entry(
+                        $,
+                        {
+                            'no_such_entry': () => abort(
+                                p.initialize.group(() => {
+                                    const $property_type: s_error.Error.type_ = ['missing reference', p.initialize.group(() => {
+                                        const $property_identifier: s_error.Error.type_.missing_reference.identifier = $
+                                        return {
+                                            'identifier': $property_identifier,
+                                        }
+                                    })]
+                                    return {
+                                        'type': $property_type,
+                                    }
+                                }),
+                            ),
+                            'no_context_lookup': () => p.unreachable_code_path(
+                                'from_resolved_dictionary supplies the lookup context directly; it cannot report an absent context',
+                            ),
+                            'cycle_detected': () => p.unreachable_code_path(
+                                'from_resolved_dictionary only reads already-resolved entries; it does not resolve dependencies and cannot detect a cycle',
+                            ),
+                        },
+                    )
+                    return {
+                        'l id': $property_l_id,
+                        'l entry': $property_l_entry,
+                    }
+                },
+            )
+            const $property_constraints: s_target.Document_Specification.root_type.constraints = p.initialize.group_with_dependencies(
+                {
+                    'value': $property_value,
+                },
+                ($parent_captures) => {
+                    const $property_public: s_target.Document_Specification.root_type.constraints.public_ = p.with.decide_state(
+                        $parent_captures['value']['l entry']['visibility'],
+                        ($s): s_target.Document_Specification.root_type.constraints.public_ => {
+                            switch ($s[0]) {
+                                case 'private': return p.option($s, ($): s_target.Document_Specification.root_type.constraints.public_ => abort(
+                                    p.initialize.group(() => {
+                                        const $property_type: s_error.Error.type_ = ['reference constraint failed', p.initialize.group(() => {
+                                            const $property_constraint: s_error.Error.type_.reference_constraint_failed.constraint = 'public'
+                                            return {
+                                                'constraint': $property_constraint,
+                                            }
+                                        })]
+                                        return {
+                                            'type': $property_type,
+                                        }
+                                    }),
+                                ))
+                                case 'private single use': return p.option($s, ($): s_target.Document_Specification.root_type.constraints.public_ => abort(
+                                    p.initialize.group(() => {
+                                        const $property_type: s_error.Error.type_ = ['reference constraint failed', p.initialize.group(() => {
+                                            const $property_constraint: s_error.Error.type_.reference_constraint_failed.constraint = 'public'
+                                            return {
+                                                'constraint': $property_constraint,
+                                            }
+                                        })]
+                                        return {
+                                            'type': $property_type,
+                                        }
+                                    }),
+                                ))
+                                case 'public': return p.option($s, ($): s_target.Document_Specification.root_type.constraints.public_ => $)
+                                default: return p.exhaustive($s[0])
+                            }
+                        },
+                    )
+                    return {
+                        'public': $property_public,
+                    }
+                },
+            )
+            return {
+                'value': $property_value,
+                'constraints': $property_constraints,
+            }
+        },
+    ))
+    return {
+        'schema': $property_schema,
+        'root type': $property_root_type,
     }
 })

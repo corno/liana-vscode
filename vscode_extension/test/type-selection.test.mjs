@@ -60,7 +60,7 @@ const specification = (value = '| `nothing` ~', resolver = '| `nothing` ~', basi
     `(\`schema\`: (\`structure\`: (\`namespaces\`: {} \`basic types\`: ${basicTypes}
         \`types\`: { 'Root': (\`visibility\`: | \`public\` ~ \`root value\`: ${value}) }
         ) \`resolver\`: (\`declarations\`: (\`namespaces\`: {} \`types\`: { 'Root': ${signature()} }) \`implementations\`: (\`namespaces\`: {} \`types\`: { 'Root': (\`root value resolver\`: ${resolver}) })
-    )) \`directory\`: | \`dictionary\` (\`node\`: | \`file\` (\`file extension\`: "" \`type\`: '${root}')))`
+    )) \`directory\`: | \`dictionary\` (\`node\`: | \`file\` (\`type\`: '${root}')))`
 const selectedType = specification => file_type(specification, { directories: p.literal.list([]), 'file name': 'document.liana.lna' }, fail)
 const rootType = source => selectedType(parse(source)[1])['l entry']
 const document = (source, schema) => unmarshall.Document(chars(source), fail, {
@@ -242,9 +242,10 @@ test('basic type lookup failures are reported instead of defaulting', () => {
 
 test('the bundled template exposes the namespace-aware schema and root type', () => {
     const loaded = parse(readFileSync(new URL('../liana_authoring_environment_template/.liana/schema.slna', import.meta.url), 'utf8'))
-    assert.equal(selectedType(loaded[1])['l id'], 'Type Specification')
+    assert.equal(selectedType(loaded[1])['l id'], 'Authoring Specification')
     const properties = selectedType(loaded[1])['l entry']['root value'][1]
-    assert.equal(entry(properties, 'schema').value[0], 'group')
+    assert.equal(entry(properties, 'schema').value[0], 'component')
+    assert.equal(entry(properties, 'schema').value[1].type[1].value[1]['l id'], 'Schema')
     assert.equal(entry(properties, 'directory').value[0], 'component')
     assert.deepEqual(properties.__get_raw().map(([id]) => id), ['schema', 'directory'])
     assert.equal(entry(loaded[1].schema.structure['basic types'], 'text').type[0], 'double quoted')
@@ -255,7 +256,7 @@ test('latest references and resolvers use the current schema model', () => {
     const specification = parse(source)[1]
     assert.deepEqual(Object.keys(specification.schema), ['structure', 'resolver'])
     assert.deepEqual(Object.keys(specification.schema.resolver), ['declarations', 'implementations'])
-    assert.equal(selectedType(specification)['l id'], 'Type Specification')
+    assert.equal(selectedType(specification)['l id'], 'Authoring Specification')
 })
 
 test('the bundled template completes all three visibility states', async () => {
@@ -384,7 +385,7 @@ test('nested components pass through whole categories or explicitly bind every t
                         'Middle': ${component('Leaf', '* (`types`: * { \'forwarded\': | `parameter` \'basic types\' \'inherited\': | `parameter` \'inherited\' } `lookups`: * {})')}
                         'Leaf': (\`root value resolver\`: | \`nothing\` ~)
                     })
-                )) \`directory\`: | \`dictionary\` (\`node\`: | \`file\` (\`file extension\`: "" \`type\`: 'Root'))
+                )) \`directory\`: | \`dictionary\` (\`node\`: | \`file\` (\`type\`: 'Root'))
             )`
             writeFileSync(join(dir, '.liana', 'schema.slna'), signed_schema(schema))
             const result = await new Promise(resolve => {
@@ -510,7 +511,7 @@ const dependentReferenceSchema = () => {
             } \`benchmark\`: _))
             'Members': (\`root value resolver\`: | \`dictionary\` (\`resolver\`: | \`nothing\` ~ \`benchmark\`: _))
         })
-    )) \`directory\`: | \`dictionary\` (\`node\`: | \`file\` (\`file extension\`: "" \`type\`: 'Root')))`
+    )) \`directory\`: | \`dictionary\` (\`node\`: | \`file\` (\`type\`: 'Root')))`
 }
 
 test('dependent lookups traverse components, groups and resolved references in dependency order', async () => {
@@ -1022,7 +1023,7 @@ const benchmarkSchema = dense => `(
             })
         )
     )
-    \`directory\`: | \`dictionary\` (\`node\`: | \`file\` (\`file extension\`: "" \`type\`: 'Root'))
+    \`directory\`: | \`dictionary\` (\`node\`: | \`file\` (\`type\`: 'Root'))
 )`
 
 const argumentBindingSchema = args => {
@@ -1040,7 +1041,7 @@ const argumentBindingSchema = args => {
                 \`location\`: | \`local\` 'Leaf' \`arguments\`: ${args} \`constraints\`: _))
             'Leaf': (\`root value resolver\`: | \`nothing\` ~)
         })
-    )) \`directory\`: | \`dictionary\` (\`node\`: | \`file\` (\`file extension\`: "" \`type\`: 'Root')))`
+    )) \`directory\`: | \`dictionary\` (\`node\`: | \`file\` (\`type\`: 'Root')))`
 }
 
 test('argument diagnostics accept pass-through boundaries and complete explicit dictionaries', async () => {
@@ -1140,7 +1141,7 @@ const lookupBindingSchema = (mode, args) => {
             'Leaf': (\`root value resolver\`: | \`reference\` (\`type\`: (\`lookup\`: (\`type\`: | \`parameter\` 'source' ) \`constraints\`: _)))
             'Nodes': (\`root value resolver\`: | \`dictionary\` (\`benchmark\`: _ \`resolver\`: | \`nothing\` ~))
         })
-    )) \`directory\`: | \`dictionary\` (\`node\`: | \`file\` (\`file extension\`: "" \`type\`: 'Root')))`
+    )) \`directory\`: | \`dictionary\` (\`node\`: | \`file\` (\`type\`: 'Root')))`
 }
 
 test('lookup arguments pass through only at category boundaries and explicit dictionaries are dense', async () => {
@@ -2153,7 +2154,7 @@ const namespaced_schema = (throughSibling = false, componentType = 'simple') => 
                     })` : ''}
                 }
                 \`types\`: { 'Root': (\`root value resolver\`: ${throughSibling ? call('bridge') : rootResolver('child namespace')}) })))
-        \`directory\`: | \`dictionary\` (\`node\`: | \`file\` (\`file extension\`: "" \`type\`: 'Root')))`
+        \`directory\`: | \`dictionary\` (\`node\`: | \`file\` (\`type\`: 'Root')))`
 }
 
 for (const componentType of ['simple', 'cyclic']) {

@@ -14,7 +14,7 @@ export const Type_Specifier: p_.Refiner_With_Parameter<
         $, error => abort(['unresolved document deserialization', ['parse tree deserialization', error]]),
         parameters, header => validate_schema_signature(header, abort),
     )
-    return ['constrained', read.Type_Specification(document.content, error => abort([
+    return ['constrained', read.Authoring_Specification(document.content, error => abort([
         'resolving',
         {
             ...error,

@@ -61,7 +61,9 @@ export type API = {
                 readonly 'types': {
                     readonly 'Directory': unresolved_uptransformers_unmarshal.Directory
                     readonly 'Node': unresolved_uptransformers_unmarshal.Node
-                    readonly 'Type Specification': unresolved_uptransformers_unmarshal.Type_Specification
+                    readonly 'Schema': unresolved_uptransformers_unmarshal.Schema
+                    readonly 'Authoring Specification': unresolved_uptransformers_unmarshal.Authoring_Specification
+                    readonly 'Document Specification': unresolved_uptransformers_unmarshal.Document_Specification
                 }
             }
         }
@@ -120,7 +122,9 @@ export type API = {
                 readonly 'types': {
                     readonly 'Directory': unresolved_downtransformers_marshal.Directory
                     readonly 'Node': unresolved_downtransformers_marshal.Node
-                    readonly 'Type Specification': unresolved_downtransformers_marshal.Type_Specification
+                    readonly 'Schema': unresolved_downtransformers_marshal.Schema
+                    readonly 'Authoring Specification': unresolved_downtransformers_marshal.Authoring_Specification
+                    readonly 'Document Specification': unresolved_downtransformers_marshal.Document_Specification
                 }
             }
         }
@@ -181,7 +185,9 @@ export type API = {
                 readonly 'types': {
                     readonly 'Directory': resolved_uptransformers_resolve.Directory
                     readonly 'Node': resolved_uptransformers_resolve.Node
-                    readonly 'Type Specification': resolved_uptransformers_resolve.Type_Specification
+                    readonly 'Schema': resolved_uptransformers_resolve.Schema
+                    readonly 'Authoring Specification': resolved_uptransformers_resolve.Authoring_Specification
+                    readonly 'Document Specification': resolved_uptransformers_resolve.Document_Specification
                 }
             }
         }
@@ -240,7 +246,9 @@ export type API = {
                 readonly 'types': {
                     readonly 'Directory': resolved_downtransformers_unresolve.Directory
                     readonly 'Node': resolved_downtransformers_unresolve.Node
-                    readonly 'Type Specification': resolved_downtransformers_unresolve.Type_Specification
+                    readonly 'Schema': resolved_downtransformers_unresolve.Schema
+                    readonly 'Authoring Specification': resolved_downtransformers_unresolve.Authoring_Specification
+                    readonly 'Document Specification': resolved_downtransformers_unresolve.Document_Specification
                 }
             }
         }

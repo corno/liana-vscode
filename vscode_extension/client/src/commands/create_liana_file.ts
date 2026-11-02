@@ -35,7 +35,7 @@ export default ((deps) => async (uri: vscode.Uri) => {
 			const choices = file_choices(context.specification[1], context.directories, message => { throw new Error(message) })
 			const choice = choices.length === 1 ? choices[0] : (await vscode.window.showQuickPick(
 				choices.map(choice => ({
-					label: `${choice.name}${choice.extension === '' ? '' : `.${choice.extension}`}.lna`,
+					label: choice.name ?? 'Choose a filename',
 					choice,
 				})),
 				{ placeHolder: 'Choose the schema file to create' },
@@ -44,14 +44,14 @@ export default ((deps) => async (uri: vscode.Uri) => {
 
 			let final_file_name: string
 			if (choice.name !== null) {
-				final_file_name = `${choice.name}${choice.extension === '' ? '' : `.${choice.extension}`}.lna`
+				final_file_name = choice.name
 			} else {
 				const file_name = await vscode.window.showInputBox({
 					prompt: 'Enter the name for your new Liana file',
-					placeHolder: new_file_name('my_file', choice.extension),
+					placeHolder: 'my_file.lna',
 					validateInput: (value: string) => {
 						try {
-							validate_new_file(context.specification[1], context.directories, new_file_name(value, choice.extension))
+							validate_new_file(context.specification[1], context.directories, new_file_name(value))
 							return null
 						} catch (error) {
 							return error instanceof Error ? error.message : String(error)
@@ -59,7 +59,7 @@ export default ((deps) => async (uri: vscode.Uri) => {
 					},
 				})
 				if (file_name === undefined) return
-				final_file_name = new_file_name(file_name, choice.extension)
+				final_file_name = new_file_name(file_name)
 			}
 			validate_new_file(context.specification[1], context.directories, final_file_name)
 			const file_uri = vscode.Uri.file(path.join(target_folder.fsPath, final_file_name))

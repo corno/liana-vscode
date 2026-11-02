@@ -21,8 +21,8 @@ export namespace declarations {
         s_target.Value
     >
     
-    export type Type_Specification = p_.Transformer<
-        s_source.types.Type_Specification,
+    export type Authoring_Specification = p_.Transformer<
+        s_source.types.Authoring_Specification,
         s_target.Value
     >
 }
@@ -58,10 +58,6 @@ export const Node: declarations.Node = ($) => ['state', p_.from.state($).decide(
         case 'file': return p_.option($, ($): s_target.Value.state => ({
             'option': 'file',
             'value': ['group', ['verbose', p_.literal.dictionary({
-                "file extension": p_.change_context($['file extension'], ($) => ['text', {
-                    'delimiter': ['quote', null],
-                    'value': $,
-                }]),
                 "type": p_.change_context($['type'], ($) => ['reference', {
                     'value': $,
                 }]),
@@ -77,7 +73,7 @@ export const Node: declarations.Node = ($) => ['state', p_.from.state($).decide(
     }
 })]
 
-export const Type_Specification: declarations.Type_Specification = ($) => ['group', ['verbose', p_.literal.dictionary({
+export const Authoring_Specification: declarations.Authoring_Specification = ($) => ['group', ['verbose', p_.literal.dictionary({
     "schema": p_.change_context($['schema'], ($) => ['group', ['verbose', p_.literal.dictionary({
         "structure": p_.change_context($['structure'], ($) => __operations.namespaces.structure.Structure(
             $,

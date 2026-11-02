@@ -1,6 +1,6 @@
 import type * as s from "./current_generated/structure/schemas/unresolved.js"
 
-export type Type_Specification = s.Type_Specification
+export type Authoring_Specification = s.Authoring_Specification
 export type Directory = s.Directory
 export type Node = s.Node
 export type Structure = s.structure.Structure

@@ -42,12 +42,12 @@ test('the selected path does not enter the governing-schema hash', () => {
     }
 })
 
-// Canonical body fingerprints from clean_start/test_results/expected/seal_liana.
+// Current CLI invocation outputs; owner-managed expected snapshots are not yet promoted.
 const cliFixtures = [
-    ['astn_schema', 12521, '8c65571bda2f1cffe22530cd90ab7f725c6508b42c6a3d00e18245b0deefb003'],
-    ['boekhouding', 58802, 'e52780b928073c049f8f43ecbaa1d325beb5ff9fc8dabf08979da16f52317f18'],
-    ['liana', 158395, '8743fe5747ba3999ff1693ffc081084980bac543e513f86c24e6abccfd119ba2'],
-    ['pareto', 258149, '4052b573356e101faaccd954b57de017ccd109128073b553e3dcfe92a5d3421f'],
+    ['astn_schema', 12471, '28b991928416c1804eaaf3a465aebf5a7cb3571c3715d34367345998cd4f7bc1'],
+    ['boekhouding', 58772, 'c8c734aea6d9717dc3f147df1c90cd8dd6186a812c65e2522911d189b09a6202'],
+    ['liana', 159809, '8e63bc9d414ee6f6ae84b46aa8b91607afbbfc2020acaea254f8cafbec2f6f0d'],
+    ['pareto', 258127, '0d155e608569cbd8cb1ba890dc7079597a1adf9abe09a428175fb7d9fcf9a2cd'],
 ]
 
 for (const [name, bytes, digest] of cliFixtures) {

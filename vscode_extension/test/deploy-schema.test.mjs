@@ -15,7 +15,10 @@ test('schema deployment is contributed and registered under the deploy command',
     })
     for (const menu of ['editor/context', 'explorer/context']) {
         assert.equal(manifest.contributes.menus[menu].filter(entry => entry.command === command).length, 1)
+        assert.doesNotMatch(manifest.contributes.menus[menu].find(entry => entry.command === command).when,
+            /resourceFilename|resourceExtname/)
     }
+    assert.ok(manifest.contributes.languages.find(language => language.id === 'liana').extensions.includes('.slna'))
     const registration = readFileSync(new URL('../client/src/register_commands.ts', import.meta.url), 'utf8')
     assert.ok(registration.includes(`registerCommand('${command}', deploy_schema_to_authoring_environment(deps))`))
 })

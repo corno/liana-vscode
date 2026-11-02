@@ -223,8 +223,20 @@ export type Node = p_.Transformer_With_Error_With_Source_Value<
     s_source.Value
 >
 
-export type Type_Specification = p_.Transformer_With_Error_With_Source_Value<
-    s_target.Type_Specification,
+export type Schema = p_.Transformer_With_Error_With_Source_Value<
+    s_target.Schema,
+    s_error.Error,
+    s_source.Value
+>
+
+export type Authoring_Specification = p_.Transformer_With_Error_With_Source_Value<
+    s_target.Authoring_Specification,
+    s_error.Error,
+    s_source.Value
+>
+
+export type Document_Specification = p_.Transformer_With_Error_With_Source_Value<
+    s_target.Document_Specification,
     s_error.Error,
     s_source.Value
 >

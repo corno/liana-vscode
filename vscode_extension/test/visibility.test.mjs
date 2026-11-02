@@ -4,7 +4,8 @@ import test from 'node:test'
 
 const require = createRequire(import.meta.url)
 const p = require('pareto-core/transformer')
-const { Type_Specification: resolve } = require('pareto-liana/schemas/liana_next_schema/resolve')
+const { Authoring_Specification: resolve } = require('pareto-liana/schemas/liana_next_schema/resolve')
+const generated = require('pareto-liana/schemas/liana_next_schema/current_generated/implementations/schemas/resolved/uptransformers/resolve')
 const dictionary = p.literal.dictionary
 const none = p.literal.not_set
 const entry = (values, name) => {
@@ -30,7 +31,7 @@ const implementations = resolver => ({
     namespaces: dictionary({}), types: dictionary({ Item: { 'root value resolver': resolver } }),
 })
 const fixture = () => ({
-    directory: ['dictionary', { node: ['file', { 'file extension': 'test', type: 'Root' }] }],
+    directory: ['dictionary', { node: ['file', { type: 'Root' }] }],
     schema: {
         structure: {
             namespaces: dictionary({
@@ -53,6 +54,34 @@ const fixture = () => ({
         },
     },
 })
+
+test('shared Schema and both specification forms retain the same structural root namespace', () => {
+    const input = fixture()
+    const schema = generated.Schema(input.schema, fail)
+    assert.deepEqual(Object.keys(schema), ['structure', 'resolver'])
+    const authoring = resolve(input, fail)
+    assert.deepEqual(Object.keys(authoring), ['schema', 'directory'])
+    assert.deepEqual(Object.keys(authoring.directory[1].node[1]), ['type'])
+    const document = generated.Document_Specification({ schema: input.schema, 'root type': 'Root' }, fail)
+    assert.deepEqual(Object.keys(document), ['schema', 'root type'])
+    assert.equal(document['root type'].value['l entry'], entry(document.schema.structure.types, 'Root'))
+})
+
+test('Document Specification does not select roots from child namespaces or invent missing roots', () => {
+    for (const root of ['Item', 'B.Item', 'missing']) {
+        assert.throws(() => generated.Document_Specification({ schema: fixture().schema, 'root type': root }, fail),
+            /missing reference/)
+    }
+})
+
+for (const visibility of ['private', 'private single use']) {
+    test(`Document Specification rejects a ${visibility} root`, () => {
+        const input = fixture()
+        entry(input.schema.structure.types, 'Root').visibility = [visibility, null]
+        assert.throws(() => generated.Document_Specification({ schema: input.schema, 'root type': 'Root' }, fail),
+            /"constraint":"public"/)
+    })
+}
 
 for (const visibility of ['private', 'private single use']) {
     for (const kind of ['simple', 'cyclic']) {

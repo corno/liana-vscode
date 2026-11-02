@@ -8,6 +8,14 @@
   Schema-independent refactorings remain available.
 
 ### Changed
+- Upgrade to the deployed shared `Schema`, `Authoring Specification`, and
+  `Document Specification` model. Vendor the maintained shared generated API,
+  independently of unpromoted expected snapshots, and refresh the canonical
+  Liana compatibility key and authored fixtures.
+- Remove schema/file-extension metadata from consumers. Type selection is
+  path-only: group names match exactly and dictionary names have no suffix
+  restrictions. New-file and extraction workflows preserve those names.
+  Recognize `.slna` and allow schema deployment without a `.liana.lna` filename.
 - Share the canonical sealed-artifact core with `clean_start`, copying it during
   Liana upgrades. Seal and Deploy now emit the same canonical envelope using the
   actual governing schema body's SHA-256, rather than stamping the extension's

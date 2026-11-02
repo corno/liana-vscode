@@ -72,10 +72,10 @@ Hovering over a property's value, including an explicit not-set optional (`_`),
 shows its schema description in both verbose and concise notation.
 
 **New Liana File...** uses the nearest ancestor `.liana/schema.slna` and follows
-its file tree to the selected directory. For dictionary file nodes, entering
-`my_file` creates `my_file.<schema extension>.lna` (or `my_file.lna` when the
-extension is empty). Already supplied schema/encoding suffixes are not duplicated.
-For fixed-name directory groups, choose a declared file when more than one is
+its file tree to the selected directory. For dictionary file nodes, the entered
+filename is used unchanged; `my_file.lna` is a suggestion, not a requirement.
+For fixed-name directory groups, the exact configured filename is used, without
+adding or stripping suffixes. Choose a declared file when more than one is
 available. Invalid schema contexts are reported, and existing files are never
 overwritten.
 
@@ -121,7 +121,7 @@ duplicate or unknown properties retain their notation to avoid losing data.
 
 ### Current Liana schemas
 
-The extension supports only the latest deployed Liana format. A Type Specification
+The extension supports only the latest deployed Liana format. An Authoring Specification
 contains a structural schema, separate resolver signature and implementation
 trees, and a file tree selecting the root type for each document:
 
@@ -145,7 +145,7 @@ trees, and a file tree selecting the root type for each document:
         )
     )
     `directory`: | `dictionary` (
-        `node`: | `file` (`file extension`: "example" `type`: 'Root')
+        `node`: | `file` (`type`: 'Root')
     )
 )
 ```
@@ -168,7 +168,23 @@ The nearest ancestor `.liana` directory is authoritative: a missing or invalid
 schema there is an error, not a reason to search farther. Named `group`
 directories and arbitrary-name `dictionary` directories may be nested. Root
 selection happens per document; a cached schema never fixes all its files to one
-type. Unknown, ambiguous and extension-mismatched paths are rejected.
+type. Group directories match exact configured names; dictionary directories
+accept arbitrary valid path segments, without suffix enforcement. Unknown paths
+and file/directory mismatches are rejected.
+
+The shared `Schema` contains `structure` and `resolver`. An `Authoring Specification`
+contains `schema` and `directory`; a `Document Specification` contains `schema`
+and `root type`, selecting a public type in the root namespace. None contains
+schema-extension metadata, and file nodes contain only `type`.
+
+Authored suffixes such as `.liana.lna`, `.astn.lna` (formerly `.astn_d.lna`),
+and `.pto.lna` are naming conventions, not language requirements. VS Code recognizes
+`.lna`, `.liana`, and `.slna` automatically; select the Liana language mode for
+other names. Sealed naming convention is `<name>.<type>.<schema>.slna`, including
+`<name>.a.liana.slna`, `<name>.d.astn.slna`, `<name>.s.astn.slna`, and
+`<name>.m.pto.slna`. The caller owns output naming: the shared sealer only emits
+the artifact, and the editor's Save dialog chooses its destination. Registry
+publication and registry configuration loading are not implemented.
 
 Self-contained documents instead use a header containing both the logical path
 and the same specification:
@@ -176,7 +192,7 @@ and the same specification:
 ```astn
 ! (
     `path`: (`directories`: [] `file name`: "document.example.lna")
-    `schema`: # // insert the complete Type Specification here
+    `schema`: # // insert the complete Authoring Specification here
 )
 ~
 ```
@@ -344,12 +360,13 @@ Validate with `npm run compile` and `node --test test/*.test.mjs`.
 
 ### Starting a Liana version upgrade
 
-After the owner has reviewed and promoted the generated output in the sibling
+After the owner has deployed the schemas and refreshed the shared generated API in the sibling
 `clean_start` repository, run `bash ./upgrade_liana.sh` from this repository's
 root. The script deletes the obsolete `generated` and `next_generated` schema
 trees and replaces `pareto_liana/src/schemas/liana_next_schema/current_generated`
 with a verbatim copy of
-`clean_start/test_results/expected/generate_typescript_from_liana_via_pareto/liana`.
+`clean_start/meta/shared/src/liana/liana`. Owner-managed expected snapshots are
+not used or promoted by the upgrade.
 It also copies `clean_start/instance/liana/.liana/schema.slna` into the bundled
 authoring template and the maintained-schema test context.
 It also copies `clean_start/meta/shared/src/sealed_artifact` verbatim into
@@ -394,7 +411,7 @@ you should now have a directory with 1 file and 1 directory (containing 1 file a
 my_schema.liana.lna
 ````
 
-you can now either author the `my_schema.liana.lna` file or create your own one; right click in the folder -> create liana file (make sure the file has the double extension '.liana.lna', more about this later).
+you can now either author the `my_schema.liana.lna` file or create your own one; right click in the folder -> create liana file. The `.liana.lna` suffix is conventional; type selection follows the configured directory tree, not the suffix.
 
 you should now see a file with a single '#' character.
 
@@ -461,7 +478,7 @@ If all went well, you ended up with a file that looks like this
             )
         )
     )
-    `directory`: | `dictionary` (`node`: | `file` (`file extension`: "" `type`: 'root'))
+    `directory`: | `dictionary` (`node`: | `file` (`type`: 'root'))
 )
 ````
 

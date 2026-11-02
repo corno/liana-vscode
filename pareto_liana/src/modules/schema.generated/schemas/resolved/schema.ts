@@ -38,8 +38,6 @@ export namespace types {
         
         export namespace file {
             
-            export type file_extension = string
-            
             export namespace type_ {
                 
                 export namespace constraints {
@@ -71,7 +69,6 @@ export namespace types {
         }
         
         export type file = {
-            readonly 'file extension': file.file_extension
             readonly 'type': file.type_
         }
         
@@ -82,7 +79,7 @@ export namespace types {
         | readonly ['file', Node.file]
         | readonly ['directory', Node.directory]
     
-    export namespace Type_Specification {
+    export namespace Authoring_Specification {
         
         export namespace schema {
             
@@ -109,9 +106,9 @@ export namespace types {
         export type directory = __schema.types.Directory
     }
     
-    export type Type_Specification = {
-        readonly 'schema': Type_Specification.schema
-        readonly 'directory': Type_Specification.directory
+    export type Authoring_Specification = {
+        readonly 'schema': Authoring_Specification.schema
+        readonly 'directory': Authoring_Specification.directory
     }
 }
 export namespace namespaces {

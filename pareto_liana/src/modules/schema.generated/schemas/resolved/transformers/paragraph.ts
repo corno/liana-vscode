@@ -4,4 +4,4 @@ import type * as s_out from 'pareto-fountain-pen/modules/paragraph/schemas/parag
 import * as t from './astn_sealed_target.js'
 import * as sh from 'pareto-fountain-pen/modules/paragraph/schemas/paragraph/shorthands/deprecated'
 import * as serialize from 'astn-runtime/modules/serialization/schemas/sealed_target/transformers/paragraph'
-export const Type_Specification: p_.Transformer<s_in.types.Type_Specification, s_out.Paragraph> = $ => sh.pg.sentences([sh.sentence([serialize.Value(t.Type_Specification($))])])
+export const Authoring_Specification: p_.Transformer<s_in.types.Authoring_Specification, s_out.Paragraph> = $ => sh.pg.sentences([sh.sentence([serialize.Value(t.Authoring_Specification($))])])

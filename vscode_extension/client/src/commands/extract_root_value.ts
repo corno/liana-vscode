@@ -52,13 +52,13 @@ export default ((_deps) => async (parameters: Export_Parameters) => {
       }
     }
     if (available_suggestions.length === 0 && !parameters.candidates.some(candidate => candidate.name === null)) {
-      vscode.window.showInformationMessage('No unused Type Specification location is available for this root type.')
+      vscode.window.showInformationMessage('No unused Authoring Specification location is available for this root type.')
       return
     }
     const picked = await vscode.window.showQuickPick([
       ...available_suggestions.map(value => ({ label: value, value })),
       { label: 'Enter a custom path…', value: null },
-    ], { placeHolder: 'Choose a Type Specification location for this root value' })
+    ], { placeHolder: 'Choose an Authoring Specification location for this root value' })
     if (picked === undefined) return
 
     let target_value = picked.value ?? undefined

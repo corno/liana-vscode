@@ -24,8 +24,8 @@ export namespace declarations {
         s_source.Value
     >
     
-    export type Type_Specification = p_.Refiner<
-        s_target.types.Type_Specification,
+    export type Authoring_Specification = p_.Refiner<
+        s_target.types.Authoring_Specification,
         s_error.types.Unmarshalling_Error,
         s_source.Value
     >
@@ -102,31 +102,10 @@ export const Node: declarations.Node = ($, abort) => p_.change_context(r_unmarsh
             ($) => abort(['value', $]),
             {
                 'expected properties': p_.literal.dictionary({
-                    "file extension": null,
                     "type": null,
                 }),
             },
         ), ($) => ({
-            'file extension': p_.change_context(r_unmarshalled_from_parse_tree.Property(
-                $,
-                ($) => abort(['value', $]),
-                {
-                    'id': 'file extension',
-                },
-            ), ($) => p_.change_context(r_token_from_parse_tree.Text(
-                $,
-                ($) => abort(['value', ['astn value unmarshalling', $]]),
-            ), ($) => (() => (($['token']['type'][0]) === ("quoted"))
-                ? $['token']['value']
-                : abort(
-                    ['token syntax', {
-                        'type': "text",
-                        'expected': "double quoted",
-                        'found': $['token']['type'][0],
-                        'range': $['range'],
-                    }],
-                )
-            )())),
             'type': p_.change_context(r_unmarshalled_from_parse_tree.Property(
                 $,
                 ($) => abort(['value', $]),
@@ -151,7 +130,7 @@ export const Node: declarations.Node = ($, abort) => p_.change_context(r_unmarsh
     }
 }))
 
-export const Type_Specification: declarations.Type_Specification = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
+export const Authoring_Specification: declarations.Authoring_Specification = ($, abort) => p_.change_context(r_unmarshalled_from_parse_tree.Verbose_Group(
     $,
     ($) => abort(['value', $]),
     {

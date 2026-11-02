@@ -11,7 +11,7 @@ import * as location from 'astn-runtime/modules/deserialization/schemas/parse_tr
 import * as value_reader from 'liana-runtime/modules/value_unmarshalling/schemas/unmarshalled_value/refiners/astn_parse_tree'
 import type * as unmarshalling from 'liana-runtime/modules/value_unmarshalling/schemas/unmarshalling/schema'
 
-export type Document_Header = { path: File_Path, specification: schema.Type_Specification, schema_body: tree.Value }
+export type Document_Header = { path: File_Path, specification: schema.Authoring_Specification, schema_body: tree.Value }
 
 export const document_header = (
     document: tree.Document,
@@ -35,7 +35,7 @@ export const document_header = (
     return p.literal.set({
         path: parsed.path,
         schema_body: parsed.schema,
-        specification: read.Type_Specification(parsed.schema, error => abort([
+        specification: read.Authoring_Specification(parsed.schema, error => abort([
             'resolving',
             {
                 ...error,

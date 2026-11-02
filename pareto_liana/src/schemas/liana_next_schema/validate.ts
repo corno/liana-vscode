@@ -5,7 +5,7 @@ import { Component_Type } from './component.js'
 
 type Abort = (message: string) => never
 
-export const Validate = (schema: s.Type_Specification, abort: Abort): void => {
+export const Validate = (schema: s.Authoring_Specification, abort: Abort): void => {
     let benchmarks = p.literal.list<{ owner: s.structure.Value, target: s.structure.Value }>([])
 
     const same = (left: s.structure.Value, right: s.structure.Value, description: string, abort: Abort): void => {

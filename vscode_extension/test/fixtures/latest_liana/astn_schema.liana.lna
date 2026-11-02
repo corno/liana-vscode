@@ -198,7 +198,7 @@
         )
     )
     `directory`: | `group` < {
-        'document_schemas': | `directory` | `dictionary` < | `file` < "astn_d" 'Document Schema' > >
-        'schemas': | `directory` | `dictionary` < | `file` < "astn_s" 'Schema' > >
+        'document_schemas': | `directory` | `dictionary` < | `file` < 'Document Schema' > >
+        'schemas': | `directory` | `dictionary` < | `file` < 'Schema' > >
     } >
 )

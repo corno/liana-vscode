@@ -3,10 +3,10 @@ import type * as core from 'pareto-core/schema'
 import type * as schema from 'pareto-liana/schemas/liana_next_schema/authoring_schema'
 import { file_directory, file_type } from 'pareto-liana/schemas/temp_type_specifier/file_type'
 
-export type File_Choice = { name: string | null, extension: string }
+export type File_Choice = { name: string | null }
 
 export const file_choices = (
-    specification: schema.types.Type_Specification,
+    specification: schema.types.Authoring_Specification,
     directories: core.List<string>,
     abort: (message: string) => never,
 ): File_Choice[] => {
@@ -14,29 +14,26 @@ export const file_choices = (
     if (directory[0] === 'dictionary') {
         const node = directory[1].node
         if (node[0] !== 'file') return abort('This schema directory contains subdirectories, not files')
-        return [{ name: null, extension: node[1]['file extension'] }]
+        return [{ name: null }]
     }
     const choices: File_Choice[] = []
     p.from.dictionary(directory[1].nodes).map((node, name) => {
-        if (node[0] === 'file') choices.push({ name, extension: node[1]['file extension'] })
+        if (node[0] === 'file') choices.push({ name })
         return null
     })
     if (choices.length === 0) return abort('This schema directory does not declare any files')
     return choices
 }
 
-export const new_file_name = (name: string, extension: string): string => {
+export const new_file_name = (name: string): string => {
     if (name === '' || name.trim() === '' || name === '.' || name === '..' || /[/\\\0]/.test(name)) {
         throw new Error('Enter a filename without directory separators')
     }
-    const base = name.replace(/\.(?:s?lna)$/, '')
-    const logical = extension === '' || base.endsWith(`.${extension}`) ? base : `${base}.${extension}`
-    if (base === '' || base === '.' || base === '..') throw new Error('Filename cannot be empty')
-    return `${logical}.lna`
+    return name
 }
 
 export const validate_new_file = (
-    specification: schema.types.Type_Specification,
+    specification: schema.types.Authoring_Specification,
     directories: core.List<string>,
     name: string,
 ): void => {

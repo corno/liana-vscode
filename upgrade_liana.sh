@@ -2,7 +2,7 @@
 set -euo pipefail
 
 WORKSPACE_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-GENERATED_SOURCE="$(dirname -- "$WORKSPACE_ROOT")/clean_start/test_results/expected/generate_typescript_from_liana_via_pareto/liana"
+GENERATED_SOURCE="$(dirname -- "$WORKSPACE_ROOT")/clean_start/meta/shared/src/liana/liana"
 SCHEMA_SOURCE="$(dirname -- "$WORKSPACE_ROOT")/clean_start/instance/liana/.liana/schema.slna"
 GENERATED_DEST="$WORKSPACE_ROOT/pareto_liana/src/schemas/liana_next_schema/current_generated"
 SCHEMA_TEMPLATE="$WORKSPACE_ROOT/vscode_extension/liana_authoring_environment_template/.liana/schema.slna"

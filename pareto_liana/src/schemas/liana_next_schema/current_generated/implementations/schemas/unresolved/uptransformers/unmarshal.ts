@@ -11277,48 +11277,6 @@ export const Node: d.Node = ($, abort) => p.with.expect_state_option(
                     $['type'],
                     'group',
                     ($): s_target.Node.file => p.initialize.group(() => {
-                        const $property_file_extension: s_target.Node.file.file_extension = p.with.get_possible_entry(
-                            $['properties'],
-                            'file extension',
-                            ($): s_target.Node.file.file_extension => p.with.expect_state_option(
-                                $['type'],
-                                'text',
-                                ($): s_target.Node.file.file_extension => $,
-                                ($unexpected_option): s_target.Node.file.file_extension => abort(
-                                    ['type mismatch', p.initialize.group(() => {
-                                        const $property_expected: s_error.Error.type_mismatch.expected = ['text', null]
-                                        const $property_found: s_error.Error.type_mismatch.found = p.with.decide_state(
-                                            $['type'],
-                                            ($s): s_error.Error.type_mismatch.found => {
-                                                switch ($s[0]) {
-                                                    case 'dictionary': return p.option($s, ($): s_error.Error.type_mismatch.found => ['dictionary', null])
-                                                    case 'group': return p.option($s, ($): s_error.Error.type_mismatch.found => ['group', null])
-                                                    case 'list': return p.option($s, ($): s_error.Error.type_mismatch.found => ['list', null])
-                                                    case 'nothing': return p.option($s, ($): s_error.Error.type_mismatch.found => ['nothing', null])
-                                                    case 'optional': return p.option($s, ($): s_error.Error.type_mismatch.found => ['optional', null])
-                                                    case 'reference': return p.option($s, ($): s_error.Error.type_mismatch.found => ['reference', null])
-                                                    case 'state': return p.option($s, ($): s_error.Error.type_mismatch.found => ['state', null])
-                                                    case 'text': return p.option($s, ($): s_error.Error.type_mismatch.found => ['text', null])
-                                                    default: return p.exhaustive($s[0])
-                                                }
-                                            },
-                                        )
-                                        return {
-                                            'expected': $property_expected,
-                                            'found': $property_found,
-                                        }
-                                    })],
-                                ),
-                            ),
-                            (): s_target.Node.file.file_extension => abort(
-                                ['missing property', p.initialize.group(() => {
-                                    const $property_identifier: s_error.Error.missing_property.identifier = 'file extension'
-                                    return {
-                                        'identifier': $property_identifier,
-                                    }
-                                })],
-                            ),
-                        )
                         const $property_type: s_target.Node.file.type_ = p.with.get_possible_entry(
                             $['properties'],
                             'type',
@@ -11362,7 +11320,6 @@ export const Node: d.Node = ($, abort) => p.with.expect_state_option(
                             ),
                         )
                         return {
-                            'file extension': $property_file_extension,
                             'type': $property_type,
                         }
                     }),
@@ -11434,106 +11391,59 @@ export const Node: d.Node = ($, abort) => p.with.expect_state_option(
     ),
 )
 
-export const Type_Specification: d.Type_Specification = ($, abort) => p.with.expect_state_option(
+export const Schema: d.Schema = ($, abort) => p.with.expect_state_option(
     $['type'],
     'group',
-    ($): s_target.Type_Specification => p.initialize.group(() => {
-        const $property_schema: s_target.Type_Specification.schema = p.with.get_possible_entry(
+    ($): s_target.Schema => p.initialize.group(() => {
+        const $property_structure: s_target.Schema.structure = p.with.get_possible_entry(
             $['properties'],
-            'schema',
-            ($): s_target.Type_Specification.schema => p.with.expect_state_option(
+            'structure',
+            ($): s_target.Schema.structure => structure.Structure(
+                $,
+                abort,
+            ),
+            (): s_target.Schema.structure => abort(
+                ['missing property', p.initialize.group(() => {
+                    const $property_identifier: s_error.Error.missing_property.identifier = 'structure'
+                    return {
+                        'identifier': $property_identifier,
+                    }
+                })],
+            ),
+        )
+        const $property_resolver: s_target.Schema.resolver = p.with.get_possible_entry(
+            $['properties'],
+            'resolver',
+            ($): s_target.Schema.resolver => p.with.expect_state_option(
                 $['type'],
                 'group',
-                ($): s_target.Type_Specification.schema => p.initialize.group(() => {
-                    const $property_structure: s_target.Type_Specification.schema.structure = p.with.get_possible_entry(
+                ($): s_target.Schema.resolver => p.initialize.group(() => {
+                    const $property_declarations: s_target.Schema.resolver.declarations = p.with.get_possible_entry(
                         $['properties'],
-                        'structure',
-                        ($): s_target.Type_Specification.schema.structure => structure.Structure(
+                        'declarations',
+                        ($): s_target.Schema.resolver.declarations => declarations.Namespace(
                             $,
                             abort,
                         ),
-                        (): s_target.Type_Specification.schema.structure => abort(
+                        (): s_target.Schema.resolver.declarations => abort(
                             ['missing property', p.initialize.group(() => {
-                                const $property_identifier: s_error.Error.missing_property.identifier = 'structure'
+                                const $property_identifier: s_error.Error.missing_property.identifier = 'declarations'
                                 return {
                                     'identifier': $property_identifier,
                                 }
                             })],
                         ),
                     )
-                    const $property_resolver: s_target.Type_Specification.schema.resolver = p.with.get_possible_entry(
+                    const $property_implementations: s_target.Schema.resolver.implementations = p.with.get_possible_entry(
                         $['properties'],
-                        'resolver',
-                        ($): s_target.Type_Specification.schema.resolver => p.with.expect_state_option(
-                            $['type'],
-                            'group',
-                            ($): s_target.Type_Specification.schema.resolver => p.initialize.group(() => {
-                                const $property_declarations: s_target.Type_Specification.schema.resolver.declarations = p.with.get_possible_entry(
-                                    $['properties'],
-                                    'declarations',
-                                    ($): s_target.Type_Specification.schema.resolver.declarations => declarations.Namespace(
-                                        $,
-                                        abort,
-                                    ),
-                                    (): s_target.Type_Specification.schema.resolver.declarations => abort(
-                                        ['missing property', p.initialize.group(() => {
-                                            const $property_identifier: s_error.Error.missing_property.identifier = 'declarations'
-                                            return {
-                                                'identifier': $property_identifier,
-                                            }
-                                        })],
-                                    ),
-                                )
-                                const $property_implementations: s_target.Type_Specification.schema.resolver.implementations = p.with.get_possible_entry(
-                                    $['properties'],
-                                    'implementations',
-                                    ($): s_target.Type_Specification.schema.resolver.implementations => resolver.Resolver(
-                                        $,
-                                        abort,
-                                    ),
-                                    (): s_target.Type_Specification.schema.resolver.implementations => abort(
-                                        ['missing property', p.initialize.group(() => {
-                                            const $property_identifier: s_error.Error.missing_property.identifier = 'implementations'
-                                            return {
-                                                'identifier': $property_identifier,
-                                            }
-                                        })],
-                                    ),
-                                )
-                                return {
-                                    'declarations': $property_declarations,
-                                    'implementations': $property_implementations,
-                                }
-                            }),
-                            ($unexpected_option): s_target.Type_Specification.schema.resolver => abort(
-                                ['type mismatch', p.initialize.group(() => {
-                                    const $property_expected: s_error.Error.type_mismatch.expected = ['group', null]
-                                    const $property_found: s_error.Error.type_mismatch.found = p.with.decide_state(
-                                        $['type'],
-                                        ($s): s_error.Error.type_mismatch.found => {
-                                            switch ($s[0]) {
-                                                case 'dictionary': return p.option($s, ($): s_error.Error.type_mismatch.found => ['dictionary', null])
-                                                case 'group': return p.option($s, ($): s_error.Error.type_mismatch.found => ['group', null])
-                                                case 'list': return p.option($s, ($): s_error.Error.type_mismatch.found => ['list', null])
-                                                case 'nothing': return p.option($s, ($): s_error.Error.type_mismatch.found => ['nothing', null])
-                                                case 'optional': return p.option($s, ($): s_error.Error.type_mismatch.found => ['optional', null])
-                                                case 'reference': return p.option($s, ($): s_error.Error.type_mismatch.found => ['reference', null])
-                                                case 'state': return p.option($s, ($): s_error.Error.type_mismatch.found => ['state', null])
-                                                case 'text': return p.option($s, ($): s_error.Error.type_mismatch.found => ['text', null])
-                                                default: return p.exhaustive($s[0])
-                                            }
-                                        },
-                                    )
-                                    return {
-                                        'expected': $property_expected,
-                                        'found': $property_found,
-                                    }
-                                })],
-                            ),
+                        'implementations',
+                        ($): s_target.Schema.resolver.implementations => resolver.Resolver(
+                            $,
+                            abort,
                         ),
-                        (): s_target.Type_Specification.schema.resolver => abort(
+                        (): s_target.Schema.resolver.implementations => abort(
                             ['missing property', p.initialize.group(() => {
-                                const $property_identifier: s_error.Error.missing_property.identifier = 'resolver'
+                                const $property_identifier: s_error.Error.missing_property.identifier = 'implementations'
                                 return {
                                     'identifier': $property_identifier,
                                 }
@@ -11541,11 +11451,11 @@ export const Type_Specification: d.Type_Specification = ($, abort) => p.with.exp
                         ),
                     )
                     return {
-                        'structure': $property_structure,
-                        'resolver': $property_resolver,
+                        'declarations': $property_declarations,
+                        'implementations': $property_implementations,
                     }
                 }),
-                ($unexpected_option): s_target.Type_Specification.schema => abort(
+                ($unexpected_option): s_target.Schema.resolver => abort(
                     ['type mismatch', p.initialize.group(() => {
                         const $property_expected: s_error.Error.type_mismatch.expected = ['group', null]
                         const $property_found: s_error.Error.type_mismatch.found = p.with.decide_state(
@@ -11571,7 +11481,59 @@ export const Type_Specification: d.Type_Specification = ($, abort) => p.with.exp
                     })],
                 ),
             ),
-            (): s_target.Type_Specification.schema => abort(
+            (): s_target.Schema.resolver => abort(
+                ['missing property', p.initialize.group(() => {
+                    const $property_identifier: s_error.Error.missing_property.identifier = 'resolver'
+                    return {
+                        'identifier': $property_identifier,
+                    }
+                })],
+            ),
+        )
+        return {
+            'structure': $property_structure,
+            'resolver': $property_resolver,
+        }
+    }),
+    ($unexpected_option): s_target.Schema => abort(
+        ['type mismatch', p.initialize.group(() => {
+            const $property_expected: s_error.Error.type_mismatch.expected = ['group', null]
+            const $property_found: s_error.Error.type_mismatch.found = p.with.decide_state(
+                $['type'],
+                ($s): s_error.Error.type_mismatch.found => {
+                    switch ($s[0]) {
+                        case 'dictionary': return p.option($s, ($): s_error.Error.type_mismatch.found => ['dictionary', null])
+                        case 'group': return p.option($s, ($): s_error.Error.type_mismatch.found => ['group', null])
+                        case 'list': return p.option($s, ($): s_error.Error.type_mismatch.found => ['list', null])
+                        case 'nothing': return p.option($s, ($): s_error.Error.type_mismatch.found => ['nothing', null])
+                        case 'optional': return p.option($s, ($): s_error.Error.type_mismatch.found => ['optional', null])
+                        case 'reference': return p.option($s, ($): s_error.Error.type_mismatch.found => ['reference', null])
+                        case 'state': return p.option($s, ($): s_error.Error.type_mismatch.found => ['state', null])
+                        case 'text': return p.option($s, ($): s_error.Error.type_mismatch.found => ['text', null])
+                        default: return p.exhaustive($s[0])
+                    }
+                },
+            )
+            return {
+                'expected': $property_expected,
+                'found': $property_found,
+            }
+        })],
+    ),
+)
+
+export const Authoring_Specification: d.Authoring_Specification = ($, abort) => p.with.expect_state_option(
+    $['type'],
+    'group',
+    ($): s_target.Authoring_Specification => p.initialize.group(() => {
+        const $property_schema: s_target.Authoring_Specification.schema = p.with.get_possible_entry(
+            $['properties'],
+            'schema',
+            ($): s_target.Authoring_Specification.schema => Schema(
+                $,
+                abort,
+            ),
+            (): s_target.Authoring_Specification.schema => abort(
                 ['missing property', p.initialize.group(() => {
                     const $property_identifier: s_error.Error.missing_property.identifier = 'schema'
                     return {
@@ -11580,14 +11542,14 @@ export const Type_Specification: d.Type_Specification = ($, abort) => p.with.exp
                 })],
             ),
         )
-        const $property_directory: s_target.Type_Specification.directory = p.with.get_possible_entry(
+        const $property_directory: s_target.Authoring_Specification.directory = p.with.get_possible_entry(
             $['properties'],
             'directory',
-            ($): s_target.Type_Specification.directory => Directory(
+            ($): s_target.Authoring_Specification.directory => Directory(
                 $,
                 abort,
             ),
-            (): s_target.Type_Specification.directory => abort(
+            (): s_target.Authoring_Specification.directory => abort(
                 ['missing property', p.initialize.group(() => {
                     const $property_identifier: s_error.Error.missing_property.identifier = 'directory'
                     return {
@@ -11601,7 +11563,101 @@ export const Type_Specification: d.Type_Specification = ($, abort) => p.with.exp
             'directory': $property_directory,
         }
     }),
-    ($unexpected_option): s_target.Type_Specification => abort(
+    ($unexpected_option): s_target.Authoring_Specification => abort(
+        ['type mismatch', p.initialize.group(() => {
+            const $property_expected: s_error.Error.type_mismatch.expected = ['group', null]
+            const $property_found: s_error.Error.type_mismatch.found = p.with.decide_state(
+                $['type'],
+                ($s): s_error.Error.type_mismatch.found => {
+                    switch ($s[0]) {
+                        case 'dictionary': return p.option($s, ($): s_error.Error.type_mismatch.found => ['dictionary', null])
+                        case 'group': return p.option($s, ($): s_error.Error.type_mismatch.found => ['group', null])
+                        case 'list': return p.option($s, ($): s_error.Error.type_mismatch.found => ['list', null])
+                        case 'nothing': return p.option($s, ($): s_error.Error.type_mismatch.found => ['nothing', null])
+                        case 'optional': return p.option($s, ($): s_error.Error.type_mismatch.found => ['optional', null])
+                        case 'reference': return p.option($s, ($): s_error.Error.type_mismatch.found => ['reference', null])
+                        case 'state': return p.option($s, ($): s_error.Error.type_mismatch.found => ['state', null])
+                        case 'text': return p.option($s, ($): s_error.Error.type_mismatch.found => ['text', null])
+                        default: return p.exhaustive($s[0])
+                    }
+                },
+            )
+            return {
+                'expected': $property_expected,
+                'found': $property_found,
+            }
+        })],
+    ),
+)
+
+export const Document_Specification: d.Document_Specification = ($, abort) => p.with.expect_state_option(
+    $['type'],
+    'group',
+    ($): s_target.Document_Specification => p.initialize.group(() => {
+        const $property_schema: s_target.Document_Specification.schema = p.with.get_possible_entry(
+            $['properties'],
+            'schema',
+            ($): s_target.Document_Specification.schema => Schema(
+                $,
+                abort,
+            ),
+            (): s_target.Document_Specification.schema => abort(
+                ['missing property', p.initialize.group(() => {
+                    const $property_identifier: s_error.Error.missing_property.identifier = 'schema'
+                    return {
+                        'identifier': $property_identifier,
+                    }
+                })],
+            ),
+        )
+        const $property_root_type: s_target.Document_Specification.root_type = p.with.get_possible_entry(
+            $['properties'],
+            'root type',
+            ($): s_target.Document_Specification.root_type => p.with.expect_state_option(
+                $['type'],
+                'reference',
+                ($): s_target.Document_Specification.root_type => $,
+                ($unexpected_option): s_target.Document_Specification.root_type => abort(
+                    ['type mismatch', p.initialize.group(() => {
+                        const $property_expected: s_error.Error.type_mismatch.expected = ['reference', null]
+                        const $property_found: s_error.Error.type_mismatch.found = p.with.decide_state(
+                            $['type'],
+                            ($s): s_error.Error.type_mismatch.found => {
+                                switch ($s[0]) {
+                                    case 'dictionary': return p.option($s, ($): s_error.Error.type_mismatch.found => ['dictionary', null])
+                                    case 'group': return p.option($s, ($): s_error.Error.type_mismatch.found => ['group', null])
+                                    case 'list': return p.option($s, ($): s_error.Error.type_mismatch.found => ['list', null])
+                                    case 'nothing': return p.option($s, ($): s_error.Error.type_mismatch.found => ['nothing', null])
+                                    case 'optional': return p.option($s, ($): s_error.Error.type_mismatch.found => ['optional', null])
+                                    case 'reference': return p.option($s, ($): s_error.Error.type_mismatch.found => ['reference', null])
+                                    case 'state': return p.option($s, ($): s_error.Error.type_mismatch.found => ['state', null])
+                                    case 'text': return p.option($s, ($): s_error.Error.type_mismatch.found => ['text', null])
+                                    default: return p.exhaustive($s[0])
+                                }
+                            },
+                        )
+                        return {
+                            'expected': $property_expected,
+                            'found': $property_found,
+                        }
+                    })],
+                ),
+            ),
+            (): s_target.Document_Specification.root_type => abort(
+                ['missing property', p.initialize.group(() => {
+                    const $property_identifier: s_error.Error.missing_property.identifier = 'root type'
+                    return {
+                        'identifier': $property_identifier,
+                    }
+                })],
+            ),
+        )
+        return {
+            'schema': $property_schema,
+            'root type': $property_root_type,
+        }
+    }),
+    ($unexpected_option): s_target.Document_Specification => abort(
         ['type mismatch', p.initialize.group(() => {
             const $property_expected: s_error.Error.type_mismatch.expected = ['group', null]
             const $property_found: s_error.Error.type_mismatch.found = p.with.decide_state(
